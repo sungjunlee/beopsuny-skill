@@ -48,25 +48,26 @@ metadata:
 
 ### 모드 판별 (Full / Lite)
 
-스킬 시작 시 능력을 감지하여 모드를 결정한다. 플랫폼이 아니라 능력 기준:
+스킬 시작 시 로컬 데이터 존재 여부로 모드를 결정한다:
 
 ```
-로컬 데이터 접근 가능? ──yes──→ Full 모드
-       │no
-Bash 사용 가능? ──yes──→ 데이터 clone 후 Full 모드
-       │no
-Lite 모드 (API 우선, 시각화 활용)
+ls ~/.beopsuny/data/legalize-kr/kr/ 결과 있음? ──yes──→ Full 모드
+                                                 │no
+                                           Lite 모드
 ```
 
-**Full 모드 판별**: `ls ~/.beopsuny/data/legalize-kr/kr/ 2>/dev/null` 결과가 있으면 Full.
+데이터가 없으면 **자동 clone하지 않는다** — Lite 모드로 진입한다.
+Chat 탭처럼 채팅마�� 스토리지가 초기화되는 환경에서는 clone이 무��미하기 때문이다.
+
 **Lite 모드 진입 시 안내** (한 번만):
-> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령/판례 데이터를 포함한 전체 기능은 Claude Code(또는 Code 탭)에서 사용할 수 있습니다.
+> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다.
+> 로컬 법령/판례 데이터로 Full 모드를 사용하려면 Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하세요 (아래 "데이터 초기화" 참조).
 
 ### 1순위 (Full): 로컬 Git 데이터 (legalize-kr + precedent-kr)
 
 경로: `~/.beopsuny/data/legalize-kr/`, `~/.beopsuny/data/precedent-kr/`
 
-데이터가 없으면 모드 판별(위)에서 자동 clone한다.
+데이터가 없으면 Lite 모드로 동작한다. 초기화는 "데이터 초기화" 섹션 참조.
 
 **법령** — legalize-kr은 Markdown + YAML frontmatter 형식.
 디렉토리명에 띄어쓰기가 없다 (법률 제목의 띄어쓰기를 제거해서 매칭).
@@ -120,9 +121,11 @@ WebFetch "https://korean-law-mcp.fly.dev/mcp?oc={OC코드}" (MCP 리모트)
 
 법령/판례 **링크 제공용**으로만 사용 (원문 확인 URL).
 
-### 데이터 초기화 (Full 모드)
+### 데이터 초기화 (Full 모드 전환)
 
-Bash가 가능한데 데이터가 없으면 자연스럽게 clone한다.
+Claude Code, Codex CLI 등 **영속 파일시스템이 있는 AI 개발 도구**에서 사용자가 데이터 다운로드를 요청하거나 Full 모드 설정을 원할 때 실행한다.
+Desktop Chat 탭 등 채팅마다 초기화되는 환경에서는 clone을 권장하지 않는다.
+
 **`--depth` 플래그를 사용하지 않는다** — `git log`로 개정 이력을 추적하려면 전체 히스토리가 필요하다.
 ```bash
 mkdir -p ~/.beopsuny/data

@@ -1,10 +1,10 @@
 # Claude Desktop Chat 탭에서 법순이 사용하기
 
 Claude Desktop의 **Chat 탭**(또는 claude.ai)에서 법순이를 사용하는 가이드.
-Code 탭/Claude Code CLI와 달리 파일 시스템 접근이 없으므로 **Lite 모드**로 동작한다.
+Chat 탭은 채팅마다 스토리지가 초기화되므로 **Lite 모드**로 동작한다 (법망 API + 웹검색).
 
-> 전체 기능(로컬 법령 데이터, 판례 12만건 직접 읽기, 검토 이력 저장)은
-> Claude Code CLI 또는 Desktop의 Code 탭에서 사용할 수 있습니다.
+> 전체 기능(로컬 법령 데이터, 판례 12만건 직접 읽기, 개정 이력 추적, 검토 이력 저장)은
+> Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하면 사용할 수 있습니다.
 
 ---
 
