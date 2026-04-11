@@ -1,0 +1,118 @@
+# 기본 법령 검색 시나리오
+# 실제 사용자가 법령 조문을 확인하려 할 때의 질문들
+
+name: 기본 법령 검색
+description: |
+  가장 흔한 사용 패턴 - 특정 법령이나 조문의 내용을 확인하려는 경우.
+  정확한 조문 반환, 시행일 정보, 링크 유효성을 검증.
+
+scenarios:
+  - id: basic-01
+    name: 민법 불법행위 조항 확인
+    persona: 법무팀 실무자
+    context: |
+      계약 분쟁 검토 중 손해배상 청구 가능성을 확인하려 함
+    question: "민법 제750조 불법행위 내용 확인해줘"
+    expected:
+      law_name: 민법
+      article: 제750조
+      contains_keywords:
+        - 고의
+        - 과실
+        - 손해
+        - 배상
+      has_effective_date: true
+      has_link: true
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "민법"
+    validation:
+      - type: content_accuracy
+        description: 조문 내용이 실제와 일치하는지
+      - type: link_validity
+        description: 생성된 law.go.kr 링크가 작동하는지
+
+  - id: basic-02
+    name: 상법 이사 충실의무
+    persona: 스타트업 대표
+    context: |
+      이사회 구성 검토 중 이사의 의무가 무엇인지 확인
+    question: "상법에서 이사의 충실의무 조항 찾아줘"
+    expected:
+      law_name: 상법
+      article: 제382조의3
+      contains_keywords:
+        - 충실
+        - 의무
+        - 이사
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "상법"
+
+  - id: basic-03
+    name: 근로기준법 퇴직금 규정
+    persona: HR 담당자
+    context: |
+      직원 퇴직 처리 중 퇴직금 지급 기준 확인
+    question: "퇴직금 지급 요건이랑 계산 방법 법조문으로 확인하고 싶어"
+    expected:
+      law_name: 근로자퇴직급여 보장법
+      note: 근로기준법이 아닌 별도 법률임을 안내해야 함
+      contains_keywords:
+        - 퇴직금
+        - 계속근로
+        - 1년
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "근로자퇴직급여 보장법"
+
+  - id: basic-04
+    name: 개인정보보호법 동의 요건
+    persona: 서비스 기획자
+    context: |
+      신규 서비스 출시 전 개인정보 수집 동의 화면 설계
+    question: "개인정보 수집할 때 필수로 받아야 하는 동의 항목이 뭐야?"
+    expected:
+      law_name: 개인정보 보호법
+      articles:
+        - 제15조  # 수집·이용
+        - 제22조  # 동의 방법
+      contains_keywords:
+        - 동의
+        - 수집
+        - 목적
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "개인정보 보호법"
+
+  - id: basic-05
+    name: 형법 사기죄 구성요건
+    persona: 일반인 (피해 의심)
+    context: |
+      투자 사기 피해를 당한 것 같아 법적 대응 검토
+    question: "사기죄가 성립하려면 어떤 조건이 필요해?"
+    expected:
+      law_name: 형법
+      article: 제347조
+      contains_keywords:
+        - 기망
+        - 재물
+        - 재산상의 이익
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "형법"
+
+  - id: basic-06
+    name: 최신 시행일 확인
+    persona: 컴플라이언스 담당
+    context: |
+      규제 대응을 위해 최근 법령 변경사항 파악 필요
+    question: "개인정보보호법 최근 개정된 거 시행일이 언제야?"
+    expected:
+      has_effective_date: true
+      effective_date_format: "YYYY.MM.DD 또는 YYYY년 MM월 DD일"
+    data_source: |
+      # legalize-kr git log:  --days 90
+    validation:
+      - type: temporal_accuracy
+        description: 시행일 정보가 정확한지

@@ -1,0 +1,79 @@
+# 국회 의안 시나리오
+# 입법 동향 파악 - 개정 예정인 법률, 발의된 법안 등
+
+name: 국회 의안 추적
+description: |
+  현행법뿐 아니라 앞으로 바뀔 법률도 중요.
+  국회에 발의된 개정안, 계류 중인 법안을 추적하는 시나리오.
+  열린국회정보 API 활용.
+
+scenarios:
+  - id: legis-01
+    name: 특정 법률 개정안 추적
+    persona: 정책 담당자
+    context: |
+      소관 법률 개정 동향 모니터링
+    question: "상법 개정안 국회에 발의된 거 있어? 어떤 내용이야?"
+    expected:
+      law_name: 상법
+      has_pending_bills: true/false  # 시점에 따라 다름
+      bill_info:
+        - 의안명
+        - 발의자
+        - 발의일
+        - 주요 내용
+    data_source: |
+      # WebSearch 의안:  track "상법"
+    validation:
+      - type: bill_existence
+        description: 검색된 의안이 실제 의안정보시스템에 존재하는지
+
+  - id: legis-02
+    name: 최근 발의 법안
+    persona: 국회 모니터링 담당
+    context: |
+      주간 입법 동향 리포트 작성
+    question: "지난 한 달간 발의된 법률안 중에 노동법 관련된 거 있어?"
+    expected:
+      date_range: 최근 30일
+      keyword_filter: 노동
+    data_source: |
+      # WebSearch 의안:  recent --days 30 --keyword 노동
+
+  - id: legis-03
+    name: 계류 법안 현황
+    persona: 로비스트
+    context: |
+      특정 분야 법안 통과 가능성 분석
+    question: "현재 국회에 계류 중인 개인정보 관련 법안 뭐가 있어?"
+    expected:
+      filter: 계류 중
+      keyword: 개인정보
+    data_source: |
+      # WebSearch 의안:  pending --keyword "개인정보"
+
+  - id: legis-04
+    name: 법안 처리 현황
+    persona: 언론사 기자
+    context: |
+      특정 법안의 국회 처리 과정 취재
+    question: "그 법안 지금 어디까지 진행됐어? 위원회 통과했어?"
+    expected:
+      bill_status_info:
+        - 소관 위원회
+        - 심사 진행 상황
+        - 본회의 상정 여부
+    note: |
+      특정 의안번호가 주어지면 상세 현황 조회
+
+  - id: legis-05
+    name: 22대 국회 주요 발의 현황
+    persona: 학술 연구자
+    context: |
+      22대 국회 입법 활동 분석
+    question: "22대 국회에서 ESG 관련 법안 얼마나 발의됐어?"
+    expected:
+      assembly_number: 22대
+      keyword: ESG
+    data_source: |
+      # WebSearch 의안:  recent --keyword "ESG"

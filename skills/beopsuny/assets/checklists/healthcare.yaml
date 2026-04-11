@@ -1,0 +1,285 @@
+# ============================================================
+# 의료·헬스케어 사업 법적 체크리스트
+# Healthcare Business Legal Checklist
+# ============================================================
+# 의료기기, 화장품, 헬스케어 서비스 관련 법적 요건
+# Legal requirements for medical devices, cosmetics, and healthcare services
+
+name: "의료·헬스케어 사업 법적 체크리스트"
+description: "의료기기 판매, 화장품 제조, 디지털 헬스케어 서비스의 인허가 및 규제 준수"
+type: "checklist"
+category: "의료/헬스케어"
+last_updated: "2025-12-28"
+
+maintenance:
+  review_cycle: "quarterly"
+  next_review: "2026-03"
+  volatile_items:
+    - "의료기기 등급분류"
+    - "디지털치료제 규제"
+    - "원격의료 관련 규정"
+  note: "의료 규제는 고시 개정 빈번, 디지털 헬스케어 규제 신설 주의"
+  changelog:
+    - date: "2025-12-28"
+      changes: "초기 버전 생성"
+
+triage_questions:
+  - question: "어떤 유형의 헬스케어 사업인가?"
+    options:
+      - "의료기기 제조/판매 → 식약처 인허가"
+      - "화장품 제조/판매 → 화장품법 적용"
+      - "디지털 헬스케어 앱 → 의료기기 해당 여부 확인"
+      - "의료기관 개설 → 의료법 적용"
+  - question: "의료기기 등급은?"
+    if_yes: "1~2등급: 신고/인증, 3~4등급: 허가"
+  - question: "개인건강정보를 처리하는가?"
+    if_yes: "개인정보보호법 + 의료법 민감정보 규정 적용"
+
+related_checklists:
+  - name: "privacy_compliance"
+    when: "건강정보 수집 시"
+  - name: "startup"
+    when: "신규 법인 설립 시"
+
+related_permits:
+  - permit-016  # 의료기기 판매업 신고
+  - permit-017  # 화장품 제조업 등록
+
+items:
+  # ─────────────────────────────────────────────────────────
+  # 1. 의료기기
+  # ─────────────────────────────────────────────────────────
+  - id: "health-01"
+    task: "의료기기 등급분류 확인"
+    laws:
+      - name: "의료기기법"
+        articles: ["제3조 (의료기기의 정의)"]
+        law_id: "009514"
+    notes: |
+      - 1등급: 인체 위해성 낮음 (신고)
+      - 2등급: 중등도 위해성 (인증)
+      - 3등급: 높은 위해성 (허가)
+      - 4등급: 생명에 직접 영향 (허가)
+    condition: "의료기기 제조/수입/판매 시"
+    risk_level: "critical"
+    check_points:
+      - "품목 해당 여부 확인 (식약처 민원상담)"
+      - "등급분류 신청 필요 여부"
+
+  - id: "health-02"
+    task: "의료기기 판매업 신고"
+    laws:
+      - name: "의료기기법"
+        articles: ["제17조"]
+        law_id: "009514"
+    notes: |
+      - 1~2등급: 시/군/구 신고
+      - 3~4등급: 허가 필요
+    deadline: "판매 개시 전"
+    condition: "의료기기 판매 시"
+    risk_level: "high"
+    check_points:
+      - "품질관리자 지정 (2등급 이상)"
+      - "영업소 시설기준"
+
+  - id: "health-03"
+    task: "의료기기 제조업 허가"
+    laws:
+      - name: "의료기기법"
+        articles: ["제6조"]
+        law_id: "009514"
+    notes: |
+      - 관할: 식품의약품안전처
+      - GMP 인증 필요
+    deadline: "제조 개시 전"
+    condition: "의료기기 제조 시"
+    risk_level: "critical"
+    check_points:
+      - "제조시설 GMP 기준"
+      - "품질책임자 지정"
+
+  - id: "health-04"
+    task: "의료기기 품목 허가/인증/신고"
+    laws:
+      - name: "의료기기법"
+        articles: ["제15조, 제16조, 제17조"]
+        law_id: "009514"
+    notes: |
+      - 1등급: 신고
+      - 2등급: 인증 (인증기관)
+      - 3~4등급: 허가 (식약처)
+    deadline: "유통 개시 전"
+    condition: "신규 품목 출시 시"
+    risk_level: "critical"
+    check_points:
+      - "기술문서 준비"
+      - "임상시험 필요 여부 (3~4등급)"
+
+  # ─────────────────────────────────────────────────────────
+  # 2. 화장품
+  # ─────────────────────────────────────────────────────────
+  - id: "health-05"
+    task: "화장품 제조업 등록"
+    laws:
+      - name: "화장품법"
+        articles: ["제3조"]
+        law_id: "002015"
+    notes: |
+      - 관할: 식품의약품안전처
+      - 책임판매관리자 필요
+    deadline: "제조 개시 전"
+    condition: "화장품 제조 시"
+    risk_level: "high"
+    check_points:
+      - "시설기준 충족"
+      - "책임판매관리자 자격"
+
+  - id: "health-06"
+    task: "화장품 책임판매업 신고"
+    laws:
+      - name: "화장품법"
+        articles: ["제3조의2"]
+        law_id: "002015"
+    notes: |
+      - 제조 없이 판매만 하는 경우
+      - OEM/ODM 위탁 시 해당
+    deadline: "판매 개시 전"
+    condition: "화장품 유통/판매 시"
+    risk_level: "high"
+    check_points:
+      - "책임판매관리자 지정"
+      - "품질관리 기준"
+
+  - id: "health-07"
+    task: "기능성화장품 심사"
+    laws:
+      - name: "화장품법"
+        articles: ["제4조"]
+        law_id: "002015"
+    notes: |
+      - 미백, 주름개선, 자외선차단 등
+      - 사전 심사 또는 보고 필요
+    deadline: "기능성 표시 전"
+    condition: "기능성화장품 표방 시"
+    risk_level: "high"
+    check_points:
+      - "기능성 입증 자료"
+      - "심사/보고 대상 구분"
+
+  # ─────────────────────────────────────────────────────────
+  # 3. 디지털 헬스케어
+  # ─────────────────────────────────────────────────────────
+  - id: "health-08"
+    task: "디지털 헬스케어 의료기기 해당 여부 확인"
+    laws:
+      - name: "의료기기법"
+        articles: ["제2조"]
+        law_id: "009514"
+    admin_rules:
+      - name: "디지털치료기기 허가·심사 가이드라인"
+    notes: |
+      - 모바일 의료용 앱 → 의료기기 해당 가능
+      - 단순 건강관리 앱 → 비의료기기
+      - 디지털치료제(DTx) → 의료기기 허가
+    condition: "헬스케어 앱/소프트웨어 개발 시"
+    risk_level: "critical"
+    check_points:
+      - "식약처 사전상담"
+      - "의료기기 범위 판단"
+
+  - id: "health-09"
+    task: "원격의료 관련 규정 준수"
+    laws:
+      - name: "의료법"
+        articles: ["제34조 (원격의료)"]
+        law_id: "001788"
+    notes: |
+      - 의료인 간 원격의료: 허용
+      - 환자 대상 원격의료: 제한적 허용 (비대면 진료 한시 허용 등)
+    condition: "원격의료 서비스 제공 시"
+    risk_level: "critical"
+    check_points:
+      - "허용 범위 확인"
+      - "의료기관 개설 요건"
+
+  # ─────────────────────────────────────────────────────────
+  # 4. 건강정보 보호
+  # ─────────────────────────────────────────────────────────
+  - id: "health-10"
+    task: "건강정보 처리 동의 획득"
+    laws:
+      - name: "개인정보 보호법"
+        articles: ["제23조 (민감정보의 처리 제한)"]
+        law_id: "011357"
+    notes: |
+      - 건강정보는 민감정보
+      - 별도 명시적 동의 필요
+    condition: "건강정보 수집 시"
+    risk_level: "critical"
+    check_points:
+      - "민감정보 동의 별도 획득"
+      - "처리 목적 명시"
+
+  - id: "health-11"
+    task: "의료정보 보호 조치"
+    laws:
+      - name: "의료법"
+        articles: ["제21조 (기록 열람 등), 제23조 (전자의무기록)"]
+        law_id: "001788"
+    notes: |
+      - 진료기록 비밀유지 의무
+      - 전자의무기록 보안기준
+    condition: "의료정보 처리 시"
+    risk_level: "critical"
+    check_points:
+      - "접근권한 관리"
+      - "암호화 조치"
+
+  # ─────────────────────────────────────────────────────────
+  # 5. 광고 규제
+  # ─────────────────────────────────────────────────────────
+  - id: "health-12"
+    task: "의료기기 광고 규정 준수"
+    laws:
+      - name: "의료기기법"
+        articles: ["제24조 (광고의 금지 등)"]
+        law_id: "009514"
+    notes: |
+      - 허가/인증 받은 범위 내 광고
+      - 허위·과대광고 금지
+    condition: "의료기기 광고 시"
+    risk_level: "high"
+    check_points:
+      - "광고 사전심의 (필요시)"
+      - "효능 표현 범위"
+
+  - id: "health-13"
+    task: "화장품 광고 규정 준수"
+    laws:
+      - name: "화장품법"
+        articles: ["제13조 (표시·광고의 범위)"]
+        law_id: "002015"
+    notes: |
+      - 의약품 오인 광고 금지
+      - 기능성 표시는 심사 후만 가능
+    condition: "화장품 광고 시"
+    risk_level: "high"
+    check_points:
+      - "금지 표현 확인"
+      - "기능성 심사 여부"
+
+references:
+  - name: "의료기기 정보포털"
+    url: "https://www.mfds.go.kr/md"
+    description: "의료기기 허가/인증/신고 안내"
+  - name: "화장품 정보포털"
+    url: "https://www.mfds.go.kr/cos"
+    description: "화장품 등록/신고 안내"
+  - name: "디지털헬스케어 규제혁신"
+    url: "https://www.mfds.go.kr"
+    description: "디지털치료기기 가이드라인"
+
+disclaimer: |
+  이 체크리스트는 일반적인 법적 검토 가이드이며, 구체적인 사안에 대해서는
+  반드시 관할 행정기관 또는 법률전문가의 자문을 받으시기 바랍니다.
+  의료기기 규제는 품목별로 상이하므로 식약처 사전상담을 권장합니다.

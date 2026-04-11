@@ -1,0 +1,462 @@
+# ============================================================
+# 식품 사업 법적 체크리스트
+# Food Business Legal Checklist
+# ============================================================
+# 식품 제조·유통·판매업 창업 및 운영 시 필수 법적 검토사항
+# Essential legal requirements for food manufacturing, distribution, and sales
+#
+# 용도: 식품 관련 사업 시작 전 법적 요건 점검
+# 주의: 품목별 세부 규정은 식품안전나라(foodsafetykorea.go.kr) 확인 필요
+
+name: "식품 사업 법적 체크리스트"
+description: "식품 제조·유통·판매업의 인허가, 위생, 표시·광고, 안전관리 법적 요건"
+type: "checklist"
+category: "식품/F&B"
+last_updated: "2025-12-28"
+
+# 유지보수 정보
+maintenance:
+  review_cycle: "quarterly"
+  next_review: "2026-03"
+  volatile_items:
+    - "HACCP 의무 적용 품목"
+    - "식품표시 기준 (고시 개정 빈번)"
+    - "건강기능식품 기능성 인정 기준"
+    - "수입식품 검사 기준"
+  note: "식품 규제는 고시·훈령 개정이 빈번하므로 분기별 확인 필수"
+  changelog:
+    - date: "2025-12-28"
+      changes: "초기 버전 생성 (식품 제조·판매·건기식 중심)"
+
+# ─────────────────────────────────────────────────────────
+# 초기 분기 질문 (Quick Triage)
+# ─────────────────────────────────────────────────────────
+triage_questions:
+  - question: "어떤 유형의 식품 사업인가?"
+    options:
+      - "식품 제조·가공 → 영업허가 필요"
+      - "식품 판매 (유통) → 영업신고"
+      - "건강기능식품 → 별도 신고/허가"
+      - "수입식품 → 수입식품안전관리특별법 적용"
+  - question: "HACCP 의무 품목을 제조하는가?"
+    if_yes: "HACCP 인증 필수 취득"
+    examples:
+      - "어육가공품류"
+      - "냉동식품 (피자류, 만두류, 면류)"
+      - "빙과류"
+      - "비가열음료"
+      - "레토르트식품"
+      - "김치류 (배추김치)"
+  - question: "온라인으로 판매하는가?"
+    if_yes: "통신판매업 신고 병행 필요 → permits.yaml permit-001 참조"
+  - question: "건강기능식품 기능성을 표시·광고하는가?"
+    if_yes: "한국건강기능식품협회 사전심의 필수"
+  - question: "해외에서 식품을 수입하는가?"
+    if_yes: "수입식품 신고, 해외제조업소 등록 검토"
+
+# 연관 체크리스트/자료
+related_checklists:
+  - name: "startup"
+    when: "신규 법인 설립 시"
+  - name: "privacy_compliance"
+    when: "고객 개인정보 수집 시 (온라인 판매 등)"
+  - name: "labor_hr"
+    when: "직원 고용 시"
+
+related_permits:
+  - permit-001  # 통신판매업 신고 (온라인 판매 시)
+  - permit-013  # 식품제조·가공업 허가
+  - permit-014  # 식품판매업 신고
+  - permit-015  # 건강기능식품 판매업 신고
+
+items:
+  # ─────────────────────────────────────────────────────────
+  # 1. 인허가·신고 (Permits & Registrations)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-01"
+    task: "식품제조·가공업 영업허가 취득"
+    laws:
+      - name: "식품위생법"
+        articles: ["제37조 (영업허가 등)"]
+        law_id: "001805"
+    admin_rules:
+      - name: "식품위생법 시행규칙"
+        articles: ["별표 14 (영업의 시설기준)"]
+    notes: |
+      - 관할: 시·군·구청 (보건소)
+      - 처리기간: 10~14일
+      - 시설기준 충족 후 신청
+    deadline: "사업 개시 전"
+    condition: "식품 제조·가공업 영위 시"
+    risk_level: "critical"
+    check_points:
+      - "제조시설 시설기준 충족 여부"
+      - "영업자 위생교육 이수 (8시간)"
+      - "종업원 건강진단 완료"
+
+  - id: "food-02"
+    task: "식품판매업 영업신고"
+    laws:
+      - name: "식품위생법"
+        articles: ["제37조 제4항"]
+        law_id: "001805"
+    notes: |
+      - 유형: 식품소분업, 식품판매업, 집단급식소식품판매업
+      - 처리기간: 즉시~3일
+    deadline: "사업 개시 전"
+    condition: "식품 판매업 영위 시 (제조 없이 판매만)"
+    risk_level: "high"
+    check_points:
+      - "영업장 시설기준 충족"
+      - "위생교육 이수 (4시간)"
+
+  - id: "food-03"
+    task: "건강기능식품 판매업 영업신고"
+    laws:
+      - name: "건강기능식품에 관한 법률"
+        articles: ["제6조 (영업의 신고)"]
+        law_id: "009353"
+    notes: |
+      - 관할: 시·군·구청 (보건소)
+      - 건기식 전문 위생교육 이수 필수
+    deadline: "사업 개시 전"
+    condition: "건강기능식품 판매 시"
+    risk_level: "high"
+    check_points:
+      - "건강기능식품 위생교육 이수"
+      - "광고 사전심의 절차 숙지"
+
+  - id: "food-04"
+    task: "통신판매업 신고 (온라인 판매 시)"
+    laws:
+      - name: "전자상거래법"
+        articles: ["제12조"]
+        law_id: "009318"
+    notes: |
+      - 식품 온라인 판매 시 필수
+      - 관할: 시·군·구청
+    deadline: "온라인 판매 개시 전"
+    condition: "온라인으로 식품 판매 시"
+    risk_level: "high"
+    check_points:
+      - "구매안전서비스(에스크로) 가입"
+      - "신고번호 사이트 표시"
+
+  # ─────────────────────────────────────────────────────────
+  # 2. 시설·위생기준 (Facility & Hygiene Standards)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-05"
+    task: "제조시설 기준 충족 확인"
+    laws:
+      - name: "식품위생법 시행규칙"
+        articles: ["별표 14"]
+    notes: |
+      - 작업장 구획 (원료처리실, 제조가공실, 포장실 등)
+      - 급수시설 (상수도 또는 검사 합격 지하수)
+      - 화장실·세척시설 분리
+    deadline: "허가 신청 전"
+    condition: "제조업"
+    risk_level: "critical"
+    check_points:
+      - "작업장 구획 적정성"
+      - "급수시설 검사성적서"
+      - "방충·방서 시설"
+
+  - id: "food-06"
+    task: "HACCP 인증 취득"
+    laws:
+      - name: "식품위생법"
+        articles: ["제48조 (식품안전관리인증기준)"]
+        law_id: "001805"
+    admin_rules:
+      - name: "식품 및 축산물 안전관리인증기준"
+        articles: ["전문"]
+    notes: |
+      - 의무 품목: 어육가공품, 냉동식품(피자·만두·면), 빙과류, 비가열음료, 레토르트, 배추김치
+      - 인증기관: 한국식품안전관리인증원
+      - 유효기간: 3년 (갱신 가능)
+    deadline: "영업허가 후 1년 이내 (의무업종)"
+    condition: "HACCP 의무 품목 제조 시"
+    risk_level: "critical"
+    check_points:
+      - "HACCP 7원칙 12절차 이행"
+      - "CCP(중요관리점) 설정"
+      - "모니터링 기록 관리"
+
+  - id: "food-07"
+    task: "종업원 건강진단 실시"
+    laws:
+      - name: "식품위생법"
+        articles: ["제40조 (건강진단)"]
+        law_id: "001805"
+    notes: |
+      - 대상: 영업자 및 종업원
+      - 주기: 연 1회
+      - 검사항목: 장티푸스, 폐결핵 등
+    deadline: "영업 개시 전 및 연 1회"
+    condition: "식품 취급 종사자 전원"
+    risk_level: "high"
+    check_points:
+      - "건강진단 결과서 보관"
+      - "부적격자 업무 배제"
+
+  - id: "food-08"
+    task: "위생교육 이수"
+    laws:
+      - name: "식품위생법"
+        articles: ["제41조 (식품위생교육)"]
+        law_id: "001805"
+    notes: |
+      - 영업자: 매년 3시간 (신규 8시간)
+      - 위탁교육기관: 한국식품산업협회 등
+    deadline: "영업 개시 전 및 매년"
+    condition: "식품영업자 전원"
+    risk_level: "high"
+    check_points:
+      - "위생교육 이수증 보관"
+      - "갱신 교육 일정 관리"
+
+  # ─────────────────────────────────────────────────────────
+  # 3. 표시·광고 (Labeling & Advertising)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-09"
+    task: "식품 표시기준 준수"
+    laws:
+      - name: "식품등의 표시·광고에 관한 법률"
+        articles: ["제4조 (표시의 기준)"]
+        law_id: "015320"
+    admin_rules:
+      - name: "식품등의 표시기준"
+        articles: ["전문 (식약처 고시)"]
+    notes: |
+      - 필수 표시사항: 제품명, 영업소명, 소재지, 원재료명,
+        영양성분, 유통기한/소비기한, 보관방법, 주의사항
+    deadline: "제품 출시 전"
+    condition: "모든 가공식품"
+    risk_level: "critical"
+    check_points:
+      - "필수 표시사항 누락 없음"
+      - "글씨 크기 기준 충족"
+      - "알레르기 유발물질 표시"
+
+  - id: "food-10"
+    task: "영양성분 표시"
+    laws:
+      - name: "식품등의 표시·광고에 관한 법률"
+        articles: ["제5조"]
+    notes: |
+      - 의무 표시: 열량, 나트륨, 탄수화물, 당류, 지방, 트랜스지방, 포화지방, 콜레스테롤, 단백질
+      - 1회 제공량 기준 표시
+    deadline: "제품 출시 전"
+    condition: "영양표시 의무 대상 가공식품"
+    risk_level: "high"
+    check_points:
+      - "영양성분 분석 완료"
+      - "1회 제공량 적정성"
+
+  - id: "food-11"
+    task: "원산지 표시"
+    laws:
+      - name: "농수산물의 원산지 표시에 관한 법률"
+        articles: ["제5조, 제6조"]
+    notes: |
+      - 농수산물 가공품 원료 원산지 표시
+      - 수입 원료 사용 시 국가명 표시
+    deadline: "제품 출시 전"
+    condition: "농수산물 가공품"
+    risk_level: "high"
+    check_points:
+      - "주요 원료 원산지 표시"
+      - "혼합 비율 표시 (해당 시)"
+
+  - id: "food-12"
+    task: "건강기능식품 광고 사전심의"
+    laws:
+      - name: "건강기능식품에 관한 법률"
+        articles: ["제18조 (허위·과대의 표시·광고 금지)"]
+        law_id: "009353"
+    admin_rules:
+      - name: "건강기능식품의 표시·광고 심의기준"
+    notes: |
+      - 기능성 광고 시 사전심의 필수
+      - 심의기관: 한국건강기능식품협회
+      - 금지표현: 질병 예방·치료, 의약품 오인
+    deadline: "광고 게재 전"
+    condition: "건강기능식품 기능성 광고 시"
+    risk_level: "critical"
+    check_points:
+      - "심의필증 취득"
+      - "심의 유효기간 확인 (3년)"
+      - "금지 표현 배제"
+
+  - id: "food-13"
+    task: "허위·과대광고 금지 준수"
+    laws:
+      - name: "식품등의 표시·광고에 관한 법률"
+        articles: ["제8조 (부당한 표시 또는 광고행위의 금지)"]
+        law_id: "015320"
+    notes: |
+      - 금지: 질병 치료·예방 표현, 의약품 오인, 허위 인증마크
+      - 위반 시 형사처벌 및 영업정지
+    deadline: "상시"
+    condition: "모든 식품 광고"
+    risk_level: "critical"
+    check_points:
+      - "질병 관련 표현 배제"
+      - "객관적 근거 확보"
+      - "비교광고 적법성"
+
+  # ─────────────────────────────────────────────────────────
+  # 4. 이력추적·안전관리 (Traceability & Safety)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-14"
+    task: "식품이력추적관리 등록"
+    laws:
+      - name: "식품위생법"
+        articles: ["제49조 (식품이력추적관리 등록기준 등)"]
+        law_id: "001805"
+    notes: |
+      - 의무대상: 연매출 1억원 이상 식품제조가공업
+      - 등록시스템: 식품이력추적관리시스템 (tfood.go.kr)
+    deadline: "연매출 1억원 초과 시"
+    condition: "의무대상 사업자"
+    risk_level: "high"
+    check_points:
+      - "이력추적관리번호 부여"
+      - "거래내역 기록 관리"
+
+  - id: "food-15"
+    task: "자가품질검사 실시"
+    laws:
+      - name: "식품위생법"
+        articles: ["제31조 (자가품질검사 의무)"]
+        law_id: "001805"
+    admin_rules:
+      - name: "식품위생법 시행규칙"
+        articles: ["제31조 (자가품질검사 주기)"]
+    notes: |
+      - 검사주기: 품목별 상이 (1개월~6개월)
+      - 검사기관: 식품의약품안전처 지정 검사기관
+    deadline: "영업 개시 후 주기적"
+    condition: "식품제조가공업"
+    risk_level: "high"
+    check_points:
+      - "검사성적서 보관 (2년)"
+      - "부적합 시 조치"
+
+  - id: "food-16"
+    task: "위해식품 회수절차 수립"
+    laws:
+      - name: "식품위생법"
+        articles: ["제45조 (위해식품등의 회수)"]
+        law_id: "001805"
+    notes: |
+      - 회수계획서 작성
+      - 회수 공표 의무 (필요시)
+      - 회수 결과 보고
+    deadline: "영업 개시 시"
+    condition: "식품제조가공업"
+    risk_level: "high"
+    check_points:
+      - "회수절차 매뉴얼 구비"
+      - "비상연락망 구축"
+      - "회수 훈련 실시"
+
+  # ─────────────────────────────────────────────────────────
+  # 5. 수입·수출 (Import & Export)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-17"
+    task: "수입식품 등 신고"
+    laws:
+      - name: "수입식품안전관리 특별법"
+        articles: ["제20조 (수입신고)"]
+        law_id: "012607"
+    notes: |
+      - 신고기관: 지방식품의약품안전청
+      - 서류검사/정밀검사 대상 확인
+    deadline: "수입 전 또는 통관 시"
+    condition: "식품 수입 시"
+    risk_level: "critical"
+    check_points:
+      - "수출국 제조업소 등록 여부"
+      - "검역 대상 품목 확인"
+      - "한글 표시 부착"
+
+  - id: "food-18"
+    task: "해외제조업소 등록"
+    laws:
+      - name: "수입식품안전관리 특별법"
+        articles: ["제5조 (해외제조업소의 등록)"]
+        law_id: "012607"
+    notes: |
+      - 일부 품목 해외제조업소 등록 의무
+      - 등록 유효기간: 3년
+    deadline: "수입 전"
+    condition: "해외 위탁생산 또는 수입 시"
+    risk_level: "high"
+    check_points:
+      - "등록 대상 품목 해당 여부"
+      - "등록번호 확인"
+
+  # ─────────────────────────────────────────────────────────
+  # 6. 영업자 준수사항 (Operator Obligations)
+  # ─────────────────────────────────────────────────────────
+  - id: "food-19"
+    task: "영업자 준수사항 이행"
+    laws:
+      - name: "식품위생법"
+        articles: ["제3조~제6조"]
+        law_id: "001805"
+    notes: |
+      - 위해식품 판매 금지
+      - 기준·규격 위반 식품 제조·판매 금지
+      - 유통기한 경과 식품 판매 금지
+    deadline: "상시"
+    condition: "모든 식품영업자"
+    risk_level: "critical"
+    check_points:
+      - "원료 입고검사"
+      - "제조일·유통기한 관리"
+      - "보관 온도 관리"
+
+  - id: "food-20"
+    task: "영업신고사항 변경신고"
+    laws:
+      - name: "식품위생법"
+        articles: ["제37조 제5항"]
+        law_id: "001805"
+    notes: |
+      - 변경사항: 영업소 소재지, 상호, 대표자 등
+      - 신고기한: 변경일로부터 1개월 이내
+    deadline: "변경일로부터 1개월 이내"
+    condition: "신고사항 변경 시"
+    risk_level: "medium"
+    check_points:
+      - "변경신고서 제출"
+      - "관련 서류 갱신"
+
+# ─────────────────────────────────────────────────────────
+# 참고 자료 (References)
+# ─────────────────────────────────────────────────────────
+references:
+  - name: "식품안전나라"
+    url: "https://www.foodsafetykorea.go.kr"
+    description: "식품 인허가, 기준규격, 행정처분 조회"
+  - name: "식품의약품안전처"
+    url: "https://www.mfds.go.kr"
+    description: "법령, 고시, 정책 안내"
+  - name: "HACCP 정보마당"
+    url: "https://www.haccp.or.kr"
+    description: "HACCP 인증 신청 및 기준"
+  - name: "한국건강기능식품협회"
+    url: "https://www.khsa.or.kr"
+    description: "건기식 위생교육, 광고심의"
+  - name: "식품이력추적관리시스템"
+    url: "https://www.tfood.go.kr"
+    description: "이력추적관리 등록"
+
+# 면책 조항
+disclaimer: |
+  이 체크리스트는 일반적인 법적 검토 가이드이며, 구체적인 사안에 대해서는
+  반드시 관할 행정기관 또는 법률전문가의 자문을 받으시기 바랍니다.
+  식품 관련 규정은 고시·훈령 개정이 빈번하므로 최신 법령을 확인하세요.

@@ -1,0 +1,270 @@
+# ============================================================
+# 부동산 사업 법적 체크리스트
+# Real Estate Business Legal Checklist
+# ============================================================
+# 부동산 중개, 임대관리, 프롭테크 관련 법적 요건
+# Legal requirements for real estate brokerage, rental management, and proptech
+
+name: "부동산 사업 법적 체크리스트"
+description: "부동산 중개업, 임대관리업, 프롭테크 서비스의 인허가 및 규제 준수"
+type: "checklist"
+category: "부동산/건설"
+last_updated: "2025-12-28"
+
+maintenance:
+  review_cycle: "annual"
+  next_review: "2026-12"
+  volatile_items:
+    - "중개보수 요율"
+    - "임대차 3법 관련 규정"
+    - "부동산 플랫폼 규제"
+  note: "부동산 관련 규정은 정책 변화에 민감"
+  changelog:
+    - date: "2025-12-28"
+      changes: "초기 버전 생성"
+
+triage_questions:
+  - question: "어떤 유형의 부동산 사업인가?"
+    options:
+      - "중개업 → 공인중개사법 적용"
+      - "임대관리 → 민간임대주택법 적용"
+      - "부동산 플랫폼 → 중개업 해당 여부 확인"
+      - "건설/개발 → 건설산업기본법 적용"
+  - question: "공인중개사 자격이 있는가?"
+    if_yes: "중개업 등록 가능"
+    if_no: "중개업 직접 영위 불가, 플랫폼/정보제공만 가능"
+
+related_checklists:
+  - name: "startup"
+    when: "신규 법인 설립 시"
+  - name: "privacy_compliance"
+    when: "부동산 매물/고객 정보 수집 시"
+
+related_permits:
+  - permit-018  # 부동산 중개업 등록
+  - permit-019  # 주택임대관리업 등록
+  - permit-020  # 건설업 등록
+
+items:
+  # ─────────────────────────────────────────────────────────
+  # 1. 중개업 등록
+  # ─────────────────────────────────────────────────────────
+  - id: "real-01"
+    task: "공인중개사 자격 취득"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제4조 (공인중개사 자격시험)"]
+        law_id: "001654"
+    notes: |
+      - 국가공인자격시험 합격 필요
+      - 결격사유 확인
+    deadline: "중개업 등록 전"
+    condition: "중개업 영위 시"
+    risk_level: "critical"
+    check_points:
+      - "자격증 취득"
+      - "결격사유 없음 확인"
+
+  - id: "real-02"
+    task: "중개사무소 개설등록"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제9조 (중개사무소의 개설등록)"]
+        law_id: "001654"
+    notes: |
+      - 관할: 시/군/구청
+      - 사무소 확보 필요
+    deadline: "영업 개시 전"
+    condition: "중개업 영위 시"
+    risk_level: "critical"
+    check_points:
+      - "사무소 임대차계약"
+      - "손해배상책임 보장"
+
+  - id: "real-03"
+    task: "실무교육 이수"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제34조"]
+        law_id: "001654"
+    notes: |
+      - 신규 등록 전: 28시간 이상
+      - 연간 보수교육: 12시간 이상
+    deadline: "등록 전 및 매년"
+    condition: "중개사무소 개설 시"
+    risk_level: "high"
+    check_points:
+      - "교육이수증 발급"
+      - "보수교육 일정 관리"
+
+  - id: "real-04"
+    task: "업무보증 설정"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제30조 (손해배상책임의 보장)"]
+        law_id: "001654"
+    notes: |
+      - 보증보험 또는 공제 가입
+      - 개인: 1억원 이상
+      - 법인: 2억원 이상
+    deadline: "등록 시"
+    condition: "중개업 등록 시"
+    risk_level: "critical"
+    check_points:
+      - "보증보험 가입"
+      - "공제조합 가입"
+
+  # ─────────────────────────────────────────────────────────
+  # 2. 중개 거래 준수사항
+  # ─────────────────────────────────────────────────────────
+  - id: "real-05"
+    task: "중개대상물 확인·설명"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제25조 (중개대상물의 확인·설명)"]
+        law_id: "001654"
+    notes: |
+      - 권리관계 확인 (등기부등본)
+      - 확인·설명서 작성 교부
+    deadline: "계약 체결 전"
+    condition: "모든 중개 거래"
+    risk_level: "critical"
+    check_points:
+      - "등기부등본 발급 확인"
+      - "확인설명서 서명"
+
+  - id: "real-06"
+    task: "거래계약서 작성"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제26조 (거래계약서의 작성 등)"]
+        law_id: "001654"
+    notes: |
+      - 법정 기재사항 포함
+      - 원본 보존 의무 (5년)
+    deadline: "계약 체결 시"
+    condition: "중개 완성 시"
+    risk_level: "high"
+    check_points:
+      - "필수 기재사항"
+      - "서명날인"
+
+  - id: "real-07"
+    task: "부동산 거래신고"
+    laws:
+      - name: "부동산 거래신고 등에 관한 법률"
+        articles: ["제3조"]
+        law_id: "009947"
+    notes: |
+      - 계약일로부터 30일 이내
+      - 공동 신고 원칙
+    deadline: "계약일로부터 30일"
+    condition: "부동산 매매 거래 시"
+    risk_level: "high"
+    check_points:
+      - "신고기한 준수"
+      - "신고필증 발급"
+
+  # ─────────────────────────────────────────────────────────
+  # 3. 임대관리업
+  # ─────────────────────────────────────────────────────────
+  - id: "real-08"
+    task: "주택임대관리업 등록"
+    laws:
+      - name: "민간임대주택에 관한 특별법"
+        articles: ["제7조"]
+        law_id: "000243"
+    notes: |
+      - 관할: 시/도지사
+      - 자본금 1억원 이상 (법인)
+    deadline: "영업 개시 전"
+    condition: "임대관리업 영위 시"
+    risk_level: "high"
+    check_points:
+      - "자본금 요건"
+      - "전문인력 2인 이상"
+
+  - id: "real-09"
+    task: "임대차계약 신고"
+    laws:
+      - name: "부동산 거래신고 등에 관한 법률"
+        articles: ["제6조의2"]
+        law_id: "009947"
+    notes: |
+      - 보증금 6천만원 초과 또는 월차임 30만원 초과
+      - 계약일로부터 30일 이내
+    deadline: "계약일로부터 30일"
+    condition: "주택 임대차 계약 시"
+    risk_level: "high"
+    check_points:
+      - "신고 대상 여부"
+      - "확정일자 부여"
+
+  # ─────────────────────────────────────────────────────────
+  # 4. 프롭테크/플랫폼
+  # ─────────────────────────────────────────────────────────
+  - id: "real-10"
+    task: "중개업 해당 여부 확인"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제2조 (정의)"]
+        law_id: "001654"
+    notes: |
+      - 중개: 거래당사자 간 계약 성립 알선
+      - 정보제공만: 비중개 가능
+      - 매칭/알선: 중개 해당 가능
+    condition: "부동산 플랫폼 운영 시"
+    risk_level: "critical"
+    check_points:
+      - "서비스 범위 검토"
+      - "법률 자문"
+
+  - id: "real-11"
+    task: "부동산 정보 제공 적법성"
+    laws:
+      - name: "공인중개사법"
+        articles: ["제18조의2 (부동산 거래정보망)"]
+        law_id: "001654"
+    notes: |
+      - 허위 매물 게재 금지
+      - 중개사 아닌 자의 중개행위 금지
+    condition: "매물 정보 제공 시"
+    risk_level: "high"
+    check_points:
+      - "실매물 확인 절차"
+      - "허위매물 모니터링"
+
+  # ─────────────────────────────────────────────────────────
+  # 5. 임대차 3법
+  # ─────────────────────────────────────────────────────────
+  - id: "real-12"
+    task: "임대차 3법 안내"
+    laws:
+      - name: "주택임대차보호법"
+        articles: ["제6조의3 (계약갱신요구권)"]
+        law_id: "001663"
+    notes: |
+      - 계약갱신요구권 (1회, 2년)
+      - 전월세상한제 (5%)
+      - 전월세신고제
+    condition: "주택 임대차 중개 시"
+    risk_level: "high"
+    check_points:
+      - "갱신요구권 안내"
+      - "차임증액 한도 안내"
+
+references:
+  - name: "부동산거래전자계약시스템"
+    url: "https://irts.molit.go.kr"
+    description: "전자계약 체결"
+  - name: "렌트홈"
+    url: "https://www.renthome.go.kr"
+    description: "임대주택 등록/관리"
+  - name: "부동산거래관리시스템"
+    url: "https://rtms.molit.go.kr"
+    description: "거래신고"
+
+disclaimer: |
+  이 체크리스트는 일반적인 법적 검토 가이드이며, 구체적인 사안에 대해서는
+  반드시 관할 행정기관 또는 법률전문가의 자문을 받으시기 바랍니다.
+  부동산 관련 규정은 지역별로 상이할 수 있습니다.

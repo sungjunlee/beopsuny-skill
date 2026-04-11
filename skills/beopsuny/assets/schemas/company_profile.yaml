@@ -1,0 +1,26 @@
+# 회사 프로필
+# 대화에서 점진적으로 축적. 같은 법이라도 업종/규모에 따라 적용이 다르다.
+# 사용자가 회사 정보를 공유하면 이 파일을 업데이트한다.
+
+company_name: ""           # 회사명 (비공개 가능)
+industry: ""               # 업종 (예: IT, 제조, 식품, 금융)
+industry_code: ""           # 한국표준산업분류 코드 (선택)
+company_type: ""            # 유형: 주식회사, 유한회사, 개인사업자
+listing_status: ""          # 상장 여부: listed, kosdaq, unlisted
+employee_count: null        # 직원 수 (법적 의무 기준 분기에 사용)
+capital: null               # 자본금 (원)
+annual_revenue: null        # 연매출 (원, 하도급법 기준 등)
+headquarters: ""            # 본사 소재지
+branches: []                # 지점/사업장 소재지
+
+# 규제 관련 속성
+has_subcontract: false      # 하도급 관계 여부
+handles_personal_data: false  # 개인정보 처리 여부
+data_subjects_count: null   # 정보주체 수 (개인정보보호법 기준)
+has_overseas_operations: false  # 해외 사업 여부
+overseas_countries: []      # 해외 진출국
+is_franchise: false         # 가맹사업 여부
+
+# 메모
+notes: ""                   # 기타 특기사항
+updated_at: ""              # 마지막 업데이트 일시

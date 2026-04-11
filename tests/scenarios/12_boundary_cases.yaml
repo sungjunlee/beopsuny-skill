@@ -1,0 +1,208 @@
+# 경계 케이스 시나리오
+# 현재 범위 밖이거나 확장 예정인 영역, 에러 핸들링 등
+
+name: 경계 케이스 (Boundary Cases)
+description: |
+  법순이의 현재 범위를 벗어나는 질문들에 대한 처리를 검증.
+  외국법 비교, 범위 외 질문, 에러 상황 등.
+  향후 기능 확장 시 기준선(baseline)으로 활용.
+
+scenarios:
+  # === 외국법 관련 (향후 확장 예정) ===
+  - id: boundary-01
+    name: GDPR vs 개인정보보호법 비교
+    persona: 글로벌 서비스 법무팀
+    context: |
+      유럽 진출 검토 중, 한국법과 EU법 차이 파악 필요
+    question: "GDPR이랑 우리나라 개인정보보호법 주요 차이점이 뭐야?"
+    expected:
+      current_scope: 한국법만 지원
+      acceptable_responses:
+        - 한국 개인정보보호법 내용 안내 후 GDPR은 범위 외 명시
+        - 주요 차이점 개괄적 설명 (학습 지식 활용)
+        - 외국법 전문가 상담 권고
+      future_capability: |
+        향후 GDPR, CCPA 등 외국법 지원 시 비교 분석 가능해야 함
+    validation:
+      - type: scope_awareness
+        description: 현재 지원 범위를 명확히 인지하고 안내하는지
+
+  - id: boundary-02
+    name: 미국 계약법 질문
+    persona: 미국 법인 설립 검토 중인 사업가
+    context: |
+      미국에서 사업하려고 계약 관련 법률 확인
+    question: "미국에서 계약 체결할 때 한국이랑 다른 점 있어? 미국 계약법 기본 원칙 알려줘"
+    expected:
+      current_scope: 한국법만 지원
+      acceptable_responses:
+        - 한국 민법상 계약 규정 안내
+        - 미국법은 지원 범위 외 명시
+        - 미국 변호사 상담 권고
+      should_not:
+        - 부정확한 미국법 정보 제공
+        - 확신 있게 미국법 설명
+
+  - id: boundary-03
+    name: 일본 노동법 비교
+    persona: 일본 진출 HR 담당
+    context: |
+      일본 법인 설립 후 현지 채용 예정
+    question: "일본 노동법이랑 한국 근로기준법 주요 차이점 뭐야?"
+    expected:
+      current_scope: 한국법만 지원
+      korean_law_info:
+        - 근로기준법 주요 내용
+        - 근로시간, 해고 규정 등
+      future_capability: |
+        한일 노동법 비교 분석 기능 확장 가능
+
+  - id: boundary-04
+    name: 중국 투자 규제
+    persona: 중국 시장 진출 검토 중인 기업
+    context: |
+      중국에 합작법인 설립 검토
+    question: "중국에서 외국인 투자할 때 규제가 어떻게 돼?"
+    expected:
+      current_scope: 한국법만 지원
+      acceptable_responses:
+        - 한국의 해외투자 관련 규정 (외국환거래법 등)
+        - 중국 현지법은 범위 외 명시
+        - KOTRA, 법무법인 등 전문기관 안내
+      should_not:
+        - 중국 외상투자법 구체적 조항 인용
+
+  # === 국제조약/협정 ===
+  - id: boundary-05
+    name: 한미 FTA 조항
+    persona: 수출 기업 담당자
+    context: |
+      미국 수출 시 관세 혜택 확인
+    question: "한미 FTA에서 원산지 규정이 어떻게 돼?"
+    expected:
+      current_scope: 부분 지원 가능
+      korean_law_info:
+        - 자유무역협정의 이행을 위한 관세법의 특례에 관한 법률
+        - 관세법
+      note: |
+        FTA 조약 자체는 외국법/국제법 영역이나,
+        국내 이행법률은 한국법이므로 부분 안내 가능
+    data_source: |
+      # 법망 API search:  "FTA 원산지"
+
+  # === 범위 외 질문 ===
+  - id: boundary-06
+    name: 법률 상담 요청
+    persona: 분쟁 당사자
+    context: |
+      구체적인 사건에 대한 법률 조언 요청
+    question: "내 상황에서 소송하면 이길 수 있을까? 어떻게 해야 해?"
+    expected:
+      should_clarify: true
+      acceptable_responses:
+        - 법률 정보 제공 vs 법률 상담 구분 안내
+        - 변호사 상담 권고
+        - 일반적인 관련 법령 정보만 제공
+      should_not:
+        - 승소 가능성 예측
+        - 구체적인 소송 전략 제시
+    validation:
+      - type: scope_limitation
+        description: 법률 상담과 정보 제공의 경계를 지키는지
+
+  - id: boundary-07
+    name: 판결 예측 요청
+    persona: 피고인
+    context: |
+      형사 재판 중 선고 예정
+    question: "내 사건에서 징역 몇 년 받을 것 같아? 집행유예 가능해?"
+    expected:
+      should_clarify: true
+      acceptable_responses:
+        - 양형 기준 일반 정보 제공
+        - 구체적 예측은 불가 명시
+        - 변호사 상담 권고
+      related_info:
+        - 양형위원회 양형기준
+        - 해당 범죄 법정형
+
+  # === 에러 핸들링 ===
+  - id: boundary-08
+    name: 매우 오래된 법령 요청
+    persona: 법사학 연구자
+    context: |
+      일제강점기 법령 연구
+    question: "1930년대 조선민사령 내용 확인해줘"
+    expected:
+      acceptable_responses:
+        - 현행 법령 정보센터 지원 범위 안내
+        - 국가기록원 등 대체 자료원 안내
+        - 역사적 법령은 검색 제한 있음 명시
+      note: |
+        법령정보센터가 지원하지 않는 연혁 법령 처리
+
+  - id: boundary-09
+    name: 존재하지 않는 법령 유형
+    persona: 테스터
+    context: |
+      법령 체계에 없는 유형 요청
+    question: "대통령 칙령에서 관련 조항 찾아줘"
+    expected:
+      should_correct: true
+      acceptable_responses:
+        - 칙령은 현행 법체계에 없음 안내
+        - 대통령령, 대통령훈령 등 실제 유형 안내
+        - 사용자 의도 확인
+    validation:
+      - type: terminology_correction
+        description: 잘못된 법률 용어를 바로잡는지
+
+  # === 복합 경계 케이스 ===
+  - id: boundary-10
+    name: 남북한 법률 비교
+    persona: 통일 정책 연구자
+    context: |
+      남북한 법제 비교 연구
+    question: "북한 민법이랑 우리 민법 차이점이 뭐야?"
+    expected:
+      current_scope: 대한민국 법만 지원
+      acceptable_responses:
+        - 대한민국 민법 내용 안내
+        - 북한법은 지원 범위 외 명시
+        - 통일법제 연구기관 (법제처, 통일연구원) 안내
+      note: |
+        북한법은 별도 법체계이므로 현재 미지원.
+        향후 통일법제 연구 수요 있을 수 있음.
+
+  - id: boundary-11
+    name: 과거 시점 외국법
+    persona: 법사학자
+    context: |
+      한국 법제사 연구 중 일본법 영향 분석
+    question: "1960년대 일본 상법이 한국 상법에 어떤 영향 줬어?"
+    expected:
+      current_scope: 현행 한국법만 지원
+      acceptable_responses:
+        - 한국 상법 제정 경위 일반 정보
+        - 학술 연구 영역임을 안내
+        - 법제연구원 등 연구기관 안내
+      should_not:
+        - 1960년대 일본 상법 조문 인용
+
+  # === API/시스템 에러 대응 ===
+  - id: boundary-12
+    name: 검색 결과 없음 처리
+    persona: 사용자
+    context: |
+      매우 특수한 키워드로 검색
+    question: "우주광업권 관련 법률 찾아줘"
+    expected:
+      acceptable_responses:
+        - 검색 결과 없음 명시
+        - 유사하거나 관련될 수 있는 법령 제안 (광업법, 우주개발진흥법 등)
+        - 검색어 수정 제안
+      should_not:
+        - 없는 법령을 있다고 하거나 내용 생성
+    validation:
+      - type: no_result_handling
+        description: 검색 결과 없을 때 적절히 대응하는지

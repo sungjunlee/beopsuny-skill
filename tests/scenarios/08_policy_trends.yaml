@@ -1,0 +1,103 @@
+# 정책 동향 시나리오
+# 법령 조문뿐 아니라 정부의 실제 집행 스탠스를 파악하는 시나리오
+
+name: 정책 동향 및 집행 스탠스
+description: |
+  법순이의 차별화 기능 중 하나 - 법령 조문만이 아니라
+  정부 부처의 보도자료, 법령해석례, 제재 사례 등을 통해
+  실제 집행 동향을 파악하는 시나리오.
+
+scenarios:
+  - id: policy-01
+    name: 공정위 최근 제재 동향
+    persona: 대기업 법무팀
+    context: |
+      공정거래법 준수를 위해 최근 제재 트렌드 파악 필요
+    question: "공정위가 최근에 어떤 유형의 불공정행위를 집중 단속하고 있어?"
+    expected:
+      source: 공정거래위원회 보도자료
+      info_types:
+        - 최근 제재 사례
+        - 집중 단속 분야
+        - 과징금 규모
+    data_source: |
+      # WebSearch 정책:  rss ftc
+    validation:
+      - type: recency
+        description: 최근 정책 동향을 반영하는지
+
+  - id: policy-02
+    name: 개인정보위 처분 동향
+    persona: CPO (개인정보보호책임자)
+    context: |
+      개인정보 유출 사고 대응 준비 중, 최근 처분 수위 파악
+    question: "개인정보위가 최근 개인정보 유출에 대해 어느 정도 처분하고 있어?"
+    expected:
+      source: 개인정보보호위원회 보도자료
+      info_types:
+        - 과징금 부과 사례
+        - 처분 사유
+        - 시정 명령 내용
+    data_source: |
+      # WebSearch 정책:  rss pipc --keyword 과징금
+
+  - id: policy-03
+    name: 고용부 근로감독 방향
+    persona: HR 담당자
+    context: |
+      올해 근로감독 중점 사항 파악
+    question: "올해 고용노동부 근로감독 중점 분야가 뭐야?"
+    expected:
+      source: 고용노동부 보도자료
+      info_types:
+        - 근로감독 계획
+        - 중점 점검 사항
+        - 주요 위반 사례
+    data_source: |
+      # WebSearch 정책:  rss moel --keyword 근로감독
+
+  - id: policy-04
+    name: 법제처 법령해석례
+    persona: 법무 담당자
+    context: |
+      법령 조문 해석이 불분명할 때 공식 해석 확인
+    question: "연차휴가 산정할 때 육아휴직 기간이 포함되는지 법제처 해석 있어?"
+    expected:
+      source: 법제처 법령해석례
+      search_type: 유권해석
+    data_source: |
+      # WebSearch 정책:  interpret "연차휴가 육아휴직"
+    validation:
+      - type: official_interpretation
+        description: 공식 법령해석례를 찾아 안내하는지
+
+  - id: policy-05
+    name: 금융위 규제 동향
+    persona: 핀테크 CEO
+    context: |
+      금융 규제 변화에 대한 사업 영향 분석
+    question: "금융위에서 핀테크 관련 규제 완화한다는 소식 있었어?"
+    expected:
+      source: 금융위원회 보도자료
+      info_types:
+        - 규제 샌드박스
+        - 혁신금융서비스
+        - 규제 완화 정책
+    data_source: |
+      # WebSearch 정책:  rss fsc --keyword 핀테크
+
+  - id: policy-06
+    name: 종합 정책 요약
+    persona: 컴플라이언스 팀장
+    context: |
+      주요 규제 기관의 최근 동향 종합 파악
+    question: "최근 일주일간 주요 정부 부처 정책 변화 요약해줘"
+    expected:
+      sources:
+        - 공정거래위원회
+        - 개인정보보호위원회
+        - 고용노동부
+        - 금융위원회
+      summary_format: true
+    data_source: |
+      # WebSearch 정책:  summary --days 7

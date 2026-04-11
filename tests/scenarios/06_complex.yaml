@@ -1,0 +1,158 @@
+# 복합 실무 시나리오
+# 여러 법령, 판례, 행정규칙을 종합적으로 검토해야 하는 실제 업무 상황
+
+name: 복합 실무 시나리오
+description: |
+  실제 법률 실무에서는 하나의 법령만 보는 경우가 드뭄.
+  법률 + 시행령 + 시행규칙 + 고시 + 판례를 종합적으로 검토해야 하는
+  현실적인 복합 시나리오.
+
+scenarios:
+  - id: complex-01
+    name: 스타트업 스톡옵션 부여
+    persona: 스타트업 대표 / 법무 담당
+    context: |
+      핵심 인재 영입을 위해 스톡옵션(주식매수선택권) 부여 검토.
+      요건, 절차, 세금 문제까지 종합적으로 파악 필요.
+    question: |
+      스타트업에서 직원한테 스톡옵션 주려면 어떻게 해야 해?
+      법적 요건이랑 절차, 주의할 점 알려줘.
+    expected:
+      laws_involved:
+        - 상법 (제340조의2~5, 주식매수선택권)
+        - 벤처기업육성에 관한 특별조치법 (제16조의3)
+        - 소득세법 (행사이익 과세)
+      key_points:
+        - 정관 규정
+        - 주주총회/이사회 결의
+        - 부여 대상 제한 (10% 이상 주주 제외 등)
+        - 행사 기간
+    data_source:
+      - # legalize-kr Read:  "상법"
+      - # legalize-kr Read:  "벤처기업육성에 관한 특별조치법"
+    validation:
+      - type: completeness
+        description: 관련 법령을 누락 없이 안내하는지
+
+  - id: complex-02
+    name: 직장 내 괴롭힘 대응
+    persona: 중소기업 인사팀장
+    context: |
+      직원이 직장 내 괴롭힘을 신고함.
+      회사가 취해야 할 조치와 책임 범위 파악 필요.
+    question: |
+      직장 내 괴롭힘 신고가 들어왔어. 회사에서 뭘 해야 하고,
+      안 하면 어떤 처벌 받아?
+    expected:
+      laws_involved:
+        - 근로기준법 (제76조의2, 제76조의3)
+        - 산업안전보건법 (정신적 건강장해 예방)
+      admin_rules:
+        - 고용노동부 직장 내 괴롭힘 판단 및 예방·대응 매뉴얼
+      key_points:
+        - 조사 의무
+        - 피해자 보호 조치
+        - 가해자 징계
+        - 불이익 금지
+    data_source:
+      - # legalize-kr Read:  "근로기준법"
+      - # 법망 API search:  "직장 내 괴롭힘" --type admrul
+
+  - id: complex-03
+    name: 개인정보 국외 이전
+    persona: 글로벌 서비스 법무팀
+    context: |
+      해외 클라우드 서버 사용 또는 해외 본사와 데이터 공유 시
+      개인정보 국외 이전 요건 검토.
+    question: |
+      AWS 미국 리전 쓰려고 하는데, 개인정보 국외 이전 동의 받아야 해?
+      어떤 절차 거쳐야 하는 거야?
+    expected:
+      laws_involved:
+        - 개인정보 보호법 (제28조의8, 국외 이전)
+        - 동법 시행령
+      admin_rules:
+        - 개인정보 국외 이전 가이드라인
+        - 표준 개인정보 처리방침
+      key_points:
+        - 동의 요건
+        - 계약 체결 요건
+        - 보호조치 기준
+        - GDPR 적정성 결정 국가
+    data_source:
+      - # legalize-kr Read:  "개인정보 보호법"
+      - # 법망 API search:  "국외 이전" --type admrul
+
+  - id: complex-04
+    name: 하도급 대금 분쟁
+    persona: 하도급 업체 대표
+    context: |
+      원청에서 하도급 대금을 깎거나 지연하는 상황.
+      법적 보호 수단과 구제 방법 파악.
+    question: |
+      원청이 하도급 대금을 자꾸 늦게 주고 깎으려고 해.
+      법적으로 대응할 수 있는 방법 뭐가 있어?
+    expected:
+      laws_involved:
+        - 하도급거래 공정화에 관한 법률
+        - 동법 시행령
+      admin_rules:
+        - 하도급대금 지급보증 관련 고시
+        - 하도급 분쟁조정협의회 운영규정
+      remedies:
+        - 공정거래위원회 신고
+        - 하도급 분쟁조정
+        - 발주자 직접 청구권
+      cases:
+        - 관련 과징금 사례
+    data_source:
+      - # legalize-kr Read:  "하도급거래 공정화에 관한 법률"
+      - # 법망 API cases:  "하도급 대금"
+      - # WebSearch 정책:  rss ftc --keyword 하도급
+
+  - id: complex-05
+    name: 퇴직금 계산 분쟁
+    persona: 퇴직 예정 직원
+    context: |
+      퇴직 앞두고 퇴직금 계산 방식에 의문.
+      어떤 항목이 포함되어야 하는지 확인.
+    question: |
+      퇴직금 계산할 때 상여금이랑 연차수당도 포함돼야 하는 거 아니야?
+      회사가 기본급만 가지고 계산하려고 하는데.
+    expected:
+      laws_involved:
+        - 근로자퇴직급여 보장법
+        - 근로기준법 (통상임금, 평균임금)
+      cases:
+        - 통상임금 전원합의체 판결
+        - 평균임금 산정 관련 판례
+      key_points:
+        - 평균임금 기준
+        - 상여금 포함 여부
+        - 연차수당 포함 여부
+    data_source:
+      - # legalize-kr Read:  "근로자퇴직급여 보장법"
+      - # 법망 API cases:  "퇴직금 평균임금"
+
+  - id: complex-06
+    name: 공정거래법 위반 자진신고
+    persona: 대기업 법무실장
+    context: |
+      담합 가능성 있는 과거 행위 발견.
+      리니언시(자진신고 감면) 제도 활용 검토.
+    question: |
+      담합 자진신고하면 과징금 얼마나 감면받을 수 있어?
+      신고 절차랑 요건 알려줘.
+    expected:
+      laws_involved:
+        - 독점규제 및 공정거래에 관한 법률
+        - 동법 시행령
+      admin_rules:
+        - 부당한 공동행위 자진신고자 등에 대한 시정조치 등 감면제도 운영고시
+      key_points:
+        - 1순위 신고자 감면율
+        - 증거 제출 요건
+        - 협조 의무
+    data_source:
+      - # legalize-kr Read:  "독점규제 및 공정거래에 관한 법률"
+      - # 법망 API search:  "자진신고 감면" --type admrul

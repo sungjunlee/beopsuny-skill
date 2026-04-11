@@ -1,0 +1,136 @@
+# 기업법무 자주 사용 양식 링크
+# 법순이 범위 외이지만 편의상 안내
+#
+# 사용법: 사용자가 양식 요청 시 해당 URL 안내
+# 최종 검증: 2024-12-07
+
+# 공정거래위원회
+ftc:
+  name: 공정거래위원회
+  forms:
+    - name: 신고서 양식 (신고서식 모음)
+      url: https://www.ftc.go.kr/www/cop/bbs/selectBoardList.do?key=305&bbsId=BBSMSTR_000000002365&bbsTyCode=BBST07
+      description: 불공정거래, 하도급, 가맹사업 신고서식 다운로드
+    - name: 신고 방법 안내
+      url: https://www.ftc.go.kr/www/contents.do?key=320
+      description: 신고 절차 및 방법 안내
+    - name: 기업결합 신고 가이드북 (2025)
+      url: https://mna.ftc.go.kr/resources/mna/file/pdfGuide2025.pdf
+      description: M&A 기업결합 신고 가이드
+
+# 고용노동부
+moel:
+  name: 고용노동부
+  forms:
+    - name: 표준 근로계약서/취업규칙 (2025년 개정)
+      url: https://www.moel.go.kr/policy/policydata/view.do?bbs_seq=20250300356
+      description: 정규직, 기간제, 단시간, 외국인 등 7종
+    - name: 노동포털 민원서식
+      url: https://labor.moel.go.kr/minwonApply/minwonFormat.do?searchVal=SN001
+      description: 진정서, 신고서 등 온라인 민원
+    - name: 직장 내 괴롭힘 예방·대응 매뉴얼
+      url: https://www.moel.go.kr/policy/policydata/view.do?bbs_seq=20230500514
+      description: 괴롭힘 판단 기준 및 대응 절차
+
+# 개인정보보호위원회
+pipc:
+  name: 개인정보보호위원회
+  forms:
+    - name: 개인정보 처리방침 작성지침 (2025.4)
+      url: https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20806
+      description: 2025년 최신 처리방침 작성 가이드
+    - name: 개인정보 포털 자료실
+      url: https://www.privacy.go.kr/front/bbs/bbsList.do?bbsNo=BBSMSTR_000000000049
+      description: 가이드라인, 안내서 모음
+    - name: 개인정보 처리 통합 안내서
+      url: https://www.pipc.go.kr/np/cop/bbs/selectBoardList.do?bbsId=BS217&mCode=D010030000
+      description: 개인정보 보호법 통합 해설
+
+# 법제처
+moleg:
+  name: 법제처
+  forms:
+    - name: 법령해석 요청 안내
+      url: https://www.moleg.go.kr/menu.es?mid=a10106010000
+      description: 법령해석 요청 절차 및 요건 안내
+    - name: 법령해석 요청 사이트
+      url: https://opinion.lawmaking.go.kr/nl4li/lsItptStm/req
+      description: 온라인 법령해석 요청 (실명인증 필요)
+    - name: 법령해석 사례 검색
+      url: https://www.lawmaking.go.kr/nl4li/lsItptEmp/list?mode=all
+      description: 기존 법령해석 사례 조회
+
+# 법원
+court:
+  name: 대한민국 법원
+  forms:
+    - name: 양식모음 (전자민원센터)
+      url: https://help.scourt.go.kr/nm/minwon/doc/DocListAction.work
+      description: 986건 이상의 법원 양식 모음
+    - name: 소장 양식 안내
+      url: https://www.scourt.go.kr/nm/min_1/min_1_1/min_1_1_4/index.html
+      description: 민사 소장 작성 안내
+    - name: 나홀로 소송 서식
+      url: https://pro-se.scourt.go.kr/wsh/wshA00/WSHA10.jsp
+      description: 소장, 답변서, 준비서면, 항소장 등
+    - name: 전자소송 양식
+      url: https://ecfs.scourt.go.kr/psp/index.on?m=PSP720M24
+      description: 전자소송 포털 양식 모음
+
+# 등기소
+registry:
+  name: 대법원 인터넷등기소
+  forms:
+    - name: 등기신청양식 다운로드
+      url: http://www.iros.go.kr/pos1/pfrontservlet?cmd=PFrmGetRegistryFormC
+      description: 법인등기, 부동산등기 신청 양식
+    - name: 인터넷등기소 메인
+      url: https://www.iros.go.kr
+      description: 등기 열람/발급, 전자신청
+
+# 특허청
+kipo:
+  name: 특허청
+  forms:
+    - name: 민원서식 다운로드
+      url: https://www.kipo.go.kr/kpo/BoardApp/UGminMinApp?board_id=minwon_download
+      description: 특허, 상표, 디자인 관련 민원 서식
+    - name: 특허로 (온라인 출원)
+      url: https://www.patent.go.kr
+      description: 전자출원 시스템
+    - name: 특허/실용신안 출원 안내
+      url: https://www.kipo.go.kr/ko/kpoContentView.do?menuCd=SCD0200111
+      description: 출원 절차 상세 안내
+
+# 내용증명
+contentproof:
+  name: 내용증명
+  forms:
+    - name: 인터넷 우체국 내용증명
+      url: https://service.epost.go.kr/econprf.RetrieveEConprfReqSend.postal
+      description: 온라인 내용증명 작성/발송
+    - name: 내용증명 작성 안내 (소비자원)
+      url: https://www.kca.go.kr/odr/pg/ma/pgProofContents.do
+      description: 내용증명 작성 방법 및 양식
+
+# 공증
+notary:
+  name: 공증
+  forms:
+    - name: 전자공증 시스템
+      url: https://www.e-notary.go.kr
+      description: 온라인 공증 신청 (법무부)
+    - name: 공증인가 법무법인 검색
+      url: https://www.lawnb.com/Info/ContentMain/Notary
+      description: 지역별 공증 사무소 찾기
+
+# 노동포털 (추가)
+labor:
+  name: 고용노동부 노동포털
+  forms:
+    - name: 임금체불 진정
+      url: https://labor.moel.go.kr/minwonApply/minwonFormat.do?searchVal=SN001
+      description: 임금, 퇴직금 체불 신고
+    - name: 부당해고 구제신청 안내
+      url: https://www.nlrc.go.kr
+      description: 중앙노동위원회 구제신청

@@ -1,0 +1,20 @@
+# 관심 법령
+# 자주 찾는 법, 소관 규제. 법 개정 시 영향 분석 자동화에 사용.
+# 법순이가 검색한 법령 중 반복적으로 조회되는 것을 자동 추가할 수 있다.
+
+laws:
+  # 예시:
+  # - name: "개인정보 보호법"
+  #   legalize_kr_path: "kr/개인정보 보호법/"
+  #   reason: "개인정보 처리방침 운영"
+  #   priority: high         # high, medium, low
+  #   last_checked: ""       # 마지막 확인일
+  #   related_admrul: []     # 관련 행정규칙 이름
+
+admin_rules:
+  # 예시:
+  # - name: "개인정보의 안전성 확보조치 기준"
+  #   law_index_id: ""       # law_index.yaml의 ID
+  #   parent_law: "개인정보 보호법"
+
+updated_at: ""

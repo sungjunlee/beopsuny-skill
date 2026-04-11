@@ -1,0 +1,21 @@
+# 컴플라이언스 이행 현황
+# compliance_calendar.yaml의 의무별 이행 상태를 추적한다.
+# 캘린더 연동 시 진행 상태를 함께 표시.
+
+year: 2026
+
+obligations:
+  # 예시:
+  # - calendar_id: "annual_shareholder_meeting"  # compliance_calendar.yaml 참조
+  #   status: completed     # pending, in_progress, completed, overdue, not_applicable
+  #   completed_date: "2026-03-28"
+  #   notes: "정기주총 완료, 이사 선임 결의"
+  #   documents: []          # 관련 문서 파일 경로
+
+  # - calendar_id: "corporate_tax_filing"
+  #   status: pending
+  #   deadline: "2026-03-31"
+  #   assignee: ""
+  #   notes: ""
+
+updated_at: ""

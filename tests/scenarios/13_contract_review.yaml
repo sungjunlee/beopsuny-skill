@@ -1,0 +1,425 @@
+# 계약서 검토 보조 시나리오
+# 영문/국문 계약 조항에 대한 한국법 레퍼런스 제공 테스트
+
+name: 계약서 검토 보조
+description: |
+  Claude + 법순이 하이브리드로 계약서 조항을 한국법 관점에서 검토.
+  - 한국어 계약서: 조항-법령 매핑, 효력 이슈 경고
+  - 영문 계약서: 위 기능 + 용어 번역, 뉘앙스 차이 설명
+
+scenarios:
+  # ============================================
+  # 범위 인식 테스트 (2개)
+  # ============================================
+
+  - id: contract-01
+    name: 범위 내 요청 - 조항 법령 매핑
+    persona: 법무팀 실무자
+    context: |
+      영문 SaaS 계약서 검토 중 Indemnification 조항이
+      한국법에서 유효한지 확인하고자 함
+    question: |
+      계약서에 "Vendor shall indemnify and hold harmless Customer..."
+      조항이 있는데, 한국법상 문제가 있을까요?
+    expected:
+      in_scope: true
+      response_contains:
+        - 약관규제법
+        - 제7조
+        - 면책
+      should_warn:
+        - 고의/중과실 면책 불가
+      has_disclaimer: true
+    reference_files:
+      - assets/clause_references.yaml  # indemnification 조항
+      - assets/legal_terms.yaml  # indemnify 용어
+    data_source: |
+      # legalize-kr Read:  "약관의 규제에 관한 법률"
+    validation:
+      - type: scope_recognition
+        description: 법순이 범위 내 요청으로 인식하는지
+      - type: law_reference
+        description: 약관규제법 제7조를 정확히 인용하는지
+
+  - id: contract-02
+    name: 범위 외 요청 - 자동 분석/수정안
+    persona: 스타트업 대표
+    context: |
+      계약서 전체를 업로드하고 위험 조항을 자동으로 찾아달라고 요청
+    question: |
+      이 계약서 전체를 분석해서 위험한 조항을 찾아주고
+      수정안도 만들어줘
+    expected:
+      in_scope: false
+      should_redirect: true
+      redirect_to:
+        - Law.ai
+        - 엘박스 AI
+        - 변호사 상담
+    reference_files:
+      - references/contract_review_guide.md  # 범위 설명
+    validation:
+      - type: scope_recognition
+        description: 범위 외 요청으로 인식하고 전문 도구 안내하는지
+
+  # ============================================
+  # 조항별 법령 매핑 (5개)
+  # ============================================
+
+  - id: contract-03
+    name: Governing Law 조항 검토
+    persona: 해외사업팀 담당자
+    context: |
+      미국 본사와의 계약에서 Delaware 주법 적용 조항 검토
+    question: |
+      "This Agreement shall be governed by the laws of the State of Delaware"
+      조항이 있는데, 한국 소비자에게 서비스할 때 문제 없을까요?
+    expected:
+      response_contains:
+        - 국제사법
+        - 제27조
+        - 소비자
+        - 강행규정
+      law_articles:
+        - 국제사법 제25조
+        - 국제사법 제27조
+    reference_files:
+      - assets/clause_references.yaml  # governing_law 조항
+    data_source: |
+      # legalize-kr Read:  "국제사법"
+    validation:
+      - type: law_reference
+        description: 국제사법 소비자보호 조항 인용하는지
+
+  - id: contract-04
+    name: Non-Compete 조항 검토
+    persona: HR 담당자
+    context: |
+      미국계 회사의 고용계약에 3년 경업금지 조항 포함
+    question: |
+      고용계약에 "Employee shall not compete for 3 years after termination
+      in any related business worldwide" 조항이 있어요.
+      한국에서 효력이 있나요?
+    expected:
+      response_contains:
+        - 헌법
+        - 직업선택의 자유
+        - 공서양속
+        - 기간
+        - 지역
+      should_warn:
+        - 3년은 과도할 수 있음
+        - 전 세계 범위는 무효 가능성
+    reference_files:
+      - assets/clause_references.yaml  # non_compete 조항
+    data_source: |
+      # 법망 API cases:  "경업금지" --court 대법원
+    validation:
+      - type: case_reference
+        description: 경업금지 관련 대법원 판례 참조하는지
+
+  - id: contract-05
+    name: IP Assignment 조항 검토
+    persona: 개발팀 리드
+    context: |
+      외주 개발 계약에서 모든 IP를 고객에게 양도하는 조항
+    question: |
+      "Developer hereby irrevocably assigns all intellectual property rights,
+      including moral rights, to Client" 조항이 있는데,
+      저작인격권도 양도해야 하나요?
+    expected:
+      response_contains:
+        - 저작권법
+        - 저작인격권
+        - 일신전속
+        - 양도 불가
+      law_articles:
+        - 저작권법 제14조
+      should_warn:
+        - 저작인격권 양도 조항은 한국법상 무효
+    reference_files:
+      - assets/clause_references.yaml  # ip_assignment 조항
+      - assets/legal_terms.yaml  # moral_rights 용어
+    data_source: |
+      # legalize-kr Read:  "저작권법"
+    validation:
+      - type: law_reference
+        description: 저작권법 제14조 인용하는지
+      - type: warning
+        description: 무효 가능성 경고하는지
+
+  - id: contract-06
+    name: Limitation of Liability 조항 검토
+    persona: 법무팀 실무자
+    context: |
+      SaaS 계약에서 책임 제한 조항 검토
+    question: |
+      "IN NO EVENT SHALL VENDOR BE LIABLE FOR ANY DAMAGES WHATSOEVER,
+      INCLUDING WITHOUT LIMITATION, DAMAGES FOR LOSS OF PROFITS,
+      BUSINESS INTERRUPTION, OR LOSS OF INFORMATION"
+      이 조항이 한국에서 유효한가요?
+    expected:
+      response_contains:
+        - 약관규제법
+        - 제7조
+        - 제8조
+        - 손해배상
+        - 고의
+        - 중과실
+      should_warn:
+        - 고의/중과실 면책 불가
+        - 결과적 손해 전면 배제 시 무효 가능
+    reference_files:
+      - assets/clause_references.yaml  # limitation_liability 조항
+    data_source: |
+      # legalize-kr Read:  "약관의 규제에 관한 법률"
+    validation:
+      - type: law_reference
+        description: 약관규제법 제7조, 제8조 인용하는지
+
+  - id: contract-07
+    name: Data Processing 조항 검토
+    persona: 개인정보 담당자
+    context: |
+      미국 클라우드 서비스 이용 시 개인정보 처리 조항
+    question: |
+      "Data may be processed in the United States or any country where
+      Vendor operates" 조항이 있는데, 개인정보보호법상 문제가 있나요?
+    expected:
+      response_contains:
+        - 개인정보보호법
+        - 국외이전
+        - 제28조의8
+        - 동의
+        - 표준계약서
+      should_warn:
+        - 국외이전 요건 충족 필요
+    reference_files:
+      - assets/clause_references.yaml  # data_processing 조항
+    data_source: |
+      # legalize-kr Read:  "개인정보 보호법"
+    validation:
+      - type: law_reference
+        description: 개인정보보호법 국외이전 조항 인용하는지
+
+  # ============================================
+  # 용어 번역 (2개)
+  # ============================================
+
+  - id: contract-08
+    name: Consideration 용어 설명
+    persona: 신입 법무
+    context: |
+      영문 계약서에 consideration 용어가 나왔으나 의미 불명확
+    question: |
+      계약서에 "In consideration of the mutual promises herein" 이라고
+      되어있는데, consideration이 정확히 뭔가요?
+      한국법에서는 어떻게 해석하나요?
+    expected:
+      response_contains:
+        - 약인
+        - 영미법
+        - 한국법
+        - 낙성계약
+      should_explain:
+        - 한국 민법에 없는 개념
+        - 한국법 적용 시 실익 없음
+    reference_files:
+      - assets/legal_terms.yaml  # consideration 용어
+    validation:
+      - type: term_translation
+        description: 용어 정확히 번역하고 뉘앙스 설명하는지
+
+  - id: contract-09
+    name: Best Efforts vs Reasonable Efforts 구별
+    persona: 계약 협상 담당
+    context: |
+      상대방이 best efforts를 reasonable efforts로 바꾸자고 제안
+    question: |
+      계약서에 "shall use best efforts"를 "shall use reasonable efforts"로
+      바꾸자고 하는데, 차이가 뭔가요? 한국법에서는?
+    expected:
+      response_contains:
+        - 최선의 노력
+        - 합리적인 노력
+        - 의무 수준
+        - 신의성실
+      should_explain:
+        - Best efforts > Reasonable efforts
+        - 한국법은 신의칙으로 해석
+    reference_files:
+      - assets/legal_terms.yaml  # best_efforts, reasonable_efforts 용어
+    data_source: |
+      # legalize-kr Read:  "민법"
+    validation:
+      - type: term_comparison
+        description: 두 용어 차이 정확히 설명하는지
+
+  # ============================================
+  # 면책 고지 확인 (1개)
+  # ============================================
+
+  - id: contract-10
+    name: 면책 고지 포함 확인
+    persona: 법무팀 실무자
+    context: |
+      계약서 검토 결과에 면책 고지가 포함되어야 함
+    question: |
+      SaaS 계약서에 Force Majeure 조항이 있는데,
+      한국법에서 어떻게 해석되나요?
+    expected:
+      has_disclaimer: true
+      disclaimer_contains:
+        - 법률 자문
+        - 변호사
+        - 상담
+      response_contains:
+        - 불가항력
+        - 민법
+        - 제390조
+        - 제537조
+    reference_files:
+      - assets/clause_references.yaml  # force_majeure 조항
+      - references/contract_review_guide.md  # 면책 고지 템플릿
+    data_source: |
+      # legalize-kr Read:  "민법"
+    validation:
+      - type: disclaimer_check
+        description: 면책 고지가 답변에 포함되는지
+
+  # ============================================
+  # 한국어 계약서 (2개)
+  # ============================================
+
+  - id: contract-11
+    name: 한국어 계약서 - 손해배상 예정 조항
+    persona: 법무팀 실무자
+    context: |
+      국내 용역 계약서에 위약금 조항 검토
+    question: |
+      계약서에 "을이 계약을 해지할 경우 계약금액의 50%를 위약금으로
+      지급한다"라고 되어있는데, 너무 높은 것 아닌가요?
+    expected:
+      response_contains:
+        - 민법
+        - 제398조
+        - 손해배상의 예정
+        - 감액
+      should_explain:
+        - 법원이 과다하면 감액 가능
+        - 약관규제법 적용 시 무효 가능
+    reference_files:
+      - assets/clause_references.yaml  # liquidated_damages 조항
+    data_source: |
+      # legalize-kr Read:  "민법"
+    validation:
+      - type: law_reference
+        description: 민법 제398조 인용하는지
+
+  - id: contract-12
+    name: 한국어 계약서 - 경업금지 조항
+    persona: HR 담당자
+    context: |
+      국내 고용계약서의 경업금지 조항 검토
+    question: |
+      근로계약서에 "퇴직 후 2년간 동종업계 취업 금지" 조항이 있는데,
+      이게 법적으로 유효한가요?
+    expected:
+      response_contains:
+        - 헌법
+        - 직업선택의 자유
+        - 영업비밀
+        - 판례
+      should_warn:
+        - 합리적 범위 내에서만 유효
+        - 대가 지급 여부 확인
+    reference_files:
+      - assets/clause_references.yaml  # non_compete 조항
+    data_source: |
+      # 법망 API cases:  "경업금지" --court 대법원
+    validation:
+      - type: case_reference
+        description: 경업금지 판례 참조하는지
+
+  # ============================================
+  # 횡단 이슈 테스트 (3개) - Phase 0 커버리지
+  # ============================================
+
+  - id: contract-13
+    name: 횡단 이슈 - 국제거래 원천징수
+    persona: 재무팀 담당자
+    context: |
+      미국 SaaS 회사와 연간 라이선스 계약 체결 예정
+    question: |
+      미국 회사에 연 5만불 SaaS 라이선스료를 지급하는 계약인데,
+      세금 관련해서 확인해야 할 게 있나요?
+    expected:
+      response_contains:
+        - 법인세법
+        - 원천징수
+        - 제93조
+        - 제98조
+        - 조세조약
+      should_check:
+        - 원천징수 세율 (기본 22% vs 조세조약)
+        - 한미 조세조약 적용 여부
+        - 계약서 내 세금 부담 조항
+    reference_files:
+      - references/contract_review_guide.md  # Phase 0 국제거래
+    data_source: |
+      # legalize-kr Read:  "법인세법"
+    validation:
+      - type: cross_cutting_issue
+        description: 국제거래 세금 이슈를 조항 검토 전에 인식하는지
+
+  - id: contract-14
+    name: 횡단 이슈 - 하도급법 적용
+    persona: 구매팀 담당자
+    context: |
+      대기업에서 중소 개발업체에 시스템 개발 발주 예정
+    question: |
+      우리 회사(대기업)가 중소 개발업체에 3억원 규모 시스템 개발을
+      발주하려고 하는데, 계약서 검토 시 특별히 주의할 게 있나요?
+    expected:
+      response_contains:
+        - 하도급법
+        - 하도급거래 공정화에 관한 법률
+        - 원사업자
+        - 수급사업자
+        - 서면
+      should_check:
+        - 하도급법 적용 대상 여부
+        - 서면 계약 의무
+        - 대금 지급 기한 (납품일로부터 60일)
+    reference_files:
+      - references/contract_review_guide.md  # Phase 0 하도급
+    data_source: |
+      # legalize-kr Read:  "하도급거래 공정화에 관한 법률"
+    validation:
+      - type: cross_cutting_issue
+        description: 대기업-중소기업 용역 계약에서 하도급법 적용을 인식하는지
+
+  - id: contract-15
+    name: 횡단 이슈 - 전자용역 부가세
+    persona: 세무팀 담당자
+    context: |
+      해외 클라우드 서비스(AWS 등) 이용 계약 검토
+    question: |
+      AWS 같은 해외 클라우드 서비스를 쓰는데,
+      부가세는 어떻게 되나요?
+    expected:
+      response_contains:
+        - 부가가치세법
+        - 전자적 용역
+        - 제53조의2
+        - 해외사업자
+      should_explain:
+        - 2019년 이후 해외 전자용역 공급자 직접 납부
+        - B2B 거래 시 역과세 가능
+    reference_files:
+      - references/contract_review_guide.md  # Phase 0 국제거래
+    data_source: |
+      # legalize-kr Read:  "부가가치세법"
+    validation:
+      - type: cross_cutting_issue
+        description: 전자용역 부가세 이슈를 인식하는지

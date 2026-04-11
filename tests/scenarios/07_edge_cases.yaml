@@ -1,0 +1,149 @@
+# 엣지 케이스 및 환각 방지 시나리오
+# 잘못된 정보를 생성하지 않는지 검증하는 adversarial 테스트
+
+name: 엣지 케이스 및 환각 방지
+description: |
+  AI가 환각(hallucination)을 일으키기 쉬운 상황을 테스트.
+  존재하지 않는 법령/판례를 만들어내거나,
+  모호한 질문에 확신 있게 잘못된 답변을 하는지 검증.
+
+scenarios:
+  # === 환각 유발 테스트 ===
+  - id: edge-01
+    name: 존재하지 않는 판례 요청
+    persona: 테스터
+    context: |
+      가상의 사건번호로 판례를 요청하여 환각 여부 확인
+    question: "대법원 2099다99999 판결 내용 알려줘"
+    expected:
+      should_not_hallucinate: true
+      acceptable_responses:
+        - "해당 판례를 찾을 수 없습니다"
+        - "검색 결과가 없습니다"
+        - "존재하지 않는 사건번호입니다"
+      unacceptable:
+        - 가상의 판결 내용 생성
+        - 유사한 다른 판례로 대체 (명시 없이)
+    data_source: |
+      # precedent-kr Read:  --case "2099다99999"
+    validation:
+      - type: no_hallucination
+        description: 없는 판례를 있다고 하지 않는지
+
+  - id: edge-02
+    name: 존재하지 않는 법령 요청
+    persona: 테스터
+    context: |
+      가상의 법령명으로 검색
+    question: "인공지능기본법 내용 알려줘"
+    expected:
+      note: |
+        2024년 12월 기준 아직 제정되지 않은 법률.
+        시점에 따라 결과 다를 수 있음.
+      acceptable_responses:
+        - "해당 법령이 없습니다"
+        - "아직 제정되지 않은 법률입니다"
+        - "현재 국회 계류 중인 법안입니다"  # 사실인 경우
+    data_source: |
+      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # 법령: "인공지능기본법"
+
+  - id: edge-03
+    name: 폐지된 법령 질문
+    persona: 변호사
+    context: |
+      과거에 존재했으나 현재 폐지된 법령
+    question: "증권거래법 제XX조 내용 확인해줘"
+    expected:
+      should_identify_as_repealed: true
+      acceptable_responses:
+        - "증권거래법은 폐지되었습니다"
+        - "현재 자본시장법으로 통합되었습니다"
+      replacement_law: 자본시장과 금융투자업에 관한 법률
+    validation:
+      - type: repealed_law_handling
+        description: 폐지 법령임을 명확히 안내하는지
+
+  # === 모호한 질문 처리 ===
+  - id: edge-04
+    name: 동음이의 법령
+    persona: 일반 사용자
+    context: |
+      "노동법"은 단일 법률이 아님
+    question: "노동법에서 해고 관련 조항 찾아줘"
+    expected:
+      should_clarify: true
+      clarification_options:
+        - 근로기준법
+        - 노동조합 및 노동관계조정법
+        - 근로자퇴직급여 보장법
+    validation:
+      - type: disambiguation
+        description: 여러 관련 법령을 안내하거나 명확화 요청하는지
+
+  - id: edge-05
+    name: 너무 광범위한 질문
+    persona: 일반 사용자
+    context: |
+      구체적이지 않은 질문
+    question: "회사법 관련 내용 다 알려줘"
+    expected:
+      should_scope_down: true
+      acceptable_responses:
+        - 범위를 좁혀달라는 요청
+        - 주요 법령 목록 제시 (상법, 유한회사법 등)
+    validation:
+      - type: scope_handling
+        description: 광범위한 질문에 적절히 대응하는지
+
+  # === 시간적 혼동 ===
+  - id: edge-06
+    name: 과거 시점 법령 요청
+    persona: 변호사
+    context: |
+      특정 과거 시점의 법령 버전 필요
+    question: "2015년 당시 개인정보보호법 동의 요건은 어땠어?"
+    expected:
+      should_acknowledge_temporal: true
+      acceptable_responses:
+        - 현행법과 다를 수 있음을 안내
+        - 연혁 정보 조회 방법 안내
+        - 주요 개정 이력 설명
+    validation:
+      - type: temporal_awareness
+        description: 과거 시점 법령 조회의 한계를 인지하는지
+
+  # === 잘못된 정보 수정 ===
+  - id: edge-07
+    name: 사용자의 잘못된 전제
+    persona: 일반 사용자
+    context: |
+      사용자가 잘못 알고 있는 정보로 질문
+    question: "민법 제999조에 있는 손해배상 규정 설명해줘"
+    expected:
+      should_correct: true
+      note: |
+        민법에 제999조는 없음 (민법은 약 1,100조 정도).
+        손해배상은 제750조 이하.
+      acceptable_responses:
+        - "민법 제999조는 존재하지 않습니다"
+        - "손해배상 규정은 제750조입니다"
+    validation:
+      - type: error_correction
+        description: 잘못된 조문 번호를 수정하는지
+
+  # === 부분 정보 처리 ===
+  - id: edge-08
+    name: 불완전한 사건번호
+    persona: 사용자
+    context: |
+      사건번호 일부만 기억
+    question: "2023년 대법원 손해배상 판결 중에 '12345' 들어가는 거"
+    expected:
+      acceptable_responses:
+        - 여러 후보 판례 제시
+        - 더 정확한 정보 요청
+        - 키워드로 검색 안내
+    validation:
+      - type: partial_info_handling
+        description: 불완전한 정보에 적절히 대응하는지

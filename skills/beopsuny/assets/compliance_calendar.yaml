@@ -1,0 +1,498 @@
+# ============================================================
+# 법정 의무 캘린더
+# Compliance Calendar
+# ============================================================
+# 기업이 반드시 준수해야 하는 법정 의무 일정
+# Mandatory legal obligations for corporations
+#
+# 용도:
+#   1. CLI로 다가오는 의무 조회 (# compliance_calendar.yaml 참조)
+#   2. iCal 파일 생성 → 캘린더 앱 구독 (generate_ical.py)
+#
+# 주의:
+#   - 12월 결산 법인 기준. 다른 결산월은 조정 필요
+#   - 회사 규모/유형별 적용 여부 확인 필요
+#   - 법령 개정 시 기한 변경될 수 있음
+
+name: "법정 의무 캘린더"
+description: "기업이 반드시 준수해야 하는 법정 의무 일정 (12월 결산 기준)"
+type: "calendar"
+category: "컴플라이언스"
+last_updated: "2025-12-27"
+fiscal_year_end: 12  # 결산월
+
+# 유지보수 정보
+maintenance:
+  review_cycle: "quarterly"
+  next_review: "2026-03"
+  volatile_items:
+    - "세무 신고 기한 (세법 개정 빈번)"
+    - "공정거래 관련 공시 기한"
+  note: "분기별 법령 개정 확인 권장"
+  changelog:
+    - date: "2025-12-27"
+      changes: |
+        v1.1 - 법조문 검증 및 신규 항목 추가
+        - 오류 수정: 사업보고서(제159조), 부가가치세 확정신고(제49조)
+        - 정기주주총회 법조문 병기(제365조, 제354조)
+        - 개인정보보호 교육 과태료 설명 보완
+        - 신규 추가: 장애인 인식개선 교육, 퇴직연금 교육, 위험성평가
+        - 신규 추가: 법인지방소득세, 부가가치세 예정신고
+    - date: "2025-12-27"
+      changes: "초기 버전 생성 (15개 의무)"
+
+# ─────────────────────────────────────────────────────────
+# 필터링 옵션
+# ─────────────────────────────────────────────────────────
+filters:
+  company_type:
+    - id: "all"
+      name: "모든 기업"
+    - id: "corp"
+      name: "주식회사"
+    - id: "listed"
+      name: "상장사"
+    - id: "large"
+      name: "대기업/대규모기업집단"
+    - id: "sme"
+      name: "중소기업"
+
+  employee_count:
+    - id: "any"
+      name: "모든 규모"
+    - id: "10plus"
+      name: "10인 이상"
+    - id: "50plus"
+      name: "50인 이상"
+    - id: "300plus"
+      name: "300인 이상"
+
+# ─────────────────────────────────────────────────────────
+# 연간 의무 (Annual)
+# ─────────────────────────────────────────────────────────
+annual:
+  # 1. 정기 주주총회
+  - id: "cal-annual-01"
+    name: "정기 주주총회"
+    description: "결산기 후 3개월 내 개최"
+    law: "상법 제365조, 제354조"
+    law_id: null  # TODO: 법령 ID 추가
+    deadline_month: 3
+    deadline_day: 31
+    deadline_rule: "결산기 후 3개월 내"
+    penalty: "과태료 500만원 이하"
+    applies_to:
+      company_type: ["corp"]
+      employee_count: ["any"]
+    reminder_days: [30, 14, 7]
+    priority: "high"
+    notes: |
+      - 재무제표 승인
+      - 이사/감사 선임
+      - 이익배당 결정
+    check_points:
+      - "소집통지 발송 (2주 전)"
+      - "의사록 작성 및 보관"
+      - "등기사항 변경 시 등기"
+
+  # 2. 법인세 신고
+  - id: "cal-annual-02"
+    name: "법인세 신고/납부"
+    description: "사업연도 종료 후 3개월 내"
+    law: "법인세법 제60조"
+    law_id: null
+    deadline_month: 3
+    deadline_day: 31
+    deadline_rule: "사업연도 종료 후 3개월 내"
+    penalty: "가산세 (무신고 20%, 과소신고 10%)"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [30, 14, 7]
+    priority: "critical"
+    notes: |
+      - 세무사/회계사 협업 필수
+      - 중간예납 (사업연도 6개월 경과 후 2개월 내)
+
+  # 3. 외부감사보고서 제출
+  - id: "cal-annual-03"
+    name: "외부감사보고서 제출"
+    description: "정기주총 1주 전까지 감사보고서 비치"
+    law: "주식회사 등의 외부감사에 관한 법률 제23조"
+    law_id: null
+    deadline_month: 3
+    deadline_day: 24
+    deadline_rule: "정기주총 1주 전"
+    penalty: "과태료 3천만원 이하"
+    applies_to:
+      company_type: ["listed", "large"]
+      employee_count: ["any"]
+    reminder_days: [30, 14]
+    priority: "high"
+    notes: |
+      - 외부감사 대상: 자산 500억 이상, 부채 200억 이상, 등
+      - 금융감독원 전자공시시스템(DART) 제출
+
+  # 4. 사업보고서 제출 (상장사)
+  - id: "cal-annual-04"
+    name: "사업보고서 제출"
+    description: "사업연도 종료 후 90일 내"
+    law: "자본시장법 제159조"
+    law_id: null
+    deadline_month: 3
+    deadline_day: 31
+    deadline_rule: "사업연도 종료 후 90일 내"
+    penalty: "과징금, 상장폐지 사유"
+    applies_to:
+      company_type: ["listed"]
+      employee_count: ["any"]
+    reminder_days: [30, 14, 7]
+    priority: "critical"
+    notes: |
+      - DART 전자공시
+      - 반기보고서 (8/14), 분기보고서 (5/15, 11/14)
+
+  # 5. 직장 내 성희롱 예방교육
+  - id: "cal-annual-05"
+    name: "직장 내 성희롱 예방교육"
+    description: "연 1회 이상 전 직원 대상"
+    law: "남녀고용평등법 제13조"
+    law_id: null
+    deadline_month: 12
+    deadline_day: 31
+    deadline_rule: "매년 1회 이상"
+    penalty: "과태료 500만원 이하"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [60, 30]
+    priority: "high"
+    notes: |
+      - 사업주 및 근로자 모두 대상
+      - 교육 자료/일지 보관 (3년)
+
+  # 6. 개인정보보호 교육
+  - id: "cal-annual-06"
+    name: "개인정보보호 교육"
+    description: "연 1회 이상 개인정보취급자 대상"
+    law: "개인정보보호법 제28조"
+    law_id: null
+    deadline_month: 12
+    deadline_day: 31
+    deadline_rule: "매년 1회 이상"
+    penalty: "직접 과태료 없음 (관리적 의무, 유출 시 과징금 최대 5억원)"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [60, 30]
+    priority: "medium"
+    notes: |
+      - 개인정보취급자 대상
+      - 교육 이수 기록 보관
+      - 교육 미실시 자체 과태료는 없으나, 유출 사고 시 관리 소홀로 불리
+
+  # 7. 장애인 고용부담금 신고
+  - id: "cal-annual-07"
+    name: "장애인 고용부담금 신고/납부"
+    description: "다음해 1월 말까지"
+    law: "장애인고용촉진법 제33조"
+    law_id: null
+    deadline_month: 1
+    deadline_day: 31
+    deadline_rule: "다음해 1월 말"
+    penalty: "가산금"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["50plus"]
+    reminder_days: [30, 14]
+    priority: "high"
+    notes: |
+      - 상시 50인 이상 사업장
+      - 의무고용률 미달 시 부담금 납부
+      - 한국장애인고용공단 신고
+
+  # 8. 산업안전보건 교육 (연간 계획)
+  - id: "cal-annual-08"
+    name: "산업안전보건 교육 계획 수립"
+    description: "매년 초 연간 교육계획 수립"
+    law: "산업안전보건법 제29조"
+    law_id: null
+    deadline_month: 1
+    deadline_day: 31
+    deadline_rule: "매년 1월"
+    penalty: "과태료 500만원 이하"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [30]
+    priority: "medium"
+    notes: |
+      - 정기교육: 사무직 매분기 3시간, 그 외 6시간
+      - 채용 시/작업내용변경 시 교육 필수
+
+  # 9. 직장 내 장애인 인식개선 교육 (신규 추가)
+  - id: "cal-annual-09"
+    name: "직장 내 장애인 인식개선 교육"
+    description: "연 1회 이상, 1시간 이상"
+    law: "장애인고용촉진 및 직업재활법 제5조의2"
+    law_id: null
+    deadline_month: 12
+    deadline_day: 31
+    deadline_rule: "매년 1회, 1시간 이상"
+    penalty: "과태료 300만원 이하"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [60, 30]
+    priority: "high"
+    notes: |
+      - 모든 사업장 의무 (사업주 및 전 근로자)
+      - 50인 미만: 교육자료 배포/게시로 대체 가능
+      - 교육 자료 3년 보관 의무
+
+  # 10. 퇴직연금 교육 (신규 추가)
+  - id: "cal-annual-10"
+    name: "퇴직연금 교육"
+    description: "연 1회 이상 가입자 대상"
+    law: "근로자퇴직급여보장법 제32조"
+    law_id: null
+    deadline_month: 12
+    deadline_day: 31
+    deadline_rule: "매년 1회 이상"
+    penalty: "과태료 1,000만원 이하"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [60, 30]
+    priority: "critical"
+    notes: |
+      - 퇴직연금제도(DB/DC) 가입 사업장만 해당
+      - 교육 방법: 서면, 전자우편, 집합교육, 온라인 중 택1
+      - 법정의무교육 중 과태료 최고액
+
+  # 11. 위험성평가 실시 (신규 추가)
+  - id: "cal-annual-11"
+    name: "위험성평가 실시"
+    description: "연 1회 정기평가, 수시평가"
+    law: "산업안전보건법 제36조"
+    law_id: null
+    deadline_month: 12
+    deadline_day: 31
+    deadline_rule: "최초평가 후 매년 정기평가"
+    penalty: "과태료 500만원 이하"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [60, 30]
+    priority: "high"
+    notes: |
+      - 상시 1인 이상 모든 사업장 의무
+      - 유해위험요인 파악 및 개선대책 수립
+      - 근로자 참여 의무, 결과 3년 보존
+
+  # 12. 법인지방소득세 신고 (신규 추가)
+  - id: "cal-annual-12"
+    name: "법인지방소득세 신고/납부"
+    description: "사업연도 종료 후 4개월 내"
+    law: "지방세법 제103조의23"
+    law_id: null
+    deadline_month: 4
+    deadline_day: 30
+    deadline_rule: "사업연도 종료 후 4개월 내"
+    penalty: "가산세"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [30, 14, 7]
+    priority: "critical"
+    notes: |
+      - 법인세(국세)와 별도로 신고 필수
+      - 위택스(www.wetax.go.kr) 전자신고
+      - 사업장 소재지 관할 지자체에 납부
+
+# ─────────────────────────────────────────────────────────
+# 분기별 의무 (Quarterly)
+# ─────────────────────────────────────────────────────────
+quarterly:
+  # 1. 부가가치세 신고
+  - id: "cal-quarterly-01"
+    name: "부가가치세 확정신고"
+    description: "과세기간 종료 후 25일 내"
+    law: "부가가치세법 제49조"
+    law_id: null
+    deadline_days_after_quarter: 25
+    deadline_rule: "과세기간 종료 후 25일 내"
+    penalty: "가산세"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [14, 7]
+    priority: "critical"
+    notes: |
+      - 1기 확정: 7/25, 2기 확정: 1/25
+    occurrences:
+      - month: 1
+        day: 25
+        label: "2기 확정신고"
+      - month: 7
+        day: 25
+        label: "1기 확정신고"
+
+  # 2. 부가가치세 예정신고 (신규 추가)
+  - id: "cal-quarterly-02"
+    name: "부가가치세 예정신고"
+    description: "예정신고기간 종료 후 25일 내 (법인 의무)"
+    law: "부가가치세법 제48조"
+    law_id: null
+    deadline_days_after_quarter: 25
+    deadline_rule: "예정신고기간 종료 후 25일 내"
+    penalty: "가산세"
+    applies_to:
+      company_type: ["corp"]
+      employee_count: ["any"]
+    reminder_days: [14, 7]
+    priority: "critical"
+    notes: |
+      - 법인사업자 의무 (개인사업자는 예정고지)
+      - 1기 예정: 4/25 (1-3월분), 2기 예정: 10/25 (7-9월분)
+      - 직전 과세기간 1.5억 미만 소규모 법인은 예정고지로 대체 가능
+    occurrences:
+      - month: 4
+        day: 25
+        label: "1기 예정신고"
+      - month: 10
+        day: 25
+        label: "2기 예정신고"
+
+  # 3. 분기보고서 제출 (상장사)
+  - id: "cal-quarterly-03"
+    name: "분기보고서 제출"
+    description: "분기 종료 후 45일 내"
+    law: "자본시장법 제160조"
+    law_id: null
+    deadline_days_after_quarter: 45
+    deadline_rule: "분기 종료 후 45일 내"
+    penalty: "과징금, 상장적격성 실질심사"
+    applies_to:
+      company_type: ["listed"]
+      employee_count: ["any"]
+    reminder_days: [14, 7]
+    priority: "critical"
+    notes: |
+      - 1분기: 5/15, 3분기: 11/14
+      - 반기보고서: 8/14
+    occurrences:
+      - month: 5
+        day: 15
+        label: "1분기 보고서"
+      - month: 8
+        day: 14
+        label: "반기 보고서"
+      - month: 11
+        day: 14
+        label: "3분기 보고서"
+
+# ─────────────────────────────────────────────────────────
+# 월별 의무 (Monthly)
+# ─────────────────────────────────────────────────────────
+monthly:
+  # 1. 원천징수세액 납부
+  - id: "cal-monthly-01"
+    name: "원천징수세액 납부"
+    description: "급여 지급 다음달 10일까지"
+    law: "소득세법 제128조"
+    law_id: null
+    deadline_day: 10
+    deadline_rule: "급여 지급 익월 10일"
+    penalty: "가산세 (미납부 3%)"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [7, 3]
+    priority: "critical"
+    notes: |
+      - 반기별 납부 특례 가능 (상시 20인 이하)
+      - 급여, 사업소득, 기타소득 등 원천징수분
+
+  # 2. 4대보험료 납부
+  - id: "cal-monthly-02"
+    name: "4대보험료 납부"
+    description: "매월 10일까지"
+    law: "국민연금법, 건강보험법, 고용보험법, 산재보험법"
+    law_id: null
+    deadline_day: 10
+    deadline_rule: "매월 10일"
+    penalty: "연체금"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    reminder_days: [7, 3]
+    priority: "high"
+    notes: |
+      - 자동이체 설정 권장
+      - 4대사회보험 통합징수
+
+# ─────────────────────────────────────────────────────────
+# 수시 의무 (Event-driven)
+# ─────────────────────────────────────────────────────────
+event_driven:
+  # 1. 등기사항 변경등기
+  - id: "cal-event-01"
+    name: "등기사항 변경등기"
+    description: "변경일로부터 2주 내"
+    law: "상법 제183조, 제317조"
+    law_id: null
+    deadline_rule: "변경일로부터 2주 내"
+    penalty: "과태료 500만원 이하"
+    trigger: "대표이사, 이사, 본점 주소, 자본금 등 변경 시"
+    applies_to:
+      company_type: ["corp"]
+      employee_count: ["any"]
+    priority: "high"
+    notes: |
+      - 등기 지연 시 과태료
+      - 주요 변경사항: 임원, 본점, 정관 목적, 자본금
+
+  # 2. 대규모내부거래 이사회 의결/공시
+  - id: "cal-event-02"
+    name: "대규모내부거래 이사회 의결/공시"
+    description: "거래 전 이사회 의결, 의결 후 공시"
+    law: "독점규제법 제26조"
+    law_id: null
+    deadline_rule: "거래 전 이사회 의결, 익일 공시"
+    penalty: "과징금, 과태료"
+    trigger: "특수관계인과의 거래 (자본총계/자본금 5% 이상)"
+    applies_to:
+      company_type: ["large"]
+      employee_count: ["any"]
+    priority: "critical"
+    notes: |
+      - 대규모기업집단 소속 회사
+      - 공정거래위원회 공시
+
+  # 3. 근로자 채용 시 4대보험 신고
+  - id: "cal-event-03"
+    name: "4대보험 자격취득 신고"
+    description: "채용일로부터 14일 내"
+    law: "국민연금법 제21조, 건강보험법 제49조"
+    law_id: null
+    deadline_rule: "채용일로부터 14일 내"
+    penalty: "과태료"
+    trigger: "신규 직원 채용 시"
+    applies_to:
+      company_type: ["all"]
+      employee_count: ["any"]
+    priority: "high"
+    notes: |
+      - 4대사회보험정보연계센터 (www.4insure.or.kr)
+
+# ─────────────────────────────────────────────────────────
+# 면책조항
+# ─────────────────────────────────────────────────────────
+disclaimer: |
+  이 캘린더는 참고용이며, 법령 개정으로 인해 최신 정보와 다를 수 있습니다.
+  중요한 결정 전 반드시 법령정보센터(law.go.kr) 또는 전문가와 확인하세요.
+
+  - 12월 결산 법인 기준. 다른 결산월인 경우 기한 조정 필요
+  - 업종별 특수 의무(금융, 의료, 식품 등)는 별도 확인 필요
+  - 마지막 검증일: 2025-12-27

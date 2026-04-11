@@ -1,0 +1,256 @@
+# ============================================================
+# 모빌리티 사업 법적 체크리스트
+# Mobility Business Legal Checklist
+# ============================================================
+# 여객/화물 운송, 모빌리티 플랫폼 관련 법적 요건
+# Legal requirements for passenger/freight transport and mobility platforms
+
+name: "모빌리티 사업 법적 체크리스트"
+description: "여객운송, 화물운송, 모빌리티 플랫폼의 인허가 및 규제 준수"
+type: "checklist"
+category: "모빌리티/운송"
+last_updated: "2025-12-28"
+
+maintenance:
+  review_cycle: "annual"
+  next_review: "2026-12"
+  volatile_items:
+    - "플랫폼 운송사업 규정"
+    - "자율주행 관련 규제"
+    - "택시 요금제"
+  note: "모빌리티 규제는 빠르게 변화, 특히 플랫폼·자율주행 규제 주의"
+  changelog:
+    - date: "2025-12-28"
+      changes: "초기 버전 생성"
+
+triage_questions:
+  - question: "어떤 유형의 모빌리티 사업인가?"
+    options:
+      - "택시/버스 → 여객자동차운수사업법"
+      - "화물운송 → 화물자동차운수사업법"
+      - "모빌리티 플랫폼 → 플랫폼 운송사업 규정"
+      - "렌터카/카셰어링 → 자동차관리법"
+  - question: "운송 서비스를 직접 제공하는가?"
+    if_yes: "운송사업 면허/허가 필요"
+    if_no: "정보제공/중개만 시 별도 규정"
+
+related_checklists:
+  - name: "startup"
+    when: "신규 법인 설립 시"
+  - name: "labor_hr"
+    when: "운전기사 고용 시"
+
+related_permits:
+  - permit-021  # 여객자동차 운송사업 면허
+  - permit-022  # 화물자동차 운송사업 허가
+
+items:
+  # ─────────────────────────────────────────────────────────
+  # 1. 여객운송사업
+  # ─────────────────────────────────────────────────────────
+  - id: "mob-01"
+    task: "여객자동차 운송사업 면허 취득"
+    laws:
+      - name: "여객자동차 운수사업법"
+        articles: ["제4조 (면허)"]
+        law_id: "001640"
+    notes: |
+      - 노선여객: 시내버스, 시외버스 등
+      - 구역여객: 택시, 전세버스 등
+    deadline: "영업 개시 전"
+    condition: "여객운송 영위 시"
+    risk_level: "critical"
+    check_points:
+      - "사업계획서 제출"
+      - "차고지 확보"
+      - "운전자 확보"
+
+  - id: "mob-02"
+    task: "운전자격 확인"
+    laws:
+      - name: "여객자동차 운수사업법"
+        articles: ["제24조 (운전업무 종사자격)"]
+        law_id: "001640"
+    notes: |
+      - 택시: 운전경력 1년 이상
+      - 버스: 운전경력 1년 이상 + 대형면허
+    deadline: "고용 전"
+    condition: "운전기사 채용 시"
+    risk_level: "high"
+    check_points:
+      - "면허 조회"
+      - "결격사유 확인"
+
+  - id: "mob-03"
+    task: "운송요금 신고"
+    laws:
+      - name: "여객자동차 운수사업법"
+        articles: ["제8조"]
+        law_id: "001640"
+    notes: |
+      - 택시: 지자체 인가 요금
+      - 전세버스: 자율요금 (범위 내)
+    deadline: "요금 적용 전"
+    condition: "여객운임 책정 시"
+    risk_level: "medium"
+    check_points:
+      - "인가/신고 구분"
+      - "미터기 설정"
+
+  # ─────────────────────────────────────────────────────────
+  # 2. 화물운송사업
+  # ─────────────────────────────────────────────────────────
+  - id: "mob-04"
+    task: "화물자동차 운송사업 허가"
+    laws:
+      - name: "화물자동차 운수사업법"
+        articles: ["제3조"]
+        law_id: "001641"
+    notes: |
+      - 일반화물: 1대 이상
+      - 개별화물: 1대 (개인)
+    deadline: "영업 개시 전"
+    condition: "화물운송 영위 시"
+    risk_level: "high"
+    check_points:
+      - "차량 확보"
+      - "차고지 확보"
+      - "자본금 요건"
+
+  - id: "mob-05"
+    task: "화물운송 종사자격 취득"
+    laws:
+      - name: "화물자동차 운수사업법"
+        articles: ["제8조"]
+        law_id: "001641"
+    notes: |
+      - 화물운송종사자격증 필요
+      - 교통안전체험교육 이수
+    deadline: "운송업무 전"
+    condition: "화물차 운전 시"
+    risk_level: "high"
+    check_points:
+      - "종사자격시험 합격"
+      - "자격증 발급"
+
+  - id: "mob-06"
+    task: "운임요율표 신고"
+    laws:
+      - name: "화물자동차 운수사업법"
+        articles: ["제5조"]
+        law_id: "001641"
+    notes: |
+      - 안전운임제 적용 품목 확인
+      - 위반 시 과태료
+    deadline: "영업 개시 전"
+    condition: "일반화물 운송 시"
+    risk_level: "medium"
+    check_points:
+      - "안전운임 적용 품목"
+      - "요율표 비치"
+
+  # ─────────────────────────────────────────────────────────
+  # 3. 플랫폼 운송사업
+  # ─────────────────────────────────────────────────────────
+  - id: "mob-07"
+    task: "플랫폼 운송사업 등록"
+    laws:
+      - name: "여객자동차 운수사업법"
+        articles: ["제81조 (플랫폼운송사업)"]
+        law_id: "001640"
+    notes: |
+      - 운송가맹사업 or 플랫폼운송사업 등록
+      - 가맹점 운송사업자 계약
+    deadline: "서비스 출시 전"
+    condition: "모빌리티 플랫폼 운영 시"
+    risk_level: "critical"
+    check_points:
+      - "사업 유형 확인"
+      - "운송사업자 제휴"
+
+  - id: "mob-08"
+    task: "중개 서비스 적법성 확인"
+    laws:
+      - name: "여객자동차 운수사업법"
+        articles: ["제12조 (유상운송 금지)"]
+        law_id: "001640"
+    notes: |
+      - 무면허 유상운송 금지
+      - 카풀 허용 시간대 제한
+    condition: "승차 중개 서비스 시"
+    risk_level: "critical"
+    check_points:
+      - "운송사업 면허 확인"
+      - "카풀 조건 준수"
+
+  # ─────────────────────────────────────────────────────────
+  # 4. 차량 등록/관리
+  # ─────────────────────────────────────────────────────────
+  - id: "mob-09"
+    task: "사업용 자동차 등록"
+    laws:
+      - name: "자동차관리법"
+        articles: ["제5조"]
+        law_id: "001639"
+    notes: |
+      - 영업용 번호판 발급
+      - 자동차검사 주기 상이
+    deadline: "영업 개시 전"
+    condition: "사업용 차량 운행 시"
+    risk_level: "high"
+    check_points:
+      - "차량 등록"
+      - "보험 가입"
+
+  - id: "mob-10"
+    task: "자동차 보험 가입"
+    laws:
+      - name: "자동차손해배상보장법"
+        articles: ["제5조"]
+        law_id: "001653"
+    notes: |
+      - 책임보험 필수
+      - 영업용 특약 필요
+    deadline: "운행 전"
+    condition: "모든 영업용 차량"
+    risk_level: "critical"
+    check_points:
+      - "책임보험 가입"
+      - "담보 범위"
+
+  # ─────────────────────────────────────────────────────────
+  # 5. 자율주행 (참고)
+  # ─────────────────────────────────────────────────────────
+  - id: "mob-11"
+    task: "자율주행 임시운행 허가"
+    laws:
+      - name: "자동차관리법"
+        articles: ["제27조"]
+        law_id: "001639"
+      - name: "자율주행자동차 상용화 촉진 및 지원에 관한 법률"
+        articles: ["제10조"]
+    notes: |
+      - 시험운행: 임시운행허가
+      - 안전기준 적합 확인
+    deadline: "운행 전"
+    condition: "자율주행차 시험 시"
+    risk_level: "critical"
+    check_points:
+      - "안전기준 충족"
+      - "운행구역 지정"
+
+references:
+  - name: "한국교통안전공단"
+    url: "https://www.kotsa.or.kr"
+    description: "운전자격/차량검사"
+  - name: "전국화물자동차운송협회"
+    url: "https://www.kta.or.kr"
+    description: "화물운송 정보"
+  - name: "자율주행 안전성 평가"
+    url: "https://www.molit.go.kr"
+    description: "자율주행 정책"
+
+disclaimer: |
+  이 체크리스트는 일반적인 법적 검토 가이드이며, 구체적인 사안에 대해서는
+  반드시 관할 행정기관 또는 법률전문가의 자문을 받으시기 바랍니다.
+  운송사업 규제는 사업 유형별로 크게 다르므로 정확한 분류가 중요합니다.

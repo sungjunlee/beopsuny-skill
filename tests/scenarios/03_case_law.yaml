@@ -1,0 +1,104 @@
+# 판례 검색 시나리오
+# 법령만으로는 해석이 불분명할 때 판례를 찾는 경우
+
+name: 판례 검색
+description: |
+  법 조문만으로는 구체적인 상황에 어떻게 적용되는지 알기 어려울 때
+  관련 판례를 찾아 법원의 해석을 확인하는 시나리오.
+
+scenarios:
+  - id: case-01
+    name: 통상임금 판례 검색
+    persona: HR 담당자
+    context: |
+      정기 상여금이 통상임금에 포함되는지 분쟁 발생
+    question: "통상임금 관련 대법원 전원합의체 판결 찾아줘"
+    expected:
+      court: 대법원
+      case_type: 전원합의체
+      landmark_cases:
+        - "2012다89399"  # 2013년 전원합의체
+      contains_keywords:
+        - 통상임금
+        - 정기성
+        - 일률성
+        - 고정성
+    data_source: |
+      # 법망 API cases:  "통상임금 전원합의체" --court 대법원
+    validation:
+      - type: case_existence
+        description: 인용된 판례가 실제로 존재하는지
+
+  - id: case-02
+    name: 부당해고 구제 판례
+    persona: 노무사
+    context: |
+      의뢰인의 해고가 정당한지 검토 중
+    question: "최근 3년간 부당해고 관련 대법원 판례 주요한 거 알려줘"
+    expected:
+      court: 대법원
+      date_range: 최근 3년
+      contains_keywords:
+        - 해고
+        - 정당한 이유
+        - 구제명령
+    data_source: |
+      # 법망 API cases:  "부당해고" --court 대법원 --from 20220101
+
+  - id: case-03
+    name: 개인정보 유출 손해배상
+    persona: 로펌 변호사
+    context: |
+      개인정보 유출 피해자 측 소송 준비
+    question: "개인정보 유출로 손해배상 받은 판례들 찾아줘. 인정 금액도 알고 싶어"
+    expected:
+      contains_keywords:
+        - 개인정보
+        - 유출
+        - 손해배상
+        - 위자료
+    data_source: |
+      # 법망 API cases:  "개인정보 유출 손해배상"
+
+  - id: case-04
+    name: 하도급법 과징금 취소 판례
+    persona: 대기업 법무팀
+    context: |
+      공정위 과징금 부과처분에 대한 불복 검토
+    question: "하도급법 위반 과징금 취소된 행정소송 판례 있어?"
+    expected:
+      case_type: 행정소송
+      contains_keywords:
+        - 하도급
+        - 과징금
+        - 취소
+    data_source: |
+      # 법망 API cases:  "하도급 과징금 취소"
+
+  - id: case-05
+    name: 직장 내 괴롭힘 판례
+    persona: 기업 인사팀장
+    context: |
+      직장 내 괴롭힘 신고 접수, 어디까지가 괴롭힘인지 기준 필요
+    question: "직장 내 괴롭힘으로 인정된 판례들 알려줘. 어떤 행위가 괴롭힘으로 봤는지"
+    expected:
+      contains_keywords:
+        - 직장 내 괴롭힘
+        - 업무상 적정범위
+    data_source: |
+      # 법망 API cases:  "직장 내 괴롭힘"
+
+  - id: case-06
+    name: 특정 사건번호로 판례 검색
+    persona: 법학 연구자
+    context: |
+      논문 작성 중 특정 판례 원문 필요
+    question: "대법원 2019다293449 판결 내용 확인해줘"
+    expected:
+      case_number: "2019다293449"
+      has_full_text: true
+    data_source: |
+      # precedent-kr Read:  --case "2019다293449"
+    validation:
+      - type: case_number_accuracy
+        description: 사건번호가 정확히 매칭되는지
