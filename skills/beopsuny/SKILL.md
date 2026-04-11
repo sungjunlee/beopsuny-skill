@@ -46,6 +46,22 @@ metadata:
 | 3 | korean-law-mcp (OC 코드) | korean-law-mcp (OC 코드) |
 | 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr |
 
+### 모드 판별 (Full / Lite)
+
+스킬 시작 시 능력을 감지하여 모드를 결정한다. 플랫폼이 아니라 능력 기준:
+
+```
+로컬 데이터 접근 가능? ──yes──→ Full 모드
+       │no
+Bash 사용 가능? ──yes──→ 데이터 clone 후 Full 모드
+       │no
+Lite 모드 (API 우선, 시각화 활용)
+```
+
+**Full 모드 판별**: `ls ~/.beopsuny/data/legalize-kr/kr/ 2>/dev/null` 결과가 있으면 Full.
+**Lite 모드 진입 시 안내** (한 번만):
+> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령/판례 데이터를 포함한 전체 기능은 Claude Code(또는 Code 탭)에서 사용할 수 있습니다.
+
 ### 1순위 (Full): 로컬 Git 데이터 (legalize-kr + precedent-kr)
 
 경로: `~/.beopsuny/data/legalize-kr/`, `~/.beopsuny/data/precedent-kr/`
@@ -103,22 +119,6 @@ WebFetch "https://korean-law-mcp.fly.dev/mcp?oc={OC코드}" (MCP 리모트)
 ### 참고: law.go.kr
 
 법령/판례 **링크 제공용**으로만 사용 (원문 확인 URL).
-
-### 모드 판별 (Full / Lite)
-
-스킬 시작 시 능력을 감지하여 모드를 결정한다. 플랫폼이 아니라 능력 기준:
-
-```
-로컬 데이터 접근 가능? ──yes──→ Full 모드
-       │no
-Bash 사용 가능? ──yes──→ 데이터 clone 후 Full 모드
-       │no
-Lite 모드 (API 우선, 시각화 활용)
-```
-
-**Full 모드 판별**: `ls ~/.beopsuny/data/legalize-kr/kr/ 2>/dev/null` 결과가 있으면 Full.
-**Lite 모드 진입 시 안내** (한 번만):
-> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령/판례 데이터를 포함한 전체 기능은 Claude Code(또는 Code 탭)에서 사용할 수 있습니다.
 
 ### 데이터 초기화 (Full 모드)
 

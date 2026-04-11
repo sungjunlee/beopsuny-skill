@@ -114,6 +114,13 @@ fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback
 - `"{법령명} 개정안 국회"` — 계류 의안
 - `"{법령명} 법제처 유권해석"` — 해석례
 
+### 3순위: korean-law-mcp (선택)
+
+OC 코드가 있으면 헌재 결정, 행정심판, 자치법규(조례), 조약 등을 조회할 수 있다.
+fetch MCP 서버로 호출: `https://korean-law-mcp.fly.dev/mcp?oc={OC코드}`
+OC 코드 발급: https://open.law.go.kr/LSO/openApi/guideList.do (무료, 1분)
+없으면 이 단계를 건너뛴다 — 1~2순위만으로 대부분 커버된다.
+
 ## 법률 조사 워크플로우
 
 질문을 받으면 5단계로 조사한다. 단순한 질문이면 필요한 단계만 실행.
@@ -123,8 +130,8 @@ fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback
 | 1. 법령 | 법률 + 시행령 원문 | 법망 `law/search` → `law/get` |
 | 2. 행정규칙 | 고시/훈령/예규 | 법망 `type=admrul` |
 | 3. 판례 | 관련 판결 | 법망 `case/search` → `case/get` |
-| 4. 개정 확인 | 최근 변경/계류 의안 | 법망 `law/history` + WebSearch |
-| 5. 집행 동향 | 해석례/보도자료/제재 | 법망 `type=expc` + WebSearch (요청 시) |
+| 4. 개정 확인 | 최근 변경 | 법망 `law/history` |
+| 5. 집행 동향 | 해석례/보도자료/제재/계류 의안 | 법망 `type=expc` + WebSearch (요청 시) |
 
 ## 링크 형식
 

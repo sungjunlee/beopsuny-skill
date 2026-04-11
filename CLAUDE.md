@@ -33,6 +33,8 @@
 
 ## 데이터 소스 우선순위
 
+Full 모드 (로컬 데이터 있음) 기준. Lite 모드(Chat 탭)는 법망 API → WebSearch 순. 상세는 SKILL.md 참조.
+
 ```
 법순이 → legalize-kr + precedent-kr (로컬)     ← 1순위: 법령 + 판례
        → 법망 API (무인증)                      ← 2순위: 행정규칙, 해석례, 의안
