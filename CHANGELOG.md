@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.3] - 2026-04-11
+
+### Fixed
+- 자동 clone 제거: 데이터 없으면 Lite 모드 진입, clone은 영속 환경(Claude Code, Codex CLI)에서만 권장
+- Chat 탭 채팅마다 스토리지 초기화 확인 — ephemeral 환경에서 clone 무의미
+- `--depth 1` shallow clone 명시적 금지 (git log 개정 이력에 전체 히스토리 필요)
+- 한글 깨짐 수정
+
 ## [0.0.2] - 2026-04-11
 
 ### Added
