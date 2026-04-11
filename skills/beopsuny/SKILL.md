@@ -122,12 +122,13 @@ WebFetch "https://korean-law-mcp.fly.dev/mcp?oc={OC코드}" (MCP 리모트)
 
 ### 데이터 초기화 (Full 모드)
 
-Bash가 가능한데 데이터가 없으면 자연스럽게 clone한다:
+Bash가 가능한데 데이터가 없으면 자연스럽게 clone한다.
+**`--depth` 플래그를 사용하지 않는다** — `git log`로 개정 이력을 추적하려면 전체 히스토리가 필요하다.
 ```bash
+mkdir -p ~/.beopsuny/data
 git clone https://github.com/legalize-kr/legalize-kr.git ~/.beopsuny/data/legalize-kr
 git clone https://github.com/legalize-kr/precedent-kr.git ~/.beopsuny/data/precedent-kr
 ```
-`~/.beopsuny/data/` 디렉토리는 setup.js가 생성한다.
 
 이미 있으면 pull로 최신화. legalize-kr은 force-push 가능성이 있으므로 pull 실패 시 re-clone:
 ```bash
