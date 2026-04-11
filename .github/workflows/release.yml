@@ -14,21 +14,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create release zip
+      - name: Create release zips
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
-          ZIP_NAME="beopsuny-skill-${VERSION}.zip"
-          # .git, .github, tests 제외 — 사용자에게 필요한 파일만
-          zip -r "$ZIP_NAME" . \
+
+          # 1. Skill zip — ~/.claude/skills/ 에 풀면 바로 동작
+          #    beopsuny/SKILL.md, beopsuny/assets/, beopsuny/references/
+          mkdir -p dist/beopsuny
+          cp -r skills/beopsuny/* dist/beopsuny/
+          cp README.md dist/beopsuny/
+          cp LICENSE dist/beopsuny/
+          SKILL_ZIP="beopsuny-skill-${VERSION}.zip"
+          (cd dist && zip -r "../${SKILL_ZIP}" beopsuny/)
+
+          # 2. Full zip — 레포 전체 (개발자용)
+          FULL_ZIP="beopsuny-skill-full-${VERSION}.zip"
+          zip -r "$FULL_ZIP" . \
             -x ".git/*" \
             -x ".github/*" \
-            -x "tests/*" \
-            -x ".gitignore"
-          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+            -x "dist/*"
+
+          echo "SKILL_ZIP=$SKILL_ZIP" >> $GITHUB_ENV
+          echo "FULL_ZIP=$FULL_ZIP" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ZIP_NAME }}
-          generate_release_notes: true
+          files: |
+            ${{ env.SKILL_ZIP }}
+            ${{ env.FULL_ZIP }}
+          body: |
+            ## 설치
+
+            ### 방법 1: Skill zip (권장)
+            `beopsuny-skill-${{ github.ref_name }}.zip`을 받아서 `~/.claude/skills/`에 압축 해제:
+            ```bash
+            unzip beopsuny-skill-${{ github.ref_name }}.zip -d ~/.claude/skills/
+            ```
+            `~/.claude/skills/beopsuny/SKILL.md`가 생기면 성공.
+
+            ### 방법 2: Full zip (개발자용)
+            `beopsuny-skill-full-${{ github.ref_name }}.zip`은 레포 전체 (테스트, plugin manifest 포함).
