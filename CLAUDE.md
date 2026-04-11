@@ -43,3 +43,13 @@
 - **legalize-kr**: [legalize-kr/legalize-kr](https://github.com/legalize-kr/legalize-kr) — 법령 Markdown (6,907 파일)
 - **precedent-kr**: [legalize-kr/precedent-kr](https://github.com/legalize-kr/precedent-kr) — 판례 Markdown (123,469건)
 - **법망**: [api.beopmang.org](https://api.beopmang.org/) — REST API (무인증, 행정규칙/해석례/의안)
+
+## 프로젝트 구조
+
+```
+skills/beopsuny/SKILL.md          # 스킬 본체 (Full/Lite 모드 지원)
+skills/beopsuny/assets/           # YAML 데이터 (법령 인덱스, 체크리스트 등)
+skills/beopsuny/references/       # 가이드 문서 (API, 외부사이트, 메모리 등)
+docs/desktop-chat-guide.md        # Chat 탭 사용자 가이드 + 프로젝트 지침 템플릿
+tests/scenarios/                  # 테스트 시나리오
+```

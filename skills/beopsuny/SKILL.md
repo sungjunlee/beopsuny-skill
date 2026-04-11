@@ -37,31 +37,37 @@ metadata:
 
 ## 데이터 소스
 
-3계층 우선순위. 위에서부터 시도하고, 없으면 아래로 내려간다.
+모드에 따라 우선순위가 다르다.
 
-### 1순위: 로컬 Git 데이터 (legalize-kr + precedent-kr)
+| 순위 | Full 모드 | Lite 모드 |
+|------|----------|----------|
+| 1 | 로컬 Git (legalize-kr + precedent-kr) | 법망 API |
+| 2 | 법망 API | WebSearch |
+| 3 | korean-law-mcp (OC 코드) | korean-law-mcp (OC 코드) |
+| 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr |
+
+### 1순위 (Full): 로컬 Git 데이터 (legalize-kr + precedent-kr)
 
 경로: `~/.beopsuny/data/legalize-kr/`, `~/.beopsuny/data/precedent-kr/`
 
-데이터가 없으면 초기화 절차(아래)를 먼저 실행한다.
+데이터가 없으면 모드 판별(위)에서 자동 clone한다.
 
 **법령** — legalize-kr은 Markdown + YAML frontmatter 형식.
 디렉토리명에 띄어쓰기가 없다 (법률 제목의 띄어쓰기를 제거해서 매칭).
 "개인정보 보호법" → `개인정보보호법`, "근로기준법" → `근로기준법`
-법령명을 모르면 Glob으로 디렉토리명을 먼저 찾는다.
-```
-Glob "kr/*개인정보*" --path ~/.beopsuny/data/legalize-kr    # 법령명 찾기
-Read ~/.beopsuny/data/legalize-kr/kr/{법령명}/법률.md       # 법률 원문
-Read ~/.beopsuny/data/legalize-kr/kr/{법령명}/시행령.md      # 시행령
-Bash: ls ~/.beopsuny/data/legalize-kr/kr/{법령명}/          # 법체계 확인 (시행규칙이 여러 개일 수 있음)
-Bash: git -C ~/.beopsuny/data/legalize-kr log --oneline -20 -- kr/{법령명}/  # 개정 이력
+```bash
+ls ~/.beopsuny/data/legalize-kr/kr/ | grep 개인정보           # 법령명 찾기
+cat ~/.beopsuny/data/legalize-kr/kr/{법령명}/법률.md          # 법률 원문
+cat ~/.beopsuny/data/legalize-kr/kr/{법령명}/시행령.md         # 시행령
+ls ~/.beopsuny/data/legalize-kr/kr/{법령명}/                  # 법체계 확인 (시행규칙이 여러 개일 수 있음)
+git -C ~/.beopsuny/data/legalize-kr log --oneline -20 -- kr/{법령명}/  # 개정 이력
 ```
 
 **판례** — precedent-kr은 `{분야}/{법원등급}/{사건번호}.md` 구조 (12만건).
 사건번호를 아는 경우에만 로컬에서 직접 읽는다. 키워드 검색은 12만 파일 grep이라 느리므로 법망 API를 쓴다.
-```
-Glob "*2022다12345*" --path ~/.beopsuny/data/precedent-kr   # 사건번호로 찾기
-Read ~/.beopsuny/data/precedent-kr/민사/대법원/2022다12345.md  # 직접 읽기
+```bash
+find ~/.beopsuny/data/precedent-kr -name "*2022다12345*"      # 사건번호로 찾기
+cat ~/.beopsuny/data/precedent-kr/민사/대법원/2022다12345.md   # 직접 읽기
 # 키워드 검색은 법망 API가 빠름 (아래 2순위 참조)
 ```
 
@@ -98,14 +104,30 @@ WebFetch "https://korean-law-mcp.fly.dev/mcp?oc={OC코드}" (MCP 리모트)
 
 법령/판례 **링크 제공용**으로만 사용 (원문 확인 URL).
 
-### 데이터 초기화 / 동기화
+### 모드 판별 (Full / Lite)
 
-데이터 디렉토리가 없으면 사용자에게 알리고 clone을 실행한다. full clone (개정이력 필요):
+스킬 시작 시 능력을 감지하여 모드를 결정한다. 플랫폼이 아니라 능력 기준:
+
+```
+로컬 데이터 접근 가능? ──yes──→ Full 모드
+       │no
+Bash 사용 가능? ──yes──→ 데이터 clone 후 Full 모드
+       │no
+Lite 모드 (API 우선, 시각화 활용)
+```
+
+**Full 모드 판별**: `ls ~/.beopsuny/data/legalize-kr/kr/ 2>/dev/null` 결과가 있으면 Full.
+**Lite 모드 진입 시 안내** (한 번만):
+> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령/판례 데이터를 포함한 전체 기능은 Claude Code(또는 Code 탭)에서 사용할 수 있습니다.
+
+### 데이터 초기화 (Full 모드)
+
+Bash가 가능한데 데이터가 없으면 자연스럽게 clone한다:
 ```bash
-mkdir -p ~/.beopsuny/data
 git clone https://github.com/legalize-kr/legalize-kr.git ~/.beopsuny/data/legalize-kr
 git clone https://github.com/legalize-kr/precedent-kr.git ~/.beopsuny/data/precedent-kr
 ```
+`~/.beopsuny/data/` 디렉토리는 setup.js가 생성한다.
 
 이미 있으면 pull로 최신화. legalize-kr은 force-push 가능성이 있으므로 pull 실패 시 re-clone:
 ```bash
@@ -117,20 +139,47 @@ git -C ~/.beopsuny/data/legalize-kr pull --ff-only || (rm -rf ~/.beopsuny/data/l
 ## 법률 조사 워크플로우
 
 법률 질문을 받으면 9단계로 조사한다. 단순한 질문이면 필요한 단계만 실행.
+Full/Lite 컬럼: ● = 기본 수행, ⬚ = 요청 시만, — = 생략.
 
-| Phase | 단계 | 무엇을 | 어떻게 |
-|-------|------|--------|--------|
-| **1차 소스** | 1. 법령 | 법률 원문 | legalize-kr에서 Read |
-| | 2. 하위법령 | 시행령/시행규칙 | 같은 디렉토리의 다른 .md |
-| | 3. 행정규칙 | 고시/훈령/예규 | `assets/law_index.yaml` → 법망 API |
-| | 4. 개정 확인 | 최근 변경 | `git log` |
-| **집행 동향** | 5. 해석례 | 법제처 해석 | 법망 `type=expc` |
-| | 6. 정책 동향 | 부처 보도자료 | WebSearch `site:{부처}.go.kr` |
-| | 7. 제재 동향 | 과징금/처분 | WebSearch `"{법령명} 과징금 2025 2026"` |
-| **2차 검증** | 8. 판례 | 관련 판결 | 법망 `case/search` (키워드) → precedent-kr (사건번호 직접 읽기) |
-| | 9. 개정안 | 계류 의안 | WebSearch `"{법령명} 개정안 국회"` |
+| Phase | 단계 | 무엇을 | Full 어떻게 | Lite 어떻게 | Full | Lite |
+|-------|------|--------|------------|------------|------|------|
+| **1차 소스** | 1. 법령 | 법률 원문 | legalize-kr `cat` | 법망 `law/get` | ● | ● |
+| | 2. 하위법령 | 시행령/시행규칙 | 같은 디렉토리의 다른 .md | 법망 `law/search` | ● | ● |
+| | 3. 행정규칙 | 고시/훈령/예규 | `assets/law_index.yaml` → 법망 API | 법망 `type=admrul` | ● | ● |
+| | 4. 개정 확인 | 최근 변경 | `git log` | 법망 `law/history` | ● | ● |
+| **집행 동향** | 5. 해석례 | 법제처 해석 | 법망 `type=expc` | 법망 `type=expc` | ● | ⬚ |
+| | 6. 정책 동향 | 부처 보도자료 | WebSearch | WebSearch | ● | ⬚ |
+| | 7. 제재 동향 | 과징금/처분 | WebSearch | WebSearch | ● | ⬚ |
+| **2차 검증** | 8. 판례 | 관련 판결 | 법망 → precedent-kr 직접 읽기 | 법망 `case/search` + `case/get` | ● | ● |
+| | 9. 개정안 | 계류 의안 | WebSearch | WebSearch | ● | ⬚ |
 
 **행정규칙이 가장 중요한 이유**: 법률은 "위반 시 과징금을 부과할 수 있다"고만 쓰고, 실제 금액/기준/절차는 고시에 있다. 행정규칙을 빠뜨리면 실무에서 쓸 수 없는 답변이 된다.
+
+---
+
+## 시각화 (Lite 모드)
+
+Lite 모드에서는 Chat 탭의 Artifacts를 활용하여 법률 정보를 시각적으로 전달한다.
+시각화는 텍스트 보완용이다 — 법적 근거는 반드시 텍스트로도 제공한다.
+
+| 용도 | Artifact 유형 | 예시 |
+|------|--------------|------|
+| 절차 플로우차트 | Mermaid `flowchart TD` | 해고 절차, 인허가 신청 흐름 |
+| 판단 트리 | Mermaid `graph TD` | 법 적용 여부 분기 (예: 중대재해법 적용 대상?) |
+| 개정 전후 비교 | HTML table | 조문 좌우 대비표 |
+| 컴플라이언스 타임라인 | Mermaid `gantt` | 연간 법정 의무 일정 |
+| 법체계 구조 | Mermaid `graph TD` | 법률→시행령→시행규칙→고시 관계 |
+
+```mermaid
+%% 예시: 판단 트리
+graph TD
+    A[상시근로자 수?] -->|5인 이상| B[근로기준법 전면 적용]
+    A -->|5인 미만| C[일부 조항만 적용]
+    C --> D[해고예고 적용 ✓]
+    C --> E[부당해고 구제 ✗]
+```
+
+Full 모드에서는 시각화가 필수가 아니다 — 텍스트와 코드 블록으로 충분. 사용자가 요청하면 제공.
 
 ---
 
@@ -272,11 +321,21 @@ git -C ~/.beopsuny/data/legalize-kr pull --ff-only || (rm -rf ~/.beopsuny/data/l
 
 ## 메모리
 
+모드에 따라 메모리 운영이 다르다.
+
+| 메모리 | Full 모드 | Lite 모드 |
+|--------|----------|----------|
+| profile.yaml | 읽기/쓰기 정상 | 파일 접근 가능하면 Read, 불가하면 대화 중 구두 수집 |
+| reviews.jsonl | 검토 완료 시 기록 | 기록 생략 (파일 쓰기 불가) |
+| learnings.jsonl | 인사이트 축적 | 기록 생략 |
+
 ### profile.yaml — 회사 맥락
 
 **읽기 시점**: 모든 법률 질문 시작 시 `~/.beopsuny/profile.yaml` 존재 여부 확인. 있으면 Read.
+Lite 모드에서 파일 접근이 안 되면, 대화 중 사용자에게 직접 물어서 맥락을 수집한다:
+> "회사의 업종과 규모를 알려주시면 더 정확한 답변이 가능합니다."
 
-**쓰기 시점**: 대화 중 사용자가 회사 정보를 공유하면 확인 후 기록.
+**쓰기 시점** (Full 모드): 대화 중 사용자가 회사 정보를 공유하면 확인 후 기록.
 ```
 사용자: "우리 회사 직원 300명이고 IT 업종이야"
 → "profile.yaml에 employee_count: 300, industry: IT로 기록할까요?"
@@ -294,24 +353,18 @@ git -C ~/.beopsuny/data/legalize-kr pull --ff-only || (rm -rf ~/.beopsuny/data/l
 - `has_subcontract: true` → 하도급법 횡단 이슈 항상 체크
 - `industry: "식품"` → food_business 체크리스트 우선 추천
 
-### reviews.jsonl — 검토 이력
+### reviews.jsonl — 검토 이력 (Full 모드)
 
 **기록 시점**: 법률 질문 답변 완료 후, 의미 있는 결론이 나온 경우.
 
-**기록 절차**:
-```bash
-# ~/.beopsuny/projects/{slug}/ 디렉토리 없으면 생성
-mkdir -p ~/.beopsuny/projects/{slug}
-```
-
-한 줄 JSON append:
+**기록 절차** — `~/.beopsuny/projects/{slug}/` 디렉토리에 한 줄 JSON append:
 ```json
 {"id":"2026-04-11-001","category":"계약","question":"SaaS 계약 면책 조항 유효성","conclusion":"고의/중과실 면책은 약관규제법 제7조로 무효 가능","laws":["약관규제법 제7조","민법 제750조"],"caveats":"개별 협상 계약이면 약관규제법 미적용","ts":"2026-04-11T04:00:00Z"}
 ```
 
 **참조 시점**: 같은 프로젝트에서 유사 질문이 들어오면 기존 결론을 먼저 보여주고, 변경 여부를 확인한다.
 
-### learnings.jsonl — 법률 지식 축적
+### learnings.jsonl — 법률 지식 축적 (Full 모드)
 
 대화에서 발견한 비자명한 인사이트를 축적. `references/memory-structure.md`의 엔트리 구조 참조.
 기록 기준: 법조문 그 자체가 아니라, 조문 적용의 함정이나 실무 팁.
