@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.2.2-rc.2] - 2026-04-12
+
+**테마: 법령 변경 감지 (Law Change Detection)** — legalize-kr 의 `git log` 기반 pull 방식으로 "최근 뭐 바뀌었어?" 류 질의에 응답. 스케줄링/알림(Push) 설계는 외부 환경 의존성이 커서 제외 — **Push 없음, Pull 만**. Lite 모드는 법망 API `law?action=history` + `law?action=diff` fallback.
+
+### Added
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 신설 (#17)
+  - 지원 질의 3종: 시간 범위 discovery / 특정 법령 변경 내역 / `interested_laws` 일괄
+  - 모드별 명령·API: Full 은 `git log --since=` + `git show`, Lite 는 법망 API
+  - 출력 포맷: 개정일자 / 공포일자 / 시행일자 (핵심 원칙 4 준수 — 공포 ≠ 시행) + 변경 조문 + legalize-kr 커밋 URL + law.go.kr
+  - 응답 후단 append 규정: `interested_laws` 비어있지 않으면 본문 → 자가 검증 → `💡 최근 개정: ...` → 면책 고지 순서로 한 줄 append. 개정 없으면 생략
+  - 경계: Push 금지 — 크론/알림 코드 없음
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `interested_laws: []` 필드 추가 (v0.2.2~). 법령명은 legalize-kr 디렉토리명과 일치
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `party_position` 필드 추가 (v0.2.2~) — #24 A안. `default: ""/"gap"/"eul"` + `per_clause_override: {}`. v0.2.1 에서 "스키마에 필드 없음" 으로 완화됐던 SKILL.md Step 4 항목 5 / Dim 4 서브체크 2 의 semantic dangle 자연 해소 (v0.2.1 post-review P2-3)
+- `tests/scenarios/14_law_change_detection.yaml` 신설 — 4 시나리오
+  - `law-change-01` — Full 모드 시간 범위 discovery
+  - `law-change-02` — 특정 법령 (개인정보보호법) 변경 내역
+  - `law-change-03` — `interested_laws` 응답 후단 append (Pull 경계)
+  - `law-change-04` — Lite 모드 법망 API fallback
+  - 공통 `forbidden_phrases`: `알림을 설정`, `크론`, `스케줄`, `notification`, `자동으로 알려드`, `푸시` — Push 뉘앙스 금지
+
+### Changed
+- `skills/beopsuny/SKILL.md` 회사 맥락 활용 예시에 2줄 추가 — `interested_laws: [...]` 가 후단 append 로 연결되는 로직, `party_position.default` 가 `negotiation_points` 우선 노출에 연결되는 로직
+- `skills/beopsuny/SKILL.md` Step 4 항목 5 — "v0.2.x 스키마에 해당 필드가 없으므로 사실상 항상 양쪽 노출" → "`profile.yaml.party_position` (v0.2.2~) 에 맞춰 `gap`/`eul` 중 관련 관점 우선 노출. 조항별 override 는 `party_position.per_clause_override.{조항key}`"
+- `skills/beopsuny/SKILL.md` Dim 4 서브체크 2 — `profile.yaml` 의 당사자 위치 → `profile.yaml.party_position` (v0.2.2~) 명시
+
+### Notes
+- **Push 설계 없음 — pull 방식 유지**. 크론/알림/스케줄링/notification 코드·문구 일절 없음. `interested_laws` 있으면 응답 후단 한 줄 append 만
+- 외부 의존성 0 — legalize-kr clone 이 이미 되어있다는 전제 (`~/.beopsuny/data/legalize-kr/`). Lite 모드는 기존 법망 API 만 사용
+- 경로 추상화: `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 로 environment variable override 허용
+- #24 A안 포함 처리 — v0.2.1 에서 follow-up 으로 연기됐던 `party_position` 필드가 `interested_laws` 와 같은 스키마 파일 수정이므로 묶어서 처리
+
 ## [0.2.2-rc.1] - 2026-04-12
 
 **테마: v0.2.1 post-review P2 housekeeping** — v0.2.1 릴리즈 직후 codex gpt-5.4 + pr-review-toolkit 독립 리뷰 2건에서 합의된 P2 finding 2건을 정리. Ship blocker 없음, 정확성 폴리시 수준.
