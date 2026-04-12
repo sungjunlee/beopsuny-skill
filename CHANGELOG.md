@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.1.0] - 2026-04-12
+
+### Added
+- `DESIGN.md` (레포 루트) — 아키텍처 결정 기록 + Multi-skill 전환 트리거 로드맵
+  - 단일 스킬 유지 결정(2026-04-12) 객관적 근거 4가지 기록
+  - v0.2.0 분리 트리거: DOCX 처리, 스케줄링, 피드백 3회, SKILL.md 800줄 초과
+- Source Grading A/B/C/D 체계 (kipeum86/PIPA-expert 패턴 차용)
+  - `skills/beopsuny/assets/policies/source_grades.yaml` — 정책 파일 (policies/ 디렉토리 신규)
+  - `skills/beopsuny/references/source-grading.md` — 사람이 읽는 규칙 문서
+  - 핵심 원칙 6번에 Source Grading 추가
+  - 출력 포맷 예시에 `[Grade X] [VERIFIED]` 태그 반영
+  - 2차 소스 `[EDITORIAL]` 태그, `[INSUFFICIENT]` 유보 예시 추가
+
+### Changed
+- `skills/beopsuny/SKILL.md` 데이터 소스 섹션 재작성
+  - 기존 모드별 우선순위 표에 Grade 컬럼 추가
+  - 각 순위 소스별 기본 Grade 명시 (legalize-kr=A, 하급심=B, 법망 API=A, WebSearch=C/D 등)
+  - WebSearch 백업 도메인별 Grade 매핑 추가
+- 기존 `[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` 태그는 **유지**하고 Grade와 병기
+
+### Notes
+- SKILL.md 548줄 (분리 트리거 800 미만)
+- 기존 자산 경로 변경 없음 (이슈 #4에서 처리 예정)
+- 자가 검증 레이어는 이슈 #5에서 후속 작업
+
 ## [0.0.3] - 2026-04-11
 
 ### Fixed
