@@ -552,8 +552,8 @@ scenarios:
       response_contains:
         - 왜 위험한가
         - 직업선택
-      # 단일 소스: assets/policies/review_mode.yaml `counter_draft_forbidden_patterns`
-      # plain substring — 명령형 패턴이라 설명 prose false-positive 위험 낮음.
+      # 대표 4개 샘플 — 전체 스캔은 단일 소스 로드. plain substring (명령형 패턴이라 설명 prose false-positive 위험 낮음).
+      forbidden_phrases_source: assets/policies/review_mode.yaml#counter_draft_forbidden_patterns
       forbidden_phrases:
         - 아래 문구로 교체
         - 최종 수정안

@@ -1,6 +1,8 @@
 # 회사 프로필
 # 대화에서 점진적으로 축적. 같은 법이라도 업종/규모에 따라 적용이 다르다.
 # 사용자가 회사 정보를 공유하면 이 파일을 업데이트한다.
+# Migration: 기존 profile.yaml 에 interested_laws / party_position 부재 시
+# 자동 누락 처리 (graceful fallback) — 두 필드는 v0.2.2~ 에서 추가됨.
 
 company_name: ""           # 회사명 (비공개 가능)
 industry: ""               # 업종 (예: IT, 제조, 식품, 금융)
