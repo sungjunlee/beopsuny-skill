@@ -528,18 +528,24 @@ profile.yaml의 정보로 리뷰를 개인화:
 
 "최근 뭐 바뀌었어?" 류 질의. **Pull 방식** — 사용자가 묻거나 `interested_laws` 비어있지 않을 때 응답 후단에 한 줄 append. 자동 알림·크론·스케줄링 없음.
 
+축약: `$DR` = `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` (Full 모드 git 명령 공통 prefix). 모드 판별은 서두 "모드 판별 (Full / Lite)" 섹션의 `ls ~/.beopsuny/data/legalize-kr/kr/` 로직을 재사용.
+
 | 질의 패턴 | Full 모드 | Lite 모드 |
 |-----------|----------|----------|
-| 시간 범위 discovery ("최근 한 달 개정") | `git -C ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr log --since="1 month ago" --name-only kr/` → 고유 법령 리스트 | 법망 API `law?action=history` + 최근 N건 |
-| 특정 법령 변경 내역 ("개인정보보호법 뭐 바뀌었어?") | `git log -n 5 --follow kr/{법령명}/법률.md` + 최신 커밋 `git show` 요약 | 법망 API `law?action=diff` |
+| 시간 범위 discovery ("최근 한 달 개정") | `git -c core.quotePath=false -C $DR/legalize-kr log --since="1 month ago" --name-only kr/` → 고유 법령 리스트. 각 법령마다 아래 row 로 재조회해 메타 추출 | **직접 discovery 미지원** — 사용자 지정 법령 or `interested_laws` 로 각각 `law?action=history&id={법령ID}` |
+| 특정 법령 변경 내역 ("개인정보보호법 뭐 바뀌었어?") | `git -C $DR/legalize-kr log -n 5 --follow kr/{법령명}/법률.md` → 커밋 SHA 목록 → 각 SHA 마다 `git -C $DR/legalize-kr show {SHA} -- kr/{법령명}/법률.md` | 법망 API `law?action=diff&id={법령ID}` |
 | 관심 법령 일괄 ("내 관심 법령 개정 있어?") | `profile.yaml.interested_laws` 순회 → 위 로직 반복 | 동일 (Lite) |
 
 **출력 포맷** (법령당 1블록):
-- **개정일자** / **공포일자** / **시행일자** — 핵심 원칙 4 (시행일 확인) 준수. 공포 ≠ 시행 구분
+- **개정일자** (git log 커밋 날짜) / **공포일자** (커밋 메시지) / **시행일자** (`kr/{법령명}/법률.md` YAML frontmatter) — 핵심 원칙 4. 공포 ≠ 시행
 - **변경 조문** — Full: `git show` diff 요약 / Lite: 법망 API `changes[]`
 - **출처 링크** — legalize-kr 커밋 (`https://github.com/legalize-kr/legalize-kr/commit/{SHA}`) + `law.go.kr/법령/{법령명}`
 
-**응답 후단 append** (사용자 요청 없어도): `interested_laws` 가 비어있지 않으면 본문 종료 후 면책 고지 **직전** 에 한 줄 `💡 최근 개정: {법령1} (YYYY-MM-DD), {법령2} (YYYY-MM-DD) — 상세는 "최근 개정" 물어봐 주세요` 추가. 개정이 없으면 append 생략. **경계**: Push 금지 — 크론/알림 코드 없음. `interested_laws` 가 비어있으면 사용자 직접 질의 시만 동작.
+**실패 분기**: `git` non-zero exit, Lite API timeout/error, `interested_laws` 법령명 ↔ legalize-kr 디렉토리명 mismatch 는 **"조회 실패" ≠ "개정 없음"**. `💡 "{법령명}" 조회 실패 — 데이터/법령명 확인 필요` 로 명시하고 "개정 없음" 으로 갈음하지 않는다 (법률 맥락 material misrepresentation 방지). 법령명은 띄어쓰기 제거 규칙 적용 (위 "모드 판별" 섹션 참조).
+
+**응답 후단 append 순서** (사용자 요청 없어도): `interested_laws` 비어있지 않으면 본문 → `🔍 자가 검증` 블록 → `💡 최근 개정: {법령1} (YYYY-MM-DD), ...` 또는 `💡 조회 실패: ...` → 면책 고지. 모든 법령이 개정 없음 + 실패 없음이면 `💡` 생략. **경계**: Push 금지 — 크론/알림 코드 없음.
+
+**경로 override 범위**: `$DR` 환경변수 override 는 이 섹션 한정 실험적 지원. 모드 판별·데이터 초기화 등 서두 섹션은 v0.2.2 에서 `~/.beopsuny/data` 하드코딩 유지 — 전역 통일은 v0.3.0 예정.
 
 ---
 
