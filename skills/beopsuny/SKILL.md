@@ -555,6 +555,8 @@ Step 4 에서 `why_risky` / `negotiation_points` / `alt_wording_hint` 를 출력
 - [ ] `negotiation_points.gap`/`.eul` 선택이 `profile.yaml` 의 당사자 위치와 일관되나? (위치 불명 시 양쪽 모두 노출이 기본)
 - [ ] 출력이 "자동 생성 금지선" 을 넘지 않았는가? — 단정적 표현 스캔 (`아래 문구로 교체`, `최종 수정안`, `다음 조항으로 대체`, `이 문구를 사용` 등 패턴 부재 확인). 근거: `references/contract_review_guide.md` "법순이가 하지 않는 것" 섹션
 
+**미출력 필드 처리**: 출력되지 않은 필드 대상 서브체크는 `n/a` (pass 로 집계). Dim 4 판정식 = "출력된 필드 대상 서브체크 전부 pass → ✓". 예: moderate 에서 `alt_wording_hint` 미출력이면 서브체크 1 은 `n/a`; loose 에서 `negotiation_points` + `alt_wording_hint` 둘 다 미출력이면 서브체크 1·2 모두 `n/a`, 서브체크 3 만 실제 평가.
+
 실패 처리: 서브체크 1/2 실패 → 해당 필드 `[EDITORIAL]` 재태깅 + `downgrade_triggers` 발동. 서브체크 3 실패 → 단정 문구를 힌트형(`∼ 방향`, `∼ 고려`) 으로 재작성 후 재검증 (재검증 실패 시 해당 필드 출력 생략).
 
 ### 검증 실패 시 처리
@@ -585,7 +587,7 @@ Step 4 에서 `why_risky` / `negotiation_points` / `alt_wording_hint` 를 출력
 🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
 ```
 
-**부분 실패** (Dim 1 중 일부 확인 불가):
+**부분 실패** (Dim 1 중 일부 확인 불가 — 예: 계약 검토 중 경업금지 조항 분석 + 힌트 출력 응답, 인용한 판례 1건이 원문 확인 불가):
 
 ```markdown
 ---
