@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.2.2.1] - 2026-04-12
+
+**테마: v0.2.2 post-release execution polish** — v0.2.2 릴리즈 직후 4 독립 리뷰 (codex gpt-5.4 / code-reviewer / silent-failure-hunter / comment-analyzer) 에서 합의된 P1 실행 문제 5건 + P2 2건 정리. 이전 릴리즈는 문서·정책 정합이 맞았으나 Full 모드 git 명령이 실제 구현 단계에서 한국어 경로 octal escape, SHA 누락, wrong-repo 실행, discovery 메타 부재 등의 이유로 실패할 수 있었음. **법령 조회 결과 정확성** 문제라 긴급 patch.
+
+### Fixed
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 — Full 모드 `git log --name-only` 에 `-c core.quotePath=false` 추가 (P1). 기본값 `core.quotePath=true` 로 한국어 경로가 octal escape (`kr/\352\260\234...`) 로 출력되어 법령명 추출 실패하던 버그 해소
+- `skills/beopsuny/SKILL.md` 특정 법령 변경 내역 row — `git log -n 5 --follow kr/{법령명}/법률.md` + `git show` 가 `-C $DR/legalize-kr` 없이 작성돼 스킬 working directory 에서 wrong repo 로 실행되던 문제 수정 (P1). `git show` 에 명시적 `{SHA} --` 전달 포맷 추가 — bare `git show` 가 HEAD 를 반환해 선택된 커밋과 무관한 diff 를 요약하던 버그 해소
+- `skills/beopsuny/SKILL.md` discovery row — `--name-only` 결과는 법령 리스트만 포함해 `개정일자`/`공포일자`/`시행일자`/`변경 조문` 메타를 hallucinate 할 여지 있었음 (P1). "각 법령마다 아래 row 로 재조회해 메타 추출" 명시 + 출력 포맷 bullet 의 3개 날짜 축에 **각각의 데이터 소스** 병기 (`git log 커밋 날짜`, `커밋 메시지`, `법률.md YAML frontmatter`)
+- `skills/beopsuny/SKILL.md` Lite 모드 시간 범위 discovery 열 — 법망 API `law?action=history` 는 `id={법령ID}` 필수이므로 "직접 discovery" 불가 (P1). "사용자 지정 법령 or `interested_laws` 로 각각 `law?action=history&id={법령ID}`" 로 좁히고 `law?action=diff` 에도 `id={법령ID}` 필수 명시
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `interested_laws` 예시값 `"하도급거래 공정화에 관한 법률"` → `"하도급거래공정화에관한법률"` (P2). 자기 주석 ("legalize-kr 디렉토리명과 일치 — 띄어쓰기 없음") 을 위반해 copy-paste 시 lookup 실패하던 문제 해소
+- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02/04) — 정정된 명령·URL 반영 (quotePath flag, `-C` prefix, SHA 명시, `/api/v4/` prefix, `id={법령ID}` 필수)
+
+### Added
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **실패 분기** 단락 신설 (P1). `git` non-zero exit, Lite API timeout/error, 법령명 ↔ 디렉토리명 mismatch 는 **"조회 실패" ≠ "개정 없음"** 으로 명시. `💡 "{법령명}" 조회 실패 — 데이터/법령명 확인 필요` 한 줄로 표시. 법률 맥락에서 "최근 개정 없음" 과 "조회 실패" 를 동일시하는 것은 material misrepresentation 이라 명시적으로 분기
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **응답 후단 append 순서** 단락 (P1) — 본문 → `🔍 자가 검증` 블록 → `💡 최근 개정: ...` 또는 `💡 조회 실패: ...` → 면책 고지. v0.2.2 에서는 "면책 고지 직전" 이 법령 변경 감지 append 와 자가 검증 블록 둘 다에 쓰여 상대 순서가 SKILL.md 내부에서 ambiguous 했음 — 이제 명시
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **모드 판별 backref** 한 줄 — 신규 섹션이 서두 "모드 판별 (Full / Lite)" 섹션의 `ls ~/.beopsuny/data/legalize-kr/kr/` 로직을 재사용함을 명시
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **경로 override 범위** 단락 (P2) — `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` override 가 이 섹션 한정 실험적 지원임을 명시. v0.2.2 에서 "경로 추상화 허용" 으로 포괄적 표현했으나 실제로는 모드 판별·데이터 초기화는 하드코딩 — drift 양성화. 전역 통일은 v0.3.0 예정
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션에 `$DR` 축약 도입 — Full 모드 명령 공통 prefix `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 를 반복 노출 대신 축약
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `interested_laws` 주석에 mismatch 처리 포인터 추가 — "mismatch 시 '개정 없음' 이 아니라 '조회 실패' (SKILL.md 법령 변경 감지 → 실패 분기 참조)"
+- `tests/scenarios/14_law_change_detection.yaml` `law-change-01` 에 `quote_path_flag` validation + `response_contains` 에 `core.quotePath=false` 검증
+
+### Changed
+- `.claude-plugin/plugin.json` 버전 `0.2.2` → `0.2.2.1` (최상위 및 `plugins[0]` 동시)
+
+### Notes
+- **SKILL.md 상한 재조정**: 724 → 730줄. 분리 트리거 800 미만 유지. v0.2.2 에서 합의됐던 725 상한을 법령 변경 감지 섹션의 실행 가능성(8줄 증가) 확보 위해 732 로 재조정. 전역 CLAUDE.md `SKILL.md < 800` 경계는 준수
+- 새 태그 도입 없음. 기존 6개 태그 (`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
+- Push 경계 그대로 — 크론/알림/스케줄링 코드·문구 일절 없음
+- 4 독립 리뷰 중 나머지 P2 (per_clause_override key contract, forbidden_phrases 자연 발화 패턴 보강, CHANGELOG "Push 없음" 중복, Dim 3 "갑/을 위치" legacy phrasing 등) 는 v0.3.0 이월
+- 4 리뷰어 합의 findings: https://github.com/sungjunlee/beopsuny-skill/releases/tag/v0.2.2 참조
+
 ## [0.2.2] - 2026-04-12
 
 **테마: 법령 변경 감지 (Law Change Detection)** — legalize-kr 의 `git log` 기반 pull 방식으로 "최근 뭐 바뀌었어?" 류 질의에 응답. 스케줄링/알림(Push) 설계는 외부 환경 의존성이 커서 제외 — **Push 없음, Pull 만**. Lite 모드는 법망 API `law?action=history` + `law?action=diff` fallback. 부록으로 v0.2.1 post-review P2 finding 2건 housekeeping 포함 (ship blocker 없음, 정확성 폴리시).

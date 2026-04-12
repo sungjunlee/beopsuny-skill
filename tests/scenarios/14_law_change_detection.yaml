@@ -36,6 +36,7 @@ scenarios:
         - git log
         - "--since"
         - "1 month"
+        - "core.quotePath=false"  # 한국어 경로 octal escape 방지 (v0.2.2.1~)
         - 개정
         - 공포
         - 시행
@@ -51,7 +52,10 @@ scenarios:
     reference_files:
       - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 섹션
     data_source: |
-      # Full 모드: git -C ~/.beopsuny/data/legalize-kr log --since="1 month ago" --name-only kr/
+      # Full 모드: git -c core.quotePath=false -C ~/.beopsuny/data/legalize-kr log \
+      #             --since="1 month ago" --name-only kr/
+      # core.quotePath=false 로 한국어 경로 octal escape 방지 (v0.2.2.1~)
+      # discovery 결과(법령 리스트)는 메타 없음 → 각 법령마다 특정 법령 flow 로 재조회
     validation:
       - type: mode_detection
         description: Full 모드 (legalize-kr 로컬 데이터 존재) 에서 git log 명령 경로를 사용하는지
@@ -59,6 +63,8 @@ scenarios:
         description: Push 뉘앙스(알림/스케줄/크론) 없이 Pull 방식 응답인지
       - type: date_axis
         description: 공포일과 시행일을 구분해 출력하는지 (핵심 원칙 4)
+      - type: quote_path_flag
+        description: "`git log --name-only` 에 `-c core.quotePath=false` 가 포함되어 한국어 경로가 octal escape 로 나오지 않는지"
 
   # ============================================
   # 2. 특정 법령 변경 내역
@@ -92,8 +98,11 @@ scenarios:
     reference_files:
       - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 섹션
     data_source: |
-      # Full 모드: git -C ~/.beopsuny/data/legalize-kr log -n 5 --follow kr/개인정보보호법/법률.md
-      #           git show {SHA} -- kr/개인정보보호법/법률.md  (diff 요약)
+      # Full 모드 (v0.2.2.1~):
+      #   git -C ~/.beopsuny/data/legalize-kr log -n 5 --follow kr/개인정보보호법/법률.md
+      #     → 각 커밋 SHA 에 대해
+      #   git -C ~/.beopsuny/data/legalize-kr show {SHA} -- kr/개인정보보호법/법률.md
+      # (bare `git show` 는 HEAD 를 보여주므로 반드시 SHA 를 명시적으로 전달)
     validation:
       - type: file_path
         description: 법령명이 `kr/{법령명}/법률.md` 경로 패턴에 정확히 매핑되는지
@@ -186,8 +195,11 @@ scenarios:
       - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 — Lite 모드 열
       - skills/beopsuny/references/beopmang-api.md  # 법망 API 엔드포인트
     data_source: |
-      # Lite 모드: 법망 API law?action=history + 최근 N건
-      # https://api.beopmang.org/law?action=history&since=...
+      # Lite 모드 (v0.2.2.1~): 법망 API base URL 은 /api/v4/ prefix.
+      # law?action=history 는 id={법령ID} 필수 — 직접 "시간 범위 discovery" 불가.
+      # 사용자 지정 법령 or interested_laws 의 각 법령마다 반복 호출:
+      #   https://api.beopmang.org/api/v4/law?action=history&id={법령ID}
+      # 법령ID 는 먼저 law?action=search&query={법령명} 으로 확인.
     validation:
       - type: mode_detection
         description: Lite 모드 (legalize-kr 로컬 데이터 없음) 에서 법망 API 경로를 사용하는지
