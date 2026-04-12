@@ -65,16 +65,24 @@ Claude Code에서 GitHub 레포를 plugin으로 설치한다.
 /plugin install beopsuny-skill@sungjunlee-beopsuny-skill
 ```
 
-### 방법 3: zip 다운로드 (Claude Desktop 등)
+### 방법 3: zip 업로드 (Claude Desktop / claude.ai 웹)
 
-[Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 zip 파일을 받는다.
+Claude Desktop과 claude.ai 웹에서는 **Skill을 zip 파일 그대로 업로드**한다. 압축 해제하거나 Custom Instructions에 본문을 붙여넣을 필요 없다.
 
-1. 최신 릴리스의 `beopsuny-skill-vX.X.X.zip` 다운로드
-2. 압축 해제
-3. `skills/beopsuny/SKILL.md` 내용을 Claude Desktop의 Project > Custom Instructions에 붙여넣기
-4. 체크리스트 등 참조 파일이 필요하면 Project에 파일로 업로드
+**전제조건** — Settings → Capabilities에서 **Code execution and file creation**이 켜져 있어야 한다. (Free/Pro/Max/Team/Enterprise 모두 지원)
 
-> Claude Desktop에서는 로컬 파일 접근이 제한되므로 일부 기능(법령 로컬 조회, 메모리)은 사용할 수 없다.
+1. [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 `beopsuny-skill-vX.X.X.zip` 다운로드 (압축 해제 X)
+2. Claude Desktop (또는 claude.ai) → **Customize → Skills** → `+` → `+ Create skill` → **Upload a skill**
+3. 다운로드한 zip 선택 → 업로드 완료 후 Skills 목록에서 **beopsuny** 토글 ON
+4. 새 대화에서 "이 계약서 봐줘" 같은 법무 질문을 하면 자동으로 활성화된다
+
+> UI 경로(예: `Customize`, `Skills` 메뉴 위치)는 Anthropic이 자주 업데이트한다. 현재 화면과 다르면 공식 가이드를 참고:
+> - 한국어: [Claude에서 스킬 사용하기](https://support.claude.com/ko/articles/12512180-claude에서-스킬-사용하기) · [사용자 정의 Skills 만드는 방법](https://support.claude.com/ko/articles/12512198-사용자-정의-skills를-만드는-방법)
+> - English: [Use Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
+
+**제약사항** — Claude Desktop/웹의 Skill 실행 환경은 사용자 PC의 로컬 파일에 접근할 수 없다. 따라서 로컬 `legalize-kr`/`precedent-kr` 데이터는 사용 못 하고, 법망 API + WebSearch 기반 **Lite 모드**로 동작한다. 회사 프로필·검토 이력 같은 영속 메모리도 대화 단위로만 유지된다.
+
+> Skills 기능을 쓸 수 없는 환경이라면 [Claude Desktop Chat 탭 가이드](docs/desktop-chat-guide.md)의 Projects + Custom Instructions 방식을 fallback으로 사용할 수 있다.
 
 ### OC 코드 발급 (선택, 무료)
 
