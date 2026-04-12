@@ -1,0 +1,160 @@
+# ============================================================
+# Clause Taxonomy — 계약 조항 분류·위험도 체계
+# ============================================================
+# 법순이가 계약 조항을 분류하고 위험도를 판정할 때 사용하는 정책 파일.
+# 조항 자체의 데이터(법령 매핑, 조항명, 예시 문구)는 분리되어
+# `assets/data/clause_references.yaml`에 있다.
+#
+# 사용 시점:
+#   1. 계약 조항 유형을 식별할 때 (categories 참조)
+#   2. 해당 조항의 위험도를 판정할 때 (risk_levels 참조)
+#   3. 신규 조항을 추가할 때 (_template 따름)
+#
+# 설계 원칙:
+#   - 카테고리·위험도 정의와 판단 기준은 정책(policy)으로 유지 (변경 빈도 낮음)
+#   - 조항별 korean_law 매핑·link·common_terms는 데이터(data)로 분리
+#   - kipeum86/contract-review-agent의 `policies.default/` 패턴 차용
+# ============================================================
+
+version: "1.1.0"
+last_updated: "2026-04-12"
+
+# ─────────────────────────────────────────────────────────
+# 1. 조항 카테고리 정의 (5종)
+# ─────────────────────────────────────────────────────────
+# data/clause_references.yaml 의 각 조항은 이 중 하나의 `category:` 필드로 참조한다.
+
+categories:
+  - id: boilerplate
+    name_ko: 일반 조항
+    name_en: Boilerplate Clauses
+    description: 대부분의 계약서에 공통으로 포함되는 표준 조항
+
+  - id: risk_allocation
+    name_ko: 위험 배분
+    name_en: Risk Allocation
+    description: 손해배상, 면책, 보험 등 위험 분배 조항
+
+  - id: ip_data
+    name_ko: 지식재산/데이터
+    name_en: IP & Data
+    description: 지식재산권, 개인정보, 데이터 관련 조항
+
+  - id: employment
+    name_ko: 고용/인력
+    name_en: Employment & Personnel
+    description: 고용, 파견, 비경쟁 관련 조항
+
+  - id: core_terms
+    name_ko: 핵심 조항
+    name_en: Core Terms
+    description: 계약의 본질적 권리의무를 정하는 조항
+
+# ─────────────────────────────────────────────────────────
+# 2. 위험도 레벨 정의 (low / medium / high)
+# ─────────────────────────────────────────────────────────
+# data/clause_references.yaml 의 각 조항은 이 중 하나의 `risk_level:` 값을 갖는다.
+
+risk_levels:
+  low:
+    name_ko: 하
+    label: "표준 boilerplate, 강행규정 충돌 없음"
+    description: |
+      표준적 조항으로 한국법 강행규정과 충돌할 가능성이 낮고,
+      해석상 쟁점도 크지 않은 조항. 검토 시 통상적 확인만 필요.
+    typical_examples:
+      - 제목/표제 (headings)
+      - 분리가능성 (severability)
+      - 통지 (notice)
+      - 정본 (counterparts)
+
+  medium:
+    name_ko: 중
+    label: "해석·적용 쟁점 있으나 무효까지 가지 않음"
+    description: |
+      당사자 합의로 조정 가능하나 해석 충돌이나 분쟁화 가능성이 있는 조항.
+      비교적 자주 문제되지만 조항 자체가 무효가 되는 경우는 드묾.
+    typical_examples:
+      - 준거법 (governing_law)
+      - 양도 (assignment)
+      - 보험 (insurance)
+      - 가격 조정 (price_adjustment)
+
+  high:
+    name_ko: 상
+    label: "강행규정 충돌·무효 가능성 있는 조항"
+    description: |
+      한국법 강행규정(약관규제법, 발명진흥법, 개인정보보호법 등)과
+      충돌할 수 있어 조항 자체가 무효가 될 가능성이 있거나,
+      재무·법적 노출이 큰 조항. 우선 검토 대상.
+    typical_examples:
+      - 면책/보상 (indemnification)
+      - 책임제한 (limitation_of_liability)
+      - 성과물/소유권 (work_product)
+      - 개인정보 처리 (data_processing)
+      - 경업금지 (non_compete)
+
+# ─────────────────────────────────────────────────────────
+# 3. 위험도 판단 기준 (Classification Rules)
+# ─────────────────────────────────────────────────────────
+# 신규 조항 추가 시 또는 기존 조항의 위험도가 애매할 때 참조.
+
+classification_rules:
+  upgrade_to_high:
+    description: |
+      아래 조건 중 하나라도 해당하면 위험도 high.
+    triggers:
+      - "한국법 강행규정과 충돌 가능 (약관규제법, 발명진흥법, 개인정보보호법, 하도급법 등)"
+      - "헌법적 권리와 충돌 (직업선택 자유, 저작인격권 일신전속성 등)"
+      - "조항 위반 시 형사처벌 또는 과징금 부과 가능"
+      - "계약 전체 재무 노출의 상한을 좌우 (책임제한, 위약금)"
+      - "규제 신고·승인 의무 수반 (개인정보 국외이전, 전략물자 수출 등)"
+
+  keep_medium:
+    description: |
+      강행규정 충돌은 없으나 해석 충돌·분쟁화 소지가 있음.
+    triggers:
+      - "당사자 합의로 조정 가능하나 실무상 협상 쟁점이 자주 발생"
+      - "국내외 법제 차이로 해석 갭이 있음 (force majeure, warranty 등)"
+      - "제한적 범위의 불공정성 (과도한 유인금지, 일방적 가격 조정)"
+
+  keep_low:
+    description: |
+      표준 boilerplate로 한국법 해석상 쟁점이 거의 없음.
+    triggers:
+      - "민법 임의규정을 반영한 일반 조항"
+      - "절차·형식 조항으로 본질적 권리의무에 영향 적음"
+
+  downgrade_when:
+    description: |
+      데이터상 특정 조항의 위험도가 과대평가된 것으로 판명되면
+      하향 조정 가능 (항상 정책 논의 후).
+    triggers:
+      - "최근 판례·행정규칙 변경으로 강행규정 성격이 완화됨"
+      - "B2B 계약·개별 협상 계약이라 약관규제법이 적용되지 않는 경우"
+
+# ─────────────────────────────────────────────────────────
+# 4. 신규 조항 추가 템플릿
+# ─────────────────────────────────────────────────────────
+# data/clause_references.yaml 의 `clauses:` 하위에 새 조항을 추가할 때 이 구조를 따른다.
+# `category:`는 위 categories 의 id 중 하나, `risk_level:`은 risk_levels 의 키 중 하나.
+
+_template:
+  clause_id:
+    name_en: ""
+    name_ko: ""
+    category: ""  # boilerplate, risk_allocation, ip_data, employment, core_terms
+    description: ""
+    common_terms:
+      en: []
+      ko: []
+    korean_law:
+      primary: []
+      admin_rules: []
+      considerations: []
+      case_search:
+        keywords: []
+        data_source: ""
+        note: 판례는 변경될 수 있으므로 항상 최신 검색 권장
+    review_points: []
+    risk_level: ""  # low, medium, high
