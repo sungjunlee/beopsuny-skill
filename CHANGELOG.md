@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0-rc.2] - 2026-04-12
+
+**테마: `per_clause_override` key contract 문서화 (갈래 3 ②)** — v0.2.2 에서 추가된 `party_position.per_clause_override` 가 사용하는 contract key 의 유효 범위를 단일 소스로 고정. 일치하지 않는 key 는 graceful skip (에러 없음, 해당 조항만 `default` 로 처리).
+
+### Added
+- `skills/beopsuny/SKILL.md` Step 4 항목 5 — `{조항key}` 계약 한 줄 추가. `assets/data/clause_references.yaml` top-level `clauses.*` ID 와 정확히 일치해야 하고, 일치하지 않는 key 는 graceful skip
+- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 — top-level `clauses.*` ID 전체가 `per_clause_override` 유효 key 단일 소스임을 명시
+- `tests/scenarios/13_contract_review.yaml` `contract-20` 신설 — override key mismatch (철자 오류) 시 graceful skip 검증. 시나리오 총합 19 → 20
+
 ## [0.3.0-rc.1] - 2026-04-12
 
 **테마: v0.3.0 housekeeping (갈래 2 일괄)** — v0.2.2.1 4 독립 리뷰 합의 P2 중 "BEOPSUNY_DATA_ROOT 전역 통일", "Dim 3 phrasing", "clause_references 주석 rot", "scenario 14 $DR drift", "contract-19 단일 소스 포인터", "CHANGELOG 중복 압축", "profile.yaml migration 노트" 7 항목 정리.

@@ -570,3 +570,51 @@ scenarios:
         description: |
           Dim 4 서브체크 3 실패 → 힌트형 재작성. 재검증 실패 시
           alt_wording_hint 필드 자체가 응답에서 생략되는지 관찰.
+
+  # ============================================
+  # per_clause_override key contract (v0.3.0)
+  # ============================================
+
+  - id: contract-20
+    name: per_clause_override key mismatch — graceful skip
+    persona: 사내변호사
+    context: |
+      profile.yaml.party_position.per_clause_override 에 존재하지 않는
+      contract key (예: "indemnity" — 철자 오류, 실제 key 는 "indemnification")
+      가 지정된 상태. SKILL.md Step 4 항목 5 "`{조항key}` 계약" 규정에 따라
+      일치하지 않는 key 는 graceful skip — 해당 조항은 `default` 로 처리되고
+      에러·경고 없이 리뷰 진행. (유효 key 는 clause_references.yaml top-level
+      clauses.* ID 와 정확히 일치해야 함)
+    question: |
+      이 SaaS 계약의 Indemnification 조항 검토해줘.
+    profile_state:
+      party_position:
+        default: "gap"
+        per_clause_override:
+          indemnity: "eul"       # 오타 — 실제 key 는 indemnification
+          non_compete: "eul"     # 유효 key
+    expected:
+      in_scope: true
+      review_mode: moderate
+      response_contains:
+        - 약관규제법
+        - 왜 위험한가
+        - 협상 포인트
+      # indemnity (오타) 는 무시되고 indemnification 은 default "gap" 으로 처리돼야 함.
+      # 오류/경고 메시지 출력 없음 — graceful skip.
+      forbidden_phrases:
+        - "override 키 오류"
+        - "unknown clause"
+        - "유효하지 않은 조항"
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "{조항key}" 계약
+      - skills/beopsuny/assets/data/clause_references.yaml  # 유효 clause ID 단일 소스
+      - skills/beopsuny/assets/schemas/company_profile.yaml  # party_position 스키마
+    validation:
+      - type: override_key_contract
+        description: |
+          clause_references.yaml top-level `clauses.*` ID 와 일치하지 않는
+          override key 는 graceful skip — 에러 없이 해당 조항은 default 로 처리.
+      - type: mode_filter
+        description: indemnification 은 default "gap" 관점 우선 노출 (override mismatch 이므로)

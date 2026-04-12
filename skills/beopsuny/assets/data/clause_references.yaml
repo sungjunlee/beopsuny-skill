@@ -25,6 +25,10 @@
 #   - negotiation_points.gap / .eul: 갑/을 관점 협상 포인트 2–3개씩
 #   - alt_wording_hint: 대체 문구의 방향·원칙 (완성된 수정안 아님)
 #
+# `party_position.per_clause_override` 에서 참조하는 contract key 목록 —
+# 이 파일의 top-level `clauses.*` ID 전체 = 유효 clause ID. 일치하지 않는
+# override key 는 graceful skip (SKILL.md Step 4 항목 5 "`{조항key}` 계약" 참조).
+#
 # gap / eul 축 정의 (v0.2.1~, 조항 전반 공통):
 #   - gap = 계약 상위 당사자 (발주자·위탁자·사용자·수요자)
 #   - eul = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
