@@ -1,82 +1,52 @@
 # Changelog
 
-## [0.2.1-rc.7] - 2026-04-12
+## [0.2.1] - 2026-04-12
+
+**테마: Review Polish** — v0.2.0 릴리즈 직후 세 독립 리뷰(code-reviewer / pr-test-analyzer / comment-analyzer) 에서 식별된 일관성·정확성·커버리지 이슈 7건을 다듬은 릴리즈. 동작 변경 없이 **flag 의미 ↔ 실행 경로 정합**, **단일 소스 통합**, **축 통일**, **정확성 보강** 에 집중.
 
 ### Fixed
-- `clause_references.yaml` `non_compete.why_risky` — "~경향이 확립되어 있다" → "다수 판례가 ~를 무효로 판시한다" (#28 M4). 경업금지는 사안별 종합판단이며 "확립" 은 단정적 표현 → Source Grading 환각 방지 원칙과 정합
-- `clause_references.yaml` `work_product.why_risky` — 저작권법 제9조 4요소 뒤에 **"(단, 계약·근무규칙에 다른 정함이 없는 때에 한함)"** 단서 추가 (#28 M5). 외주 계약 실무에서 이 단서가 핵심
-
-### Changed
-- `clause_references.yaml` L22 버전 앵커 주석 rot 완화 — "(v0.2.0~, 위험도 high 우선 확장)" → "(현재 정책 — 확장 계획은 Epic/Issue 참조)" (#28 L3)
-- SKILL.md L526 — "Stanford 2025 연구" 인라인 인용을 간결한 본문 + **`references/self-verification.md` 포인터** 로 재구성. 본문 rot 방지 (#28 L4)
-- `references/self-verification.md` 신설 — 외부 연구·근거 append-only 아카이브. references 테이블에 한 행 추가
-
-### Notes (v0.2.0 소급 정정)
-- CHANGELOG `[0.2.0]` Notes — SKILL.md 증가분 "+47" → "+48" 실측 정정 (#28 L1)
-
-## [0.2.1-rc.6] - 2026-04-12
+- `clause_references.yaml` `non_compete.why_risky` — "~경향이 확립되어 있다" (단정적 표현) → "다수 판례가 ~ 무효로 판시한다". 경업금지는 사안별 종합판단 — Source Grading 환각 방지 원칙과 정합 (#28)
+- `clause_references.yaml` `work_product.why_risky` — 저작권법 제9조 4요소 뒤에 **"(단, 계약·근무규칙에 다른 정함이 없는 때에 한함)"** 단서 추가. 외주 계약 실무 핵심 (#28)
+- `contract_review_guide.md:23` 포인터 오류 — "수정안 자동 생성 금지" 원칙은 실제 `:21` 에 있음. SKILL.md 2곳 + `clause_references.yaml` 상단 주석 + `tests/scenarios/13_contract_review.yaml:438` 일괄 수정. 라인 번호 대신 **섹션 제목** 참조(`"법순이가 하지 않는 것"` 섹션) 로 전환 (#24)
 
 ### Added
-- `review_mode.yaml` 신규 키 **`counter_draft_forbidden_patterns`** — Counter-drafting 자동 생성 금지 패턴 단일 소스 (#26)
-  - 총 18개 패턴 (기존 분산 4+6개 → 통합 + 확장 6개)
-  - 확장 후보: `수정안:`, `변경안:`, `개선안:`, `확정안`, `권고 문구`, `대체 문언`, `다음과 같이 변경`, `아래와 같이 고치`, `아래와 같이 기재`, `바꾸어야 합니다`, `이렇게 바꿔`, `로 바꿔 넣으세요` 등
-- `tests/scenarios/13_contract_review.yaml` `contract-16` 에 `forbidden_phrases_source` 메타 키 추가 — 단일 소스 참조 경로 표시
-
-### Changed
-- SKILL.md Dim 4 서브체크 3 — 단정적 표현 목록을 SKILL.md 인라인으로 열거하던 것을 `review_mode.yaml#counter_draft_forbidden_patterns` 참조로 전환 (대표 예 4개만 SKILL.md 에 유지)
-- `contract-16` `forbidden_phrases` 샘플을 단일 소스 패턴과 동일 표현으로 정규화 ("~하세요" 명령형 suffix 제거)
-
-## [0.2.1-rc.5] - 2026-04-12
-
-### Added
-- `tests/scenarios/13_contract_review.yaml` 모드별 필터 회귀 시나리오 3건 (#27)
-  - `contract-17` — moderate 에서 `alt_wording_hint` 블록 부재 검증 (forbidden: "대체 문구 힌트")
+- `review_mode.yaml` 신규 키 **`counter_draft_forbidden_patterns`** — Counter-drafting 자동 생성 금지 패턴 단일 소스, 총 18개 (#26)
+  - 기존 SKILL.md Dim 4 서브체크 3 (4개) + `contract-16` (6개) 분산 관리 → 통합 + 확장 6개
+  - 확장: `수정안:`, `변경안:`, `개선안:`, `확정안`, `권고 문구`, `대체 문언`, `다음과 같이 변경`, `아래와 같이 고치`, `아래와 같이 기재`, `바꾸어야 합니다`, `이렇게 바꿔`, `로 바꿔 넣으세요` 등
+  - SKILL.md Dim 4 + `contract-16` 둘 다 이 키 참조
+- `tests/scenarios/13_contract_review.yaml` 모드별 필터 회귀 시나리오 3건 — 시나리오 총합 **16 → 19** (#27)
+  - `contract-17` — moderate 에서 `alt_wording_hint` 블록 부재 검증
   - `contract-18` — loose 에서 `negotiation_points` + `alt_wording_hint` 둘 다 부재 검증
-  - `contract-19` — Dim 4 서브체크 3 실패 → 힌트형 재작성 → 재검증 실패 시 필드 생략
-  - 시나리오 총합 16 → 19
-- 기존 `validation.type: mode_filter_strict` → **`mode_filter`** 로 통합, 모드 분기는 `expected.review_mode` 로 수행 (moderate/loose 확장 시 조합 폭발 방지)
-
-## [0.2.1-rc.4] - 2026-04-12
-
-### Added
-- SKILL.md Dim 4 블록에 **미출력 필드 처리 규정** 한 줄 추가 (#25)
-  - "출력되지 않은 필드 대상 서브체크는 `n/a` (pass 집계). 판정식: 출력된 필드 대상 서브체크 전부 pass → ✓"
-  - moderate / loose 에서 축소 출력되는 필드의 서브체크가 "vacuous pass / skip / ⚠" 중 어느 것인지 모호했던 상태 해소
-- 부분 실패 예시에 **맥락 캡션** 추가 (계약 검토 중 경업금지 조항 분석 + 힌트 출력 응답) — Dim 4 가 `✓` 인 이유가 명확해짐
-
-## [0.2.1-rc.3] - 2026-04-12
+  - `contract-19` — Dim 4 서브체크 3 실패 유도 → 힌트형 재작성 → 재검증 실패 시 필드 생략 관찰
+- SKILL.md Dim 4 블록에 **미출력 필드 처리 규정** — "출력되지 않은 필드 대상 서브체크는 `n/a` (pass 집계). 판정식: 출력된 필드 대상 서브체크 전부 pass → ✓" (#25)
+- SKILL.md 부분 실패 예시에 **맥락 캡션** 추가 (계약 검토 중 경업금지 조항 분석 + 힌트 출력 응답) — `Counter-draft ✓` 이유가 명확해짐 (#25)
+- `references/self-verification.md` 신설 — 자가 검증 근거(Stanford 2025 등) append-only 아카이브. references 테이블에 한 행 추가 (#28)
+- `tests/scenarios/13_contract_review.yaml` `contract-16` 에 `forbidden_phrases_source` 메타 키 — 단일 소스 참조 경로 표시 (#26)
 
 ### Changed
-- `review_mode.yaml` `output.include_counter_drafting_hints` (단일 boolean) → **3 필드 분해** (#22)
-  - `include_why_risky` / `include_negotiation_points` / `include_alt_wording_hint`
+- `review_mode.yaml` `output.include_counter_drafting_hints` (단일 boolean) → **3 필드 분해** `include_why_risky` / `include_negotiation_points` / `include_alt_wording_hint` (#22)
   - 기존 단일 플래그는 "hint 를 낼지 말지" 의미였으나 SKILL.md Step 4 표는 모드별로 필드를 **차등 출력** 하도록 설계되어 불일치 → 3키 분해로 1:1 대응
   - strict: 3 키 모두 `true` / moderate: `why_risky` + `negotiation_points` `true` / loose: `why_risky` 만 `true`
-- SKILL.md Step 4 항목 5 필터 표 헤더에 대응 flag 이름 괄호 표기
-- `clause_references.yaml` 상단 주석도 3키 분해 반영
+  - SKILL.md Step 4 필터 표 헤더에 대응 flag 이름 괄호 표기, `clause_references.yaml` 상단 주석도 반영
+- `clause_references.yaml` 7개 고위험 조항의 `negotiation_points.gap`/`.eul` **축 통일** (#23)
+  - 축 정의: `gap` = 계약 상위 당사자 (발주자·위탁자·사용자·수요자), `eul` = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
+  - `indemnification` / `limitation_of_liability` / `exclusion_of_damages`: gap↔eul swap (포인트 내용 바이트 보존, 라벨 위치만 교체)
+  - 나머지 4개 (`work_product` / `data_processing` / `non_compete` / `invention_assignment`): 이미 축 일치 — 검증만
+  - 상단 주석에 "gap/eul 축 정의" 블록 추가
+- SKILL.md Dim 4 서브체크 3 — 단정 표현 목록을 인라인 4개 → `review_mode.yaml#counter_draft_forbidden_patterns` 참조 (#26)
+- SKILL.md Step 4 항목 5 — 당사자 위치 fallback 기본값 문구 강화: `profile.yaml` 필드 부재 시 **양쪽 모두 노출** 이 기본값임을 명시 (v0.2.x 스키마에 필드 없음 — A안 스키마 신설은 후속) (#24)
+- SKILL.md L526 — "Stanford 2025" 인라인 인용을 간결 본문 + `references/self-verification.md` 포인터로 재구성. 본문 rot 방지 (#28)
+- `clause_references.yaml` 버전 앵커 주석 rot 완화: "(v0.2.0~, 위험도 high 우선 확장)" → "(현재 정책 — 확장 계획은 Epic/Issue 참조)" (#28)
 - `review_mode.yaml` 버전 `1.0.0` → `1.1.0`
+- `.claude-plugin/plugin.json` 버전 `0.2.0` → `0.2.1` (최상위 및 `plugins[0]` 동시)
 
-## [0.2.1-rc.2] - 2026-04-12
-
-### Changed
-- `clause_references.yaml` — 7개 고위험 조항의 `negotiation_points.gap`/`.eul` 축 통일 (#23)
-  - **축 정의**: `gap` = 계약 상위 당사자 (발주자·위탁자·사용자·수요자), `eul` = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
-  - **swap** (포인트 내용 동일, 라벨 위치만 교체): `indemnification`, `limitation_of_liability`
-  - **갑/을 라벨 추가 + swap**: `exclusion_of_damages` (기존 "배제 vs 회수" → 상위/하위 축으로 재정렬)
-  - **이미 정합**: `work_product`, `data_processing`, `non_compete`, `invention_assignment` (축 검증만)
-  - 상단 주석에 "gap/eul 축 정의" 블록 추가 — 향후 조항 확장 시 축 혼란 재발 방지
-
-## [0.2.1-rc.1] - 2026-04-12
-
-### Fixed
-- `contract_review_guide.md:23` 포인터 오류 — "수정안 자동 생성 금지" 원칙은 실제 `:21` 에 있음 (#24)
-  - SKILL.md 2곳 + `clause_references.yaml` 상단 주석 + `tests/scenarios/13_contract_review.yaml:438` 일괄 수정
-  - 라인 번호 대신 **섹션 제목** 참조로 전환 (`"법순이가 하지 않는 것"` 섹션) — 향후 라인 shift 에 견고
-
-### Changed
-- SKILL.md Step 4 항목 5 — 당사자 위치 fallback 기본값 문구 강화
-  - `profile.yaml` 에 당사자 위치 필드가 없거나 불명이면 **양쪽(gap·eul) 모두 노출** 이 기본값임을 명시
-  - v0.2.x 스키마(`company_profile.yaml`)에는 해당 필드 부재이므로 사실상 항상 양쪽 노출
-  - 스키마 필드 신설(A안)은 H2(#23) gap/eul 축 통일 결과를 본 후 재검토
+### Notes
+- **하위 호환**: moderate(default) + 비고위험 조항은 v0.1.3 과 동일한 출력. v0.2.0 에서 이미 유효했던 모드별 필터 의미가 flag 수준에서도 정합해졌을 뿐이며 사용자 응답 형식은 그대로
+- 기존 51개 조항 key/value 바이트 동일 보존 — 7개 고위험 조항의 `negotiation_points` 는 라벨 위치 swap 만, 포인트 텍스트 보존
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
+- SKILL.md 700 → 703줄 (분리 트리거 800 미만, 720 목표 유지)
+- CHANGELOG `[0.2.0]` Notes — SKILL.md 증가분 "+47" → "+48" 실측 정정 (#28 소급)
+- Epic #21 종료. 다음 릴리즈는 v0.2.2 (법령 변경 감지, Epic #13)
 
 ## [0.2.0] - 2026-04-12
 
