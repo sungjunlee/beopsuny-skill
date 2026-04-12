@@ -31,7 +31,7 @@ metadata:
 4. **시행일 확인** — 미시행 법령은 "⚠️ 미시행 (2026.7.1. 시행 예정)" 표시
 5. **환각 방지** — 조문/판례 번호를 추측하지 않는다. 모르면 "확인 필요"라고 쓴다
 6. **Source Grading** — 모든 인용에 `[Grade A/B/C/D]` 태그를 붙인다. 규칙은 `references/source-grading.md`, 정책은 `assets/policies/source_grades.yaml`. 핵심 결론은 **Grade A 또는 B primary** 소스로만 뒷받침. Grade C 단독 결론은 `[EDITORIAL: Single-source, Grade C]` 태그 필수
-7. **자가 검증** — 출력 **직전** 3개 차원(Citation/Legal Substance/Client Alignment)으로 내부 검증 후 요약을 메타데이터로 노출. 규칙은 `## 자가 검증 (응답 전)` 섹션 참조
+7. **자가 검증** — 출력 **직전** 3개 필수 차원(Citation/Legal Substance/Client Alignment) + 1개 조건부 차원(Counter-drafting Quality, 계약 검토 힌트 출력 시) 으로 내부 검증 후 요약을 메타데이터로 노출. 규칙은 `## 자가 검증 (응답 전)` 섹션 참조
 
 응답 종료 순서: 본문 → `🔍 자가 검증` 메타데이터 → 면책 고지.
 
@@ -523,7 +523,7 @@ profile.yaml의 정보로 리뷰를 개인화:
 
 ## 자가 검증 (응답 전)
 
-응답을 출력하기 **직전**에 3개 차원으로 내부 검증한다. Stanford 2025 연구는 상업 법률 AI도 1/6 ~ 1/3 쿼리에서 할루시네이션이 발생한다고 보고한다 — 법률 분야에서 부정확한 인용은 실제 피해로 이어지므로, 출력 직전 자가 검증은 필수 단계다.
+응답을 출력하기 **직전**에 3개 필수 차원(Citation/Legal Substance/Client Alignment) + 1개 조건부 차원(Counter-drafting Quality, 계약 검토 힌트 출력 시) 으로 내부 검증한다. Stanford 2025 연구는 상업 법률 AI도 1/6 ~ 1/3 쿼리에서 할루시네이션이 발생한다고 보고한다 — 법률 분야에서 부정확한 인용은 실제 피해로 이어지므로, 출력 직전 자가 검증은 필수 단계다.
 
 핵심 원칙 5번(환각 방지)을 **구체화**하고, 핵심 원칙 6번(Source Grading)의 `downgrade_triggers`(`assets/policies/source_grades.yaml`)와 **연동**된다. 새 태그를 만들지 않고 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`)만 사용한다.
 
@@ -547,6 +547,16 @@ profile.yaml의 정보로 리뷰를 개인화:
 - [ ] 실무적 시사점이 있는가? (법률 원론만 나열하지 않았는가?)
 - [ ] `~/.beopsuny/profile.yaml`의 회사 맥락(업종, 규모, 갑/을 위치, 개인정보 처리 여부 등)이 반영됐는가?
 
+### Dim 4: Counter-drafting Quality (조건부 — 계약 검토 Step 4 힌트 출력 시)
+
+Step 4 에서 `why_risky` / `negotiation_points` / `alt_wording_hint` 를 출력한 응답에만 적용. 그 외 응답은 n/a.
+
+- [ ] `alt_wording_hint` 방향이 한국 강행규정(약관규제법 제7조, 민법 제103·393·398조, 발명진흥법 제15조, 저작권법 제9조, 개인정보보호법 제26조 등) 하에서 **유효 가능한** 범위인가? (명백 위반 문구 제안 없음)
+- [ ] `negotiation_points.gap`/`.eul` 선택이 `profile.yaml` 의 당사자 위치와 일관되나? (위치 불명 시 양쪽 모두 노출이 기본)
+- [ ] 출력이 "자동 생성 금지선" 을 넘지 않았는가? — 단정적 표현 스캔 (`아래 문구로 교체`, `최종 수정안`, `다음 조항으로 대체`, `이 문구를 사용` 등 패턴 부재 확인). 근거: `references/contract_review_guide.md:23`
+
+실패 처리: 서브체크 1/2 실패 → 해당 필드 `[EDITORIAL]` 재태깅 + `downgrade_triggers` 발동. 서브체크 3 실패 → 단정 문구를 힌트형(`∼ 방향`, `∼ 고려`) 으로 재작성 후 재검증 (재검증 실패 시 해당 필드 출력 생략).
+
 ### 검증 실패 시 처리
 
 별도 서브에이전트 호출 없이, SKILL.md 내부 프롬프트로 처리한다. 기존 Source Grading의 다운그레이드 트리거를 그대로 사용한다.
@@ -561,22 +571,29 @@ profile.yaml의 정보로 리뷰를 개인화:
 
 모든 응답 끝, 면책 고지 직전에 자가 검증 요약을 붙인다.
 
-**전부 통과:**
+**전부 통과** (계약 검토 힌트 출력 시):
 
 ```markdown
 ---
-🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓
+🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓
+```
+
+**계약 검토 아닌 응답** (Dim 4 해당 없음):
+
+```markdown
+---
+🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
 ```
 
 **부분 실패** (Dim 1 중 일부 확인 불가):
 
 ```markdown
 ---
-🔍 **자가 검증**: Citation 2/3 ⚠ | Legal Substance ✓ | Client Alignment ✓
+🔍 **자가 검증**: Citation 2/3 ⚠ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓
    - 경업금지 판례(2021다12345) 원문 확인 불가 → [UNVERIFIED] 표시됨
 ```
 
-Citation 분모 = 응답에 등장한 1차 소스(법령·판례·행정규칙) 인용 **총 개수**. 분자 = 그중 Dim 1의 **네 체크를 모두 통과한** 인용 수. 인용이 0개인 답변(절차 안내, 용어 설명 등)은 `Citation n/a`로 표기하고 Dim 2/3는 그대로 평가한다. Dim 2/3는 pass(✓) / fail(⚠) 이분법으로만 표시 — 각 차원의 체크리스트 항목이 모두 통과할 때만 ✓.
+Citation 분모 = 응답에 등장한 1차 소스(법령·판례·행정규칙) 인용 **총 개수**. 분자 = 그중 Dim 1의 **네 체크를 모두 통과한** 인용 수. 인용이 0개인 답변(절차 안내, 용어 설명 등)은 `Citation n/a`로 표기하고 Dim 2/3/4는 그대로 평가한다. Dim 2/3/4는 pass(✓) / fail(⚠) / 해당 없음(`n/a`) 3분법. Dim 4 는 Step 4 에서 3 필드 중 하나라도 출력한 응답에만 적용하고, 그 외에는 `n/a`.
 
 ---
 
