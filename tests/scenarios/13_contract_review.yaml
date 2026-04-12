@@ -170,7 +170,6 @@ scenarios:
       response_contains:
         - 약관규제법
         - 제7조
-        - 제8조
         - 손해배상
         - 고의
         - 중과실
@@ -183,7 +182,7 @@ scenarios:
       # legalize-kr Read:  "약관의 규제에 관한 법률"
     validation:
       - type: law_reference
-        description: 약관규제법 제7조, 제8조 인용하는지
+        description: 약관규제법 제7조(면책조항 금지) 인용하는지 — 제8조(손해배상 예정)는 liquidated_damages 영역이라 별도
 
   - id: contract-07
     name: Data Processing 조항 검토
@@ -647,19 +646,18 @@ scenarios:
         - 약관규제법
         - 왜 위험한가
         - 협상 포인트
-        # negotiation_points 블록에 "을" 또는 "eul" 관점이 선명히 드러나야 함
-        - 을
-      # override 값이 지정된 조항에서 default "gap" 관점만 단독으로 우선 노출되면 override 해석 실패.
-      # 구조상 "갑" 관점이 함께 나올 수는 있으나, "eul/을" 관점 부재는 회귀.
+        # SKILL.md Step 4 출력 포맷 "우리가 을:" 블록 마커로 assertion (v0.3.1 anchor 강화).
+        # bare "을" 은 "을지", "을사" 등 substring trap — block marker 로 정확 매칭.
+        - "우리가 을:"
       has_disclaimer: true
     reference_files:
-      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서"
+      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서" + 출력 포맷 블록 마커
       - skills/beopsuny/assets/schemas/company_profile.yaml  # party_position 해석 순서 주석
     validation:
       - type: override_resolution
         description: |
           per_clause_override.indemnification == "eul" 일 때 indemnification
-          블록의 negotiation_points 에서 "eul/을" 관점이 우선 노출되는지.
+          블록의 negotiation_points 에서 "우리가 을:" 블록 마커가 노출되는지.
           default "gap" 단독 노출은 회귀.
 
   - id: contract-22
@@ -683,16 +681,17 @@ scenarios:
       response_contains:
         - 직업선택
         - 협상 포인트
-        # 양쪽 노출 — "갑" 과 "을" 관점이 모두 드러나야 함
-        - 갑
-        - 을
+        # SKILL.md Step 4 출력 포맷 블록 마커로 양쪽 노출 검증 (v0.3.1 anchor 강화).
+        # bare "갑/을" 은 "갑자기", "을지" 등 substring trap — block marker 로 정확 매칭.
+        - "우리가 갑:"
+        - "우리가 을:"
       has_disclaimer: true
     reference_files:
-      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서"
+      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서" + 출력 포맷 블록 마커
       - skills/beopsuny/assets/schemas/company_profile.yaml  # per_clause_override "" 해석
     validation:
       - type: override_resolution
         description: |
           per_clause_override.non_compete == "" 일 때 non_compete 블록의
-          negotiation_points 에서 "gap/갑" 과 "eul/을" 관점이 모두 노출되는지.
-          default "gap" 폴백은 회귀.
+          negotiation_points 에서 "우리가 갑:" 과 "우리가 을:" 블록 마커가 모두 노출되는지.
+          default "gap" 폴백 (을 블록 부재) 은 회귀.

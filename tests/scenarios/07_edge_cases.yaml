@@ -45,7 +45,7 @@ scenarios:
         - "아직 제정되지 않은 법률입니다"
         - "현재 국회 계류 중인 법안입니다"  # 사실인 경우
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "인공지능기본법"
 
   - id: edge-03

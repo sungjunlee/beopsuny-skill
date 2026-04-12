@@ -24,7 +24,7 @@ scenarios:
       has_effective_date: true
       has_link: true
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "민법"
     validation:
       - type: content_accuracy
@@ -46,7 +46,7 @@ scenarios:
         - 의무
         - 이사
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "상법"
 
   - id: basic-03
@@ -63,7 +63,7 @@ scenarios:
         - 계속근로
         - 1년
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "근로자퇴직급여 보장법"
 
   - id: basic-04
@@ -82,7 +82,7 @@ scenarios:
         - 수집
         - 목적
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "개인정보 보호법"
 
   - id: basic-05
@@ -99,7 +99,7 @@ scenarios:
         - 재물
         - 재산상의 이익
     data_source: |
-      # legalize-kr에서 Read: ~/.beopsuny/data/legalize-kr/kr/{법령명}/*.md
+      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
       # 법령: "형법"
 
   - id: basic-06
