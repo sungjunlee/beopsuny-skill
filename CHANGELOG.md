@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.2.2-rc.2] - 2026-04-12
+## [0.2.2] - 2026-04-12
 
-**테마: 법령 변경 감지 (Law Change Detection)** — legalize-kr 의 `git log` 기반 pull 방식으로 "최근 뭐 바뀌었어?" 류 질의에 응답. 스케줄링/알림(Push) 설계는 외부 환경 의존성이 커서 제외 — **Push 없음, Pull 만**. Lite 모드는 법망 API `law?action=history` + `law?action=diff` fallback.
+**테마: 법령 변경 감지 (Law Change Detection)** — legalize-kr 의 `git log` 기반 pull 방식으로 "최근 뭐 바뀌었어?" 류 질의에 응답. 스케줄링/알림(Push) 설계는 외부 환경 의존성이 커서 제외 — **Push 없음, Pull 만**. Lite 모드는 법망 API `law?action=history` + `law?action=diff` fallback. 부록으로 v0.2.1 post-review P2 finding 2건 housekeeping 포함 (ship blocker 없음, 정확성 폴리시).
 
 ### Added
 - `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 신설 (#17)
@@ -19,29 +19,29 @@
   - `law-change-03` — `interested_laws` 응답 후단 append (Pull 경계)
   - `law-change-04` — Lite 모드 법망 API fallback
   - 공통 `forbidden_phrases`: `알림을 설정`, `크론`, `스케줄`, `notification`, `자동으로 알려드`, `푸시` — Push 뉘앙스 금지
+- `tests/scenarios/13_contract_review.yaml` 상단 주석 블록 — `**foo**` 접두 (블록 헤더 존재 검증) vs plain substring (금지 패턴 뉘앙스 검증) 두 용도 구분 명문화 (PR #37, v0.2.1 post-review P2)
+- `tests/scenarios/13_contract_review.yaml` `contract-19` forbidden_phrases 에 단일 소스 참조 포인터 주석 (PR #37)
+
+### Fixed
+- `tests/scenarios/13_contract_review.yaml` `contract-19` 의 `아래 문구로 교체하세요` → `아래 문구로 교체` — 단일 소스 `review_mode.yaml#counter_draft_forbidden_patterns` 와 drift 해소 (PR #37, v0.2.1 post-review P2-1)
 
 ### Changed
 - `skills/beopsuny/SKILL.md` 회사 맥락 활용 예시에 2줄 추가 — `interested_laws: [...]` 가 후단 append 로 연결되는 로직, `party_position.default` 가 `negotiation_points` 우선 노출에 연결되는 로직
 - `skills/beopsuny/SKILL.md` Step 4 항목 5 — "v0.2.x 스키마에 해당 필드가 없으므로 사실상 항상 양쪽 노출" → "`profile.yaml.party_position` (v0.2.2~) 에 맞춰 `gap`/`eul` 중 관련 관점 우선 노출. 조항별 override 는 `party_position.per_clause_override.{조항key}`"
 - `skills/beopsuny/SKILL.md` Dim 4 서브체크 2 — `profile.yaml` 의 당사자 위치 → `profile.yaml.party_position` (v0.2.2~) 명시
+- `tests/scenarios/13_contract_review.yaml` `contract-17` / `contract-18` 의 블록 헤더 검증용 `forbidden_phrases` — plain substring → **`**` prefix 앵커** (`"**협상 포인트**"`, `"**대체 문구 힌트**"`). 설명 prose 에서 단어 자연발생 시 false-positive 제거 (PR #37, v0.2.1 post-review P2-2)
+- `.claude-plugin/plugin.json` 버전 `0.2.1` → `0.2.2` (최상위 및 `plugins[0]` 동시)
 
 ### Notes
 - **Push 설계 없음 — pull 방식 유지**. 크론/알림/스케줄링/notification 코드·문구 일절 없음. `interested_laws` 있으면 응답 후단 한 줄 append 만
 - 외부 의존성 0 — legalize-kr clone 이 이미 되어있다는 전제 (`~/.beopsuny/data/legalize-kr/`). Lite 모드는 기존 법망 API 만 사용
 - 경로 추상화: `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 로 environment variable override 허용
 - #24 A안 포함 처리 — v0.2.1 에서 follow-up 으로 연기됐던 `party_position` 필드가 `interested_laws` 와 같은 스키마 파일 수정이므로 묶어서 처리
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
+- SKILL.md 703 → 724줄 (분리 트리거 800 미만, 상한 725 이하)
+- Epic #13 종료. 다음 릴리즈는 v0.3.0 — DOCX 처리형 또는 후보 주제 재평가
 
-## [0.2.2-rc.1] - 2026-04-12
-
-**테마: v0.2.1 post-review P2 housekeeping** — v0.2.1 릴리즈 직후 codex gpt-5.4 + pr-review-toolkit 독립 리뷰 2건에서 합의된 P2 finding 2건을 정리. Ship blocker 없음, 정확성 폴리시 수준.
-
-### Fixed
-- `tests/scenarios/13_contract_review.yaml` `contract-19:546` 의 `아래 문구로 교체하세요` → `아래 문구로 교체`. 단일 소스 `review_mode.yaml#counter_draft_forbidden_patterns` 와 drift 해소 (P2-1)
-
-### Changed
-- `tests/scenarios/13_contract_review.yaml` `contract-17:490` / `contract-18:515-517` 의 블록 헤더 검증용 `forbidden_phrases` — plain substring → **`**` prefix 앵커** (`"**협상 포인트**"`, `"**대체 문구 힌트**"`). 설명 prose 에서 같은 단어가 자연발생 시 false-positive 발생 가능성 제거 (P2-2)
-- `tests/scenarios/13_contract_review.yaml` 상단 주석 블록 추가 — `**foo**` 접두 (블록 헤더 존재 검증) vs plain substring (금지 패턴 뉘앙스 검증) 두 용도 구분 명문화
-- `tests/scenarios/13_contract_review.yaml` `contract-19` forbidden_phrases 에 단일 소스 참조 포인터 주석 추가
+## [0.2.1] - 2026-04-12
 
 **테마: Review Polish** — v0.2.0 릴리즈 직후 세 독립 리뷰(code-reviewer / pr-test-analyzer / comment-analyzer) 에서 식별된 일관성·정확성·커버리지 이슈 7건을 다듬은 릴리즈. 동작 변경 없이 **flag 의미 ↔ 실행 경로 정합**, **단일 소스 통합**, **축 통일**, **정확성 보강** 에 집중.
 
