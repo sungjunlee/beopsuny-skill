@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0-rc.4] - 2026-04-12
+
+**테마: `forbidden_phrases` 자연 발화 패턴 커버리지 (갈래 3 ④)** — scenario 14 의 기존 `forbidden_phrases` 는 직접 Push 용어(알림/크론/스케줄/notification/푸시) 만 캐치. 사내변호사 친화 어투인 "정기적으로 알려드릴게요", "주기적으로 모니터링하겠습니다" 류가 실제로는 크론/알림 약속으로 연결되므로 자연 발화 6 패턴 추가.
+
+### Added
+- `tests/scenarios/14_law_change_detection.yaml` 4 시나리오 공통 `forbidden_phrases` 에 6 패턴 추가:
+  - `정기적으로`, `주기적`, `모니터링`, `알려드릴`, `체크해드리`, `지속적으로 추적`
+  - `추적` 단독은 SKILL.md L5/L158 "개정 이력 추적" 정당 용법과 충돌 → 복합구 `지속적으로 추적` 만 금지
+- scenario 14 상단 주석에 자연 발화 패턴 커버리지 이유 + `추적` 복합구 정책 명시
+
+### Notes
+- 사전 grep 검증: SKILL.md 본문·scenario 14 `response_contains`·`context` 에서 신규 패턴 false-positive 없음 확인 (`git grep` 결과 0건)
+- Push 설계 금지 원칙 강화 — 직접 용어 금지선을 "자연 발화까지" 확장
+
 ## [0.3.0-rc.3] - 2026-04-12
 
 **테마: `party_position` override 해석 순서 (갈래 3 ③)** — v0.2.2 에서 `per_clause_override` 스키마가 추가됐으나 "override 값이 `""` 일 때" 해석이 문서화돼있지 않았음. default vs override 우선순위 + 빈 문자열 의미를 명시.
