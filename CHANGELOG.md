@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.1-rc.3] - 2026-04-12
+
+### Changed
+- `review_mode.yaml` `output.include_counter_drafting_hints` (단일 boolean) → **3 필드 분해** (#22)
+  - `include_why_risky` / `include_negotiation_points` / `include_alt_wording_hint`
+  - 기존 단일 플래그는 "hint 를 낼지 말지" 의미였으나 SKILL.md Step 4 표는 모드별로 필드를 **차등 출력** 하도록 설계되어 불일치 → 3키 분해로 1:1 대응
+  - strict: 3 키 모두 `true` / moderate: `why_risky` + `negotiation_points` `true` / loose: `why_risky` 만 `true`
+- SKILL.md Step 4 항목 5 필터 표 헤더에 대응 flag 이름 괄호 표기
+- `clause_references.yaml` 상단 주석도 3키 분해 반영
+- `review_mode.yaml` 버전 `1.0.0` → `1.1.0`
+
 ## [0.2.1-rc.2] - 2026-04-12
 
 ### Changed

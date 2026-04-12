@@ -14,7 +14,7 @@
 #   - Source Grading 정책(assets/policies/source_grades.yaml)과 독립적으로 동작
 # ============================================================
 
-version: "1.0.0"
+version: "1.1.0"
 last_updated: "2026-04-12"
 
 default_mode: moderate
@@ -44,9 +44,12 @@ modes:
       require_cross_check: true          # Grade B 이상이라도 교차검증 요구
     output:
       verbosity: "high"
-      include_negotiation_points: true
       include_missing_clauses_section: true
-      include_counter_drafting_hints: true
+      # Counter-drafting hint 필드별 제어 (v0.2.1~, 3키 분해 — see #22)
+      #   SKILL.md Step 4 필터 표와 1:1 대응. 모든 필드 출력.
+      include_why_risky: true
+      include_negotiation_points: true
+      include_alt_wording_hint: true
 
   moderate:
     label: "표준 검토 — 실무 균형, 기본값"
@@ -68,9 +71,12 @@ modes:
       require_cross_check: false                 # Grade A 단독 결론 허용
     output:
       verbosity: "medium"
-      include_negotiation_points: true
       include_missing_clauses_section: false
-      include_counter_drafting_hints: false
+      # Counter-drafting hint 필드별 제어 (v0.2.1~)
+      #   why_risky + negotiation_points 는 출력, alt_wording_hint 만 생략
+      include_why_risky: true
+      include_negotiation_points: true
+      include_alt_wording_hint: false
 
   loose:
     label: "간이 검토 — 빠른 요약"
@@ -91,9 +97,12 @@ modes:
       require_cross_check: false
     output:
       verbosity: "low"
-      include_negotiation_points: false
       include_missing_clauses_section: false
-      include_counter_drafting_hints: false
+      # Counter-drafting hint 필드별 제어 (v0.2.1~)
+      #   why_risky 만 출력, negotiation_points / alt_wording_hint 둘 다 생략
+      include_why_risky: true
+      include_negotiation_points: false
+      include_alt_wording_hint: false
 
 # ─────────────────────────────────────────────────────────
 # 2. 모드 감지 (사용자 발화 → 모드 분기)
