@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.3.0-rc.1] - 2026-04-12
+
+**테마: v0.3.0 housekeeping (갈래 2 일괄)** — v0.2.2.1 4 독립 리뷰 합의 P2 중 "BEOPSUNY_DATA_ROOT 전역 통일", "Dim 3 phrasing", "clause_references 주석 rot", "scenario 14 $DR drift", "contract-19 단일 소스 포인터", "CHANGELOG 중복 압축", "profile.yaml migration 노트" 7 항목 정리.
+
+### Changed
+- `skills/beopsuny/SKILL.md` 모드 판별·1순위 데이터 소스·데이터 초기화 전 섹션 — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 전역 통일. v0.2.2.1 에서 "법령 변경 감지 섹션 한정" 으로 한정됐던 `$DR` override 가 이제 전역. "경로 override 범위" 단락 삭제, `$DR` 축약은 유지 (해당 섹션 반복 prefix 축약 용도)
+- `skills/beopsuny/SKILL.md` Dim 3 체크리스트 — "갑/을 위치" → "갑/을 위치(`party_position.default`)". Dim 4 서브체크 2 와 필드명 표기 통일
+- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 gap/eul 축 정의 — "당사자 위치가 불명이면 양쪽 모두 노출이 기본값" (v0.2.1 generic phrasing) → `profile.yaml.party_position.default: ""` (v0.2.2~) 스키마 필드 구체 참조
+- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02, law-change-04 forbidden_phrases) — `~/.beopsuny/data/legalize-kr` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr`. SKILL.md 본문과 drift 해소
+- `CHANGELOG.md` `[0.2.2]` 섹션 — "Push 없음"/"크론/알림 없음" 4회 반복 → 테마 헤더 1회 + Notes 1회로 압축. Added 블록 내부 반복 제거
+
+### Fixed
+- `tests/scenarios/13_contract_review.yaml` `contract-19` — `forbidden_phrases_source: assets/policies/review_mode.yaml#counter_draft_forbidden_patterns` 메타 키 추가 (contract-16 과 동일 포맷). "대표 4개 샘플 — 전체 스캔은 단일 소스 로드" 주석 병기
+- `skills/beopsuny/assets/schemas/company_profile.yaml` 상단 주석 — 기존 `profile.yaml` 에 `interested_laws` / `party_position` 부재 시 처리 방침 한 줄 추가 (v0.2.2 에서 추가된 필드, graceful fallback)
+
+### Notes
+- 기존 `profile.yaml` 에 `interested_laws` / `party_position` 부재 시 자동 누락 처리 — graceful fallback 보장 (v0.2.2 에서 추가된 필드들)
+- 새 태그 도입 없음 / Push 경계 그대로 유지
+- SKILL.md 730 → 728줄 (상한 재조정 범위 내, 분리 트리거 800 미만)
+
 ## [0.2.2.1] - 2026-04-12
 
 **테마: v0.2.2 post-release execution polish** — v0.2.2 릴리즈 직후 4 독립 리뷰 (codex gpt-5.4 / code-reviewer / silent-failure-hunter / comment-analyzer) 에서 합의된 P1 실행 문제 5건 + P2 2건 정리. 이전 릴리즈는 문서·정책 정합이 맞았으나 Full 모드 git 명령이 실제 구현 단계에서 한국어 경로 octal escape, SHA 누락, wrong-repo 실행, discovery 메타 부재 등의 이유로 실패할 수 있었음. **법령 조회 결과 정확성** 문제라 긴급 patch.
@@ -41,7 +61,6 @@
   - 모드별 명령·API: Full 은 `git log --since=` + `git show`, Lite 는 법망 API
   - 출력 포맷: 개정일자 / 공포일자 / 시행일자 (핵심 원칙 4 준수 — 공포 ≠ 시행) + 변경 조문 + legalize-kr 커밋 URL + law.go.kr
   - 응답 후단 append 규정: `interested_laws` 비어있지 않으면 본문 → 자가 검증 → `💡 최근 개정: ...` → 면책 고지 순서로 한 줄 append. 개정 없으면 생략
-  - 경계: Push 금지 — 크론/알림 코드 없음
 - `skills/beopsuny/assets/schemas/company_profile.yaml` `interested_laws: []` 필드 추가 (v0.2.2~). 법령명은 legalize-kr 디렉토리명과 일치
 - `skills/beopsuny/assets/schemas/company_profile.yaml` `party_position` 필드 추가 (v0.2.2~) — #24 A안. `default: ""/"gap"/"eul"` + `per_clause_override: {}`. v0.2.1 에서 "스키마에 필드 없음" 으로 완화됐던 SKILL.md Step 4 항목 5 / Dim 4 서브체크 2 의 semantic dangle 자연 해소 (v0.2.1 post-review P2-3)
 - `tests/scenarios/14_law_change_detection.yaml` 신설 — 4 시나리오
@@ -49,7 +68,7 @@
   - `law-change-02` — 특정 법령 (개인정보보호법) 변경 내역
   - `law-change-03` — `interested_laws` 응답 후단 append (Pull 경계)
   - `law-change-04` — Lite 모드 법망 API fallback
-  - 공통 `forbidden_phrases`: `알림을 설정`, `크론`, `스케줄`, `notification`, `자동으로 알려드`, `푸시` — Push 뉘앙스 금지
+  - 공통 `forbidden_phrases`: `알림을 설정`, `크론`, `스케줄`, `notification`, `자동으로 알려드`, `푸시` (Push 경계는 테마 헤더·Notes 참조)
 - `tests/scenarios/13_contract_review.yaml` 상단 주석 블록 — `**foo**` 접두 (블록 헤더 존재 검증) vs plain substring (금지 패턴 뉘앙스 검증) 두 용도 구분 명문화 (PR #37, v0.2.1 post-review P2)
 - `tests/scenarios/13_contract_review.yaml` `contract-19` forbidden_phrases 에 단일 소스 참조 포인터 주석 (PR #37)
 
