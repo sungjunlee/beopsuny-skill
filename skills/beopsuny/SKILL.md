@@ -13,7 +13,8 @@ description: |
 metadata:
   author: "sungjunlee"
   language: "ko"
-  updated: "2026-04-11"
+  updated: "2026-04-12"
+  version: "0.1.0"
 ---
 
 # 법순이 (Beopsuny)
