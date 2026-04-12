@@ -1,7 +1,7 @@
 {
   "name": "beopsuny-skill",
   "description": "한국 법무 실무를 위한 Claude Code skill — 법령/판례 조사, 계약서 검토, 컴플라이언스 체크",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "author": {
     "name": "Sungjun Lee",
     "email": "sjleelabs@gmail.com"
@@ -24,7 +24,7 @@
       "name": "beopsuny",
       "source": "./skills/beopsuny",
       "description": "법순이 — 한국 법령/판례 조사, 계약서 검토, 컴플라이언스 체크를 돕는 법무 AI 어시스턴트",
-      "version": "0.1.3"
+      "version": "0.2.0"
     }
   ]
 }

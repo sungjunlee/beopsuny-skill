@@ -1,43 +1,39 @@
 # Changelog
 
-## [0.2.0-rc.2] - 2026-04-12
+## [0.2.0] - 2026-04-12
+
+**테마: 계약 검토 심화 (Contract Review Depth)** — v0.1.3 에서 선언만 되어 있던 `review_mode.yaml` 의 `include_counter_drafting_hints: true` 를 실제 동작으로 연결. 위험 조항 발견 시 `why_risky` / `negotiation_points` / `alt_wording_hint` 3 필드를 모드별 필터로 출력한다. 자가 검증 레이어에 Dim 4 (Counter-drafting Quality) 가 조건부 차원으로 추가됐다.
 
 ### Added
-- `skills/beopsuny/SKILL.md` 계약서 검토 워크플로우 Step 4 에 **Counter-drafting 힌트 출력 로직** 추가 (Step 4 항목 5)
-  - 모드별 필터 표: `strict` → 3 필드 모두, `moderate` → `why_risky` + `negotiation_points`, `loose` → `why_risky` 만
-  - `profile.yaml` 당사자 위치(갑/을) 기반 `negotiation_points.gap`/`.eul` 우선 노출
-  - "힌트 vs 자동 생성" 경계 재명문화 (`contract_review_guide.md:23` 원칙)
-  - 조항당 출력 블록 포맷(이름/이슈/근거법령/why/negotiation/alt) 확정
-- `tests/scenarios/13_contract_review.yaml` 에 회귀 시나리오 `contract-16` 추가
-  - "자동 생성 뉘앙스 금지" 검증 (forbidden_phrases 스캔)
-  - strict 모드에서 3 필드 출력 보장 검증
-
-### Notes
-- `review_mode.yaml` 의 `include_counter_drafting_hints` 선언이 실제 Step 4 동작과 연결됨 (v0.1.3 선언 → v0.2.0 구현)
-- 자가 검증 Dim 4 는 #16 에서 후속 PR
-- SKILL.md 653 → 683줄 (분리 트리거 800 미만, 목표 720 이하 달성)
-- `plugin.json` 버전 bump 없음 — v0.2.0 최종 릴리즈 PR 에서 일괄 반영
-
-## [0.2.0-rc.1] - 2026-04-12
-
-### Added
-- `assets/data/clause_references.yaml` 고위험(risk: high) 조항 7개에 counter-drafting 힌트 3 필드 추가
+- `assets/data/clause_references.yaml` 고위험(risk: high) 조항 7개에 counter-drafting 힌트 3 필드 추가 (#14)
   - `why_risky` (3줄 이내, 한국 강행규정·실무 기준)
   - `negotiation_points.gap` / `.eul` (갑/을 관점 2–3개씩)
   - `alt_wording_hint` (방향·원칙만, 완성된 수정안 아님)
   - 대상: `indemnification`, `limitation_of_liability`, `exclusion_of_damages`, `work_product`, `data_processing`, `non_compete`, `invention_assignment`
-- 파일 상단 주석에 "힌트 vs 자동 생성" 경계 명문화 (`references/contract_review_guide.md:23` 원칙 연계)
-- `review_mode.yaml` 과의 모드별 필터 관계 주석 (strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만)
+  - 파일 상단 주석에 "힌트 vs 자동 생성" 경계 명문화 (`references/contract_review_guide.md:23` 원칙 연계)
+- `skills/beopsuny/SKILL.md` 계약서 검토 워크플로우 Step 4 에 **Counter-drafting 힌트 출력 로직** 추가 (#15)
+  - 모드별 필터: `strict` → 3 필드 모두, `moderate` → `why_risky` + `negotiation_points`, `loose` → `why_risky` 만
+  - `profile.yaml` 당사자 위치(갑/을) 기반 `negotiation_points.gap`/`.eul` 우선 노출
+  - 조항당 출력 블록 포맷(이름/이슈/근거법령/why/negotiation/alt) 확정
+- `tests/scenarios/13_contract_review.yaml` 회귀 시나리오 `contract-16` — "자동 생성 뉘앙스 금지" forbidden_phrases 스캔 + strict 모드 3 필드 출력 검증 (#15)
+- 자가 검증 Phase 2 **Dim 4: Counter-drafting Quality** — 계약 검토 힌트 출력 응답에 조건부 적용 (#16)
+  - 서브체크 1: `alt_wording_hint` 방향이 한국 강행규정(약관규제법 제7조, 민법 제103·393·398조, 발명진흥법 제15조, 저작권법 제9조, 개인정보보호법 제26조 등) 하에서 유효 가능한 범위인가
+  - 서브체크 2: `negotiation_points.gap`/`.eul` 선택이 `profile.yaml` 당사자 위치와 일관되나
+  - 서브체크 3: 단정적 자동 생성 표현 스캔 (`아래 문구로 교체`, `최종 수정안`, `다음 조항으로 대체`, `이 문구를 사용` 패턴 부재)
+  - 실패 시 처리: 1/2 실패 → `[EDITORIAL]` 재태깅 + `downgrade_triggers` 발동. 3 실패 → 힌트형 재작성 후 재검증 (재검증 실패 시 해당 필드 출력 생략)
+  - 메타데이터 라인에 `Counter-draft ✓ / ⚠ / n/a` 추가 (계약 검토 외 응답은 `n/a`)
 
 ### Changed
 - `clause_references.yaml` 버전 `1.1.0` → `1.2.0` (스키마 확장)
+- `.claude-plugin/plugin.json` 버전 `0.1.3` → `0.2.0` (최상위 및 `plugins[0]` 동시)
 
 ### Notes
-- 기존 51개 조항 key/value 바이트 동일 보존 — 추가만, 변경 최소화
+- 기존 51개 조항 key/value 바이트 동일 보존 — 고위험 조항 7개에 **추가만** 수행
 - 나머지 고위험 조항 15개 점진 확장은 v0.2.x 이후 예정
-- Step 4 출력 로직 연결은 #15 에서, 자가 검증 Dim 4 는 #16 에서 후속 PR
-- 새 태그 도입 없음. 기존 6개 태그 + Grade 체계만 사용
-- `plugin.json` 버전 bump 없음 — v0.2.0 최종 릴리즈 PR 에서 일괄 반영
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
+- `contract_review_guide.md:23` "수정안 자동 생성 안 함" 원칙 v0.2.0 에서도 유지 — 힌트는 방향·원칙 서술, 완성 문구 확정은 사용자 몫
+- SKILL.md 653 → 700줄 (분리 트리거 800 미만, 목표 720 이하 달성 — +47줄 증가분 내 Step 4 힌트 로직 +30, 자가 검증 Dim 4 +17)
+- Epic #12 종료. DOCX 처리형 주제는 v0.3.0 마일스톤으로 이전
 
 ## [0.1.3] - 2026-04-12
 
