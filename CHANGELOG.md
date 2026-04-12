@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1-rc.6] - 2026-04-12
+
+### Added
+- `review_mode.yaml` 신규 키 **`counter_draft_forbidden_patterns`** — Counter-drafting 자동 생성 금지 패턴 단일 소스 (#26)
+  - 총 18개 패턴 (기존 분산 4+6개 → 통합 + 확장 6개)
+  - 확장 후보: `수정안:`, `변경안:`, `개선안:`, `확정안`, `권고 문구`, `대체 문언`, `다음과 같이 변경`, `아래와 같이 고치`, `아래와 같이 기재`, `바꾸어야 합니다`, `이렇게 바꿔`, `로 바꿔 넣으세요` 등
+- `tests/scenarios/13_contract_review.yaml` `contract-16` 에 `forbidden_phrases_source` 메타 키 추가 — 단일 소스 참조 경로 표시
+
+### Changed
+- SKILL.md Dim 4 서브체크 3 — 단정적 표현 목록을 SKILL.md 인라인으로 열거하던 것을 `review_mode.yaml#counter_draft_forbidden_patterns` 참조로 전환 (대표 예 4개만 SKILL.md 에 유지)
+- `contract-16` `forbidden_phrases` 샘플을 단일 소스 패턴과 동일 표현으로 정규화 ("~하세요" 명령형 suffix 제거)
+
 ## [0.2.1-rc.5] - 2026-04-12
 
 ### Added
