@@ -448,12 +448,15 @@ scenarios:
         - 대체 문구 힌트
         - 약관규제법
         - 제7조
-      forbidden_phrases:  # 이 문구가 나오면 회귀 실패
-        - 아래 문구로 교체하세요
-        - 이 문구를 사용하세요
-        - 다음과 같이 수정하세요
+      # 단일 소스: assets/policies/review_mode.yaml `counter_draft_forbidden_patterns`
+      # 회귀 테스트 시 해당 키를 로드해 전부 스캔 — 여기는 핵심 대표 샘플만 기재.
+      forbidden_phrases_source: assets/policies/review_mode.yaml#counter_draft_forbidden_patterns
+      forbidden_phrases:
+        - 아래 문구로 교체
+        - 이 문구를 사용
+        - 다음과 같이 수정
         - 최종 수정안
-        - 다음 조항으로 대체합니다
+        - 다음 조항으로 대체
         - "수정된 조항: \""
       has_disclaimer: true
     reference_files:
