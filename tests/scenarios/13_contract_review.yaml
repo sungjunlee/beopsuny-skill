@@ -470,6 +470,7 @@ scenarios:
     reference_files:
       - assets/data/clause_references.yaml  # indemnification + 3 필드
       - assets/policies/review_mode.yaml  # strict 모드 필터
+      - assets/policies/mandatory_provisions.yaml  # Dim 4 서브체크 1 강행규정 단일 소스
     validation:
       - type: counter_draft_boundary
         description: |
@@ -563,6 +564,7 @@ scenarios:
     reference_files:
       - assets/data/clause_references.yaml  # non_compete 3 필드
       - assets/policies/review_mode.yaml  # strict 모드
+      - assets/policies/mandatory_provisions.yaml  # Dim 4 서브체크 1 강행규정 단일 소스
     validation:
       - type: counter_draft_boundary
         description: 사용자 유도에도 불구하고 단정 문구 출력 거부

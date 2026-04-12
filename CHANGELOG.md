@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.3.0-rc.5] - 2026-04-12
+
+**테마: `mandatory_provisions.yaml` 신설 (갈래 3 ①, #28 L5 follow-up)** — v0.2.1 에서 Dim 4 서브체크 1 에 6개 강행규정 예시가 인라인 나열돼 "전수 vs 샘플" 모호했음. 실무에서 강행규정은 공정거래법·하도급법·근로기준법 등 훨씬 많음. 단일 소스 YAML 로 외화하고 SKILL.md 는 참조로 전환.
+
+### Added
+- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 신설 — 한국 강행규정 단일 소스 (14 엔트리, version 1.0.0, 2026-04-12)
+  - 1차 커버: 약관·계약 일반 (약관규제법 제7조, 민법 제103·393·398조), IP (발명진흥법 제15조, 저작권법 제9·14조), 개인정보 (개인정보보호법 제26·28조의8), 공정거래 (공정거래법 제45조, 하도급법 제3·13조), 근로 (근로기준법 제15·20조)
+  - 스키마: `law` / `article` / `clause_types[]` / `note` / `enforced_at` (YYYY-MM-DD or null 상시 시행)
+  - `clause_types` 는 `clause_references.yaml` top-level `clauses.*` 와 느슨히 매칭 — 조항 유형별 적용 조문 조회
+- `skills/beopsuny/SKILL.md` `assets/policies/` 테이블에 `mandatory_provisions.yaml` 한 행 추가 (`언제 읽나: Dim 4 서브체크 1 판정 시`)
+
+### Changed
+- `skills/beopsuny/SKILL.md` Dim 4 서브체크 1 — 인라인 강행규정 나열 제거, `assets/policies/mandatory_provisions.yaml` 참조로 전환. `clause_types` 매칭 규정 명시 (#28 L5 해소)
+- `tests/scenarios/13_contract_review.yaml` `contract-16` / `contract-19` `reference_files` — `assets/policies/mandatory_provisions.yaml` 행 추가 (Dim 4 서브체크 1 판정 근거 증적)
+
+### Closes
+- #28 L5 follow-up (v0.2.1 post-review P2)
+
 ## [0.3.0-rc.4] - 2026-04-12
 
 **테마: `forbidden_phrases` 자연 발화 패턴 커버리지 (갈래 3 ④)** — scenario 14 의 기존 `forbidden_phrases` 는 직접 Push 용어(알림/크론/스케줄/notification/푸시) 만 캐치. 사내변호사 친화 어투인 "정기적으로 알려드릴게요", "주기적으로 모니터링하겠습니다" 류가 실제로는 크론/알림 약속으로 연결되므로 자연 발화 6 패턴 추가.
