@@ -1,5 +1,5 @@
 # ============================================================
-# 계약 조항 - 한국 법령 매핑 레퍼런스
+# 계약 조항 - 한국 법령 매핑 레퍼런스 (데이터)
 # Contract Clause to Korean Law Reference Database
 # ============================================================
 # Claude가 계약서 검토 시 관련 한국 법령을 신속히 조회할 수 있도록 지원
@@ -13,10 +13,17 @@
 # 설계 원칙:
 #   - 법령: 조문 번호 매핑 (API로 최신 내용 조회)
 #   - 판례: 검색 키워드만 제공 (판례는 변경될 수 있음)
+#
+# 분류·위험도 체계는 분리되어 있다:
+#   → `assets/policies/clause_taxonomy.yaml`
+#     - categories (5종 분류)
+#     - risk_levels (low/medium/high 정의 + 판단 기준)
+#     - _template (신규 조항 추가 템플릿)
 # ============================================================
 
-version: "1.0.0"
-last_updated: "2025-12-28"
+version: "1.1.0"
+last_updated: "2026-04-12"
+taxonomy_ref: "assets/policies/clause_taxonomy.yaml"
 disclaimer: |
   이 레퍼런스는 일반적인 참고 자료이며, 구체적인 계약 검토는
   변호사 자문이 필요합니다. 계약서 유형과 상황에 따라
@@ -25,36 +32,10 @@ disclaimer: |
   판례는 새로운 판결로 해석이 변경될 수 있으므로,
   case_search 명령어로 항상 최신 판례를 검색하세요.
 
-# 조항 카테고리 정의
-categories:
-  - id: boilerplate
-    name_ko: 일반 조항
-    name_en: Boilerplate Clauses
-    description: 대부분의 계약서에 공통으로 포함되는 표준 조항
-
-  - id: risk_allocation
-    name_ko: 위험 배분
-    name_en: Risk Allocation
-    description: 손해배상, 면책, 보험 등 위험 분배 조항
-
-  - id: ip_data
-    name_ko: 지식재산/데이터
-    name_en: IP & Data
-    description: 지식재산권, 개인정보, 데이터 관련 조항
-
-  - id: employment
-    name_ko: 고용/인력
-    name_en: Employment & Personnel
-    description: 고용, 파견, 비경쟁 관련 조항
-
-  - id: core_terms
-    name_ko: 핵심 조항
-    name_en: Core Terms
-    description: 계약의 본질적 권리의무를 정하는 조항
-
 # ─────────────────────────────────────────────────────────
 # BOILERPLATE CLAUSES (일반 조항) - 10개
 # ─────────────────────────────────────────────────────────
+# 각 조항의 `category:`와 `risk_level:` 값은 policies/clause_taxonomy.yaml의 정의를 참조한다.
 
 clauses:
   governing_law:
@@ -1381,26 +1362,4 @@ clauses:
       - 일정 영향 처리
     risk_level: medium
 
-# ─────────────────────────────────────────────────────────
-# 템플릿 (신규 조항 추가 시 사용)
-# ─────────────────────────────────────────────────────────
-
-_template:
-  clause_id:
-    name_en: ""
-    name_ko: ""
-    category: ""  # boilerplate, risk_allocation, ip_data, employment, core_terms
-    description: ""
-    common_terms:
-      en: []
-      ko: []
-    korean_law:
-      primary: []
-      admin_rules: []
-      considerations: []
-      case_search:
-        keywords: []
-        data_source: ""
-        note: 판례는 변경될 수 있으므로 항상 최신 검색 권장
-    review_points: []
-    risk_level: ""  # low, medium, high
+# 신규 조항 추가 템플릿은 `assets/policies/clause_taxonomy.yaml` 의 `_template` 참조.
