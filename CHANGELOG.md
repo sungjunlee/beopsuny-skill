@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1-rc.5] - 2026-04-12
+
+### Added
+- `tests/scenarios/13_contract_review.yaml` 모드별 필터 회귀 시나리오 3건 (#27)
+  - `contract-17` — moderate 에서 `alt_wording_hint` 블록 부재 검증 (forbidden: "대체 문구 힌트")
+  - `contract-18` — loose 에서 `negotiation_points` + `alt_wording_hint` 둘 다 부재 검증
+  - `contract-19` — Dim 4 서브체크 3 실패 → 힌트형 재작성 → 재검증 실패 시 필드 생략
+  - 시나리오 총합 16 → 19
+- 기존 `validation.type: mode_filter_strict` → **`mode_filter`** 로 통합, 모드 분기는 `expected.review_mode` 로 수행 (moderate/loose 확장 시 조합 폭발 방지)
+
 ## [0.2.1-rc.4] - 2026-04-12
 
 ### Added

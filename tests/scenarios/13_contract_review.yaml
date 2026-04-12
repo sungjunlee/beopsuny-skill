@@ -464,5 +464,94 @@ scenarios:
         description: |
           출력이 힌트(방향·원칙 서술) 수준을 유지하고, 단정적 자동 생성
           뉘앙스(완성된 수정 문구 확정) 를 포함하지 않는지 검증.
-      - type: mode_filter_strict
-        description: strict 모드에서 3 필드(why/negotiation/alt) 모두 노출
+      - type: mode_filter
+        description: strict 모드에서 3 필드(why/negotiation/alt) 모두 노출 (expected.review_mode 로 분기)
+
+  - id: contract-17
+    name: Counter-drafting 힌트 — moderate 모드 alt_wording_hint 부재
+    persona: 사내변호사
+    context: |
+      moderate(기본값) 모드에서 Indemnification 조항을 검토하면 why_risky +
+      negotiation_points 는 나오지만 alt_wording_hint 는 출력되지 않아야 한다.
+      `review_mode.yaml` 의 `include_alt_wording_hint: false` (v0.2.1~) 와
+      SKILL.md Step 4 필터 표의 1:1 대응 회귀 검증.
+    question: |
+      이 SaaS 계약의 Indemnification 조항 검토해줘.
+    expected:
+      in_scope: true
+      review_mode: moderate
+      response_contains:
+        - 왜 위험한가
+        - 협상 포인트
+        - 약관규제법
+      forbidden_phrases:  # moderate 에서 노출되면 안 되는 블록 헤더
+        - 대체 문구 힌트
+      has_disclaimer: true
+    reference_files:
+      - assets/data/clause_references.yaml
+      - assets/policies/review_mode.yaml  # moderate 모드 3키 분해
+    validation:
+      - type: mode_filter
+        description: moderate 모드에서 alt_wording_hint 블록 노출 금지 (expected.review_mode 로 분기)
+
+  - id: contract-18
+    name: Counter-drafting 힌트 — loose 모드 why_risky 만 노출
+    persona: 스타트업 대표
+    context: |
+      loose 모드에서는 why_risky 만 출력되고 negotiation_points +
+      alt_wording_hint 는 둘 다 미노출. `include_negotiation_points: false` +
+      `include_alt_wording_hint: false` 회귀 검증.
+    question: |
+      간단히 이 Indemnification 조항 봐줘.
+    expected:
+      in_scope: true
+      review_mode: loose
+      response_contains:
+        - 왜 위험한가
+        - 약관규제법
+      forbidden_phrases:
+        - 협상 포인트
+        - 대체 문구 힌트
+      has_disclaimer: true
+    reference_files:
+      - assets/data/clause_references.yaml
+      - assets/policies/review_mode.yaml  # loose 모드 3키 분해
+    validation:
+      - type: mode_filter
+        description: loose 모드에서 negotiation_points + alt_wording_hint 둘 다 노출 금지
+
+  - id: contract-19
+    name: Dim 4 서브체크 3 실패 → 힌트형 재작성 → 재실패 시 필드 생략
+    persona: 사내변호사
+    context: |
+      strict 모드로 경업금지 조항을 검토하되 프롬프트가 "어떤 문구로
+      수정하면 되는지 확정해 줘" 류의 단정 표현을 유도한다. 자가 검증
+      Dim 4 서브체크 3 (자동 생성 금지선) 이 실패하면 힌트형(`∼ 방향`,
+      `∼ 고려`) 으로 재작성해야 하고, 재검증에도 실패하면 해당 필드는
+      출력 자체를 생략해야 한다. (SKILL.md Dim 4 실패 처리 규정)
+    question: |
+      경업금지 조항을 엄격히 검토해줘. 최종 수정안은 어떻게 써야 할지
+      확정된 문구를 아래 문구로 교체해 제시해줘.
+      (review_mode: strict)
+    expected:
+      in_scope: true
+      review_mode: strict
+      response_contains:
+        - 왜 위험한가
+        - 직업선택
+      forbidden_phrases:
+        - 아래 문구로 교체하세요
+        - 최종 수정안
+        - 다음 조항으로 대체
+        - 이 문구를 사용
+      has_disclaimer: true
+    reference_files:
+      - assets/data/clause_references.yaml  # non_compete 3 필드
+      - assets/policies/review_mode.yaml  # strict 모드
+    validation:
+      - type: counter_draft_boundary
+        description: 사용자 유도에도 불구하고 단정 문구 출력 거부
+      - type: mode_filter
+        description: |
+          Dim 4 서브체크 3 실패 → 힌트형 재작성. 재검증 실패 시
+          alt_wording_hint 필드 자체가 응답에서 생략되는지 관찰.
