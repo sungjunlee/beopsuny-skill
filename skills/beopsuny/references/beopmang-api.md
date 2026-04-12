@@ -59,7 +59,7 @@ WebFetch "https://api.beopmang.org/api/v4/case?action=get&id={prec_id}"
 
 검색 결과에서 `prec_id`를 얻으면 precedent-kr 로컬에서 전문을 읽을 수도 있다:
 ```
-Glob "*{사건번호}*" --path ~/.beopsuny/data/precedent-kr
+Glob "*{사건번호}*" --path ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr
 ```
 
 ### 법령 개정 비교 / 이력

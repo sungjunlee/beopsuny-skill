@@ -20,7 +20,9 @@
 #       article: {조문 번호, "제N조" 또는 "제N조의M"}
 #       clause_types: [{조항 유형 영문 key — clause_references.yaml top-level 과 느슨히 매칭}]
 #       note: {강행규정 성격 한 줄 요약 — paraphrase 아닌 원문 핵심}
-#       enforced_at: {YYYY-MM-DD 시행일, null 이면 "상시 시행 중" 으로 간주}
+#       enforced_at: {YYYY-MM-DD — 최근 개정/신설 시행일. null 이면 "법령 원제정 이후
+#                     실질적 변경 없이 상시 시행 중" 으로 간주. 불확실하면 null 대신 "unknown" 금지 —
+#                     실제 date 를 확정하거나 null (= 상시 시행 중) 둘 중 하나}
 # ============================================================
 
 version: "1.0.0"
@@ -87,8 +89,8 @@ provisions:
   - law: "개인정보보호법"
     article: "제28조의8"
     clause_types: [data_processing]
-    note: "개인정보 국외이전 시 동의·표준계약서 등 요건 충족 필수 — 동의 없는 국외이전 조항은 무효"
-    enforced_at: null
+    note: "개인정보 국외이전 시 동의·표준계약서 등 요건 충족 필수 — 동의 없는 국외이전 조항은 무효. 2023 개정 신설"
+    enforced_at: "2023-09-15"
 
   # ------------------------------------------------------------
   # 4. 공정거래 / 하도급 (v0.3.0 확장)
@@ -96,8 +98,8 @@ provisions:
   - law: "독점규제 및 공정거래에 관한 법률"
     article: "제45조"
     clause_types: [exclusivity, non_compete, most_favored_customer, minimum_commitment]
-    note: "불공정거래행위 금지 — 거래상 지위 남용, 구속조건부거래 등 포함. 거래 제한 조항 위험"
-    enforced_at: null
+    note: "불공정거래행위 금지 (구 제23조) — 거래상 지위 남용, 구속조건부거래 등. 2021-12-30 시행 전면개정 기준"
+    enforced_at: "2021-12-30"
 
   - law: "하도급거래공정화에관한법률"
     article: "제3조"

@@ -10,10 +10,12 @@
 #   - "**foo**" 접두 = 블록 헤더 존재 여부 검증
 #   - plain substring = Push 뉘앙스 금지 패턴 뉘앙스 검증
 #
-# 자연 발화 패턴 커버리지 (v0.3.0~):
+# 자연 발화 패턴 커버리지 (v0.3.0~, v0.3.1 anchor 강화):
 #   - 직접 Push 용어(알림/크론/스케줄/notification/푸시) 외에도
-#     사내변호사 친화 어투인 "정기적으로 알려드릴게요", "주기적으로 모니터링하겠습니다",
+#     사내변호사 친화 어투인 "정기적으로 알려드릴게요", "주기적으로 알려드리겠습니다",
 #     "지속적으로 추적해드리겠습니다" 류가 실제로는 크론/알림 약속으로 연결됨.
+#   - bare 단어 (정기적으로 / 주기적 / 모니터링) 는 compliance checklist (privacy_compliance,
+#     food_business, realestate) 와 false-positive 충돌 → 복합구/행위 anchor 만 금지.
 #   - "추적" 은 SKILL.md 의 "개정 이력 추적" 정당한 용법과 충돌 → 복합구 "지속적으로 추적" 만 금지.
 
 name: 법령 변경 감지
@@ -56,11 +58,16 @@ scenarios:
         - notification
         - 자동으로 알려드
         - 푸시
-        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스
-        - 정기적으로
-        - 주기적
-        - 모니터링
-        - 알려드릴
+        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스 (v0.3.1 anchor 강화)
+        # bare 용어는 compliance checklist (privacy_compliance.yaml "주기적 점검",
+        # food_business.yaml "모니터링", realestate.yaml "허위매물 모니터링") 와
+        # false-positive 충돌. Push 행위를 적극 약속하는 복합구만 금지.
+        - 정기적으로 알려
+        - 주기적으로 알려
+        - 자동 모니터링
+        - 모니터링을 설정
+        - 알려드릴게
+        - 알려드리겠
         - 체크해드리
         - 지속적으로 추적  # "추적" 단독은 SKILL.md "개정 이력 추적" 용법과 충돌 — 복합구만 금지
       has_disclaimer: true
@@ -109,11 +116,16 @@ scenarios:
         - 크론
         - 스케줄
         - notification
-        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스
-        - 정기적으로
-        - 주기적
-        - 모니터링
-        - 알려드릴
+        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스 (v0.3.1 anchor 강화)
+        # bare 용어는 compliance checklist (privacy_compliance.yaml "주기적 점검",
+        # food_business.yaml "모니터링", realestate.yaml "허위매물 모니터링") 와
+        # false-positive 충돌. Push 행위를 적극 약속하는 복합구만 금지.
+        - 정기적으로 알려
+        - 주기적으로 알려
+        - 자동 모니터링
+        - 모니터링을 설정
+        - 알려드릴게
+        - 알려드리겠
         - 체크해드리
         - 지속적으로 추적
       has_disclaimer: true
@@ -165,11 +177,16 @@ scenarios:
         - 스케줄
         - notification
         - 자동으로 알려드
-        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스
-        - 정기적으로
-        - 주기적
-        - 모니터링
-        - 알려드릴
+        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스 (v0.3.1 anchor 강화)
+        # bare 용어는 compliance checklist (privacy_compliance.yaml "주기적 점검",
+        # food_business.yaml "모니터링", realestate.yaml "허위매물 모니터링") 와
+        # false-positive 충돌. Push 행위를 적극 약속하는 복합구만 금지.
+        - 정기적으로 알려
+        - 주기적으로 알려
+        - 자동 모니터링
+        - 모니터링을 설정
+        - 알려드릴게
+        - 알려드리겠
         - 체크해드리
         - 지속적으로 추적
         # append 는 면책 고지 "앞" 이므로 면책 고지가 append "앞" 에 나오면 안 됨
@@ -216,11 +233,16 @@ scenarios:
         - 크론
         - 스케줄
         - notification
-        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스
-        - 정기적으로
-        - 주기적
-        - 모니터링
-        - 알려드릴
+        # v0.3.0 자연 발화 패턴 — Push 약속 뉘앙스 (v0.3.1 anchor 강화)
+        # bare 용어는 compliance checklist (privacy_compliance.yaml "주기적 점검",
+        # food_business.yaml "모니터링", realestate.yaml "허위매물 모니터링") 와
+        # false-positive 충돌. Push 행위를 적극 약속하는 복합구만 금지.
+        - 정기적으로 알려
+        - 주기적으로 알려
+        - 자동 모니터링
+        - 모니터링을 설정
+        - 알려드릴게
+        - 알려드리겠
         - 체크해드리
         - 지속적으로 추적
         # Lite 에서 legalize-kr git log 를 사용하지 말아야 함 (로컬 데이터 없음)

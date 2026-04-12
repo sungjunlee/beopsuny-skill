@@ -90,9 +90,11 @@ Claude Code에서 GitHub 레포를 plugin으로 설치한다.
 
 로컬 데이터를 설정하면 응답이 더 정확하고 빠르다. 설정하지 않아도 법망 API를 통해 기본 기능은 동작한다.
 
+`BEOPSUNY_DATA_ROOT` 환경변수로 경로 override 가능 (기본 `~/.beopsuny/data`).
+
 ```bash
-mkdir -p ~/.beopsuny/data
-cd ~/.beopsuny/data
+mkdir -p ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
+cd ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
 
 # 법령 (약 500MB)
 git clone https://github.com/legalize-kr/legalize-kr.git

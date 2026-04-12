@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.3.1] - 2026-04-12
+
+**테마: v0.3.0 post-release codex adversarial review hotfix** — v0.3.0 릴리즈 직후 codex (gpt-5.x, model_reasoning_effort=high, 1.85M tokens, law.go.kr 공식 소스 검증) adversarial review 에서 **4 P1 blockers + 4 P2 issues** 식별. 핵심 원칙 4 (정확한 인용) 가 걸린 조문번호 drift 여서 긴급 patch.
+
+### Fixed (P1 — 법조문 정확성 / 단일 소스 계약)
+- `skills/beopsuny/assets/data/clause_references.yaml` **`liquidated_damages` top-level 키 신설** (P1) — v0.3.0 `mandatory_provisions.yaml` 이 `clause_types: [liquidated_damages]` 를 사용했으나 clause_references top-level 에 해당 키가 없어 v0.3.0 에서 추가한 "single source 계약" 을 즉시 자가 위반. 신설 엔트리: 민법 제398조 + 약관규제법 제8조 + 근로기준법 제20조. `name_ko: 손해배상액의 예정 (위약금)`
+- `skills/beopsuny/assets/data/clause_references.yaml` `limitation_of_liability` — `articles: ["제7조", "제8조"]` 를 `["제7조"]` 로 분리 (P1). 제7조 = 면책조항의 금지, 제8조 = 손해배상액의 예정 — 서로 다른 조항을 lump 한 pre-v0.3.0 drift 해소. 제8조는 신설 `liquidated_damages` 키로 이전
+- `skills/beopsuny/SKILL.md` Step 4 항목 3 — `Data Processing → 개인정보보호법 제28조의8` (v0.3.0) → `제26조 (위탁) · 제28조의8 (국외이전, 2023-09-15 시행)` 정확화 (P1). 기존 `clause_references.yaml` `data_processing` (제26/28조의2/28조의3) 는 국외이전 제28조의8 누락 — 위탁 + 국외이전 둘 다 반영하도록 확장
+- `skills/beopsuny/assets/data/clause_references.yaml` `data_processing` — 제28조의8 (국외이전, 2023-09-15 시행) 추가 + `data_privacy` 키와의 관계 주석 (P1). SKILL.md 포인터와 정합
+- `skills/beopsuny/assets/data/clause_references.yaml` `most_favored_customer` / `exclusivity` — 공정거래법 `제23조` (구법) → `제45조` (2021-12-30 전면개정 후 조문번호), `제3조의2` → `제5조` + `제45조` 통일 (P1). `mandatory_provisions.yaml` 과의 조문번호 drift 해소. 구·현 조문번호 매핑 주석 병기
+- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 공정거래법 제45조 엔트리 — `enforced_at: null` → `"2021-12-30"` (전면개정 시행일 기록)
+- `tests/scenarios/13_contract_review.yaml` `contract-06` — `response_contains` 에서 `제8조` 제거 (P1). Limitation of Liability (`IN NO EVENT SHALL... BE LIABLE`) 는 제7조 범위; 제8조 (손해배상 예정) 는 별도 `liquidated_damages` 영역이라 요구하면 오답 유도
+
+### Fixed (P2 — 약속 정합 / 테스트 강도)
+- `README.md` + `skills/beopsuny/references/beopmang-api.md` + `tests/scenarios/01_basic_law.yaml` + `tests/scenarios/07_edge_cases.yaml` + `tests/scenarios/11_domain_specific.yaml` — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` (P2). v0.3.0 CHANGELOG 는 "전역 통일" 을 선언했지만 SKILL.md 만 치환됐고 리포 전반은 미반영 — 오버클레임 해소 (v0.3.0 6 파일 잔여 처리)
+- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` `개인정보보호법 제28조의8` — `enforced_at: null` → `"2023-09-15"` (P2). 자기 주석 "시행일 확인 — 시행 전 조문은 '시행 예정' 으로 표시" 위반 해소. 2023-03-14 공포, 2023-09-15 시행
+- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 상단 주석 — `enforced_at: null` 의미를 "법령 원제정 이후 실질적 변경 없이 상시 시행 중" 으로 명확화. 불확실할 때 null 로 도피 금지 문구 추가
+- `tests/scenarios/14_law_change_detection.yaml` `forbidden_phrases` — bare `정기적으로` / `주기적` / `모니터링` / `알려드릴` / `체크해드리` 는 compliance checklist (`privacy_compliance.yaml` "주기적 점검", `food_business.yaml` "모니터링", `realestate.yaml` "허위매물 모니터링") 와 false-positive 충돌 (P2). Push 행위를 적극 약속하는 복합구로 anchor 강화: `정기적으로 알려` / `주기적으로 알려` / `자동 모니터링` / `모니터링을 설정` / `알려드릴게` / `알려드리겠` / `체크해드리` / `지속적으로 추적`
+- `tests/scenarios/13_contract_review.yaml` `contract-21` / `contract-22` — bare `갑` / `을` substring assertion → `"우리가 갑:"` / `"우리가 을:"` 블록 마커 (P2). "갑자기" / "을지" 등과 substring 충돌 제거, SKILL.md Step 4 출력 포맷 블록 마커와 정확 매칭
+
+### Notes
+- v0.3.0 은 "drift 해소" 를 기치로 배포했으나 post-release 리뷰에서 drift 4건이 오히려 신설·지속됨을 발견. codex (독립 AI) adversarial review 방식이 내부 self-check 보다 우월함을 확인
+- 공식 1차 소스 확인: law.go.kr 법령정보센터 조문 하이라이트로 제7조/제8조, 제28조의8, 공정거래법 제5·45조 직접 검증
+- **Push 설계 없음 — pull 방식 유지**. forbidden_phrases anchor 강화는 오히려 Push 경계 정밀화
+- 새 태그 도입 없음 / 기존 6개 태그 + Grade A/B/C/D 만 사용
+- SKILL.md 731줄 유지 (line count 변동 없음)
+- 갈래 1 (DOCX 처리형) 은 v0.4.0 이월 (#47)
+
 ## [0.3.0] - 2026-04-12
 
 **테마: Policy Extension + Housekeeping** — v0.2.2 post-review 4 독립 리뷰 합의 P2 잔여 (갈래 2 housekeeping) + 정책 신설 (갈래 3 ①~④) 묶음 릴리즈. 한국 강행규정 단일 소스 외화, `party_position` 의 조항별 override 계약·해석 순서 명문화, `forbidden_phrases` Push 경계 자연 발화까지 확장, `BEOPSUNY_DATA_ROOT` 전역 통일. 갈래 1 (DOCX 처리형) 은 v0.4.0 이월.

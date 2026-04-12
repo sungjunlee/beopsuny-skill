@@ -394,15 +394,16 @@ clauses:
     korean_law:
       primary:
         - law: 민법
-          articles: ["제393조", "제398조"]
-          description: 손해배상 범위 (통상/특별손해), 손해배상 예정
+          articles: ["제393조"]
+          description: 손해배상 범위 (통상/특별손해)
         - law: 약관의 규제에 관한 법률
-          articles: ["제7조", "제8조"]
-          description: 면책조항 무효, 손해배상액 제한
+          articles: ["제7조"]
+          description: 면책조항의 금지 (고의·중과실 면책 불가)
       considerations:
         - 고의/중과실 면책 불가
         - 소비자계약 시 약관규제법 강행적용
         - B2B 계약에서도 현저히 불공정하면 무효
+        - "손해배상액 예정/위약금 조항은 별도 `liquidated_damages` 참조 (약관규제법 제8조·민법 제398조)"
     review_points:
       - 책임 cap이 계약 금액 대비 합리적인지
       - indirect/consequential damages 배제 범위
@@ -423,6 +424,52 @@ clauses:
     alt_wording_hint: |
       쌍방 상한 + 강행규정 carve-out + 손해 유형별 범위 구분 방향.
       절대 금액보다 계약금액 배수로 표현하면 분쟁 시 해석이 용이해진다.
+    risk_level: high
+
+  liquidated_damages:
+    name_en: Liquidated Damages
+    name_ko: 손해배상액의 예정 (위약금)
+    category: risk_allocation
+    description: |
+      계약 불이행 시 지급할 손해배상액을 미리 정하는 조항 (위약금 포함).
+      `limitation_of_liability` (손해배상 상한) 와 구별 — 이쪽은 금액 예정.
+    common_terms:
+      en: ["liquidated damages", "penalty", "agreed damages"]
+      ko: ["위약금", "손해배상 예정", "위약벌"]
+    korean_law:
+      primary:
+        - law: 민법
+          articles: ["제398조"]
+          description: 손해배상액 예정 — 부당히 과다하면 법원 감액
+        - law: 약관의 규제에 관한 법률
+          articles: ["제8조"]
+          description: 손해배상액의 예정 — 고객에게 부당하게 과중한 지연손해금 등은 무효
+        - law: 근로기준법
+          articles: ["제20조"]
+          description: 근로계약 불이행에 대한 위약금·손해배상액 예정 금지 (근로자 대상)
+      considerations:
+        - 민법 제398조 제2항 — 부당히 과다한 예정액은 법원이 감액
+        - 약관 형태면 약관규제법 제8조 적용 (제7조 아님)
+        - 근로자 대상 위약금 조항은 근로기준법 제20조로 무효
+    review_points:
+      - 위약금 규모가 실손해와 대비해 합리적인지
+      - 약관 형태 여부 (B2C 또는 정형약관)
+      - 근로계약에 포함돼있지는 않은지
+    why_risky: |
+      예정액이 지나치면 민법 제398조로 감액 대상, 약관 형태면 제8조로 무효 가능.
+      근로자에 대한 위약금 예정은 강행규정 위반으로 처음부터 무효.
+    negotiation_points:
+      gap:  # 우리가 갑 (위약금 수령 측)
+        - 실손해 추정액 근거 명시 (감액 대응)
+        - 위약벌/손해배상 예정 구분 — 위약벌은 별도 손해배상 청구 가능
+        - 근로계약이면 이 조항 자체 제거
+      eul:  # 우리가 을 (위약금 부담 측)
+        - 계약금액 대비 비율 상한 명시 (10% 등 관행 참고)
+        - 지연 vs 전면 불이행 구분해 단계적 설정
+        - 일방적 해지 사유에 대한 위약금은 상호주의로 수정
+    alt_wording_hint: |
+      "손해배상 예정" 으로 명기하고 과다 시 감액 가능성을 쌍방 인지하는 문구 방향.
+      근로계약에는 위약금 조항 자체를 두지 않는 것이 원칙.
     risk_level: high
 
   force_majeure:
@@ -749,24 +796,30 @@ clauses:
 
   data_processing:
     name_en: Data Processing
-    name_ko: 데이터 처리
+    name_ko: 데이터 처리 (위탁·국외이전)
     category: ip_data
     description: |
-      개인정보 처리 위탁 관계에서 수탁자 의무를 정하는 조항
+      개인정보 처리 위탁 관계에서 수탁자 의무 + SaaS 계약의 국외이전을 정하는 조항.
+      SKILL.md Step 4 "Data Processing → 개인정보보호법 제26·28조의8" 과 정합.
+      순수 수집/이용 관점은 `data_privacy` 키 참조.
     common_terms:
-      en: ["data processor", "data controller", "processing", "sub-processor"]
-      ko: ["처리자", "위탁자", "처리", "재위탁"]
+      en: ["data processor", "data controller", "processing", "sub-processor", "cross-border transfer"]
+      ko: ["처리자", "위탁자", "처리", "재위탁", "국외이전"]
     korean_law:
       primary:
         - law: 개인정보 보호법
           articles: ["제26조"]
           description: 업무위탁에 따른 개인정보의 처리 제한
         - law: 개인정보 보호법
+          articles: ["제28조의8"]
+          description: 개인정보의 국외 이전 (2023-09-15 시행, 2023 개정 신설)
+        - law: 개인정보 보호법
           articles: ["제28조의2", "제28조의3"]
           description: 가명정보의 처리
       considerations:
         - 위탁 vs 제3자 제공 구분
         - 재위탁 시 동의/통지
+        - 국외이전은 동의·표준계약서·인증 등 요건 충족 필수 (제28조의8)
         - GDPR과의 차이점
     review_points:
       - 위탁 목적과 범위 명확성
@@ -1399,9 +1452,10 @@ clauses:
       ko: ["최혜고객", "최저가 보장"]
     korean_law:
       primary:
-        - law: 독점규제법
-          articles: ["제23조"]
-          description: 불공정거래행위 (차별취급 관련)
+        - law: 독점규제 및 공정거래에 관한 법률
+          articles: ["제45조"]
+          description: 불공정거래행위의 금지 (차별취급 포함 — 2021 개정 시행 기준 조문번호)
+          note: 구 제23조 → 현 제45조 (2020-12-29 전면개정, 2021-12-30 시행)
     review_points:
       - 비교 대상 범위
       - 적용 조건
@@ -1442,11 +1496,15 @@ clauses:
       ko: ["독점", "전용", "비독점"]
     korean_law:
       primary:
-        - law: 독점규제법
-          articles: ["제3조의2"]
-          description: 시장지배적 지위 남용 금지
+        - law: 독점규제 및 공정거래에 관한 법률
+          articles: ["제5조"]
+          description: 시장지배적지위 남용의 금지 (구 제3조의2, 2021-12-30 시행 전면개정)
+        - law: 독점규제 및 공정거래에 관한 법률
+          articles: ["제45조"]
+          description: 불공정거래행위의 금지 (구속조건부거래 — 배타조건부·거래지역 제한)
       considerations:
-        - 과도한 독점 조항은 공정거래법 위반 가능
+        - 과도한 독점 조항은 공정거래법 위반 가능 (제45조 구속조건부거래)
+        - 시장지배적사업자라면 제5조 지위남용도 추가 검토
     review_points:
       - 독점 범위 (지역/품목/기간)
       - 최소 물량 조건
