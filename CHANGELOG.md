@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0-rc.3] - 2026-04-12
+
+**테마: `party_position` override 해석 순서 (갈래 3 ③)** — v0.2.2 에서 `per_clause_override` 스키마가 추가됐으나 "override 값이 `""` 일 때" 해석이 문서화돼있지 않았음. default vs override 우선순위 + 빈 문자열 의미를 명시.
+
+### Added
+- `skills/beopsuny/SKILL.md` Step 4 항목 5 — "Override 해석 순서" 단락 신설. `per_clause_override[key]` 존재 → 그 값 사용 (`""` 은 해당 조항만 양쪽 노출 강제) / 부재 → `default` 사용 (`""` 은 양쪽 노출)
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `party_position` 주석에 해석 순서 요약 2줄 추가
+- `tests/scenarios/13_contract_review.yaml` 회귀 시나리오 2건 — `contract-21` (`default: "gap"` + `override.indemnification: "eul"` → 을 관점 우선), `contract-22` (`default: "gap"` + `override.non_compete: ""` → 양쪽 노출 강제). 시나리오 총합 20 → 22
+
 ## [0.3.0-rc.2] - 2026-04-12
 
 **테마: `per_clause_override` key contract 문서화 (갈래 3 ②)** — v0.2.2 에서 추가된 `party_position.per_clause_override` 가 사용하는 contract key 의 유효 범위를 단일 소스로 고정. 일치하지 않는 key 는 graceful skip (에러 없음, 해당 조항만 `default` 로 처리).
