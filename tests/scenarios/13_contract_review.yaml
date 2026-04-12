@@ -31,8 +31,8 @@ scenarios:
         - 고의/중과실 면책 불가
       has_disclaimer: true
     reference_files:
-      - assets/clause_references.yaml  # indemnification 조항
-      - assets/legal_terms.yaml  # indemnify 용어
+      - assets/data/clause_references.yaml  # indemnification 조항
+      - assets/data/legal_terms.yaml  # indemnify 용어
     data_source: |
       # legalize-kr Read:  "약관의 규제에 관한 법률"
     validation:
@@ -84,7 +84,7 @@ scenarios:
         - 국제사법 제25조
         - 국제사법 제27조
     reference_files:
-      - assets/clause_references.yaml  # governing_law 조항
+      - assets/data/clause_references.yaml  # governing_law 조항
     data_source: |
       # legalize-kr Read:  "국제사법"
     validation:
@@ -111,7 +111,7 @@ scenarios:
         - 3년은 과도할 수 있음
         - 전 세계 범위는 무효 가능성
     reference_files:
-      - assets/clause_references.yaml  # non_compete 조항
+      - assets/data/clause_references.yaml  # non_compete 조항
     data_source: |
       # 법망 API cases:  "경업금지" --court 대법원
     validation:
@@ -138,8 +138,8 @@ scenarios:
       should_warn:
         - 저작인격권 양도 조항은 한국법상 무효
     reference_files:
-      - assets/clause_references.yaml  # ip_assignment 조항
-      - assets/legal_terms.yaml  # moral_rights 용어
+      - assets/data/clause_references.yaml  # ip_assignment 조항
+      - assets/data/legal_terms.yaml  # moral_rights 용어
     data_source: |
       # legalize-kr Read:  "저작권법"
     validation:
@@ -170,7 +170,7 @@ scenarios:
         - 고의/중과실 면책 불가
         - 결과적 손해 전면 배제 시 무효 가능
     reference_files:
-      - assets/clause_references.yaml  # limitation_liability 조항
+      - assets/data/clause_references.yaml  # limitation_liability 조항
     data_source: |
       # legalize-kr Read:  "약관의 규제에 관한 법률"
     validation:
@@ -195,7 +195,7 @@ scenarios:
       should_warn:
         - 국외이전 요건 충족 필요
     reference_files:
-      - assets/clause_references.yaml  # data_processing 조항
+      - assets/data/clause_references.yaml  # data_processing 조항
     data_source: |
       # legalize-kr Read:  "개인정보 보호법"
     validation:
@@ -225,7 +225,7 @@ scenarios:
         - 한국 민법에 없는 개념
         - 한국법 적용 시 실익 없음
     reference_files:
-      - assets/legal_terms.yaml  # consideration 용어
+      - assets/data/legal_terms.yaml  # consideration 용어
     validation:
       - type: term_translation
         description: 용어 정확히 번역하고 뉘앙스 설명하는지
@@ -248,7 +248,7 @@ scenarios:
         - Best efforts > Reasonable efforts
         - 한국법은 신의칙으로 해석
     reference_files:
-      - assets/legal_terms.yaml  # best_efforts, reasonable_efforts 용어
+      - assets/data/legal_terms.yaml  # best_efforts, reasonable_efforts 용어
     data_source: |
       # legalize-kr Read:  "민법"
     validation:
@@ -279,7 +279,7 @@ scenarios:
         - 제390조
         - 제537조
     reference_files:
-      - assets/clause_references.yaml  # force_majeure 조항
+      - assets/data/clause_references.yaml  # force_majeure 조항
       - references/contract_review_guide.md  # 면책 고지 템플릿
     data_source: |
       # legalize-kr Read:  "민법"
@@ -309,7 +309,7 @@ scenarios:
         - 법원이 과다하면 감액 가능
         - 약관규제법 적용 시 무효 가능
     reference_files:
-      - assets/clause_references.yaml  # liquidated_damages 조항
+      - assets/data/clause_references.yaml  # liquidated_damages 조항
     data_source: |
       # legalize-kr Read:  "민법"
     validation:
@@ -334,7 +334,7 @@ scenarios:
         - 합리적 범위 내에서만 유효
         - 대가 지급 여부 확인
     reference_files:
-      - assets/clause_references.yaml  # non_compete 조항
+      - assets/data/clause_references.yaml  # non_compete 조항
     data_source: |
       # 법망 API cases:  "경업금지" --court 대법원
     validation:

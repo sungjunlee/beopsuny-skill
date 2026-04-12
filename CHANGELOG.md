@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.2] - 2026-04-12
+
+### Changed
+- `assets/` 디렉토리 구조 리팩터링 — 룰/데이터 분리 (kipeum86/contract-review-agent 패턴 일부 차용)
+  - `assets/policies/` (룰·정책): `source_grades.yaml`, `checklists/*.yaml` 11종
+  - `assets/data/` (레퍼런스 데이터): `law_index`, `compliance_calendar`, `clause_references`, `legal_terms`, `permits`, `forms`
+  - `assets/schemas/` (메모리 스키마): 유지
+- `skills/beopsuny/SKILL.md` 번들 리소스 섹션 — policies/ / data/ 서브테이블로 재구성
+- `tests/scenarios/13_contract_review.yaml` reference_files 경로 13곳 업데이트
+
+### Notes
+- 이슈 #4 **부분 close**: 디렉토리 재구성 + 경로 참조 업데이트 완료
+- **남은 작업** (follow-up): `clause_references.yaml` 분할(조항 분류 → policies/), `review_mode.yaml` 신설
+- 커밋 2단계 분리: (1) `git mv` 순수 이동 (2) 경로 참조 업데이트 — 리뷰 시 rename 추적 명확화
+- SKILL.md 611 → 620줄 (분리 트리거 800 미만)
+- v0.2.0 멀티 스킬 분리 시 `${CLAUDE_PLUGIN_ROOT}/policies/` vs `/data/` 경계 준비
+
 ## [0.1.1] - 2026-04-12
 
 ### Added
