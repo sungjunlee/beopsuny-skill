@@ -1,0 +1,127 @@
+# ============================================================
+# 한국 강행규정 단일 소스 (Mandatory Provisions)
+# ============================================================
+# SKILL.md Dim 4 서브체크 1 "alt_wording_hint 방향이 한국 강행규정 하에서
+# 유효 가능한 범위인가" 판정 시 참조하는 단일 소스.
+#
+# 배경:
+#   v0.2.1 에서 SKILL.md Dim 4 서브체크 1 에 6개 강행규정 예시가 인라인 나열돼
+#   "전수 vs 샘플" 모호했음 (#28 L5). 실무에서 강행규정은 훨씬 많음 — 공정거래법,
+#   하도급법, 근로기준법 다수 조항. 단일 소스로 외화하여 판정 근거 고정.
+#
+# 원칙 (SKILL.md 핵심 원칙 4 연동):
+#   - 법률명 + 조문 필수, 추정 금지
+#   - 시행일 확인 — 시행 전 조문은 "시행 예정" 으로 표시 (enforced_at null 가능)
+#   - 환각 방지 — 확실하지 않은 엔트리는 포함하지 않음
+#
+# 스키마:
+#   provisions:
+#     - law: {법률명, 띄어쓰기 legalize-kr 디렉토리 규칙과 일치}
+#       article: {조문 번호, "제N조" 또는 "제N조의M"}
+#       clause_types: [{조항 유형 영문 key — clause_references.yaml top-level 과 느슨히 매칭}]
+#       note: {강행규정 성격 한 줄 요약 — paraphrase 아닌 원문 핵심}
+#       enforced_at: {YYYY-MM-DD 시행일, null 이면 "상시 시행 중" 으로 간주}
+# ============================================================
+
+version: "1.0.0"
+last_updated: "2026-04-12"
+
+# ------------------------------------------------------------
+# 1. 약관·계약 일반 (v0.2.1 인라인 → 외화)
+# ------------------------------------------------------------
+provisions:
+  - law: "약관의 규제에 관한 법률"
+    article: "제7조"
+    clause_types: [indemnification, limitation_of_liability, exclusion_of_damages]
+    note: "고의/중과실로 인한 손해의 면책 조항은 무효 — 경과실만 면책 가능"
+    enforced_at: null
+
+  - law: "민법"
+    article: "제103조"
+    clause_types: [indemnification, non_compete, exclusivity]
+    note: "선량한 풍속 기타 사회질서에 위반한 법률행위는 무효 — 공서양속 위반 조항 전반 커버"
+    enforced_at: null
+
+  - law: "민법"
+    article: "제393조"
+    clause_types: [limitation_of_liability, exclusion_of_damages]
+    note: "통상손해 배상 원칙 + 특별손해는 예견 가능성 요건. 결과적 손해 전면 배제는 무효 위험"
+    enforced_at: null
+
+  - law: "민법"
+    article: "제398조"
+    clause_types: [liquidated_damages, limitation_of_liability]
+    note: "손해배상 예정액은 부당히 과다하면 법원이 감액 — 과다 위약금 조항은 감액 대상"
+    enforced_at: null
+
+  # ------------------------------------------------------------
+  # 2. IP / 저작권 / 발명진흥 (v0.2.1 인라인 → 외화)
+  # ------------------------------------------------------------
+  - law: "발명진흥법"
+    article: "제15조"
+    clause_types: [invention_assignment, work_product]
+    note: "직무발명의 사용자 승계 시 종업원에게 정당한 보상 필수 — 보상 포기 조항은 무효"
+    enforced_at: null
+
+  - law: "저작권법"
+    article: "제9조"
+    clause_types: [work_product, intellectual_property]
+    note: "업무상저작물은 법인 명의 공표 등 4요건 충족 시 법인이 저작자. 외주 계약은 별도 정함 필요"
+    enforced_at: null
+
+  - law: "저작권법"
+    article: "제14조"
+    clause_types: [invention_assignment, work_product, intellectual_property]
+    note: "저작인격권은 일신전속 — 양도 불가. '저작인격권 양도' 조항은 무효"
+    enforced_at: null
+
+  # ------------------------------------------------------------
+  # 3. 개인정보보호 (v0.2.1 인라인 → 외화)
+  # ------------------------------------------------------------
+  - law: "개인정보보호법"
+    article: "제26조"
+    clause_types: [data_processing]
+    note: "업무 위탁 시 위탁자·수탁자 문서 명시 + 재위탁 제한 + 관리감독 — 계약 서면 필수"
+    enforced_at: null
+
+  - law: "개인정보보호법"
+    article: "제28조의8"
+    clause_types: [data_processing]
+    note: "개인정보 국외이전 시 동의·표준계약서 등 요건 충족 필수 — 동의 없는 국외이전 조항은 무효"
+    enforced_at: null
+
+  # ------------------------------------------------------------
+  # 4. 공정거래 / 하도급 (v0.3.0 확장)
+  # ------------------------------------------------------------
+  - law: "독점규제 및 공정거래에 관한 법률"
+    article: "제45조"
+    clause_types: [exclusivity, non_compete, most_favored_customer, minimum_commitment]
+    note: "불공정거래행위 금지 — 거래상 지위 남용, 구속조건부거래 등 포함. 거래 제한 조항 위험"
+    enforced_at: null
+
+  - law: "하도급거래공정화에관한법률"
+    article: "제3조"
+    clause_types: [payment_terms, change_order, service_level_agreement]
+    note: "원사업자는 수급사업자에게 계약 체결 즉시 서면 발급 의무 — 구두 발주·사후 서면은 위반"
+    enforced_at: null
+
+  - law: "하도급거래공정화에관한법률"
+    article: "제13조"
+    clause_types: [payment_terms]
+    note: "하도급 대금은 목적물 수령일부터 60일 이내 지급 — 60일 초과 지급기일 조항은 무효"
+    enforced_at: null
+
+  # ------------------------------------------------------------
+  # 5. 근로기준 (v0.3.0 확장)
+  # ------------------------------------------------------------
+  - law: "근로기준법"
+    article: "제15조"
+    clause_types: [term_and_termination, representations_and_warranties]
+    note: "근로기준법 기준에 미달하는 근로조건을 정한 근로계약은 그 부분에 한하여 무효"
+    enforced_at: null
+
+  - law: "근로기준법"
+    article: "제20조"
+    clause_types: [liquidated_damages, non_compete]
+    note: "근로계약 불이행에 대한 위약금·손해배상액 예정 계약 체결 금지 — 근로자 대상 위약금 조항 무효"
+    enforced_at: null
