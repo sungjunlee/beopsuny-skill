@@ -1,74 +1,44 @@
 # Changelog
 
-## [0.3.0-rc.5] - 2026-04-12
+## [0.3.0] - 2026-04-12
 
-**테마: `mandatory_provisions.yaml` 신설 (갈래 3 ①, #28 L5 follow-up)** — v0.2.1 에서 Dim 4 서브체크 1 에 6개 강행규정 예시가 인라인 나열돼 "전수 vs 샘플" 모호했음. 실무에서 강행규정은 공정거래법·하도급법·근로기준법 등 훨씬 많음. 단일 소스 YAML 로 외화하고 SKILL.md 는 참조로 전환.
+**테마: Policy Extension + Housekeeping** — v0.2.2 post-review 4 독립 리뷰 합의 P2 잔여 (갈래 2 housekeeping) + 정책 신설 (갈래 3 ①~④) 묶음 릴리즈. 한국 강행규정 단일 소스 외화, `party_position` 의 조항별 override 계약·해석 순서 명문화, `forbidden_phrases` Push 경계 자연 발화까지 확장, `BEOPSUNY_DATA_ROOT` 전역 통일. 갈래 1 (DOCX 처리형) 은 v0.4.0 이월.
 
 ### Added
-- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 신설 — 한국 강행규정 단일 소스 (14 엔트리, version 1.0.0, 2026-04-12)
-  - 1차 커버: 약관·계약 일반 (약관규제법 제7조, 민법 제103·393·398조), IP (발명진흥법 제15조, 저작권법 제9·14조), 개인정보 (개인정보보호법 제26·28조의8), 공정거래 (공정거래법 제45조, 하도급법 제3·13조), 근로 (근로기준법 제15·20조)
-  - 스키마: `law` / `article` / `clause_types[]` / `note` / `enforced_at` (YYYY-MM-DD or null 상시 시행)
-  - `clause_types` 는 `clause_references.yaml` top-level `clauses.*` 와 느슨히 매칭 — 조항 유형별 적용 조문 조회
-- `skills/beopsuny/SKILL.md` `assets/policies/` 테이블에 `mandatory_provisions.yaml` 한 행 추가 (`언제 읽나: Dim 4 서브체크 1 판정 시`)
+- `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 신설 — 한국 강행규정 단일 소스 (14 엔트리, v1.0.0, 2026-04-12). 약관·계약 일반 (약관규제법 제7조, 민법 제103·393·398조), IP (발명진흥법 제15조, 저작권법 제9·14조), 개인정보 (개인정보보호법 제26·28조의8), 공정거래 (공정거래법 제45조, 하도급법 제3·13조), 근로 (근로기준법 제15·20조). 스키마: `law` / `article` / `clause_types[]` / `note` / `enforced_at` (YYYY-MM-DD or null 상시). `clause_types` 는 `clause_references.yaml` top-level `clauses.*` 와 매칭 (갈래 3 ①, #28 L5)
+- `skills/beopsuny/SKILL.md` Step 4 항목 5 `{조항key}` 계약 — `per_clause_override` 의 key 는 `assets/data/clause_references.yaml` top-level `clauses.*` ID 와 정확히 일치해야 하고, 일치하지 않는 key 는 graceful skip (갈래 3 ②)
+- `skills/beopsuny/SKILL.md` Step 4 항목 5 Override 해석 순서 — `per_clause_override[key]` 존재 → 그 값 사용 (`""` 은 해당 조항만 양쪽 노출 강제) / 부재 → `default` 사용 (갈래 3 ③)
+- `skills/beopsuny/assets/schemas/company_profile.yaml` `party_position` 주석에 해석 순서 요약 + `per_clause_override` 예시에 빈 문자열 케이스 추가 (갈래 3 ③)
+- `skills/beopsuny/assets/schemas/company_profile.yaml` 상단 주석 migration 노트 — 기존 profile 에 `interested_laws`/`party_position` 부재 시 graceful fallback (갈래 2)
+- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 — top-level `clauses.*` ID 전체가 `per_clause_override` 유효 key 단일 소스임을 명시 (갈래 3 ②)
+- `skills/beopsuny/SKILL.md` `assets/policies/` 테이블에 `mandatory_provisions.yaml` 한 행 추가 (Dim 4 서브체크 1 판정 시)
+- `tests/scenarios/13_contract_review.yaml` 3 회귀 시나리오:
+  - `contract-20` — `per_clause_override` key mismatch (철자 오류) 시 graceful skip 검증 (갈래 3 ②)
+  - `contract-21` — `default: "gap"` + `override.indemnification: "eul"` → 을 관점 우선 노출 (갈래 3 ③)
+  - `contract-22` — `default: "gap"` + `override.non_compete: ""` → 양쪽 노출 강제 (갈래 3 ③)
+  - 시나리오 총합 19 → 22
+- `tests/scenarios/14_law_change_detection.yaml` 4 시나리오 공통 `forbidden_phrases` 에 자연 발화 6 패턴 추가 — `정기적으로`, `주기적`, `모니터링`, `알려드릴`, `체크해드리`, `지속적으로 추적` (복합구 anchor; `추적` 단독은 SKILL.md "개정 이력 추적" 용법과 충돌하므로 제외). Push 경계 자연 발화까지 확장 (갈래 3 ④)
 
 ### Changed
-- `skills/beopsuny/SKILL.md` Dim 4 서브체크 1 — 인라인 강행규정 나열 제거, `assets/policies/mandatory_provisions.yaml` 참조로 전환. `clause_types` 매칭 규정 명시 (#28 L5 해소)
-- `tests/scenarios/13_contract_review.yaml` `contract-16` / `contract-19` `reference_files` — `assets/policies/mandatory_provisions.yaml` 행 추가 (Dim 4 서브체크 1 판정 근거 증적)
-
-### Closes
-- #28 L5 follow-up (v0.2.1 post-review P2)
-
-## [0.3.0-rc.4] - 2026-04-12
-
-**테마: `forbidden_phrases` 자연 발화 패턴 커버리지 (갈래 3 ④)** — scenario 14 의 기존 `forbidden_phrases` 는 직접 Push 용어(알림/크론/스케줄/notification/푸시) 만 캐치. 사내변호사 친화 어투인 "정기적으로 알려드릴게요", "주기적으로 모니터링하겠습니다" 류가 실제로는 크론/알림 약속으로 연결되므로 자연 발화 6 패턴 추가.
-
-### Added
-- `tests/scenarios/14_law_change_detection.yaml` 4 시나리오 공통 `forbidden_phrases` 에 6 패턴 추가:
-  - `정기적으로`, `주기적`, `모니터링`, `알려드릴`, `체크해드리`, `지속적으로 추적`
-  - `추적` 단독은 SKILL.md L5/L158 "개정 이력 추적" 정당 용법과 충돌 → 복합구 `지속적으로 추적` 만 금지
-- scenario 14 상단 주석에 자연 발화 패턴 커버리지 이유 + `추적` 복합구 정책 명시
-
-### Notes
-- 사전 grep 검증: SKILL.md 본문·scenario 14 `response_contains`·`context` 에서 신규 패턴 false-positive 없음 확인 (`git grep` 결과 0건)
-- Push 설계 금지 원칙 강화 — 직접 용어 금지선을 "자연 발화까지" 확장
-
-## [0.3.0-rc.3] - 2026-04-12
-
-**테마: `party_position` override 해석 순서 (갈래 3 ③)** — v0.2.2 에서 `per_clause_override` 스키마가 추가됐으나 "override 값이 `""` 일 때" 해석이 문서화돼있지 않았음. default vs override 우선순위 + 빈 문자열 의미를 명시.
-
-### Added
-- `skills/beopsuny/SKILL.md` Step 4 항목 5 — "Override 해석 순서" 단락 신설. `per_clause_override[key]` 존재 → 그 값 사용 (`""` 은 해당 조항만 양쪽 노출 강제) / 부재 → `default` 사용 (`""` 은 양쪽 노출)
-- `skills/beopsuny/assets/schemas/company_profile.yaml` `party_position` 주석에 해석 순서 요약 2줄 추가
-- `tests/scenarios/13_contract_review.yaml` 회귀 시나리오 2건 — `contract-21` (`default: "gap"` + `override.indemnification: "eul"` → 을 관점 우선), `contract-22` (`default: "gap"` + `override.non_compete: ""` → 양쪽 노출 강제). 시나리오 총합 20 → 22
-
-## [0.3.0-rc.2] - 2026-04-12
-
-**테마: `per_clause_override` key contract 문서화 (갈래 3 ②)** — v0.2.2 에서 추가된 `party_position.per_clause_override` 가 사용하는 contract key 의 유효 범위를 단일 소스로 고정. 일치하지 않는 key 는 graceful skip (에러 없음, 해당 조항만 `default` 로 처리).
-
-### Added
-- `skills/beopsuny/SKILL.md` Step 4 항목 5 — `{조항key}` 계약 한 줄 추가. `assets/data/clause_references.yaml` top-level `clauses.*` ID 와 정확히 일치해야 하고, 일치하지 않는 key 는 graceful skip
-- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 — top-level `clauses.*` ID 전체가 `per_clause_override` 유효 key 단일 소스임을 명시
-- `tests/scenarios/13_contract_review.yaml` `contract-20` 신설 — override key mismatch (철자 오류) 시 graceful skip 검증. 시나리오 총합 19 → 20
-
-## [0.3.0-rc.1] - 2026-04-12
-
-**테마: v0.3.0 housekeeping (갈래 2 일괄)** — v0.2.2.1 4 독립 리뷰 합의 P2 중 "BEOPSUNY_DATA_ROOT 전역 통일", "Dim 3 phrasing", "clause_references 주석 rot", "scenario 14 $DR drift", "contract-19 단일 소스 포인터", "CHANGELOG 중복 압축", "profile.yaml migration 노트" 7 항목 정리.
-
-### Changed
-- `skills/beopsuny/SKILL.md` 모드 판별·1순위 데이터 소스·데이터 초기화 전 섹션 — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 전역 통일. v0.2.2.1 에서 "법령 변경 감지 섹션 한정" 으로 한정됐던 `$DR` override 가 이제 전역. "경로 override 범위" 단락 삭제, `$DR` 축약은 유지 (해당 섹션 반복 prefix 축약 용도)
-- `skills/beopsuny/SKILL.md` Dim 3 체크리스트 — "갑/을 위치" → "갑/을 위치(`party_position.default`)". Dim 4 서브체크 2 와 필드명 표기 통일
-- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 gap/eul 축 정의 — "당사자 위치가 불명이면 양쪽 모두 노출이 기본값" (v0.2.1 generic phrasing) → `profile.yaml.party_position.default: ""` (v0.2.2~) 스키마 필드 구체 참조
-- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02, law-change-04 forbidden_phrases) — `~/.beopsuny/data/legalize-kr` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr`. SKILL.md 본문과 drift 해소
-- `CHANGELOG.md` `[0.2.2]` 섹션 — "Push 없음"/"크론/알림 없음" 4회 반복 → 테마 헤더 1회 + Notes 1회로 압축. Added 블록 내부 반복 제거
+- `skills/beopsuny/SKILL.md` 모드 판별·1순위 데이터 소스·데이터 초기화 전 섹션 — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 전역 통일. v0.2.2.1 에서 "법령 변경 감지 섹션 한정" 으로 한정됐던 `$DR` override 가 이제 전역. "경로 override 범위" 단락 삭제, `$DR` 축약은 반복 prefix 축약 용도로 유지 (갈래 2)
+- `skills/beopsuny/SKILL.md` Dim 3 체크리스트 — "갑/을 위치" → "갑/을 위치(`party_position.default`)". Dim 4 서브체크 2 와 필드명 병기 통일 (갈래 2)
+- `skills/beopsuny/SKILL.md` Dim 4 서브체크 1 — 인라인 강행규정 나열 제거, `assets/policies/mandatory_provisions.yaml` 참조로 전환. `clause_types` 매칭 규정 명시 (갈래 3 ①)
+- `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 gap/eul 축 정의 — v0.2.1 generic phrasing → `profile.yaml.party_position.default: ""` (v0.2.2~) 스키마 필드 구체 참조 (갈래 2)
+- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02, law-change-04 forbidden_phrases prefix) — hardcoded path → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr`. SKILL.md 본문과 drift 해소 (갈래 2)
+- `tests/scenarios/13_contract_review.yaml` `contract-16` / `contract-19` `reference_files` — `assets/policies/mandatory_provisions.yaml` 행 추가 (Dim 4 서브체크 1 판정 근거 증적) (갈래 3 ①)
+- `CHANGELOG.md` `[0.2.2]` 섹션 — "Push 없음"/"크론/알림 없음" 4회 반복 → 테마 헤더 1회 + Notes 1회로 압축. Added 블록 내부 반복 제거 (갈래 2)
+- `.claude-plugin/plugin.json` 버전 `0.2.2.1` → `0.3.0` (최상위 및 `plugins[0]` 동시)
 
 ### Fixed
-- `tests/scenarios/13_contract_review.yaml` `contract-19` — `forbidden_phrases_source: assets/policies/review_mode.yaml#counter_draft_forbidden_patterns` 메타 키 추가 (contract-16 과 동일 포맷). "대표 4개 샘플 — 전체 스캔은 단일 소스 로드" 주석 병기
-- `skills/beopsuny/assets/schemas/company_profile.yaml` 상단 주석 — 기존 `profile.yaml` 에 `interested_laws` / `party_position` 부재 시 처리 방침 한 줄 추가 (v0.2.2 에서 추가된 필드, graceful fallback)
+- `tests/scenarios/13_contract_review.yaml` `contract-19` — `forbidden_phrases_source: assets/policies/review_mode.yaml#counter_draft_forbidden_patterns` 메타 키 추가 (contract-16 과 동일 포맷). "대표 4개 샘플 — 전체 스캔은 단일 소스 로드" 주석 병기 (갈래 2)
 
 ### Notes
-- 기존 `profile.yaml` 에 `interested_laws` / `party_position` 부재 시 자동 누락 처리 — graceful fallback 보장 (v0.2.2 에서 추가된 필드들)
-- 새 태그 도입 없음 / Push 경계 그대로 유지
-- SKILL.md 730 → 728줄 (상한 재조정 범위 내, 분리 트리거 800 미만)
+- **Push 설계 없음 — pull 방식 유지**. 크론/알림/스케줄링/notification 코드·문구 일절 없음. 갈래 3 ④ 가 오히려 Push 경계를 자연 발화까지 강화
+- 기존 `profile.yaml` 에 `interested_laws`/`party_position` 부재 시 자동 graceful fallback 보장
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
+- SKILL.md 730 → 731줄 (상한 재조정 범위 내, 분리 트리거 800 미만)
+- 4 리뷰어 합의 P2 전부 반영 — per_clause_override key contract / party_position override 해석 순서 / forbidden_phrases 자연 발화 / BEOPSUNY_DATA_ROOT 전역 / Dim 3 phrasing / clause_references 주석 legacy / scenario 14 $DR drift / contract-19 단일 소스 포인터 / CHANGELOG 중복 / migration 노트 / mandatory_provisions 단일 소스 (#28 L5)
+- 갈래 1 (DOCX 처리형) 은 본 마일스톤 스코프 외 — v0.4.0 이월 (후보 이슈로 분리)
 
 ## [0.2.2.1] - 2026-04-12
 
