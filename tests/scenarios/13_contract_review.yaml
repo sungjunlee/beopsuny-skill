@@ -435,7 +435,7 @@ scenarios:
       strict 모드에서 Indemnification 조항을 검토하면 3 필드
       (why_risky / negotiation_points / alt_wording_hint) 가 출력되어야
       하지만, 완성된 수정 문구를 확정 제시하는 "자동 생성" 은 금지선이다.
-      (`references/contract_review_guide.md:23` 원칙 v0.2.0 유지)
+      (`references/contract_review_guide.md` "법순이가 하지 않는 것" 섹션 원칙 v0.2.0 유지)
     question: |
       이 SaaS 계약의 Indemnification 조항을 엄격히 검토해줘.
       (review_mode: strict)
