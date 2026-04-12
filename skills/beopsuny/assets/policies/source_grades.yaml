@@ -153,9 +153,13 @@ default_grades:
     grade: B
     rationale: "계류 의안은 확정 법령이 아님 — 시행 여부 미확정"
 
-  "법망 API — 판례 검색":
-    grade: "A 또는 B"
-    rationale: "대법원은 A, 하급심은 B"
+  "법망 API — 판례 (대법원)":
+    grade: A
+    rationale: "대법원 종합법률정보 데이터의 API 래핑 — 공식 판례 원문"
+
+  "법망 API — 판례 (하급심)":
+    grade: B
+    rationale: "하급심 판례는 상급심에 의해 변경 가능 — 교차검증 권장"
 
   # korean-law-mcp (OC 코드)
   "korean-law-mcp (법제처 API 래핑)":
