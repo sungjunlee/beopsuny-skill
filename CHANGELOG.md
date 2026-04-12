@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.0-rc.1] - 2026-04-12
+
+### Added
+- `assets/data/clause_references.yaml` 고위험(risk: high) 조항 7개에 counter-drafting 힌트 3 필드 추가
+  - `why_risky` (3줄 이내, 한국 강행규정·실무 기준)
+  - `negotiation_points.gap` / `.eul` (갑/을 관점 2–3개씩)
+  - `alt_wording_hint` (방향·원칙만, 완성된 수정안 아님)
+  - 대상: `indemnification`, `limitation_of_liability`, `exclusion_of_damages`, `work_product`, `data_processing`, `non_compete`, `invention_assignment`
+- 파일 상단 주석에 "힌트 vs 자동 생성" 경계 명문화 (`references/contract_review_guide.md:23` 원칙 연계)
+- `review_mode.yaml` 과의 모드별 필터 관계 주석 (strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만)
+
+### Changed
+- `clause_references.yaml` 버전 `1.1.0` → `1.2.0` (스키마 확장)
+
+### Notes
+- 기존 51개 조항 key/value 바이트 동일 보존 — 추가만, 변경 최소화
+- 나머지 고위험 조항 15개 점진 확장은 v0.2.x 이후 예정
+- Step 4 출력 로직 연결은 #15 에서, 자가 검증 Dim 4 는 #16 에서 후속 PR
+- 새 태그 도입 없음. 기존 6개 태그 + Grade 체계만 사용
+- `plugin.json` 버전 bump 없음 — v0.2.0 최종 릴리즈 PR 에서 일괄 반영
+
 ## [0.1.3] - 2026-04-12
 
 ### Added
