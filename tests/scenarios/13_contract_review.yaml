@@ -1,5 +1,13 @@
 # 계약서 검토 보조 시나리오
 # 영문/국문 계약 조항에 대한 한국법 레퍼런스 제공 테스트
+#
+# forbidden_phrases 두 용도 구분 (v0.2.2 housekeeping 후):
+#   - "**foo**" 접두 (예: "**협상 포인트**") = 블록 헤더 존재 여부 검증.
+#     설명 prose 에서 "협상 포인트" 같은 plain 단어가 자연스럽게 나올 수 있어
+#     substring 매칭은 false-positive 위험. 블록 헤더는 반드시 `**...**` 로 출력됨.
+#   - plain substring (예: "아래 문구로 교체") = 금지 패턴 뉘앙스 검증.
+#     단일 소스 assets/policies/review_mode.yaml#counter_draft_forbidden_patterns
+#     의 18개 명령형 패턴은 설명 prose 에서 자연발생 가능성 낮아 substring 유지.
 
 name: 계약서 검토 보조
 description: |
@@ -488,7 +496,8 @@ scenarios:
         - 협상 포인트
         - 약관규제법
       forbidden_phrases:  # moderate 에서 노출되면 안 되는 블록 헤더
-        - 대체 문구 힌트
+        # `**` prefix = 블록 헤더 존재 여부 검증 (plain substring 은 설명 prose 에서 false-positive)
+        - "**대체 문구 힌트**"
       has_disclaimer: true
     reference_files:
       - assets/data/clause_references.yaml
@@ -513,8 +522,9 @@ scenarios:
         - 왜 위험한가
         - 약관규제법
       forbidden_phrases:
-        - 협상 포인트
-        - 대체 문구 힌트
+        # `**` prefix = 블록 헤더 존재 여부 검증 (plain substring 은 설명 prose 에서 false-positive)
+        - "**협상 포인트**"
+        - "**대체 문구 힌트**"
       has_disclaimer: true
     reference_files:
       - assets/data/clause_references.yaml
@@ -542,8 +552,10 @@ scenarios:
       response_contains:
         - 왜 위험한가
         - 직업선택
+      # 단일 소스: assets/policies/review_mode.yaml `counter_draft_forbidden_patterns`
+      # plain substring — 명령형 패턴이라 설명 prose false-positive 위험 낮음.
       forbidden_phrases:
-        - 아래 문구로 교체하세요
+        - 아래 문구로 교체
         - 최종 수정안
         - 다음 조항으로 대체
         - 이 문구를 사용

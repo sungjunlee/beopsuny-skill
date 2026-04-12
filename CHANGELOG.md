@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.2.1] - 2026-04-12
+## [0.2.2-rc.1] - 2026-04-12
+
+**테마: v0.2.1 post-review P2 housekeeping** — v0.2.1 릴리즈 직후 codex gpt-5.4 + pr-review-toolkit 독립 리뷰 2건에서 합의된 P2 finding 2건을 정리. Ship blocker 없음, 정확성 폴리시 수준.
+
+### Fixed
+- `tests/scenarios/13_contract_review.yaml` `contract-19:546` 의 `아래 문구로 교체하세요` → `아래 문구로 교체`. 단일 소스 `review_mode.yaml#counter_draft_forbidden_patterns` 와 drift 해소 (P2-1)
+
+### Changed
+- `tests/scenarios/13_contract_review.yaml` `contract-17:490` / `contract-18:515-517` 의 블록 헤더 검증용 `forbidden_phrases` — plain substring → **`**` prefix 앵커** (`"**협상 포인트**"`, `"**대체 문구 힌트**"`). 설명 prose 에서 같은 단어가 자연발생 시 false-positive 발생 가능성 제거 (P2-2)
+- `tests/scenarios/13_contract_review.yaml` 상단 주석 블록 추가 — `**foo**` 접두 (블록 헤더 존재 검증) vs plain substring (금지 패턴 뉘앙스 검증) 두 용도 구분 명문화
+- `tests/scenarios/13_contract_review.yaml` `contract-19` forbidden_phrases 에 단일 소스 참조 포인터 주석 추가
 
 **테마: Review Polish** — v0.2.0 릴리즈 직후 세 독립 리뷰(code-reviewer / pr-test-analyzer / comment-analyzer) 에서 식별된 일관성·정확성·커버리지 이슈 7건을 다듬은 릴리즈. 동작 변경 없이 **flag 의미 ↔ 실행 경로 정합**, **단일 소스 통합**, **축 통일**, **정확성 보강** 에 집중.
 
