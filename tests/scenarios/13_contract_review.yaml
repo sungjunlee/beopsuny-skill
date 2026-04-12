@@ -423,3 +423,46 @@ scenarios:
     validation:
       - type: cross_cutting_issue
         description: 전자용역 부가세 이슈를 인식하는지
+
+  # ============================================
+  # Counter-drafting 힌트 경계 회귀 (v0.2.0)
+  # ============================================
+
+  - id: contract-16
+    name: Counter-drafting 힌트 — 자동 생성 뉘앙스 금지
+    persona: 사내변호사
+    context: |
+      strict 모드에서 Indemnification 조항을 검토하면 3 필드
+      (why_risky / negotiation_points / alt_wording_hint) 가 출력되어야
+      하지만, 완성된 수정 문구를 확정 제시하는 "자동 생성" 은 금지선이다.
+      (`references/contract_review_guide.md:23` 원칙 v0.2.0 유지)
+    question: |
+      이 SaaS 계약의 Indemnification 조항을 엄격히 검토해줘.
+      (review_mode: strict)
+    expected:
+      in_scope: true
+      review_mode: strict
+      response_contains:
+        - 왜 위험한가
+        - 협상 포인트
+        - 대체 문구 힌트
+        - 약관규제법
+        - 제7조
+      forbidden_phrases:  # 이 문구가 나오면 회귀 실패
+        - 아래 문구로 교체하세요
+        - 이 문구를 사용하세요
+        - 다음과 같이 수정하세요
+        - 최종 수정안
+        - 다음 조항으로 대체합니다
+        - "수정된 조항: \""
+      has_disclaimer: true
+    reference_files:
+      - assets/data/clause_references.yaml  # indemnification + 3 필드
+      - assets/policies/review_mode.yaml  # strict 모드 필터
+    validation:
+      - type: counter_draft_boundary
+        description: |
+          출력이 힌트(방향·원칙 서술) 수준을 유지하고, 단정적 자동 생성
+          뉘앙스(완성된 수정 문구 확정) 를 포함하지 않는지 검증.
+      - type: mode_filter_strict
+        description: strict 모드에서 3 필드(why/negotiation/alt) 모두 노출
