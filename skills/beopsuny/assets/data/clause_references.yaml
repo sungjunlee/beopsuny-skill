@@ -36,7 +36,9 @@
 #   - 힌트(hint) = 방향·원칙 서술 → ✓ 허용
 #   - 자동 생성 = 완성된 수정 문구 확정 → ✗ 사용자 몫
 #   - 출력 경로·모드별 필터는 `assets/policies/review_mode.yaml` 참조
-#     (strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만)
+#     v0.2.1~ 3키 분해 (`include_why_risky` / `include_negotiation_points` /
+#     `include_alt_wording_hint`) — SKILL.md Step 4 표와 1:1 대응
+#     strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만
 # ============================================================
 
 version: "1.2.0"
