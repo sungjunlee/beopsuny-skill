@@ -33,9 +33,14 @@ interested_laws: []         # 예: ["개인정보보호법", "근로기준법", 
 # gap = 계약 상위 당사자 (발주자·위탁자·사용자·수요자)
 # eul = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
 # 빈 값이면 양쪽 모두 노출이 기본 (SKILL.md Step 4 / Dim 4 서브체크 2).
+#
+# 해석 순서 (v0.3.0~):
+#   1. per_clause_override[{조항key}] 가 존재 → 그 값 사용 ("" 은 해당 조항만 양쪽 노출 강제)
+#   2. per_clause_override 부재 → default 사용 ("" 은 양쪽 노출)
+#   {조항key} 는 assets/data/clause_references.yaml top-level clauses.* ID 와 일치해야 함 (graceful skip).
 party_position:
   default: ""               # "gap" / "eul" / "" (불명)
-  per_clause_override: {}   # 조항별 override 예: {indemnification: "gap", non_compete: "eul"}
+  per_clause_override: {}   # 조항별 override 예: {indemnification: "gap", non_compete: "eul", work_product: ""}
 
 # 메모
 notes: ""                   # 기타 특기사항

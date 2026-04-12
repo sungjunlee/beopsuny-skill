@@ -618,3 +618,79 @@ scenarios:
           override key 는 graceful skip — 에러 없이 해당 조항은 default 로 처리.
       - type: mode_filter
         description: indemnification 은 default "gap" 관점 우선 노출 (override mismatch 이므로)
+
+  # ============================================
+  # party_position override 해석 순서 (v0.3.0)
+  # ============================================
+
+  - id: contract-21
+    name: party_position override — 조항별 관점 강제 (default vs override)
+    persona: 사내변호사
+    context: |
+      당사자 기본 위치는 "gap" (발주자) 이지만, Indemnification 조항만은
+      "eul" (공급자) 관점도 중요하게 다뤄야 함을 SKILL.md Step 4 항목 5
+      "Override 해석 순서" 규정에 따라 검증. per_clause_override.indemnification
+      "eul" 이 지정되면 해당 조항은 default "gap" 이 아닌 "eul" 우선 노출.
+    question: |
+      이 SaaS 계약의 Indemnification 조항 검토해줘.
+    profile_state:
+      party_position:
+        default: "gap"
+        per_clause_override:
+          indemnification: "eul"
+    expected:
+      in_scope: true
+      review_mode: moderate
+      response_contains:
+        - 약관규제법
+        - 왜 위험한가
+        - 협상 포인트
+        # negotiation_points 블록에 "을" 또는 "eul" 관점이 선명히 드러나야 함
+        - 을
+      # override 값이 지정된 조항에서 default "gap" 관점만 단독으로 우선 노출되면 override 해석 실패.
+      # 구조상 "갑" 관점이 함께 나올 수는 있으나, "eul/을" 관점 부재는 회귀.
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서"
+      - skills/beopsuny/assets/schemas/company_profile.yaml  # party_position 해석 순서 주석
+    validation:
+      - type: override_resolution
+        description: |
+          per_clause_override.indemnification == "eul" 일 때 indemnification
+          블록의 negotiation_points 에서 "eul/을" 관점이 우선 노출되는지.
+          default "gap" 단독 노출은 회귀.
+
+  - id: contract-22
+    name: party_position override — 빈 문자열로 양쪽 노출 강제
+    persona: 사내변호사
+    context: |
+      기본은 "gap" 관점이지만, Non-Compete 조항만은 근로자 보호 이슈가
+      균형 있게 다뤄져야 함. per_clause_override.non_compete = "" 로 지정하면
+      해당 조항만 양쪽(gap·eul) 노출이 강제되고 default "gap" 으로 폴백하지 않음.
+      (SKILL.md Step 4 항목 5 "Override 해석 순서" — `""` 은 양쪽 노출 강제)
+    question: |
+      근로계약서의 경업금지 조항 검토해줘.
+    profile_state:
+      party_position:
+        default: "gap"
+        per_clause_override:
+          non_compete: ""
+    expected:
+      in_scope: true
+      review_mode: moderate
+      response_contains:
+        - 직업선택
+        - 협상 포인트
+        # 양쪽 노출 — "갑" 과 "을" 관점이 모두 드러나야 함
+        - 갑
+        - 을
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # Step 4 항목 5 "Override 해석 순서"
+      - skills/beopsuny/assets/schemas/company_profile.yaml  # per_clause_override "" 해석
+    validation:
+      - type: override_resolution
+        description: |
+          per_clause_override.non_compete == "" 일 때 non_compete 블록의
+          negotiation_points 에서 "gap/갑" 과 "eul/을" 관점이 모두 노출되는지.
+          default "gap" 폴백은 회귀.
