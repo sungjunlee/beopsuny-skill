@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.1] - 2026-04-12
+
+### Added
+- 자가 검증 레이어 Phase 1 — `skills/beopsuny/SKILL.md`에 `## 자가 검증 (응답 전)` 섹션 (60줄)
+  - Dim 1 Citation: 조문 존재·조항 번호·취지 일치·판례 사건번호 형식 검증
+  - Dim 2 Legal Substance: 전제-결론 연결·법률 위계·단서 조항·행정규칙 누락 검증
+  - Dim 3 Client Alignment: 질문 본질 응답·실무 시사점·`profile.yaml` 맥락 반영 검증
+- 검증 실패 → 기존 Source Grading 다운그레이드 트리거와 연동 (`downgrade_triggers`)
+- 출력 메타데이터: 응답 끝에 `🔍 자가 검증: Citation n/n ✓ | Legal Substance ✓ | Client Alignment ✓` 표기
+
+### Notes
+- kipeum86/second-review-agent 7차원 중 답변 생성형에 유의미한 3개 차원만 적용 (Phase 2는 v0.2.0 이후)
+- Stanford 2025 연구 대응: LexisNexis 1/6, Westlaw 1/3 할루시네이션 → 자가 검증이 업계 표준
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`)만 사용
+- SKILL.md 608줄 (분리 트리거 800 미만, 목표 620 이하)
+- `plugin.json` 버전 bump 없음 — 다음 릴리즈(이슈 #4 YAML 리팩터링 이후)에 함께 반영
+
 ## [0.1.0] - 2026-04-12
 
 ### Added
