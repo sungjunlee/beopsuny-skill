@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1-rc.2] - 2026-04-12
+
+### Changed
+- `clause_references.yaml` — 7개 고위험 조항의 `negotiation_points.gap`/`.eul` 축 통일 (#23)
+  - **축 정의**: `gap` = 계약 상위 당사자 (발주자·위탁자·사용자·수요자), `eul` = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
+  - **swap** (포인트 내용 동일, 라벨 위치만 교체): `indemnification`, `limitation_of_liability`
+  - **갑/을 라벨 추가 + swap**: `exclusion_of_damages` (기존 "배제 vs 회수" → 상위/하위 축으로 재정렬)
+  - **이미 정합**: `work_product`, `data_processing`, `non_compete`, `invention_assignment` (축 검증만)
+  - 상단 주석에 "gap/eul 축 정의" 블록 추가 — 향후 조항 확장 시 축 혼란 재발 방지
+
 ## [0.2.1-rc.1] - 2026-04-12
 
 ### Fixed
