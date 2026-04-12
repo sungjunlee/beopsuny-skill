@@ -21,6 +21,19 @@ has_overseas_operations: false  # 해외 사업 여부
 overseas_countries: []      # 해외 진출국
 is_franchise: false         # 가맹사업 여부
 
+# 관심 법령 (v0.2.2~) — 최근 개정 자동 조회 대상
+# 비어있으면 응답 후단 append 없음. 값이 있으면 "💡 최근 개정: ..." 한 줄 덧붙임.
+# 법령명은 legalize-kr 의 디렉토리명과 일치해야 함 (예: "개인정보보호법", "근로기준법").
+interested_laws: []         # 예: ["개인정보보호법", "근로기준법", "하도급거래 공정화에 관한 법률"]
+
+# 계약서 검토 시 당사자 위치 (v0.2.2~)
+# gap = 계약 상위 당사자 (발주자·위탁자·사용자·수요자)
+# eul = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
+# 빈 값이면 양쪽 모두 노출이 기본 (SKILL.md Step 4 / Dim 4 서브체크 2).
+party_position:
+  default: ""               # "gap" / "eul" / "" (불명)
+  per_clause_override: {}   # 조항별 override 예: {indemnification: "gap", non_compete: "eul"}
+
 # 메모
 notes: ""                   # 기타 특기사항
 updated_at: ""              # 마지막 업데이트 일시

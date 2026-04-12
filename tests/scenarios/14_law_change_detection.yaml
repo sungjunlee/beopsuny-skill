@@ -1,0 +1,197 @@
+# 법령 변경 감지 시나리오 (v0.2.2)
+# legalize-kr git log 기반 pull 방식. Push 설계(크론/알림) 없음.
+#
+# 지원 질의 3종:
+#   1. 시간 범위 discovery — "최근 한 달 개정된 법령 보여줘"
+#   2. 특정 법령 변경 내역 — "개인정보보호법 최근에 뭐 바뀌었어?"
+#   3. 관심 법령 일괄 — profile.yaml.interested_laws 자동 반영 (응답 후단 append)
+#
+# forbidden_phrases 구분 (13_contract_review.yaml 상단 주석과 동일 규칙):
+#   - "**foo**" 접두 = 블록 헤더 존재 여부 검증
+#   - plain substring = Push 뉘앙스 금지 패턴 뉘앙스 검증
+
+name: 법령 변경 감지
+description: |
+  legalize-kr 의 git 히스토리를 이용해 "최근 뭐 바뀌었어?" 류 질의에 응답.
+  Full 모드는 `git log`/`git show`, Lite 모드는 법망 API `law?action=history`/`law?action=diff` fallback.
+  profile.yaml.interested_laws 가 있으면 응답 후단에 한 줄 `💡 최근 개정: ...` append.
+
+scenarios:
+  # ============================================
+  # 1. 시간 범위 discovery (Full 모드)
+  # ============================================
+
+  - id: law-change-01
+    name: 시간 범위 discovery — 최근 한 달 개정 법령 (Full 모드)
+    persona: 사내변호사
+    context: |
+      사용자가 특정 법령 지정 없이 "최근 한 달간 뭐 바뀌었는지 둘러보고"
+      싶어함. 월간 리걸 업데이트 루틴.
+    question: |
+      최근 한 달 동안 개정된 법령 보여줘.
+    expected:
+      in_scope: true
+      mode: full
+      response_contains:
+        - git log
+        - "--since"
+        - "1 month"
+        - 개정
+        - 공포
+        - 시행
+      # Push 설계 뉘앙스 금지 — 응답은 Pull 방식 명령 실행 후 리스팅만
+      forbidden_phrases:
+        - 알림을 설정
+        - 크론
+        - 스케줄
+        - notification
+        - 자동으로 알려드
+        - 푸시
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 섹션
+    data_source: |
+      # Full 모드: git -C ~/.beopsuny/data/legalize-kr log --since="1 month ago" --name-only kr/
+    validation:
+      - type: mode_detection
+        description: Full 모드 (legalize-kr 로컬 데이터 존재) 에서 git log 명령 경로를 사용하는지
+      - type: pull_boundary
+        description: Push 뉘앙스(알림/스케줄/크론) 없이 Pull 방식 응답인지
+      - type: date_axis
+        description: 공포일과 시행일을 구분해 출력하는지 (핵심 원칙 4)
+
+  # ============================================
+  # 2. 특정 법령 변경 내역
+  # ============================================
+
+  - id: law-change-02
+    name: 특정 법령 변경 내역 — 개인정보보호법 최근 5건
+    persona: 개인정보 담당자
+    context: |
+      개인정보보호법이 최근 개정됐다는 소식을 듣고 구체적 변경 조문을
+      확인하려 함.
+    question: |
+      개인정보보호법 최근에 뭐 바뀌었어?
+    expected:
+      in_scope: true
+      mode: full
+      response_contains:
+        - 개인정보보호법
+        - git log
+        - "kr/개인정보보호법"
+        - "git show"
+        - 공포
+        - 시행
+        - github.com/legalize-kr
+      forbidden_phrases:
+        - 알림을 설정
+        - 크론
+        - 스케줄
+        - notification
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 섹션
+    data_source: |
+      # Full 모드: git -C ~/.beopsuny/data/legalize-kr log -n 5 --follow kr/개인정보보호법/법률.md
+      #           git show {SHA} -- kr/개인정보보호법/법률.md  (diff 요약)
+    validation:
+      - type: file_path
+        description: 법령명이 `kr/{법령명}/법률.md` 경로 패턴에 정확히 매핑되는지
+      - type: commit_link
+        description: legalize-kr 커밋 URL (`https://github.com/legalize-kr/legalize-kr/commit/{SHA}`) 을 제공하는지
+      - type: diff_summary
+        description: git show 결과를 조문 단위 변경 요약으로 가공하는지
+
+  # ============================================
+  # 3. interested_laws 응답 후단 append
+  # ============================================
+
+  - id: law-change-03
+    name: interested_laws 자동 반영 — 응답 후단 append (Pull)
+    persona: 준법감시 담당자
+    context: |
+      profile.yaml 에 interested_laws: [개인정보보호법, 근로기준법] 이
+      설정된 상태에서, 사용자는 최근 개정 관련 아무것도 묻지 않고 다른
+      법률 질문을 함. 법순이는 응답 후단에 한 줄만 덧붙여야 한다 (Push 아님).
+    question: |
+      우리 회사 5인 미만인데 주휴수당 줘야 해?
+    profile_state:
+      interested_laws:
+        - 개인정보보호법
+        - 근로기준법
+    expected:
+      in_scope: true
+      # 본문은 기존 근로기준법 Q&A 로직 그대로
+      response_contains:
+        - 근로기준법
+        - 주휴수당
+        # 후단 append 패턴
+        - "💡 최근 개정"
+      forbidden_phrases:
+        # Pull 경계 — append 는 간단한 안내일 뿐, 능동 알림·상세 스케줄 금지
+        - 알림을 설정
+        - 크론
+        - 스케줄
+        - notification
+        - 자동으로 알려드
+        # append 는 면책 고지 "앞" 이므로 면책 고지가 append "앞" 에 나오면 안 됨
+        # (validation.append_position 에서 순서 확인)
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 — 응답 후단 append
+      - skills/beopsuny/assets/schemas/company_profile.yaml  # interested_laws 필드
+    validation:
+      - type: append_presence
+        description: "interested_laws 가 비어있지 않으므로 후단 `💡 최근 개정: ...` 한 줄 append 되는지"
+      - type: append_position
+        description: append 순서가 `본문 → 자가 검증 → 💡 최근 개정 → 면책 고지` 로 면책 고지 "직전" 인지
+      - type: append_content
+        description: append 내용이 법령명 + 개정일자(YYYY-MM-DD) 형식인지. 상세 설명은 포함 안 함
+      - type: pull_boundary
+        description: append 는 단일 라인 안내 — 능동 알림·크론·스케줄 뉘앙스 없는지
+
+  # ============================================
+  # 4. Lite 모드 fallback (법망 API)
+  # ============================================
+
+  - id: law-change-04
+    name: Lite 모드 법망 API fallback — 시간 범위 discovery
+    persona: Chat 탭 사용자
+    context: |
+      Chat 탭은 스토리지 초기화로 legalize-kr 가 없는 Lite 모드. git log 를
+      쓸 수 없으므로 법망 API `law?action=history` 로 fallback. 출력 포맷은
+      Full 모드와 동일 (공포일/시행일 구분 + 변경 조문 + 링크).
+    question: |
+      최근 한 달 동안 개정된 법령 있어?
+    expected:
+      in_scope: true
+      mode: lite
+      response_contains:
+        - 법망
+        - 개정
+        - 공포
+        - 시행
+        - law.go.kr
+      forbidden_phrases:
+        # Lite 모드도 Pull 방식 — Push 뉘앙스 금지 (Full 과 동일 경계)
+        - 알림을 설정
+        - 크론
+        - 스케줄
+        - notification
+        # Lite 에서 legalize-kr git log 를 사용하지 말아야 함 (로컬 데이터 없음)
+        - "git -C ~/.beopsuny"
+        - legalize-kr 커밋
+      has_disclaimer: true
+    reference_files:
+      - skills/beopsuny/SKILL.md  # ## 법령 변경 감지 — Lite 모드 열
+      - skills/beopsuny/references/beopmang-api.md  # 법망 API 엔드포인트
+    data_source: |
+      # Lite 모드: 법망 API law?action=history + 최근 N건
+      # https://api.beopmang.org/law?action=history&since=...
+    validation:
+      - type: mode_detection
+        description: Lite 모드 (legalize-kr 로컬 데이터 없음) 에서 법망 API 경로를 사용하는지
+      - type: no_local_git
+        description: Lite 모드에서 git log 명령을 쓰지 않는지
+      - type: pull_boundary
+        description: Push 뉘앙스 없이 Pull 방식 응답인지
