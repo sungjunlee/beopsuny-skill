@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.1-rc.1] - 2026-04-12
+
+### Fixed
+- `contract_review_guide.md:23` 포인터 오류 — "수정안 자동 생성 금지" 원칙은 실제 `:21` 에 있음 (#24)
+  - SKILL.md 2곳 + `clause_references.yaml` 상단 주석 + `tests/scenarios/13_contract_review.yaml:438` 일괄 수정
+  - 라인 번호 대신 **섹션 제목** 참조로 전환 (`"법순이가 하지 않는 것"` 섹션) — 향후 라인 shift 에 견고
+
+### Changed
+- SKILL.md Step 4 항목 5 — 당사자 위치 fallback 기본값 문구 강화
+  - `profile.yaml` 에 당사자 위치 필드가 없거나 불명이면 **양쪽(gap·eul) 모두 노출** 이 기본값임을 명시
+  - v0.2.x 스키마(`company_profile.yaml`)에는 해당 필드 부재이므로 사실상 항상 양쪽 노출
+  - 스키마 필드 신설(A안)은 H2(#23) gap/eul 축 통일 결과를 본 후 재검토
+
 ## [0.2.0] - 2026-04-12
 
 **테마: 계약 검토 심화 (Contract Review Depth)** — v0.1.3 에서 선언만 되어 있던 `review_mode.yaml` 의 `include_counter_drafting_hints: true` 를 실제 동작으로 연결. 위험 조항 발견 시 `why_risky` / `negotiation_points` / `alt_wording_hint` 3 필드를 모드별 필터로 출력한다. 자가 검증 레이어에 Dim 4 (Counter-drafting Quality) 가 조건부 차원으로 추가됐다.
