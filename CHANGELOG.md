@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.1.3] - 2026-04-12
+
+### Added
+- `assets/policies/clause_taxonomy.yaml` 신설 — 계약 조항 분류·위험도 정책 파일
+  - 5개 카테고리 (boilerplate, risk_allocation, ip_data, employment, core_terms) 정의
+  - 3단계 위험도 (low/medium/high) 정의 + 판단 기준 (`classification_rules`) 신설
+  - 신규 조항 추가 템플릿(`_template`)을 정책 쪽으로 이전
+- `assets/policies/review_mode.yaml` 신설 — 계약 리뷰 엄격도 정책 (strict/moderate/loose)
+  - 기본값 `moderate` (하위 호환 — 기존 사용자 경험 무변화)
+  - 사용자 발화 힌트 기반 모드 감지 ("엄격히" → strict, "간단히" → loose)
+  - 모드별 Phase 0 범위, 위험도 플래그 임계, Grade C 결론 허용 여부 차등화
+
+### Changed
+- `assets/data/clause_references.yaml` 슬림화 — 조항→법령 매핑 데이터만 유지
+  - 51개 조항 key/값 바이트 동일 보존 (내용 무손실)
+  - top-level `categories` / `_template` 제거 → `policies/clause_taxonomy.yaml` 로 이전
+  - `taxonomy_ref` 필드 추가 (Claude 가 규칙 위치를 파일에서 직접 발견 가능)
+- `skills/beopsuny/SKILL.md`
+  - 번들 리소스 `assets/policies/` 테이블에 `clause_taxonomy.yaml`, `review_mode.yaml` 2행 추가
+  - 계약서 검토 워크플로우 **Step 3.5 (리뷰 모드 판정)** 신규 삽입
+  - Step 4 조항별 검토에 모드별 `risk_flagging.threshold` 적용 명시
+
+### Notes
+- 이슈 #4 **완전 close** — 잔여 2개 체크리스트(`clause_references.yaml` 분할 + `review_mode.yaml` 신설) 완료
+- Epic #1 (3개 패턴 도입: Source Grading + YAML Policy 구조 + 자가 검증) 종료 단계
+- 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`)만 사용
+- SKILL.md 620 → 653줄 (분리 트리거 800 미만, 목표 670 이하 달성)
+- `plugin.json` 버전 bump 없음 — `[0.1.1]` / `[0.1.2]` 엔트리와 함께 다음 릴리즈 PR에서 일괄 반영
+
 ## [0.1.2] - 2026-04-12
 
 ### Changed

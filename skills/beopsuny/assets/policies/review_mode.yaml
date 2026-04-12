@@ -1,0 +1,162 @@
+# ============================================================
+# Review Mode — 계약 리뷰 엄격도 정책 (strict / moderate / loose)
+# ============================================================
+# 계약서 검토 시 사용자의 요청 강도에 따라 리뷰 깊이를 조절하는 정책.
+#
+# 사용 시점:
+#   1. 사용자 발화에서 강도 힌트 감지 (detection.user_utterance_hints)
+#   2. 힌트 없으면 default_mode (moderate) 적용
+#   3. 선택된 모드의 rules 를 Step 4 조항별 검토에 적용
+#
+# 설계 원칙:
+#   - 기본값은 반드시 moderate (하위 호환: 기존 시나리오가 그대로 통과)
+#   - 태그 체계는 변경 없음 (6개 기존 태그만 사용)
+#   - Source Grading 정책(assets/policies/source_grades.yaml)과 독립적으로 동작
+# ============================================================
+
+version: "1.0.0"
+last_updated: "2026-04-12"
+
+default_mode: moderate
+
+# ─────────────────────────────────────────────────────────
+# 1. 모드별 규칙
+# ─────────────────────────────────────────────────────────
+
+modes:
+  strict:
+    label: "엄격 검토 — 보수적 관점, 모든 위험 플래그"
+    description: |
+      모든 위험 조항을 플래그하고 Grade C 단독 결론을 허용하지 않으며,
+      Primary Authority Rule 을 엄격히 적용하는 모드.
+      Phase 0 횡단 이슈는 트리거 여부와 무관하게 전수 확인한다.
+    risk_flagging:
+      threshold: "low"   # low/medium/high 모든 조항 플래그
+      include_low: true
+      include_missing_clauses: true
+      include_boilerplate_inconsistency: true
+    phase_0:
+      scope: "전수 확인"
+      require_all: true  # 트리거 없어도 국제거래/하도급/약관/표준계약서 모두 체크
+    source_grading:
+      primary_authority_rule: "strict"   # Grade C 단독 결론 금지 — [EDITORIAL] 태그만
+      grade_c_conclusion: "forbidden"
+      require_cross_check: true          # Grade B 이상이라도 교차검증 요구
+    output:
+      verbosity: "high"
+      include_negotiation_points: true
+      include_missing_clauses_section: true
+      include_counter_drafting_hints: true
+
+  moderate:
+    label: "표준 검토 — 실무 균형, 기본값"
+    description: |
+      위험도 상(high) 조항을 우선 플래그하고 Grade B 이상 소스 교차검증을 요구.
+      Phase 0 은 트리거된 항목(해외법인·하도급 관계 등)만 확인한다.
+      기존 법순이 기본 동작과 동일.
+    risk_flagging:
+      threshold: "medium"   # medium 이상 플래그
+      include_low: false
+      include_missing_clauses: true
+      include_boilerplate_inconsistency: false
+    phase_0:
+      scope: "트리거된 항목만"
+      require_all: false
+    source_grading:
+      primary_authority_rule: "standard"
+      grade_c_conclusion: "with_editorial_tag"   # [EDITORIAL] 태그 시에만 허용
+      require_cross_check: false                 # Grade A 단독 결론 허용
+    output:
+      verbosity: "medium"
+      include_negotiation_points: true
+      include_missing_clauses_section: false
+      include_counter_drafting_hints: false
+
+  loose:
+    label: "간이 검토 — 빠른 요약"
+    description: |
+      위험도 상(high) 조항과 명백한 누락 조항만 보고.
+      Phase 0 횡단 이슈 체크는 생략. 빠른 피드백이 목적.
+    risk_flagging:
+      threshold: "high"   # high 만 플래그
+      include_low: false
+      include_missing_clauses: true   # 누락 조항은 여전히 보고
+      include_boilerplate_inconsistency: false
+    phase_0:
+      scope: "생략"
+      require_all: false
+    source_grading:
+      primary_authority_rule: "standard"
+      grade_c_conclusion: "with_editorial_tag"
+      require_cross_check: false
+    output:
+      verbosity: "low"
+      include_negotiation_points: false
+      include_missing_clauses_section: false
+      include_counter_drafting_hints: false
+
+# ─────────────────────────────────────────────────────────
+# 2. 모드 감지 (사용자 발화 → 모드 분기)
+# ─────────────────────────────────────────────────────────
+
+detection:
+  # 사용자 발화에 아래 키워드가 포함되면 해당 모드로 분기
+  user_utterance_hints:
+    strict:
+      - 엄격하게
+      - 엄격히
+      - 꼼꼼하게
+      - 꼼꼼히
+      - 보수적으로
+      - 리스크 제로
+      - 모든 위험
+      - 전수 검토
+      - 상세 검토
+    loose:
+      - 간단히
+      - 간단하게
+      - 빠르게
+      - 빨리
+      - 요약만
+      - 요약해
+      - 가볍게
+      - 핵심만
+      - 훑어
+    moderate: []   # 기본값 — 명시적 힌트 필요 없음
+
+  resolution_rules:
+    - rule: "strict 와 loose 힌트가 동시에 등장하면 strict 우선"
+      reason: "법률 분야에서 안전 쪽(더 많은 확인)을 기본으로 한다"
+    - rule: "힌트 없으면 default_mode(moderate) 적용"
+      reason: "기존 사용자 경험 유지 (하위 호환)"
+    - rule: "사용자가 명시적으로 `review_mode:` 를 지정하면 힌트보다 우선"
+      reason: "명시 지정 > 추론"
+
+# ─────────────────────────────────────────────────────────
+# 3. 모드별 동작 차이 요약 (SKILL.md 표와 대응)
+# ─────────────────────────────────────────────────────────
+
+mode_matrix:
+  headers: [mode, risk_threshold, phase_0, grade_c_conclusion, verbosity]
+  rows:
+    - [strict,   "low (전부)",   "전수 확인",     "금지 ([EDITORIAL] 태그만)", high]
+    - [moderate, "medium 이상",   "트리거 시만",   "with_editorial_tag",        medium]
+    - [loose,    "high 만",        "생략",          "with_editorial_tag",        low]
+
+# ─────────────────────────────────────────────────────────
+# 4. 태그 체계 (기존 6개만 사용 — 새 태그 없음)
+# ─────────────────────────────────────────────────────────
+
+tag_policy:
+  existing_tags_only: true
+  allowed:
+    - "[VERIFIED]"
+    - "[UNVERIFIED]"
+    - "[INSUFFICIENT]"
+    - "[CONTRADICTED]"
+    - "[STALE]"
+    - "[EDITORIAL]"
+  note: |
+    모드별 차이는 "어떤 태그를 언제 강제하느냐"로만 표현한다.
+    예: strict 모드는 Grade C 결론에 반드시 [EDITORIAL] + 상위 Grade 보강 요구.
+    새 태그를 도입하지 않는다.
