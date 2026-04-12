@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0-rc.2] - 2026-04-12
+
+### Added
+- `skills/beopsuny/SKILL.md` 계약서 검토 워크플로우 Step 4 에 **Counter-drafting 힌트 출력 로직** 추가 (Step 4 항목 5)
+  - 모드별 필터 표: `strict` → 3 필드 모두, `moderate` → `why_risky` + `negotiation_points`, `loose` → `why_risky` 만
+  - `profile.yaml` 당사자 위치(갑/을) 기반 `negotiation_points.gap`/`.eul` 우선 노출
+  - "힌트 vs 자동 생성" 경계 재명문화 (`contract_review_guide.md:23` 원칙)
+  - 조항당 출력 블록 포맷(이름/이슈/근거법령/why/negotiation/alt) 확정
+- `tests/scenarios/13_contract_review.yaml` 에 회귀 시나리오 `contract-16` 추가
+  - "자동 생성 뉘앙스 금지" 검증 (forbidden_phrases 스캔)
+  - strict 모드에서 3 필드 출력 보장 검증
+
+### Notes
+- `review_mode.yaml` 의 `include_counter_drafting_hints` 선언이 실제 Step 4 동작과 연결됨 (v0.1.3 선언 → v0.2.0 구현)
+- 자가 검증 Dim 4 는 #16 에서 후속 PR
+- SKILL.md 653 → 683줄 (분리 트리거 800 미만, 목표 720 이하 달성)
+- `plugin.json` 버전 bump 없음 — v0.2.0 최종 릴리즈 PR 에서 일괄 반영
+
 ## [0.2.0-rc.1] - 2026-04-12
 
 ### Added
