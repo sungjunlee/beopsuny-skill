@@ -88,7 +88,7 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 **전제조건** — Settings → Capabilities에서 **Code execution and file creation**이 켜져 있어야 한다 (Free / Pro / Max / Team / Enterprise 모두 지원).
 
 1. [Releases 페이지](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 (압축 해제 X)
-2. Claude Desktop 또는 claude.ai → **Customize → Skills → Create Skill → Upload a skill**
+2. Claude Desktop 또는 claude.ai → **Customize → Skills** → `+` → `+ Create skill` → **Upload a skill**
 3. 1단계에서 받은 zip 선택 → 업로드 완료 후 Skills 목록에서 **beopsuny** 토글 ON
 4. 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`)을 하면 자동으로 활성화된다
 
