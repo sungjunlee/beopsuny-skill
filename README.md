@@ -52,21 +52,21 @@ You: "이 계약서 검토해줘"
 
 ### 방법 1: Claude Code Plugin (권장)
 
-Claude Code 안에서 플러그인 마켓플레이스로 추가·설치한다. OS 무관하게 Claude Code CLI 한 줄씩이면 끝.
+Claude Code 프롬프트에서 아래 두 줄을 **한 줄씩** 실행한다. OS 무관.
+
+1) 이 레포를 플러그인 마켓플레이스로 등록 (`.claude-plugin/marketplace.json` 기준, 이름: `beopsuny-skill`):
 
 ```
 /plugin marketplace add sungjunlee/beopsuny-skill
+```
+
+2) 등록된 마켓플레이스에서 `beopsuny` 플러그인 설치:
+
+```
 /plugin install beopsuny@beopsuny-skill
 ```
 
-- 첫 줄은 이 레포를 마켓플레이스로 등록한다 (이름: `beopsuny-skill`, `.claude-plugin/marketplace.json` 기준).
-- 둘째 줄은 마켓플레이스에서 `beopsuny` 플러그인을 설치한다. 새 세션에서 스킬이 자동 활성화된다.
-- 업데이트는 `/plugin marketplace update beopsuny-skill` 후 다시 install.
-
-> **Windows 사용자 주의**
-> - PowerShell에서 `/plugin ...` 명령을 붙여넣을 때 파싱이 깨지면 인자를 `"..."`로 감싼다: `/plugin install "beopsuny@beopsuny-skill"`.
-> - `git config --global core.symlinks true`가 꺼져 있으면 plugin clone 시 내부 심볼릭 링크가 깨질 수 있다. `git config --global --get core.symlinks`로 확인.
-> - 마켓플레이스 클론 위치는 `%USERPROFILE%\.claude\plugins\`. 설치가 꼬이면 해당 폴더에서 마켓플레이스 디렉토리를 지우고 다시 `/plugin marketplace add`.
+설치 후 새 세션에서 스킬이 자동 활성화된다. 업데이트는 `/plugin marketplace update beopsuny-skill` 후 다시 install.
 
 ### 방법 2: `skills` CLI (Claude Code 바깥에서 설치)
 
