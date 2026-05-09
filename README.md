@@ -31,6 +31,7 @@ You: "이 계약서 검토해줘"
 - **법령 변경 감지** — `watched_laws` 등록 법령의 개정 이력 추적 (`git log` + 법망 API)
 - **자가 검증 태그** — 답변마다 `[VERIFIED]`/`[UNVERIFIED]`/`[STALE]` 등 6종 태그 + 소스 Grade A–D → 환각 방지
 - **Full / Lite 모드** — 로컬 데이터가 있으면 Full(조문·판례 전문 직접 조회), 없으면 법망 API 기반 Lite로 자동 fallback
+- **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
 - **회사 맥락 메모리** — 회사 프로필·과거 검토 이력 기반 맥락 답변
 
