@@ -1,0 +1,269 @@
+# beopsuny-knowledge 주입 경계 시나리오
+# 첫 단계는 docs/config/test-fixture only: manifest fetch, checksum 검증,
+# usage_mode enforcement 구현은 후속 이슈로 둔다.
+
+name: beopsuny-knowledge 주입 경계
+description: |
+  beopsuny-knowledge privacy active vertical 자산을 법순이 live legal research와
+  결합할 때의 경계를 검증한다. 이 시나리오는 runtime ingestion 구현이 아니라
+  blind-first, expansion-not-routing, audit-not-oracle 원칙을 고정하는 replay fixture다.
+
+manifest:
+  default_channel: stable
+  source_type: configured_manifest
+  channels:
+    - stable
+    - canary
+  source_location: integration_config
+  required_asset_keys:
+    - taxonomy
+    - retrieval_hints
+    - authority_map.core
+    - authority_map.overlay
+    - session_schema
+  failure_behavior: skip_knowledge_injection_and_use_live_research_only
+
+global_rules:
+  consumption_order:
+    - privacy_issue_materiality_check
+    - active_vertical_assets_for_framing_when_useful
+    - blind_live_search
+    - retrieval_hints_expansion_when_useful
+    - authority_source_audit_when_useful
+    - reference_context_check_when_useful
+    - answer_from_current_live_sources
+  right_sized_use:
+    knowledge_asset_is_optional: true
+    skip_allowed_for_simple_lookup: true
+    must_not_require_manifest_for_basic_legal_answer: true
+    must_not_turn_every_privacy_question_into_full_ingestion_workflow: true
+    good_use_cases:
+      - cross_border_vendor_dpa_subprocessor_questions
+      - server_side_tag_forwarding_or_adtech_questions
+      - incident_response_effective_date_boundary_questions
+  allowed_active_verticals:
+    - privacy
+  seed_workspace_boundary:
+    structured_ingestion: false
+    note: contracts/employment/fair-trade 등 seed workspace memo는 reference context일 뿐 runtime taxonomy/retrieval hints/authority map이 아니다.
+  forbidden_uses:
+    - retrieval_hints_as_initial_route
+    - authority_map_as_route_oracle
+    - knowledge_asset_as_legal_conclusion_source
+    - seed_memo_as_structured_asset
+    - sibling_path_as_runtime_contract
+  required_live_boundaries:
+    - current_statutes_decrees_rules_admin_materials
+    - current_cases_interpretations_official_materials
+    - source_grading
+    - self_verification
+  simple_question_boundary:
+    examples:
+      - 개인정보 보호법 제15조 조문 확인
+      - 개인정보 보호법 최근 시행일 확인
+      - 개인정보위 공식 국외이전 안내 링크 확인
+    expected_behavior: live_research_only_is_allowed
+    forbidden_behavior: manifest_fetch_or_full_authority_audit_as_a_prerequisite
+
+scenarios:
+  - id: eval-privacy-000
+    name: 단순 개인정보 조문 확인은 live research만으로 충분
+    persona: 법무팀 실무자
+    context: |
+      개인정보 수집·이용 동의 화면을 만들기 전에 기본 조문 번호와 내용을 확인하려 한다.
+      vendor, DPA, 국외이전, 사고대응, 광고태그 같은 복합 사실관계는 없다.
+    question: |
+      개인정보 보호법 제15조 조문 내용과 공식 링크만 확인해줘.
+    expected:
+      knowledge_scope:
+        vertical: privacy
+        use_knowledge_assets: optional_skip
+        reason: 단순 조문·공식 링크 확인은 쟁점 분해나 post-search audit 없이 live legal research로 충분하다.
+      live_research_must_check:
+        - 개인정보 보호법 제15조 현행 조문
+        - law.go.kr 공식 링크
+        - 시행일 또는 현행성 표시
+      forbidden_workflow_requirements:
+        - manifest_fetch_as_prerequisite
+        - taxonomy_issue_framing_as_prerequisite
+        - retrieval_hints_expansion_as_prerequisite
+        - authority_map_audit_as_prerequisite
+      forbidden_conclusions:
+        - knowledge asset을 확인할 수 없어 답변 불가
+        - 단순 조문 확인에 vendor/DPA/국외이전 사실관계 확인을 요구
+    reference_files:
+      - skills/beopsuny/SKILL.md
+      - skills/beopsuny/references/knowledge-injection.md
+    validation:
+      - type: right_sized_skip
+        description: 단순 조문/링크 확인에서는 manifest나 full ingestion workflow 없이 live source 기준 답변을 허용하는지
+      - type: source_boundary
+        description: 공식 조문과 링크를 확인하되 knowledge asset을 법적 결론 근거로 쓰지 않는지
+
+  - id: eval-privacy-001
+    name: 해외 SaaS CRM 국외이전
+    persona: 사내 개인정보 담당 변호사
+    context: |
+      미국 CRM SaaS에 고객 연락처와 상담 이력을 업로드하려 한다.
+      저장 리전, 백업 리전, support access, DPA, subprocessor list가 아직 모두 확인되지 않았다.
+    question: |
+      미국 CRM SaaS에 고객 연락처와 상담 이력을 올리려는데 국외이전 동의가 필요한가?
+    expected:
+      knowledge_scope:
+        vertical: privacy
+        issue_codes:
+          - cross_border
+          - sharing_structure
+        allowed_assets:
+          taxonomy: issue_framing_only
+          retrieval_hints: expansion_after_blind_search
+          authority_map.core: audit_only
+          authority_map.overlay: audit_only
+      blind_first_must_check:
+        - 개인정보 보호법 현행 국외이전 조항
+        - 개인정보 보호법 시행령 현행 공개/통지 세부 기준
+        - 개인정보위 국외이전 제도 관련 공식 자료
+        - 처리위탁과 제3자 제공 분기
+      post_blind_expansion_should_add:
+        - 해외 support access
+        - backup region
+        - DPA 국외이전 조항
+        - subprocessor list
+        - data transfer map
+        - vendor self-use 여부
+      authority_audit_should_check:
+        - storage_access_split
+        - processor_third_party_fork
+        - notice_or_disclosure_obligation
+        - company_doc_dpa
+        - vendor_doc_subprocessor_list
+      forbidden_conclusions:
+        - DPA가 있으면 국외이전 문제 없음
+        - 해외 서버면 항상 별도 동의 필요
+        - knowledge memo만으로 현행 결론 확정
+    reference_files:
+      - skills/beopsuny/SKILL.md
+      - skills/beopsuny/references/knowledge-injection.md
+    validation:
+      - type: blind_first
+        description: retrieval hints 적용 전 현행 공식 source set을 먼저 확인하는지
+      - type: expansion_not_routing
+        description: support access, backup, DPA, subprocessor를 post-blind 확장으로만 쓰는지
+      - type: conclusion_boundary
+        description: 최종 결론이 live official source와 Source Grade로만 뒷받침되는지
+      - type: right_sized_use
+        description: 복합 국외이전/vendor 질문이라 knowledge 보강은 허용되지만, manifest가 결론의 전제조건이 되지 않는지
+
+  - id: eval-privacy-002
+    name: Server-side tag forwarding 공개·변경 이력
+    persona: SaaS 서비스 개인정보/마케팅 법무 담당자
+    context: |
+      웹 광고 태그를 server-side tag manager로 옮겼다.
+      브라우저 제3자 스크립트는 줄었지만 first-party endpoint, forwarding rule,
+      destination vendor, opt-out suppression propagation은 별도 확인이 필요하다.
+    question: |
+      웹 광고 태그를 server-side tag manager로 옮겼다. 브라우저의 제3자 스크립트는 줄었는데 SDK/태그 버전만 변경 이력에 남기면 충분한가?
+    expected:
+      knowledge_scope:
+        vertical: privacy
+        issue_codes:
+          - sharing_structure
+          - collection_use
+          - data_subject_rights
+        allowed_assets:
+          taxonomy: issue_framing_only
+          retrieval_hints: expansion_after_blind_search
+          authority_map.overlay: audit_only
+      blind_first_must_check:
+        - 개인정보 보호법 현행 수집/이용 및 공개 관련 조항
+        - 개인정보 처리방침 작성지침
+        - 개인정보위 행태정보/맞춤형 광고 관련 공식 자료
+        - 제3자 수집도구와 처리위탁/제3자 제공 분기
+      post_blind_expansion_should_add:
+        - server-side container version
+        - forwarding rule ID
+        - first-party endpoint
+        - endpoint payload annex
+        - destination vendor별 수신 항목과 목적
+        - opt-out forwarding suppression test
+        - vendor suppression acknowledgement
+      authority_audit_should_check:
+        - 제3자 수집도구 공개·변경 이력
+        - vendor list
+        - subprocessor notice
+        - CPO 수집도구 점검 로그
+        - forwarding rule change ticket
+      forbidden_conclusions:
+        - server-side tagging이면 개인정보 리스크 감소로 충분
+        - 브라우저 SDK 제거로 opt-out 전파 해결
+        - 쿠키 동의 배너만 있으면 충분
+    reference_files:
+      - skills/beopsuny/SKILL.md
+      - skills/beopsuny/references/knowledge-injection.md
+    validation:
+      - type: blind_first
+        description: 행태정보와 처리방침 공식 자료를 먼저 확인하는지
+      - type: expansion_not_routing
+        description: server-side forwarding 세부 문서를 post-blind 확장으로만 쓰는지
+      - type: audit_not_oracle
+        description: authority map이 공개/변경 이력 누락 점검에만 쓰이는지
+      - type: right_sized_use
+        description: server-side forwarding 특유의 누락 위험 때문에 보강하되, 모든 광고/쿠키 질문에 같은 full workflow를 강제하지 않는지
+
+  - id: eval-privacy-003
+    name: Vendor incident notice와 effective-date boundary
+    persona: 사고대응 담당 사내변호사
+    context: |
+      벤더 관리자 계정탈취 정황이 있고 일부 로그만 확인됐다.
+      유출 확정 전 단계, 유출 가능성 단계, 현행 신고·통지 기준, 시행예정 조항을 분리해야 한다.
+    question: |
+      벤더 계정탈취 정황이 있고 일부 로그만 확인됐다. 유출 가능성 단계에서 신고ㆍ통지ㆍ증적보전과 처리방침 또는 DPA 변경 이력을 어떻게 나눠야 하나?
+    expected:
+      knowledge_scope:
+        vertical: privacy
+        issue_codes:
+          - incident_response
+          - security_controls
+        allowed_assets:
+          taxonomy: issue_framing_only
+          retrieval_hints: expansion_after_blind_search
+          authority_map.core: audit_only
+          authority_map.overlay: audit_only
+      blind_first_must_check:
+        - 개인정보 보호법 현행 유출 통지·신고 조항
+        - 개인정보 보호법 시행령 현행 통지·신고 기준
+        - 개인정보위 유출신고제도
+        - 개인정보 유출 등 사고대응 매뉴얼
+        - 시행예정 조항의 시행일과 부칙
+      post_blind_expansion_should_add:
+        - vendor incident notice
+        - DPA incident cooperation clause
+        - incident timeline
+        - notification/reporting decision table
+        - containment log
+        - forensic and access log preservation policy
+        - effective-date versioning fields
+      authority_audit_should_check:
+        - current_reporting_conclusion
+        - future_effective_date_transition_risk
+        - delegated_decree_todo
+        - law_version
+        - vendor_involvement
+        - evidence_preservation
+      forbidden_conclusions:
+        - 계정탈취 정황은 곧바로 유출 확정
+        - 확정 전에는 아무 조치 없음
+        - 유출 가능성 통지는 현행 의무라고 단정
+        - 벤더 사고라 위탁자 책임 없음
+    reference_files:
+      - skills/beopsuny/SKILL.md
+      - skills/beopsuny/references/knowledge-injection.md
+    validation:
+      - type: temporal_boundary
+        description: 현행 의무와 시행예정 전환 리스크를 분리하는지
+      - type: expansion_not_routing
+        description: vendor notice, timeline, evidence preservation을 post-blind 확장으로만 쓰는지
+      - type: conclusion_boundary
+        description: 통지·신고 결론이 live official source와 적용 시점 확인에 근거하는지
+      - type: right_sized_use
+        description: 사고대응/effective-date 분리에는 audit 보강이 유용하지만, manifest 실패 시에도 live source 기준의 실무 답변을 계속하는지
