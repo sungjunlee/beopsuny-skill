@@ -13,7 +13,8 @@
 - `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 6건 추가. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, Grade C/D 단독 결론 금지, 인허가 checklist routing 검증
 
 ### Changed
-- `skills/beopsuny/SKILL.md` 762줄 → 253줄. 상세 매뉴얼에서 `Intent Router` + Full/Lite gate + Source Grade contract + mandatory self-verification spine으로 재작성
+- `skills/beopsuny/SKILL.md` 762줄 → 245줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + Source Grade 계약 + 필수 자가 검증 중심 문서로 재작성
+- `skills/beopsuny/SKILL.md` frontmatter에서 비필수 `metadata.author/language/updated/version` 제거. skill discovery에 필요한 `name`/`description`만 유지하고, 배포 메타데이터는 `.claude-plugin/plugin.json`로 단일화. 한국 사용자 대상 스킬에 맞춰 `description`과 주요 라우터 문구를 한국어 중심으로 정리
 - `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
 - `DESIGN.md`에 2026-05-10 아키텍처 결정 기록 추가: 물리적 multi-skill 전환 보류, 단일 스킬 유지 + 내부 router spine 전환
 
