@@ -111,6 +111,28 @@ beopsuny-skill/
 
 ## 6. 아키텍처 결정 기록
 
+### 2026-05-10: 단일 스킬 유지 + 내부 router spine 전환
+
+**컨텍스트**: `SKILL.md`가 762줄까지 커져 §4의 multi-skill 전환 트리거(800줄)에 근접했다. 단순한 분량보다 더 큰 문제는 법률 조사, 계약 검토, 체크리스트, 변경 감지, 메모리, knowledge injection, 출력 예시가 모두 항상 로드되는 spine에 섞인 점이다.
+
+**결정**: 외부 artifact는 단일 `beopsuny` skill로 유지하되, 내부 구조는 virtual skill suite처럼 재정렬한다.
+
+```
+User question
+  -> SKILL.md router spine
+  -> intent-specific reference
+  -> Source Grade + self verification
+  -> answer
+```
+
+**이유**:
+
+1. §6의 2026-04-12 단일 스킬 유지 근거는 여전히 유효하다. Desktop Chat/Lite paste 호환성, 통합형 사내변호사 workflow, multi-skill 자동 발견 불안정성이 남아 있다.
+2. 하지만 `SKILL.md`가 매뉴얼이 되면 단순 조문 질문에도 계약 검토, checklist, 변경 감지, memory 규칙이 모델 context에 올라와 오답 리스크가 커진다.
+3. 따라서 물리적 multi-skill 전환 대신 `SKILL.md`는 router + mandatory gates로 축소하고, source access, research, checklist, law change, output formats를 on-demand reference로 이동한다.
+
+**후속 트리거**: DOCX redline, 자동 알림/스케줄링, 공식 MCP/updater 배포, 계약 검토 단독 사용 피드백이 쌓이면 물리적 multi-skill 또는 plugin escalation을 다시 검토한다.
+
 ### 2026-04-12: 단일 스킬 유지 (reversed from multi-skill)
 
 **컨텍스트**: `/gstack-plan-eng-review` 세션에서 처음 3개 스킬(research/contract/compliance)로 분리하는 방향으로 갔다가, Codex 독립 리뷰에서 아래 지적을 받고 되돌렸다.
@@ -149,4 +171,5 @@ beopsuny-skill/
 
 | 날짜 | 변경 | PR |
 |------|------|----|
+| 2026-05-10 | 단일 스킬 유지 + 내부 router spine 전환 결정 | TBD |
 | 2026-04-12 | 초안 작성 — 단일 스킬 결정, 분리 트리거 정의, v0.2.0 로드맵 | #2 |

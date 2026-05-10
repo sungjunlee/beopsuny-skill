@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased]
+
+**테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.
+
+### Added
+- `skills/beopsuny/references/source-access.md` — Full/Lite 모드, legalize-kr, precedent-kr, 법망 API, korean-law-mcp, WebSearch fallback, 원문 링크, 데이터 초기화 절차를 분리
+- `skills/beopsuny/references/research-workflow.md` — 법령·하위법령·행정규칙·판례·개정안 조사 깊이 조절 규칙 분리
+- `skills/beopsuny/references/checklist-routing.md` — checklist 선택, triage, filtering, related checklist, 회사 맥락 적용 규칙 분리
+- `skills/beopsuny/references/law-change-detection.md` — pull-only 법령 변경 감지, Full/Lite 동작, 조회 실패 처리, push 경계 분리
+- `skills/beopsuny/references/output-formats.md` — 법령/판례/행정규칙/Grade C/INSUFFICIENT 출력 예시 분리
+- `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 6건 추가. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, Grade C/D 단독 결론 금지, 인허가 checklist routing 검증
+
+### Changed
+- `skills/beopsuny/SKILL.md` 762줄 → 253줄. 상세 매뉴얼에서 `Intent Router` + Full/Lite gate + Source Grade contract + mandatory self-verification spine으로 재작성
+- `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
+- `DESIGN.md`에 2026-05-10 아키텍처 결정 기록 추가: 물리적 multi-skill 전환 보류, 단일 스킬 유지 + 내부 router spine 전환
+
+### Notes
+- 외부 artifact 이름은 계속 `beopsuny`
+- 물리적 multi-skill 전환은 DOCX redline, 자동 알림/스케줄링, MCP/updater 배포, 계약 검토 단독 사용 피드백이 생길 때 재검토
+- 새 Source Grade 태그 없음. 기존 6개 상태 태그 + Grade A/B/C/D 유지
+
 ## [0.3.1] - 2026-04-12
 
 **테마: v0.3.0 post-release codex adversarial review hotfix** — v0.3.0 릴리즈 직후 codex (gpt-5.x, model_reasoning_effort=high, 1.85M tokens, law.go.kr 공식 소스 검증) adversarial review 에서 **4 P1 blockers + 4 P2 issues** 식별. 핵심 원칙 4 (정확한 인용) 가 걸린 조문번호 drift 여서 긴급 patch.
