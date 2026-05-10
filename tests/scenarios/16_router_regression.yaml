@@ -1,0 +1,181 @@
+# Router regression scenarios
+# These fixtures protect the compact SKILL.md router spine from over-routing
+# after detailed workflow material moved into references/.
+
+name: 라우터 회귀 시나리오
+description: |
+  단일 public skill을 유지하되 내부 workflow를 virtual suite처럼 나누는 구조 변경의 회귀를 검증한다.
+  핵심은 짧은 질문에 과잉 workflow를 적용하지 않고, 복합 질문은 맞는 reference로 진입하는지다.
+
+global_rules:
+  router_spine:
+    public_skill: beopsuny
+    must_remain_single_skill: true
+    primary_contract:
+      - choose_one_primary_intent_first
+      - load_only_relevant_workflow_references
+      - always_apply_source_grade_and_self_verification
+      - do_not_answer_korean_law_from_memory
+  mandatory_references:
+    source_grade: skills/beopsuny/references/source-grading.md
+    self_verification: skills/beopsuny/references/self-verification.md
+    source_access: skills/beopsuny/references/source-access.md
+
+scenarios:
+  - id: router-01
+    name: 짧은 조문 확인은 legal_research만 수행
+    persona: 법무팀 실무자
+    context: |
+      사용자가 단순히 조문 번호와 공식 링크를 확인하려 한다.
+      계약서, checklist, 개인정보 복합 사실관계는 없다.
+    question: "민법 제750조 내용과 공식 링크만 알려줘."
+    expected:
+      primary_intent: legal_research
+      should_load:
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/output-formats.md
+      should_not_load:
+        - skills/beopsuny/references/contract_review_guide.md
+        - skills/beopsuny/references/checklist-routing.md
+        - skills/beopsuny/references/knowledge-injection.md
+      response_contains:
+        - 민법 제750조
+        - "[Grade A]"
+        - "[VERIFIED]"
+        - law.go.kr
+      forbidden_behavior:
+        - 계약 검토 모드 진입
+        - 체크리스트 triage 질문
+        - knowledge manifest fetch 요구
+    validation:
+      - type: no_overrouting
+        description: 단순 조문 확인에서 계약/체크리스트/knowledge workflow를 끌어오지 않는지
+
+  - id: router-02
+    name: 계약 검토는 contract_review workflow로 진입
+    persona: 사내변호사
+    context: |
+      사용자가 SaaS 계약서 일부를 붙여넣고 위험 조항을 봐 달라고 한다.
+    question: |
+      이 SaaS 계약서에서 손해배상과 책임제한 조항이 너무 센지 봐줘.
+    expected:
+      primary_intent: contract_review
+      review_mode: moderate
+      should_load:
+        - skills/beopsuny/references/contract_review_guide.md
+        - skills/beopsuny/assets/policies/checklists/contract_review.yaml
+        - skills/beopsuny/assets/policies/review_mode.yaml
+        - skills/beopsuny/assets/data/clause_references.yaml
+      response_contains:
+        - 위험 조항
+        - 근거 법령
+        - 협상 포인트
+      forbidden_phrases_source: skills/beopsuny/assets/policies/review_mode.yaml#counter_draft_forbidden_patterns
+      forbidden_behavior:
+        - 최종 수정안처럼 단정
+        - Grade C 단독 결론
+    validation:
+      - type: correct_workflow
+        description: 계약 질문이 일반 법률 조사에 머물지 않고 계약 workflow로 진입하는지
+
+  - id: router-03
+    name: 개인정보 복합 질문은 live search 우선, knowledge는 보조
+    persona: 개인정보 담당자
+    context: |
+      미국 CRM SaaS에 고객 연락처와 상담 이력을 업로드하려 한다.
+    question: "미국 CRM SaaS에 고객 연락처와 상담 이력을 올리려는데 국외이전 동의가 필요한가?"
+    expected:
+      primary_intent: legal_research
+      optional_secondary_intent: privacy_knowledge_layer
+      must_do_before_knowledge:
+        - 현행 개인정보 보호법 확인
+        - 시행령/고시/개인정보위 공식 자료 확인
+        - Source Grade 부여
+      knowledge_use:
+        allowed: recall_expansion_or_authority_audit_after_blind_search
+        forbidden:
+          - retrieval_hints_as_initial_route
+          - knowledge_asset_as_legal_conclusion_source
+          - manifest_failure_blocks_answer
+      should_load:
+        - skills/beopsuny/references/knowledge-injection.md
+    validation:
+      - type: blind_first_boundary
+        description: privacy knowledge layer가 최초 route나 결론 근거가 되지 않는지
+
+  - id: router-04
+    name: 법령 변경 정기 알림 요청은 기본 변경 감지와 분리
+    persona: 법무팀장
+    context: |
+      사용자가 관심 법령을 정기적으로 알려 달라고 말한다.
+      현재 skill 자체는 pull 방식 변경 감지만 지원한다.
+    question: "개인정보보호법 바뀌면 매주 정기적으로 알려줘."
+    expected:
+      primary_intent: law_change_detection
+      should_load:
+        - skills/beopsuny/references/law-change-detection.md
+      response_contains:
+        - pull 방식
+        - 자동화
+      acceptable_behavior:
+        - 현재 대화에서 자동 알림은 별도 automation 요청으로 처리해야 함을 설명
+        - 지금 즉시 최근 변경 내역을 확인할지 묻거나 수행
+      forbidden_phrases:
+        - 정기적으로 알려드릴게요
+        - 주기적으로 체크해드리겠습니다
+        - 자동 모니터링을 설정했습니다
+        - 크론을 설정했습니다
+    validation:
+      - type: push_boundary
+        description: 변경 감지 workflow가 알림/크론 약속으로 새지 않는지
+
+  - id: router-05
+    name: Grade C/D 단독 결론 금지
+    persona: 스타트업 운영 담당자
+    context: |
+      사용자가 블로그에서 본 과징금 정보를 확인하려 한다.
+    question: "블로그에서 개인정보 과징금이 무조건 10억이라던데 맞아?"
+    expected:
+      primary_intent: legal_research
+      must_check:
+        - 개인정보 보호법
+        - 시행령 또는 고시의 산정 기준
+        - 개인정보위 등 공식 자료
+      source_grade_rules:
+        blog: Grade D
+        law_firm_newsletter: Grade C
+        official_agency: Grade B_or_A_depending_source
+      forbidden_conclusions:
+        - 블로그 내용만으로 맞다고 단정
+        - Grade C 단독으로 금액 확정
+      response_contains:
+        - "[EDITORIAL]"
+        - "[INSUFFICIENT]"
+    validation:
+      - type: source_discipline
+        description: 비공식 자료가 결론 근거로 승격되지 않는지
+
+  - id: router-06
+    name: 인허가 질문은 checklist workflow로 진입
+    persona: 식품 커머스 창업자
+    context: |
+      온라인으로 가공식품을 판매하려는 초기 사업자.
+    question: "온라인으로 식품 팔려면 어떤 인허가랑 신고를 준비해야 해?"
+    expected:
+      primary_intent: compliance_checklist
+      should_load:
+        - skills/beopsuny/references/checklist-routing.md
+        - skills/beopsuny/assets/policies/checklists/food_business.yaml
+        - skills/beopsuny/assets/data/permits.yaml
+        - skills/beopsuny/assets/data/forms.yaml
+      must_do:
+        - 업종/판매 방식/제조 여부 triage
+        - 관련 법령 원문 또는 공식 기관 링크 확인
+        - 필요한 신고/허가와 미확인 조건 분리
+      forbidden_behavior:
+        - 전체 체크리스트 무차별 나열
+        - 법령 확인 없이 permits.yaml만 근거로 결론
+    validation:
+      - type: checklist_routing
+        description: 인허가 질문이 관련 checklist와 data로 좁혀지는지
