@@ -150,7 +150,17 @@ scenarios:
         - 블로그 내용만으로 맞다고 단정
         - Grade C 단독으로 금액 확정
       response_contains:
+        - "[Grade A]"
+      source_handling_must_show:
+        - blog_or_secondary_source_not_conclusion_source
+        - official_source_controls_amount_conclusion
+      acceptable_secondary_tags:
+        - "[Grade C]"
+        - "[Grade D]"
         - "[EDITORIAL]"
+      acceptable_status_tags:
+        - "[VERIFIED]"
+        - "[UNVERIFIED]"
         - "[INSUFFICIENT]"
     validation:
       - type: source_discipline
