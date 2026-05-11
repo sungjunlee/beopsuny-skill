@@ -94,6 +94,20 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 
 ## 고급 설정 (선택)
 
+### 개발/설치본 드리프트 확인
+
+레포의 `skills/beopsuny/SKILL.md`와 실제 에이전트가 읽는 설치본이 다르면 수정 결과가 런타임에 반영되지 않는다. 릴리즈 전에는 기본 계약 검증을 실행한다.
+
+```bash
+python3 tests/validate_skill_contracts.py
+```
+
+로컬 전역 설치본까지 비교하려면 설치 경로를 명시한다.
+
+```bash
+BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny python3 tests/validate_skill_contracts.py
+```
+
 ### Full 모드 로컬 데이터 (권장)
 
 Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **Full 모드를 권장한다**. 로컬 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 1차 소스를 열어볼 수 있다.

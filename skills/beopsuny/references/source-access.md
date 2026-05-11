@@ -28,6 +28,27 @@ ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/
 
 결과가 있으면 Full 모드, 없으면 Lite 모드다. 데이터가 없다고 자동 clone하지 않는다. 사용자가 Full 모드 설정 또는 데이터 다운로드를 요청할 때만 초기화한다.
 
+## Capability Matrix
+
+실행 환경마다 사용할 수 있는 소스가 다르다. 없는 도구를 있다고 가정하지 말고, 가능한 경로로 좁히거나 결론을 유보한다.
+
+| 상황 | 사용 가능한 경로 | 답변 경계 |
+| --- | --- | --- |
+| Full 모드 + 네트워크 가능 | local legalize-kr/precedent-kr, 법망 API, korean-law-mcp, WebSearch | 가장 강한 모드. 그래도 행정규칙·최신 개정은 API/공식 링크로 확인 |
+| 로컬 데이터 없음 | 법망 API, WebSearch, 공식 링크 | Lite 모드로 안내. 로컬 전문·git history 전제 금지 |
+| 법망 API 접근 불가 | local data, law.go.kr/glaw.scourt.go.kr, WebSearch 공식 자료 | 행정규칙·해석례 원문 확인 실패 시 `[INSUFFICIENT]` 또는 `[UNVERIFIED]` |
+| WebSearch 없음 | local data, 법망 API, 사용 가능한 MCP/공식 링크 | 정책 동향·제재 동향은 생략하거나 확인 필요 표시 |
+| korean-law-mcp 또는 OC 코드 없음 | local data, 법망 API, WebSearch | 헌재·행정심판·자치법규·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내 |
+| 네트워크 없음 | local legalize-kr/precedent-kr만 사용 | 최신성, 행정규칙, 정책 동향, 공식 링크 검증을 제한사항으로 표시 |
+| 로컬 데이터와 네트워크 모두 없음 | 번들 YAML은 후보·체크리스트로만 사용 | 법률 결론을 만들지 말고 `[INSUFFICIENT]`로 유보 |
+
+Fallback 원칙:
+
+- 조회 실패는 결론이 아니다. 실패 원인과 확인하지 못한 범위를 표시한다.
+- 번들 `assets/data/*.yaml`은 탐색 후보이지 현행 법적 결론 근거가 아니다.
+- 링크 패턴이 확실하지 않으면 추정 링크를 만들지 않는다.
+- 현재 소스로 확인할 수 없는 조문·판례·시행일·금액은 만들지 않는다.
+
 ## Full Mode: legalize-kr
 
 경로:
