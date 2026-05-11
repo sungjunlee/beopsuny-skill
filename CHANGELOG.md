@@ -11,11 +11,16 @@
 - `skills/beopsuny/references/law-change-detection.md` — pull-only 법령 변경 감지, Full/Lite 동작, 조회 실패 처리, push 경계 분리
 - `skills/beopsuny/references/output-formats.md` — 법령/판례/행정규칙/Grade C/INSUFFICIENT 출력 예시 분리
 - `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 6건 추가. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, Grade C/D 단독 결론 금지, 인허가 checklist routing 검증
+- `tests/validate_skill_contracts.py` — plugin 메타데이터 버전 정합, 최소 SKILL frontmatter, 계약 검토 가이드 경계, source fallback, 출력 크기 조절, 라우터 필수 reference를 검증하는 정적 계약 검사 추가. `BEOPSUNY_INSTALLED_SKILL_PATH` 지정 시 설치본 content drift도 감지
 
 ### Changed
 - `skills/beopsuny/SKILL.md` 762줄 → 245줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + Source Grade 계약 + 필수 자가 검증 중심 문서로 재작성
 - `skills/beopsuny/SKILL.md` frontmatter에서 비필수 `metadata.author/language/updated/version` 제거. 스킬 발견에 필요한 `name`/`description`만 유지하고, 배포 메타데이터는 `.claude-plugin/plugin.json`로 단일화. 한국 사용자 대상 스킬에 맞춰 `description`과 주요 라우터 문구를 한국어 중심으로 정리
 - `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
+- `skills/beopsuny/SKILL.md` 출력 계약에 `full`/`compact` 크기 조절 규칙 추가. 법률 결론에는 자가 검증을 유지하되, 비법률 운영 응답에는 법률용 메타데이터를 억지로 붙이지 않도록 정리
+- `skills/beopsuny/references/contract_review_guide.md`를 v0.3 router spine 기준으로 재작성. 구버전 "명령어 실행" 지시를 제거하고 Source Grade, verification status, review_mode, Counter-drafting 경계를 반영
+- `skills/beopsuny/references/source-access.md`에 Capability Matrix 추가. 로컬 데이터 없음, 법망 API 접근 불가, WebSearch 없음, 네트워크 없음 등 환경별 fallback과 `[INSUFFICIENT]` 유보 기준 명시
+- `README.md`에 개발/설치본 drift 확인 절차 추가
 - `DESIGN.md`에 2026-05-10 아키텍처 결정 기록 추가: 물리적 multi-skill 전환 보류, 단일 스킬 유지 + 내부 router spine 전환
 
 ### Notes
