@@ -122,10 +122,39 @@ def check_output_contract_right_sizing() -> None:
 
     for required in [
         "출력 크기 조절",
+        "검토 메모",
         "compact",
         "full",
         "법률 결론",
         "비법률 운영 응답",
+    ]:
+        assert_contains(text, required, label)
+
+
+def check_self_verification_guardrails() -> None:
+    text = read_text("skills/beopsuny/references/self-verification.md")
+    label = "self-verification.md"
+
+    for required in [
+        "사용자 전제 검증",
+        "Retrieved Content Trust",
+        "검토 대상 데이터",
+        "긴 입력의 읽은 범위",
+        "데이터 무결성 이슈",
+    ]:
+        assert_contains(text, required, label)
+
+
+def check_output_reviewer_note_lite() -> None:
+    text = read_text("skills/beopsuny/references/output-formats.md")
+    label = "output-formats.md"
+
+    for required in [
+        "검토 메모 Lite",
+        "출처 provenance",
+        "legalize-kr 로컬 확인",
+        "법망 API 확인",
+        "web — verify",
     ]:
         assert_contains(text, required, label)
 
@@ -140,6 +169,15 @@ def check_router_scenario_references() -> None:
     }
     if refs != expected:
         raise AssertionError(f"router mandatory references drift: {refs!r}")
+
+
+def check_router_guardrail_scenarios() -> None:
+    data = load_yaml("tests/scenarios/16_router_regression.yaml")
+    scenario_ids = {scenario.get("id") for scenario in data.get("scenarios", [])}
+    expected = {"router-07", "router-08", "router-09"}
+    missing = expected - scenario_ids
+    if missing:
+        raise AssertionError(f"router guardrail scenarios missing: {sorted(missing)!r}")
 
 
 def check_optional_installed_skill_drift() -> None:
@@ -180,7 +218,10 @@ CHECKS = [
     check_contract_review_guide,
     check_source_access_fallbacks,
     check_output_contract_right_sizing,
+    check_self_verification_guardrails,
+    check_output_reviewer_note_lite,
     check_router_scenario_references,
+    check_router_guardrail_scenarios,
     check_optional_installed_skill_drift,
 ]
 
