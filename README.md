@@ -102,6 +102,12 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 python3 tests/validate_skill_contracts.py
 ```
 
+시나리오 샘플 출력만 따로 확인하려면:
+
+```bash
+python3 tests/evaluate_scenario_outputs.py
+```
+
 로컬 전역 설치본까지 비교하려면 설치 경로를 명시한다.
 
 ```bash

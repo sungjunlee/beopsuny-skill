@@ -12,6 +12,7 @@ import json
 import hashlib
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -180,6 +181,18 @@ def check_router_guardrail_scenarios() -> None:
         raise AssertionError(f"router guardrail scenarios missing: {sorted(missing)!r}")
 
 
+def check_router_output_eval() -> None:
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "tests/evaluate_scenario_outputs.py")],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        details = "\n".join(part for part in [result.stdout, result.stderr] if part)
+        raise AssertionError(details.strip())
+
+
 def check_optional_installed_skill_drift() -> None:
     installed = os.environ.get("BEOPSUNY_INSTALLED_SKILL_PATH")
     if not installed:
@@ -222,6 +235,7 @@ CHECKS = [
     check_output_reviewer_note_lite,
     check_router_scenario_references,
     check_router_guardrail_scenarios,
+    check_router_output_eval,
     check_optional_installed_skill_drift,
 ]
 
