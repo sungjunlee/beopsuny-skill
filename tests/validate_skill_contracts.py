@@ -123,6 +123,7 @@ def check_output_contract_right_sizing() -> None:
 
     for required in [
         "출력 크기 조절",
+        "면책 고지는 답변 성격에 따라 붙인다",
         "검토 메모",
         "compact",
         "full",
@@ -130,6 +131,7 @@ def check_output_contract_right_sizing() -> None:
         "비법률 운영 응답",
     ]:
         assert_contains(text, required, label)
+    assert_not_contains(text, "답변 마지막에는 항상 면책 고지를 붙인다", label)
 
 
 def check_self_verification_guardrails() -> None:
@@ -193,6 +195,33 @@ def check_router_output_eval() -> None:
         raise AssertionError(details.strip())
 
 
+def check_volatile_api_docs() -> None:
+    text = read_text("skills/beopsuny/references/beopmang-api.md")
+    label = "beopmang-api.md"
+
+    for required in [
+        "운영 정보",
+        "운영 정보는 변동될 수 있으므로",
+        "문서에 고정하지 않는다",
+    ]:
+        assert_contains(text, required, label)
+    for stale in [
+        "분당 100회",
+        "❌ 503",
+        "법령 5,573",
+    ]:
+        assert_not_contains(text, stale, label)
+
+
+def check_international_index_routing() -> None:
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    guide_text = read_text("skills/beopsuny/references/international_guide.md")
+
+    assert_contains(skill_text, "references/international_guide.md", "SKILL.md")
+    assert_contains(guide_text, "별도 router intent가 아니라", "international_guide.md")
+    assert_contains(guide_text, "한국법상 확인할 후보 쟁점", "international_guide.md")
+
+
 def check_optional_installed_skill_drift() -> None:
     installed = os.environ.get("BEOPSUNY_INSTALLED_SKILL_PATH")
     if not installed:
@@ -236,6 +265,8 @@ CHECKS = [
     check_router_scenario_references,
     check_router_guardrail_scenarios,
     check_router_output_eval,
+    check_volatile_api_docs,
+    check_international_index_routing,
     check_optional_installed_skill_drift,
 ]
 
