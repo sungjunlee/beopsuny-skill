@@ -1,6 +1,6 @@
 # 계약서 검토 보조 가이드
 
-계약 검토는 계약 문구를 최종 확정하는 기능이 아니라, 조항별 한국법 이슈와 확인해야 할 근거를 좁히는 workflow다. 모든 결론은 현재 법령·판례·행정규칙 확인과 Source Grade, verification status를 거쳐야 한다.
+계약 검토는 계약 문구를 최종 확정하는 기능이 아니라, 조항별 한국법 이슈와 확인해야 할 근거를 좁히는 workflow다. 공통 Source Grade, verification status, 자가 검증, 면책 고지는 `SKILL.md`, `references/source-grading.md`, `references/self-verification.md`, `references/output-formats.md`를 따른다.
 
 ## 범위
 
@@ -107,9 +107,9 @@
 
 ## Source Grade와 Verification
 
-- 법령·판례·행정규칙 근거는 `**[Grade X] [VERIFIED/UNVERIFIED/INSUFFICIENT]**` 형식으로 표시한다.
+- 법령·판례·행정규칙 근거 표시는 `references/output-formats.md`를 따른다.
+- Source Grade와 verification status의 등급·다운그레이드는 `references/source-grading.md`와 `references/self-verification.md`를 따른다.
 - `clause_references.yaml`, 체크리스트, 과거 검토 이력은 후보·맥락 자료다. 결론 근거가 되려면 live legal research로 확인해야 한다.
-- Grade C 해설은 보조 의견이다. 단독 결론은 `[EDITORIAL: Single-source, Grade C]`로 유보한다.
 - 확인 실패는 "문제 없음"이 아니라 `[INSUFFICIENT]`다.
 
 ## Counter-drafting
@@ -141,4 +141,4 @@
 
 ## 면책 고지
 
-계약 검토 답변도 SKILL.md의 공통 면책 고지를 따른다. 이 reference 안에서 별도 문구를 새로 만들지 않는다.
+계약 검토는 법률 판단이 포함되므로 `SKILL.md`의 공통 면책 고지를 붙인다. 이 reference 안에서 별도 문구를 새로 만들지 않는다.

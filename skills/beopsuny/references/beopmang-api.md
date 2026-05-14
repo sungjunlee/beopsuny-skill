@@ -1,24 +1,24 @@
 # 법망 API 레퍼런스
 
 기본 URL: `https://api.beopmang.org/api/v4/{endpoint}?action={action}`
-무인증, 무료. Rate limit: 분당 100회. 매주 토요일 데이터 동기화.
 
-무료 서비스라 간헐적 메인테넌스 가능. 응답에 `"error": "service_maintenance"`가 오면 legalize-kr/precedent-kr 로컬 데이터로 fallback.
+이 문서는 API 사용 패턴과 fallback을 정리한다. 인증 방식, rate limit, endpoint 상태, 데이터 규모 같은 운영 정보는 변동될 수 있으므로 답변에서 확정 사실처럼 말하기 전에 현재 응답 또는 공식 안내를 확인한다.
 
-## 엔드포인트 전체 맵
+API timeout, 5xx, maintenance 응답, 빈 응답은 "결과 없음"이 아니다. Full 모드면 legalize-kr/precedent-kr 로컬 데이터로 fallback하고, Lite 모드면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.
 
-| 엔드포인트 | 액션 | 상태 | 핵심 용도 |
-|-----------|------|------|----------|
-| `law` | `search` | ✅ | 법령/행정규칙/해석례 검색 |
-| `law` | `get` | ✅ | 법령 조문 조회 (depth 연쇄) |
-| `law` | `diff` | ✅ | 개정 전후 비교 |
-| `law` | `history` | ✅ | 개정 이력 |
-| `case` | `search` | ✅ | 판례 키워드 검색 |
-| `case` | `get` | ✅ | 판례 상세 조회 |
-| `tools` | `verify` | ⚠️ | 인용 검증 (2단계 호출) |
-| `tools` | `compare` | ✅ | 법령 간 비교 |
-| `bill` | `search` | ❌ 503 | 의안 — WebSearch로 대체 |
-| `tools` | `overview` | ❌ 503 | 종합개요 — law+case 조합으로 대체 |
+## 엔드포인트 맵
+
+| 엔드포인트 | 액션 | 핵심 용도 | 실패 시 |
+|-----------|------|----------|---------|
+| `law` | `search` | 법령/행정규칙/해석례 검색 | law.go.kr, local data, WebSearch 공식 자료 |
+| `law` | `get` | 법령 조문 조회 | 원문 확인 실패로 표시 |
+| `law` | `diff` | 개정 전후 비교 | `history`, git log, 공식 법령 페이지 |
+| `law` | `history` | 개정 이력 | git log 또는 공식 법령 페이지 |
+| `case` | `search` | 판례 키워드 검색 | glaw.scourt.go.kr, precedent-kr |
+| `case` | `get` | 판례 상세 조회 | 판례 원문 미확인 표시 |
+| `tools` | `verify` | 인용 검증 | 직접 원문 재조회 |
+| `tools` | `compare` | 법령 간 비교 | 각 법령을 따로 조회해 수동 비교 |
+| `bill` | `search` | 의안 검색 | 국회 의안정보 또는 WebSearch 공식 자료 |
 
 ---
 
@@ -145,7 +145,7 @@ WebFetch "https://api.beopmang.org/api/v4/tools?action=verify&citation=개인정
 }
 ```
 
-메인테넌스 응답:
+maintenance류 응답 예:
 ```json
 {
   "ok": false,
@@ -154,6 +154,6 @@ WebFetch "https://api.beopmang.org/api/v4/tools?action=verify&citation=개인정
 }
 ```
 
-## 데이터 규모
+## 운영 정보
 
-법령 5,573 + 행정규칙 23,829 + 판례 171,451 + 해석례 8,600 + 조약 3,596 + 자치법규 159,177 + 조문 ~119만
+데이터 규모, 동기화 주기, rate limit, endpoint별 장애 상태는 문서에 고정하지 않는다. 조사 중 API 응답에서 직접 확인했거나 공식 안내를 확인한 경우에만 검토 메모에 적는다.
