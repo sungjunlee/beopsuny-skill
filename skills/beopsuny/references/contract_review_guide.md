@@ -34,6 +34,12 @@
 
 `~/.beopsuny/profile.yaml`에 `contract_playbook`이 있으면 한국법 검토 위에 협상 선호를 얹는다. playbook은 결론 근거가 아니라 고객 맥락이다.
 
+역할 값은 분리해서 해석한다.
+
+- `contract_playbook.default_role`: 고객/공급자/플랫폼 같은 비즈니스 역할이다.
+- `party_position.default`: 기존 조항 매핑에서 쓰는 `gap`/`eul` 값이다.
+- 고객은 대체로 `gap`, 공급자는 대체로 `eul`에 가깝지만, 플랫폼·삼자거래·하도급 구조에서는 조항별로 달라질 수 있으므로 자동 변환하지 않는다. 불명확하면 묻는다.
+
 적용 순서:
 
 ```text

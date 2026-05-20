@@ -41,13 +41,14 @@ interested_laws: []         # 예: ["개인정보보호법", "근로기준법", 
 #   2. per_clause_override 부재 → default 사용 ("" 은 양쪽 노출)
 #   {조항key} 는 assets/data/clause_references.yaml top-level clauses.* ID 와 일치해야 함 (graceful skip).
 party_position:
-  default: ""               # "customer" / "supplier" / "platform" / "gap" / "eul" / "" (불명)
+  default: ""               # "gap" / "eul" / "" (불명)
   per_clause_override: {}   # 조항별 override 예: {indemnification: "gap", non_compete: "eul", work_product: ""}
 
 # 계약 검토 playbook (v0.4.0~)
 # 한국법 강행규정과 공식 근거가 항상 우선한다. playbook은 협상 선호와 escalation 기준일 뿐
 # Source Grade A/B 법령·판례 근거를 대체하지 않는다.
 contract_playbook:
+  default_role: ""          # customer | supplier | platform | unknown
   risk_posture: ""          # conservative | moderate | aggressive | ""
   standard_positions:
     liability_cap: ""

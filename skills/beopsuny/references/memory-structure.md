@@ -35,7 +35,9 @@ gstack 패턴을 따른다. 코드(`.claude/skills/`)와 데이터(`~/.beopsuny/
 
 ## Quick / Full 온보딩
 
-사용자가 "회사 정보를 저장해줘", "법순이 설정해줘", "계약 검토 playbook을 맞춰줘"처럼 프로필 설정을 요청하면 `memory_profile` 의도로 처리한다. 기본은 quick 온보딩이고, 사용자가 "자세히", "full", "playbook까지"라고 말하면 full 온보딩으로 확장한다.
+사용자가 "회사 정보를 저장해줘", "법순이 설정해줘"처럼 프로필 설정을 요청하면 `memory_profile` 의도로 처리한다. 기본은 quick 온보딩이다.
+
+다만 요청에 playbook 설정 의도(예: "계약 검토 playbook을 맞춰줘")가 포함되면 full 온보딩으로 즉시 전환한다. 모호한 경우에는 quick 시작 전에 "계약 playbook 항목까지 함께 설정할까요?"라고 확인한다.
 
 ### quick 온보딩
 
@@ -54,7 +56,8 @@ gstack 패턴을 따른다. 코드(`.claude/skills/`)와 데이터(`~/.beopsuny/
 
 quick 항목에 아래 계약 검토 playbook 항목을 추가한다.
 
-- 기본 당사자 위치: 고객/공급자/플랫폼/미확인
+- 기본 역할: 고객/공급자/플랫폼/미확인 (`contract_playbook.default_role`)
+- 조항별 당사자 위치: 기존 `party_position`의 `gap`/`eul` 체계를 유지
 - 위험 선호: conservative/moderate/aggressive
 - 표준 입장: 책임제한, 면책, 개인정보, 해지, 준거법·분쟁해결
 - 허용 fallback

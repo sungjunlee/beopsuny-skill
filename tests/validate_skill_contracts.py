@@ -129,6 +129,7 @@ def check_company_profile_playbook_schema() -> None:
         raise AssertionError("company_profile.yaml: missing contract_playbook")
     playbook = data["contract_playbook"]
     for key in [
+        "default_role",
         "risk_posture",
         "standard_positions",
         "acceptable_fallbacks",
