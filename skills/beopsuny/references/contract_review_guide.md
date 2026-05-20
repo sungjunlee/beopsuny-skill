@@ -45,7 +45,7 @@
 ```text
 계약 유형/당사자 위치 확인
   -> 한국법 강행규정·횡단 이슈 확인
-  -> profile.contract_playbook 후보 적용
+  -> contract_playbook 적용
   -> fallback / never_accept / escalation_triggers 반영
   -> 법령·판례 근거와 충돌하면 법령 근거 우선, playbook은 조정 필요로 표시
 ```

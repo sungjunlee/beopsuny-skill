@@ -318,12 +318,14 @@ scenarios:
         - quick/full 온보딩 선택 또는 기본 quick 안내
         - 저장 전 요약 확인
         - skip/unknown 항목을 추정하지 않음
+        - Lite 모드에서는 파일에 쓰지 않고 대화 내 확인으로 처리
       response_contains:
         - 온보딩
         - 저장 전 확인
         - playbook
       forbidden_behavior:
         - 사용자 확인 없이 profile.yaml 쓰기
+        - Lite 모드인데 profile.yaml 기록 약속
         - seed document 자동 다운로드
         - 미국식 work-product 헤더 설정
     validation:
@@ -338,6 +340,7 @@ scenarios:
         - playbook
       forbidden_substrings:
         - profile.yaml에 바로 저장했습니다
+        - Lite 모드에서도 profile.yaml에 기록했습니다
         - seed document를 자동으로 읽겠습니다
         - ATTORNEY WORK PRODUCT
 

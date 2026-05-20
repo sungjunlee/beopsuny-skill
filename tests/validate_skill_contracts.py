@@ -116,9 +116,11 @@ def check_memory_profile_workflow() -> None:
         "저장 전에는 요약을 보여주고",
         "프로젝트 workspace 경계",
         "cross-project context 기본값은 `off`",
+        "글로벌 (`~/.beopsuny/verification_log.jsonl`)",
         "verification_log.jsonl",
         "Source Grade A/B는 현재 세션에서",
         "freshness_days",
+        "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
     ]:
         assert_contains(text, required, label)
 

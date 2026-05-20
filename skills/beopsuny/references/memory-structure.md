@@ -8,6 +8,7 @@ gstack 패턴을 따른다. 코드(`.claude/skills/`)와 데이터(`~/.beopsuny/
 ~/.beopsuny/
 ├── config.yaml                    # 글로벌 설정
 ├── profile.yaml                   # 사용자 + 회사 프로필 (글로벌)
+├── verification_log.jsonl         # 글로벌 사용자 확인 이력 (append-only)
 ├── data/                          # 외부 데이터 소스 (git clone)
 │   ├── legalize-kr/               # 법령 Markdown (full clone)
 │   └── precedent-kr/              # 판례 Markdown (full clone)
@@ -72,7 +73,7 @@ seed document는 사용자가 명시적으로 제공한 경우에만 읽는다. 
 - 일부 수정 요청은 해당 필드만 갱신한다.
 - full 온보딩 재실행은 기존 값을 먼저 요약하고, 덮어쓸 항목을 확인한다.
 - 사용자 확인 없이 `~/.beopsuny/profile.yaml`에 쓰지 않는다.
-- Lite 모드처럼 파일 쓰기가 불가능한 환경에서는 저장 예정 요약만 제공하고, 영속 저장을 약속하지 않는다.
+- Lite 모드에서는 파일에 쓰지 않고 대화 내 확인으로 처리하며, 저장 예정 요약만 제공하고 영속 저장을 약속하지 않는다.
 
 ## 글로벌 vs 프로젝트
 
@@ -84,7 +85,7 @@ seed document는 사용자가 명시적으로 제공한 경우에만 읽는다. 
 | 컴플라이언스 상태 | 글로벌 (`profile.yaml`) | 연간 의무는 회사 단위 |
 | 검토 이력 | 프로젝트별 (`reviews.jsonl`) | 맥락이 프로젝트에 종속 |
 | 법률 지식 | 프로젝트별 (`learnings.jsonl`) | 발견한 인사이트는 맥락 의존 |
-| 사용자 확인 이력 | 프로젝트별 (`verification_log.jsonl`) 또는 글로벌 | 프로젝트별 사실은 프로젝트에, 반복 사용되는 일반 법령 확인은 글로벌에 기록 |
+| 사용자 확인 이력 | 프로젝트별 (`projects/{slug}/verification_log.jsonl`) 또는 글로벌 (`~/.beopsuny/verification_log.jsonl`) | 프로젝트별 사실은 프로젝트에, 반복 사용되는 일반 법령 확인은 글로벌에 기록 |
 
 ## 프로젝트 workspace 경계
 
@@ -178,5 +179,5 @@ gstack 패턴 동일. append-only, read 시 key+type으로 dedup.
 - 쓰기 전 사용자에게 "이 확인 이력을 기록할까요?"라고 묻는다.
 - `verdict`는 `confirmed`, `corrected`, `could_not_verify` 중 하나를 사용한다.
 - `freshness_days`가 지나면 이전 확인 사실을 그대로 결론에 쓰지 않고 재확인 필요로 표시한다.
-- Lite 모드에서는 파일 기록 대신 대화 내 확인 메모만 제공한다.
+- Lite 모드에서는 파일에 쓰지 않고 파일 기록 대신 대화 내 확인 메모만 제공한다.
 - 법령 개정 가능성이 큰 시행일, 과징금 기준, 고시, 행정규칙은 짧은 freshness window를 둔다.
