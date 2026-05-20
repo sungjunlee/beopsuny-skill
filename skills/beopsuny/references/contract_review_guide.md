@@ -25,10 +25,39 @@
 | 축 | 확인할 내용 |
 | --- | --- |
 | 계약 유형 | SaaS/라이선스, 용역, 공급, 고용, 투자, NDA 등 |
-| 당사자 위치 | 우리 쪽이 고객인지, 공급자인지, 플랫폼인지 |
+| 당사자 위치 | 우리 쪽이 고객인지, 공급자인지, 플랫폼인지, 미확인인지 |
 | 상대방 | 국내/해외, 대기업/중소기업, 소비자 상대 여부 |
 | 개인정보 | 처리위탁, 제3자 제공, 국외이전, subprocessor 여부 |
 | 거래 특성 | 하도급, 전자용역, 외국환, 수출입·전략물자, 표준계약서 적용 가능성 |
+
+## 회사 playbook 적용
+
+`~/.beopsuny/profile.yaml`에 `contract_playbook`이 있으면 한국법 검토 위에 협상 선호를 얹는다. playbook은 결론 근거가 아니라 고객 맥락이다.
+
+적용 순서:
+
+```text
+계약 유형/당사자 위치 확인
+  -> 한국법 강행규정·횡단 이슈 확인
+  -> profile.contract_playbook 후보 적용
+  -> fallback / never_accept / escalation_triggers 반영
+  -> 법령·판례 근거와 충돌하면 법령 근거 우선, playbook은 조정 필요로 표시
+```
+
+출력에서 playbook을 사용할 때:
+
+- `표준 입장`: 회사가 선호하는 협상 기준으로 표시한다.
+- `fallback`: 법적으로 허용될 수 있지만 회사 기준상 조건부 수용인 항목으로 표시한다.
+- `never_accept`: 법적 리스크 또는 회사 정책상 escalation 대상인 항목으로 표시한다.
+- `escalation_triggers`: 담당자에게 결정을 넘겨야 할 조건을 표시한다.
+
+playbook이 없으면 일반 한국법 검토로 진행하고, 검토 메모에 `계약 playbook 미설정 — 한국법 일반 기준으로 검토`처럼 짧게 표시한다.
+
+금지:
+
+- playbook만으로 조항의 적법/위법을 단정하지 않는다.
+- 영미법식 limitation of liability framework를 그대로 적용하지 않는다.
+- 회사가 선호한다고 해서 강행규정 충돌 가능성을 낮추지 않는다.
 
 ## Review Mode
 
@@ -48,6 +77,7 @@
 계약 유형과 당사자 위치 파악
   -> review_mode 결정
   -> 횡단 이슈 확인
+  -> 회사 playbook 있으면 협상 기준과 escalation trigger 반영
   -> 조항 분류와 관련 법령 후보 매핑
   -> 법령/하위법령/행정규칙/판례 원문 확인
   -> Source Grade + verification status 부여
@@ -84,6 +114,7 @@
 ## 계약서 검토 결과
 
 **계약 유형**: [유형] | **당사자 위치**: [고객/공급자/미확인] | **review_mode**: [strict/moderate/loose]
+**playbook**: [적용/미설정] | **escalation**: [없음/필요]
 
 ### 횡단 이슈
 
@@ -100,6 +131,7 @@
 ### 협상 포인트
 
 - [조항명] 상대방 책임 제한 범위, 고의·중과실 carve-out, 개인정보 사고 책임 범위를 확인.
+- [playbook] 회사 표준 입장과 다른 조항은 fallback 또는 escalation trigger로 분리.
 
 ---
 🔍 **자가 검증**: Citation n/m | Legal Substance ✓/⚠ | Client Alignment ✓/⚠ | Counter-draft ✓/⚠/n/a

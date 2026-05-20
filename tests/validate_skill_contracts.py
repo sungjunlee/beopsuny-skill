@@ -98,6 +98,64 @@ def check_contract_review_guide() -> None:
         "Counter-drafting",
         "확정 문구가 아니라 검토 힌트",
         "자가 검증",
+        "회사 playbook 적용",
+        "playbook은 결론 근거가 아니라 고객 맥락",
+        "법령 근거 우선",
+    ]:
+        assert_contains(text, required, label)
+
+
+def check_memory_profile_workflow() -> None:
+    text = read_text("skills/beopsuny/references/memory-structure.md")
+    label = "memory-structure.md"
+
+    for required in [
+        "Quick / Full 온보딩",
+        "quick 온보딩",
+        "full 온보딩",
+        "저장 전에는 요약을 보여주고",
+        "프로젝트 workspace 경계",
+        "cross-project context 기본값은 `off`",
+        "verification_log.jsonl",
+        "Source Grade A/B는 현재 세션에서",
+        "freshness_days",
+    ]:
+        assert_contains(text, required, label)
+
+
+def check_company_profile_playbook_schema() -> None:
+    data = load_yaml("skills/beopsuny/assets/schemas/company_profile.yaml")
+    if "contract_playbook" not in data:
+        raise AssertionError("company_profile.yaml: missing contract_playbook")
+    playbook = data["contract_playbook"]
+    for key in [
+        "risk_posture",
+        "standard_positions",
+        "acceptable_fallbacks",
+        "never_accept",
+        "escalation_triggers",
+        "seed_documents",
+    ]:
+        if key not in playbook:
+            raise AssertionError(f"company_profile.yaml: contract_playbook missing {key!r}")
+    if "user_role" not in data:
+        raise AssertionError("company_profile.yaml: missing user_role")
+
+
+def check_bulk_tabular_review_reference() -> None:
+    text = read_text("skills/beopsuny/references/bulk-tabular-review.md")
+    label = "bulk-tabular-review.md"
+
+    for required in [
+        "대량 표 검토 워크플로",
+        "schema 초안 작성",
+        "Column Type",
+        "`verbatim`",
+        "`classify`",
+        "`needs_review`",
+        "quote/location을 확보하지 못하면",
+        "Evidence Rule",
+        "읽은 문서 수",
     ]:
         assert_contains(text, required, label)
 
@@ -169,6 +227,7 @@ def check_router_scenario_references() -> None:
         "source_grade": "skills/beopsuny/references/source-grading.md",
         "self_verification": "skills/beopsuny/references/self-verification.md",
         "source_access": "skills/beopsuny/references/source-access.md",
+        "memory_structure": "skills/beopsuny/references/memory-structure.md",
     }
     if refs != expected:
         raise AssertionError(f"router mandatory references drift: {refs!r}")
@@ -177,7 +236,7 @@ def check_router_scenario_references() -> None:
 def check_router_guardrail_scenarios() -> None:
     data = load_yaml("tests/scenarios/16_router_regression.yaml")
     scenario_ids = {scenario.get("id") for scenario in data.get("scenarios", [])}
-    expected = {"router-07", "router-08", "router-09"}
+    expected = {"router-07", "router-08", "router-09", "router-10", "router-11", "router-12"}
     missing = expected - scenario_ids
     if missing:
         raise AssertionError(f"router guardrail scenarios missing: {sorted(missing)!r}")
@@ -258,6 +317,9 @@ CHECKS = [
     check_version_sync,
     check_skill_frontmatter_minimal,
     check_contract_review_guide,
+    check_memory_profile_workflow,
+    check_company_profile_playbook_schema,
+    check_bulk_tabular_review_reference,
     check_source_access_fallbacks,
     check_output_contract_right_sizing,
     check_self_verification_guardrails,

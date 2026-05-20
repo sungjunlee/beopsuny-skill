@@ -1,6 +1,6 @@
 description: |
   Sample outputs for scenario-output evaluation. These are not authoritative legal
-  answers. They pin the guardrail shape expected from router-07 through router-09.
+  answers. They pin the guardrail shape expected from router-07 through router-12.
 
 outputs:
   router-07: |
@@ -36,3 +36,30 @@ outputs:
 
     ---
     🔍 자가 검증: Citation 0/1 ⚠ | Legal Substance ⚠ | Client Alignment ✓ | Counter-draft n/a
+
+  router-10: |
+    온보딩으로 회사 프로필을 설정하겠습니다. 기본은 quick이고, 계약 검토 playbook까지 맞추려면 full로 진행합니다.
+
+    먼저 회사명/비공개 여부, 업종, 직원 수, 주요 관할, 개인정보 처리 여부, 관심 법령을 확인합니다.
+    full에서는 당사자 위치, 위험 선호, 표준 입장, fallback, never accept, escalation trigger를 추가로 묻습니다.
+
+    저장 전 확인 요약을 보여드리고, 사용자가 승인한 뒤에만 profile.yaml에 기록합니다.
+
+  router-11: |
+    **검토 메모**: 계약 playbook 적용 가능 | 당사자 위치는 공급자 기준으로 가정
+
+    playbook은 협상 선호와 escalation 기준입니다. 법령 근거 우선 원칙에 따라 약관규제법, 민법, 개인정보 보호법 등 강행규정과 충돌하면 한국법 근거를 우선 표시합니다.
+
+    이 책임제한 조항이 고의 또는 중과실 책임까지 제한한다면 회사 playbook상 never accept 또는 escalation 대상이고, 한국법상 효력 제한 가능성도 별도로 확인해야 합니다.
+
+    ---
+    🔍 자가 검증: Citation 0/1 ⚠ | Legal Substance ⚠ | Client Alignment ✓ | Counter-draft n/a
+
+  router-12: |
+    대량 표 검토는 먼저 schema를 확정한 뒤 진행합니다.
+
+    Column Type은 verbatim, classify, date, duration, currency, number, free 중에서 정합니다.
+    Cell State는 answered, not_present, unclear, needs_review를 사용합니다.
+    Evidence는 quote/location 또는 Source Grade로 남기고, 근거를 확보하지 못한 셀은 needs_review로 둡니다.
+
+    먼저 3-5개 계약으로 샘플을 확인한 뒤 전체 표로 확장하겠습니다.
