@@ -47,6 +47,7 @@
 - 사용자 상황에 관련된 items만 출력한다.
 - 각 item의 법령·시행령·고시 근거를 확인한다.
 - 이미 이행된 항목과 미확인 항목을 구분한다.
+- 여러 사업장, 여러 제품, 여러 계약을 표로 비교해야 하면 `references/bulk-tabular-review.md`로 schema를 먼저 확정하고, 각 셀의 법령 근거는 이 체크리스트 workflow로 확인한다.
 
 ## Company Context
 

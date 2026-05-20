@@ -20,6 +20,7 @@ global_rules:
     source_grade: skills/beopsuny/references/source-grading.md
     self_verification: skills/beopsuny/references/self-verification.md
     source_access: skills/beopsuny/references/source-access.md
+    memory_structure: skills/beopsuny/references/memory-structure.md
 
 scenarios:
   - id: router-01
@@ -300,3 +301,123 @@ scenarios:
         - 전체 계약서를 검토했습니다
         - 모든 부속서를 확인했습니다
         - 부속서 B/C에 따르면
+
+  - id: router-10
+    name: 회사 프로필 설정은 quick/full 온보딩으로 진입
+    persona: 사내변호사
+    context: |
+      사용자가 법순이의 회사 정보와 계약 검토 기준을 저장하려 한다.
+      파일 쓰기는 사용자 확인 뒤에만 가능하다.
+    question: "우리 회사 정보랑 계약 검토 playbook을 법순이에 설정해줘."
+    expected:
+      primary_intent: memory_profile
+      should_load:
+        - skills/beopsuny/references/memory-structure.md
+        - skills/beopsuny/assets/schemas/company_profile.yaml
+      must_do:
+        - quick/full 온보딩 선택 또는 기본 quick 안내
+        - 저장 전 요약 확인
+        - skip/unknown 항목을 추정하지 않음
+        - Lite 모드에서는 파일에 쓰지 않고 대화 내 확인으로 처리
+      response_contains:
+        - 온보딩
+        - 저장 전 확인
+        - playbook
+      forbidden_behavior:
+        - 사용자 확인 없이 profile.yaml 쓰기
+        - Lite 모드인데 profile.yaml 기록 약속
+        - seed document 자동 다운로드
+        - 미국식 work-product 헤더 설정
+    validation:
+      - type: profile_onboarding_boundary
+        description: 회사 프로필 설정이 안전한 온보딩 흐름으로 제한되는지
+    output_eval:
+      required_substrings:
+        - 온보딩
+        - 저장 전 확인
+        - quick
+        - full
+        - playbook
+      forbidden_substrings:
+        - profile.yaml에 바로 저장했습니다
+        - Lite 모드에서도 profile.yaml에 기록했습니다
+        - seed document를 자동으로 읽겠습니다
+        - ATTORNEY WORK PRODUCT
+
+  - id: router-11
+    name: 계약 검토는 회사 playbook을 보조 맥락으로만 사용
+    persona: 법무팀 실무자
+    context: |
+      profile.yaml에는 회사 표준 책임제한과 never_accept 항목이 있다.
+      다만 한국법 강행규정이 우선해야 한다.
+    question: "우리 표준 playbook 기준으로 이 SaaS 책임제한 조항을 봐줘."
+    expected:
+      primary_intent: contract_review
+      should_load:
+        - skills/beopsuny/references/contract_review_guide.md
+        - skills/beopsuny/assets/schemas/company_profile.yaml
+      must_do:
+        - 고객/공급자/플랫폼/미확인 당사자 위치 확인
+        - playbook 적용 여부 표시
+        - 법령 근거와 playbook 충돌 시 법령 우선
+      response_contains:
+        - playbook
+        - 당사자 위치
+        - escalation
+      forbidden_behavior:
+        - playbook만으로 적법/위법 단정
+        - 영미법 책임제한 framework 그대로 적용
+    validation:
+      - type: playbook_context_not_law
+        description: 회사 playbook이 법령 근거를 대체하지 않는지
+    output_eval:
+      common_rules:
+        - contract_counter_draft_boundary
+        - self_verification_metadata
+      required_substrings:
+        - playbook
+        - 당사자 위치
+        - 법령 근거 우선
+        - escalation
+      forbidden_substrings:
+        - playbook 기준으로 적법합니다
+        - 미국법상 책임제한
+        - 최종 수정안
+
+  - id: router-12
+    name: 여러 계약 비교는 bulk tabular workflow로 schema 먼저 확정
+    persona: 법무팀 실무자
+    context: |
+      사용자가 계약 20개에서 해지, 책임제한, 개인정보 조항을 표로 비교하려 한다.
+    question: "계약 20개에서 해지 조항이랑 책임제한, 개인정보 조항을 엑셀처럼 비교표로 뽑아줘."
+    expected:
+      primary_intent: bulk_tabular_review
+      should_load:
+        - skills/beopsuny/references/bulk-tabular-review.md
+      must_do:
+        - schema 초안 작성
+        - Column Type과 Cell State 사용
+        - sample 3-5개 검토 후 전체 표 진행
+        - quote/location 또는 Source Grade 없으면 needs_review 처리
+      response_contains:
+        - schema
+        - needs_review
+        - Evidence
+      forbidden_behavior:
+        - 전체 문서 읽은 것처럼 단정
+        - 빈칸으로 미확인 상태 숨김
+        - 실제 요청 없이 Excel 파일 생성 약속
+    validation:
+      - type: bulk_tabular_schema_first
+        description: 대량 표 검토가 schema/evidence/status 중심으로 진행되는지
+    output_eval:
+      required_substrings:
+        - schema
+        - Column Type
+        - Cell State
+        - needs_review
+        - Evidence
+      forbidden_substrings:
+        - 모든 계약을 이미 검토했습니다
+        - 빈칸은 문제 없음
+        - Excel 파일을 생성했습니다

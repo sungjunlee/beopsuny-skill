@@ -5,6 +5,8 @@
 # 자동 누락 처리 (graceful fallback) — 두 필드는 v0.2.2~ 에서 추가됨.
 
 company_name: ""           # 회사명 (비공개 가능)
+user_role: ""              # lawyer | legal_ops | business_user | unknown
+attorney_contact: ""       # 비법무 사용자의 검토 담당 변호사/법무팀 연락처 (선택)
 industry: ""               # 업종 (예: IT, 제조, 식품, 금융)
 industry_code: ""           # 한국표준산업분류 코드 (선택)
 company_type: ""            # 유형: 주식회사, 유한회사, 개인사업자
@@ -41,6 +43,25 @@ interested_laws: []         # 예: ["개인정보보호법", "근로기준법", 
 party_position:
   default: ""               # "gap" / "eul" / "" (불명)
   per_clause_override: {}   # 조항별 override 예: {indemnification: "gap", non_compete: "eul", work_product: ""}
+
+# 계약 검토 playbook (v0.4.0~)
+# 한국법 강행규정과 공식 근거가 항상 우선한다. playbook은 협상 선호와 escalation 기준일 뿐
+# Source Grade A/B 법령·판례 근거를 대체하지 않는다.
+contract_playbook:
+  default_role: ""          # customer | supplier | platform | unknown
+  risk_posture: ""          # conservative | moderate | aggressive | ""
+  standard_positions:
+    liability_cap: ""
+    indemnity: ""
+    data_protection: ""
+    termination: ""
+    governing_law_dispute: ""
+  acceptable_fallbacks: []  # 예: ["책임한도 12개월 수수료", "DPA 별첨 체결 조건부 수용"]
+  never_accept: []          # 예: ["고의·중과실까지 면책", "개인정보 재위탁 무제한 허용"]
+  escalation_triggers: []   # 예: ["무제한 책임", "국외이전 고지/동의 누락", "하도급법 적용 가능"]
+  seed_documents:
+    reviewed_count: 0
+    notes: ""
 
 # 메모
 notes: ""                   # 기타 특기사항
