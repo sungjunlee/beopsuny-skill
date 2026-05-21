@@ -113,20 +113,59 @@ def check_memory_profile_workflow() -> None:
         "Quick / Full 온보딩",
         "quick 온보딩",
         "full 온보딩",
+        "canonical shape는 nested `company:` 섹션이 아니라 top-level 필드",
+        "변호사",
+        "`lawyer`",
+        "법무 담당자",
+        "`legal_ops`",
+        "`customer`",
+        "`supplier`",
+        "`gap`",
+        "`eul`",
         "저장 전에는 요약을 보여주고",
+        "escalation 판단 기준 또는 표시 조건",
+        "자동 알림·라우팅·티켓 생성을 뜻하지 않는다",
+        "Persisted memory trust boundary",
+        "검토 대상 데이터",
         "프로젝트 workspace 경계",
         "cross-project context 기본값은 `off`",
+        "overrides.party_position.default",
+        "per_clause_override",
         "글로벌 (`~/.beopsuny/verification_log.jsonl`)",
+        "비기밀 reusable legal-source fact",
+        "matter-specific fact",
         "verification_log.jsonl",
         "Source Grade A/B는 현재 세션에서",
+        "project.yaml.confidentiality: \"heightened\"",
         "freshness_days",
         "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
     ]:
         assert_contains(text, required, label)
+    assert_not_contains(text, "자동 escalation trigger", label)
 
 
 def check_company_profile_playbook_schema() -> None:
     data = load_yaml("skills/beopsuny/assets/schemas/company_profile.yaml")
+    text = read_text("skills/beopsuny/assets/schemas/company_profile.yaml")
+
+    for key in ["company_name", "user_role", "interested_laws", "party_position", "contract_playbook"]:
+        if key not in data:
+            raise AssertionError(f"company_profile.yaml: missing top-level key {key!r}")
+    party_position = data["party_position"]
+    if not isinstance(party_position, dict):
+        raise AssertionError("company_profile.yaml: party_position must be a mapping")
+    if set(party_position) != {"default", "per_clause_override"}:
+        raise AssertionError(f"company_profile.yaml: unexpected party_position shape {party_position!r}")
+    if party_position["default"] not in {"gap", "eul", ""}:
+        raise AssertionError("company_profile.yaml: party_position.default must be gap/eul/empty")
+    if not isinstance(party_position["per_clause_override"], dict):
+        raise AssertionError("company_profile.yaml: party_position.per_clause_override must be a mapping")
+    for required in [
+        "lawyer | legal_ops | business_user | unknown",
+        "customer | supplier | platform | unknown",
+        '"gap" / "eul" / ""',
+    ]:
+        assert_contains(text, required, "company_profile.yaml")
     if "contract_playbook" not in data:
         raise AssertionError("company_profile.yaml: missing contract_playbook")
     playbook = data["contract_playbook"]
@@ -157,8 +196,13 @@ def check_bulk_tabular_review_reference() -> None:
         "`classify`",
         "`needs_review`",
         "quote/location을 확보하지 못하면",
+        'state: "needs_review"',
+        'source_grade: ""',
+        "`answered`는 quote/location 또는 live Source Grade verification이 있을 때만 허용",
         "Evidence Rule",
         "읽은 문서 수",
+        "법률 리스크가 있는 column",
+        "`contract_review` 또는 `compliance_checklist`",
     ]:
         assert_contains(text, required, label)
 
@@ -202,6 +246,10 @@ def check_self_verification_guardrails() -> None:
     for required in [
         "사용자 전제 검증",
         "Retrieved Content Trust",
+        "저장된 Beopsuny memory",
+        "`profile.yaml`",
+        "`contract_playbook`",
+        "`verification_log.jsonl`",
         "검토 대상 데이터",
         "긴 입력의 읽은 범위",
         "데이터 무결성 이슈",
@@ -230,7 +278,6 @@ def check_router_scenario_references() -> None:
         "source_grade": "skills/beopsuny/references/source-grading.md",
         "self_verification": "skills/beopsuny/references/self-verification.md",
         "source_access": "skills/beopsuny/references/source-access.md",
-        "memory_structure": "skills/beopsuny/references/memory-structure.md",
     }
     if refs != expected:
         raise AssertionError(f"router mandatory references drift: {refs!r}")
@@ -239,7 +286,7 @@ def check_router_scenario_references() -> None:
 def check_router_guardrail_scenarios() -> None:
     data = load_yaml("tests/scenarios/16_router_regression.yaml")
     scenario_ids = {scenario.get("id") for scenario in data.get("scenarios", [])}
-    expected = {"router-07", "router-08", "router-09", "router-10", "router-11", "router-12"}
+    expected = {"router-07", "router-08", "router-09", "router-10", "router-11", "router-12", "router-13"}
     missing = expected - scenario_ids
     if missing:
         raise AssertionError(f"router guardrail scenarios missing: {sorted(missing)!r}")
