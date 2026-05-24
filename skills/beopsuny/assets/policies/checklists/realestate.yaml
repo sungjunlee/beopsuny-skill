@@ -40,10 +40,10 @@ related_checklists:
   - name: "privacy_compliance"
     when: "부동산 매물/고객 정보 수집 시"
 
-related_permits:
-  - permit-018  # 부동산 중개업 등록
-  - permit-019  # 주택임대관리업 등록
-  - permit-020  # 건설업 등록
+related_live_checks:
+  - 부동산 중개업 등록
+  - 주택임대관리업 등록
+  - 건설업 등록
 
 items:
   # ─────────────────────────────────────────────────────────

@@ -40,9 +40,9 @@ related_checklists:
   - name: "labor_hr"
     when: "운전기사 고용 시"
 
-related_permits:
-  - permit-021  # 여객자동차 운송사업 면허
-  - permit-022  # 화물자동차 운송사업 허가
+related_live_checks:
+  - 여객자동차 운송사업 면허
+  - 화물자동차 운송사업 허가
 
 items:
   # ─────────────────────────────────────────────────────────

@@ -14,7 +14,7 @@ laws:
 admin_rules:
   # 예시:
   # - name: "개인정보의 안전성 확보조치 기준"
-  #   law_index_id: ""       # law_index.yaml의 ID
+  #   official_source: ""    # law.go.kr 또는 관할 기관 공식 URL
   #   parent_law: "개인정보 보호법"
 
 updated_at: ""
