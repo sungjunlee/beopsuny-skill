@@ -61,6 +61,8 @@ contract_playbook:
   escalation_triggers: []   # 예: ["무제한 책임", "국외이전 고지/동의 누락", "하도급법 적용 가능"]
   seed_documents:
     reviewed_count: 0
+    stated_vs_signed_delta: ""  # stated position 과 실제 체결 조건 차이 요약
+    skipped_fields: []          # 사용자가 건너뛴 playbook 항목 — 추정 금지
     notes: ""
 
 # 메모

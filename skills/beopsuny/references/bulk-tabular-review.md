@@ -25,6 +25,8 @@
   -> 3-5개 샘플 검토
   -> schema 조정
   -> 전체 표 작성
+  -> values table / sources table 분리
+  -> normalization spot-check
   -> evidence/status 점검
   -> 자가 검증 및 읽은 범위 표시
 ```
@@ -71,6 +73,28 @@ notes: ""
 
 계약 문서에서 온 값은 quote와 location을 붙인다. 법령/행정규칙/판례에서 온 값은 Source Grade와 verification status를 붙인다. 후보 체크리스트나 clause mapping만으로는 `answered`가 될 수 없다. `answered`는 quote/location 또는 live Source Grade verification이 있을 때만 허용한다.
 
+quote는 가능한 한 원문에서 연속된 문구를 그대로 옮긴다. 조항 제목과 예상되는 표준 문구를 조합해 만든 문장, paraphrase, 비연속 문장을 이어 붙인 quote는 evidence가 아니다. quote를 확보하지 못하면 `notes: "quote_unavailable: {이유}"`를 남기고 `needs_review`로 둔다.
+
+## Output Grid
+
+표 출력은 값과 근거를 분리한다.
+
+1. **values table** — 검토자가 훑는 주 표. 각 셀에는 `value` 또는 `not_present` / `unclear` / `needs_review`를 넣는다.
+2. **sources table** — 같은 행·열 구조의 근거 표. 각 셀에는 `quote | location | source_grade/status`를 넣는다.
+3. **Verified column** — 각 주요 column 또는 행에 검토자 확인용 빈 칸을 둔다. 법순이가 자동으로 채우지 않는다.
+
+`values table`만 보고 결론을 확정할 수 없게 한다. 표는 검토 lead이고, 검토자는 `sources table`의 quote/location 또는 Source Grade를 확인한 뒤 `Verified`를 채운다.
+
+## Normalization Spot-check
+
+전체 표를 만든 뒤 column 단위로 정규화한다.
+
+- `classify` 값이 schema options 밖이면 schema를 조정하거나 해당 셀을 `needs_review`로 낮춘다.
+- 날짜, 기간, 금액, 숫자 형식을 통일한다.
+- 값이 비정상적으로 튀는 셀은 `needs_review`로 표시한다.
+- 각 핵심 column에서 최소 3-5개 또는 10% 중 큰 수를 spot-check해 quote/location이 실제 근거와 맞는지 확인한다.
+- quote mismatch, quote unavailable, location 불명확이 발견되면 해당 셀을 `needs_review`로 낮추고 같은 column의 추가 spot-check를 권장한다.
+
 ## Schema 예시
 
 ```yaml
@@ -95,21 +119,32 @@ schema:
 ## 출력 예시
 
 ```markdown
-**검토 메모**: 5개 계약 중 샘플 2개로 schema 확인 | 각 셀은 evidence 확인 전 검토 lead
+**검토자 메모**: Sources 사용자 제공 계약 5개 | Read 샘플 2개로 schema 확인 | Currency 계약 원문 기준 | Before relying 각 셀은 evidence 확인 전 검토 lead
 
-| 문서 | 책임한도 | 상태 | Evidence | 확인 |
-| --- | --- | --- | --- | --- |
-| A MSA | 12개월 수수료 | answered | §12.2 "fees paid in the twelve months..." | 미확인 |
-| B MSA | null | needs_review | quote_unavailable: OCR 불량 | 추가 원문 필요 |
-| C NDA | null | not_present | 책임제한 조항 없음(읽은 범위: 전문) | 미확인 |
+Values table:
+
+| 문서 | 책임한도 | 고의·중과실 carve-out | Verified |
+| --- | --- | --- | --- |
+| A MSA | 12개월 수수료 | present |  |
+| B MSA | needs_review | unclear |  |
+| C NDA | not_present | not_present |  |
+
+Sources table:
+
+| 문서 | 책임한도_source | 고의·중과실 carve-out_source |
+| --- | --- | --- |
+| A MSA | §12.2 "fees paid in the twelve months..." | §12.3 "except for willful misconduct..." |
+| B MSA | quote_unavailable: OCR 불량 | §13.1 문구가 충돌해 needs_review |
+| C NDA | 읽은 범위 전문에서 책임제한 조항 없음 | 읽은 범위 전문에서 carve-out 없음 |
 ```
 
 ## 대량 입력 안전장치
 
-- 읽은 문서 수, 제외된 문서 수, 읽은 범위를 검토 메모에 표시한다.
+- 읽은 문서 수, 제외된 문서 수, 읽은 범위를 검토자 메모에 표시한다.
 - 일부 문서만 읽었으면 전체 결론처럼 말하지 않는다.
 - 샘플 검토 후 schema가 맞지 않으면 전체 실행 전에 사용자에게 조정안을 보여준다.
 - 표가 10행을 넘거나 status/date/severity 열이 있으면 dashboard나 CSV는 제안할 수 있지만, 자동 생성은 별도 요청이 있을 때만 한다.
+- `Verified` 열은 사람이 확인하기 전까지 비워둔다. 법순이가 자체 확인한 것처럼 채우지 않는다.
 
 ## 다른 workflow와의 관계
 
