@@ -1,0 +1,101 @@
+# Freshness Governance
+
+법순이의 번들 YAML은 빠른 triage와 issue spotting을 위한 로컬 지식이다. 현행 법령, 시행령, 고시, 서식, 수수료, 과징금, 신고기한, 인허가 요건을 대신하지 않는다.
+
+이 문서는 `references/source-access.md#freshness-gate`와 `references/checklist-routing.md#freshness-routing`의 운영 계약을 보강한다. 구조화된 stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
+
+## Runtime Rule
+
+`assets/policies/freshness_debt.yaml`에 등록된 자산은 모두 `triage_only`로 취급한다.
+
+답변에서 허용되는 사용:
+
+- 사용자 상황을 좁히기 위한 후보 체크리스트
+- 어떤 법령·기관·서식을 확인해야 하는지 찾는 research seed
+- 대량 표 검토에서 `needs_review` 후보 셀을 만드는 입력
+
+답변에서 금지되는 사용:
+
+- 등록된 stale 자산의 금액, 기한, 인원 기준, 과징금, 구비서류, 서식 번호를 현행 의무처럼 말하기
+- live source 확인 없이 `answered`, `[VERIFIED]`, “현재 확인된 의무”로 승격하기
+- 오래된 체크리스트 날짜를 숨기고 일반 법률 결론처럼 출력하기
+
+## Verification Before Answering
+
+stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live legal research를 수행한다.
+
+우선순위:
+
+1. law.go.kr 법령·시행령·시행규칙·행정규칙
+2. 소관 기관 공식 고시, 예규, 가이드라인, 민원안내
+3. 법망 API 또는 로컬 legalize-kr/precedent-kr 원문
+4. 공식 원문에 접근할 수 없을 때만 Grade C 해설을 보조 자료로 사용
+
+확인 실패 시:
+
+- 결론을 유보한다.
+- 해당 항목을 `[STALE]` 또는 `[INSUFFICIENT]`로 표시한다.
+- 검토자 메모의 `Currency` 또는 `Before relying`에 재확인 필요 범위를 적는다.
+
+## Debt Register Contract
+
+`assets/policies/freshness_debt.yaml`의 각 항목은 아래 필드를 갖는다.
+
+| 필드 | 의미 |
+| --- | --- |
+| `path` | stale로 등록된 repo-relative asset path |
+| `status` | 현재는 `stale_registered`만 사용 |
+| `next_review` | 해당 자산의 `maintenance.next_review`와 일치해야 함 |
+| `risk` | outdated일 때 잘못 답할 수 있는 법률 리스크 |
+| `allowed_use` | stale 상태에서 허용되는 사용 범위 |
+| `verification_required` | 결론 전 확인해야 할 공식 소스 계열 |
+| `retire_when` | registry에서 제거할 수 있는 조건 |
+
+새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
+
+## Revalidation Record
+
+stale 자산을 갱신하거나 registry에서 제거하려면 재검증 기록을 남긴다. 형식은 `assets/schemas/freshness_revalidation.yaml`을 따른다.
+
+필수로 남길 정보:
+
+- `asset_path` — 갱신한 repo-relative asset path
+- `checked_at`, `checked_by`, `tracked_issue`
+- `source_families_checked` — law.go.kr, 소관 부처, gov.kr, 기관 고시, 법원 등 확인한 source family
+- `official_sources` — title, URL, Source Grade, verification status, retrieved_at
+- `volatile_items_checked` — deadline, fee, threshold, filing_requirement, form, authority, penalty, document처럼 stale 위험이 큰 항목별 결과
+- `asset_update` — 본문 수정 여부와 `maintenance.next_review` 변경 전후
+- `retirement_decision` — `keep_registered`, `retire`, `partial_refresh`
+- `self_check` — official source 사용, volatile item 검토, next_review 갱신, freshness debt 반영 여부
+
+공식 source 없이 사용자 기억, 오래된 뉴스레터, stale 번들 YAML만으로 `retire` 결정을 내리지 않는다. 일부 항목만 확인했으면 `partial_refresh`로 남기고 `remaining_stale_scope`를 적는다.
+
+## Registered Stale Assets
+
+현재 등록된 stale 자산은 issue #101에서 갱신한다.
+
+| 자산 | next_review | stale 상태 사용 |
+| --- | --- | --- |
+| `skills/beopsuny/assets/data/permits.yaml` | 2026-01 | 업종·인허가 후보 triage only |
+| `skills/beopsuny/assets/data/compliance_calendar.yaml` | 2026-03 | 법정 일정 후보 triage only |
+| `skills/beopsuny/assets/policies/checklists/contract_review.yaml` | 2026-01 | 계약 issue-spotting triage only |
+| `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-01 | 공정거래 research question triage only |
+| `skills/beopsuny/assets/policies/checklists/food_business.yaml` | 2026-03 | 식품 사업 triage only |
+| `skills/beopsuny/assets/policies/checklists/healthcare.yaml` | 2026-03 | 의료·헬스케어 triage only |
+| `skills/beopsuny/assets/policies/checklists/investment_due_diligence.yaml` | 2026-01 | 투자·M&A issue-spotting triage only |
+| `skills/beopsuny/assets/policies/checklists/labor_hr.yaml` | 2026-01 | 노동·인사 triage only |
+| `skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml` | 2026-01 | 개인정보 issue triage only |
+| `skills/beopsuny/assets/policies/checklists/serious_accident.yaml` | 2026-01 | 중대재해 issue triage only |
+| `skills/beopsuny/assets/policies/checklists/startup.yaml` | 2026-01 | 설립 절차 triage only |
+
+## Retirement Rule
+
+registry에서 제거하려면 아래가 모두 필요하다.
+
+1. 자산 본문 또는 maintainer note에 확인한 공식 source family를 남긴다.
+2. `maintenance.next_review`를 실제 다음 검토일로 갱신한다.
+3. stale 상태였던 금액, 기한, threshold, 구비서류, 고시·가이드라인 항목을 live source 기준으로 재검토한다.
+4. `assets/schemas/freshness_revalidation.yaml` 형식의 재검증 기록에 `retirement_decision.decision: "retire"` 또는 `partial_refresh` 근거를 남긴다.
+5. `tests/validate_skill_contracts.py`가 registry 제거 후에도 통과해야 한다.
+
+부분 갱신이면 registry에서 제거하지 않는다. 대신 `risk` 또는 `retire_when`을 좁혀 남긴다.

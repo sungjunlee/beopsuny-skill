@@ -1,0 +1,129 @@
+# Role and destination output contract template
+# Runtime use: reference contract for choosing answer shape and legal-effect gates.
+# This schema does not reduce legal verification duties; it only controls how a verified or qualified conclusion is packaged.
+
+role_modes:
+  - role: "lawyer"
+    default_destination: "internal_legal_memo"
+    default_sections:
+      - "쟁점"
+      - "근거"
+      - "반대논거"
+      - "결론 강도"
+      - "검토자 메모"
+    legal_effect_gate: "confirm destination before external send or filing"
+    must_include:
+      - "Source Grade"
+      - "verification status"
+      - "unresolved assumptions"
+    must_not:
+      - "treat Grade C/D as verified authority"
+  - role: "legal_ops"
+    default_destination: "business_summary"
+    default_sections:
+      - "실무 결론"
+      - "owner/action"
+      - "escalation"
+      - "근거"
+    legal_effect_gate: "require lawyer or approval owner check before signing, sending, or filing"
+    must_include:
+      - "approval owner"
+      - "legal review needed before external action"
+    must_not:
+      - "promise automatic routing or notification unless separately requested"
+  - role: "business_user"
+    default_destination: "business_summary"
+    default_sections:
+      - "한 줄 결론"
+      - "지금 할 일"
+      - "하지 말 것"
+      - "확인 필요 정보"
+      - "변호사/법무에게 물어볼 질문"
+      - "근거"
+    legal_effect_gate: "do not directly instruct signing, sending, filing, or final legal reliance"
+    must_include:
+      - "lawyer/legal_ops review before legal effect"
+      - "plain-language Source Grade explanation when useful"
+    must_not:
+      - "send as-is"
+      - "file as-is"
+      - "sign as-is"
+  - role: "unknown"
+    default_destination: "business_summary"
+    default_sections:
+      - "한 줄 결론"
+      - "지금 할 일"
+      - "하지 말 것"
+      - "확인 필요 정보"
+      - "변호사/법무에게 물어볼 질문"
+      - "근거"
+    legal_effect_gate: "treat as business_user until role is confirmed"
+    must_include:
+      - "role or reviewer confirmation before legal effect"
+    must_not:
+      - "direct external legal action"
+
+destinations:
+  - destination: "internal_legal_memo"
+    may_include_internal_blocks: true
+    required_gate: "show assumptions, source limits, and conclusion strength"
+    must_include:
+      - "검토자 메모"
+      - "Source Grade"
+      - "verification status"
+    must_strip: []
+  - destination: "business_summary"
+    may_include_internal_blocks: false
+    required_gate: "separate decision points from legal caveats"
+    must_include:
+      - "action items"
+      - "legal review needed items"
+    must_strip:
+      - "self-verification block"
+      - "internal scratchpad"
+  - destination: "executive_report"
+    may_include_internal_blocks: false
+    required_gate: "show options, impact, owner, and timing"
+    must_include:
+      - "key risks"
+      - "options"
+      - "owner"
+    must_strip:
+      - "raw citation ledger unless requested"
+  - destination: "external_draft"
+    may_include_internal_blocks: false
+    required_gate: "mark as draft and require legal review before sending"
+    must_include:
+      - "외부 공유용 초안"
+      - "보내기 전 법무 검토 필요"
+    must_strip:
+      - "검토자 메모"
+      - "자가 검증"
+      - "internal scratchpad"
+      - "unreviewed internal assumptions"
+  - destination: "agency_or_court_submission"
+    may_include_internal_blocks: false
+    required_gate: "do not instruct filing without lawyer/legal_ops review"
+    must_include:
+      - "confirmed facts"
+      - "missing information"
+      - "review before submission"
+    must_strip:
+      - "internal reviewer note"
+      - "self-verification block"
+
+legal_effect_triggers:
+  - "signing"
+  - "external_send"
+  - "agency_or_court_submission"
+  - "contract_acceptance"
+  - "litigation_position"
+  - "customer_or_regulator_reply"
+
+non_overrides:
+  - "Legal Verification Core"
+  - "Source Grade / VERIFIED contract"
+  - "Freshness Governance"
+  - "Role / Destination Gate"
+  - "lawyer/legal_ops review requirement"
+  - "current user request"

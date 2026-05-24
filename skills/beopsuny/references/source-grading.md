@@ -41,6 +41,27 @@
 **[Grade X] [VERIFIED/UNVERIFIED/INSUFFICIENT]** — 소스명 또는 경로
 ```
 
+### VERIFIED 계약
+
+`[VERIFIED]`는 소스의 등급이 높다는 뜻이 아니라, **이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조했다**는 뜻이다. Grade와 verification status는 분리한다.
+
+`[VERIFIED]`를 붙이려면 아래 네 가지가 모두 충족되어야 한다.
+
+1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 식별자가 충분하다.
+2. **원문 대조**: local legalize-kr/precedent-kr 원문, law.go.kr/glaw.scourt.go.kr, 법망 API의 원문 필드, 또는 공식 MCP 응답에서 실제 문구나 구조를 확인했다.
+3. **최신성 표시**: 현행/미시행/시행 예정/조회 실패 중 어느 상태인지 답변에 드러난다. 시행일·금액·기한·과징금처럼 변동성이 큰 사실은 stale source가 아니어야 한다.
+4. **provenance 표시**: 이번 응답에서 확인한 경로를 `legalize-kr 로컬`, `law.go.kr 확인`, `법망 API 원문`, `glaw.scourt.go.kr 확인`처럼 표시한다.
+
+아래 경우에는 `[VERIFIED]`를 붙이지 않는다.
+
+- 법망 API나 WebSearch의 요약·스니펫만 본 경우
+- `assets/data/*.yaml` 또는 체크리스트 후보만 본 경우
+- 사용자가 제공한 조문번호·사건번호·금액을 독립 확인하지 않은 경우
+- 법령 ID가 비어 있거나 중복 의심 상태인 `law_index.yaml` 항목을 search 없이 직접 조회한 것처럼 처리한 경우
+- 원문 링크 패턴을 추정만 했고 실제 원문을 열어보지 않은 경우
+
+이 경우에는 `[UNVERIFIED]`, `[INSUFFICIENT]`, `[STALE]`, `[EDITORIAL]` 중 실제 상태에 맞는 태그로 낮춘다.
+
 ### 예시 1: 법령 원문 (Grade A, 원문 확인)
 
 ```markdown
@@ -113,6 +134,8 @@
 - 상위 등급 소스를 우선
 - 모순 자체를 `[CONTRADICTED]` 태그로 사용자에게 노출
 - 절대 숨기지 않는다
+- `references/research-workflow.md#legal-verification-core`의 contradiction scan과 conclusion binding을 적용한다
+- 모순이 해소되지 않으면 Grade가 높은 source가 있더라도 단정 결론으로 쓰지 않는다
 
 ---
 

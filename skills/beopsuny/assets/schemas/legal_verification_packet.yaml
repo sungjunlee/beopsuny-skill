@@ -1,0 +1,68 @@
+# Legal Verification Core packet template
+# Runtime use: internal scratchpad or persisted review artifact when the user explicitly asks.
+# This schema fixes the minimum evidence shape; it is not a required user-facing output.
+
+matter:
+  question: ""
+  jurisdiction:
+    primary: "KR"
+    secondary: []              # 해외법은 한국법 결론과 분리해 별도 packet 또는 section으로 둔다
+  user_role: ""                # lawyer | legal_ops | business_user | unknown | ""
+  destination: ""              # internal_legal_memo | business_summary | executive_report | external_draft | agency_or_court_submission | ""
+
+issue_to_authority_map:
+  - issue_id: ""               # stable local id, e.g. issue-1
+    conclusion_candidate: ""
+    required_authority:
+      - "statute"              # statute | decree | regulation | guidance | precedent | form | fee_schedule | official_notice | other
+    legal_effect: ""           # none | internal_reliance | external_send | filing | signing | litigation_position
+    must_not_conclude_without: []
+
+authority_packets:
+  - issue_id: ""
+    authorities:
+      - authority_id: ""       # stable local id, e.g. auth-1
+        type: ""               # statute | decree | regulation | guidance | precedent | form | fee_schedule | official_notice | other
+        citation: ""
+        pinpoint: ""
+        source_grade: ""       # A | B | C | D
+        verification_status: "" # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
+        provenance: ""         # 이번 응답에서 실제 확인한 경로
+        currency: ""           # 현행 | 시행 예정 | 미시행 | 조회 실패 | 검토일
+        retrieved_at: ""
+        supports: []           # issue_id or conclusion ids
+        limitations: ""
+
+citation_ledger:
+  - citation_id: ""            # stable local id, e.g. cite-1
+    authority_id: ""
+    citation: ""
+    pinpoint: ""
+    source_grade: ""
+    verification_status: ""
+    provenance: ""
+    currency: ""
+    supports: []
+    output_allowed: false      # true인 경우에만 사용자 답변의 인용으로 노출
+
+contradiction_scan:
+  checked: false
+  conflicts:
+    - issue_id: ""
+      authorities: []
+      conflict_type: ""        # stale_vs_current | hierarchy | precedent_split | official_guidance_gap | user_fact_gap | other
+      treatment: ""            # downgrade | separate | ask_user | withhold_conclusion | other
+
+conclusion_binding:
+  - issue_id: ""
+    conclusion_strength: ""    # verified | qualified | insufficient | contradicted | triage_only
+    binding_reason: ""
+    required_next_check: ""
+
+self_verification:
+  source_grade_applied: false
+  ledger_covers_output_citations: false
+  freshness_gate_checked: false
+  role_destination_gate_checked: false
+  no_unledgered_citation_in_output: false
+  unresolved_limits: []
