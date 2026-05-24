@@ -274,11 +274,11 @@ scenarios:
     expected:
       primary_intent: contract_review
       must_do:
-        - 검토 메모 또는 본문 초반에 읽은 범위 표시
+        - 검토자 메모 또는 본문 초반에 읽은 범위 표시
         - 읽지 못한 부속서나 본문 범위를 미확인으로 표시
         - 미확인 범위가 결론을 좌우하면 결론 유보 또는 추가 자료 요청
       response_contains:
-        - 검토 메모
+        - 검토자 메모
         - 읽은 범위
         - 미확인
       forbidden_behavior:
@@ -292,7 +292,7 @@ scenarios:
         - contract_counter_draft_boundary
         - self_verification_metadata
       required_substrings:
-        - 검토 메모
+        - 검토자 메모
         - 본문 1~20쪽
         - DPA 별첨
         - 미확인
@@ -315,6 +315,8 @@ scenarios:
         - skills/beopsuny/assets/schemas/company_profile.yaml
       must_do:
         - quick/full 온보딩 선택 또는 기본 quick 안내
+        - full 온보딩에서 seed document 제공 여부 확인
+        - stated position 과 signed practice 차이 표시
         - 저장 전 요약 확인
         - skip/unknown 항목을 추정하지 않음
         - Lite 모드에서는 파일에 쓰지 않고 대화 내 확인으로 처리
@@ -322,6 +324,7 @@ scenarios:
         - 온보딩
         - 저장 전 확인
         - playbook
+        - seed document
       forbidden_behavior:
         - 사용자 확인 없이 profile.yaml 쓰기
         - Lite 모드인데 profile.yaml 기록 약속
@@ -340,6 +343,7 @@ scenarios:
         - quick
         - full
         - playbook
+        - seed document
       forbidden_substrings:
         - profile.yaml에 바로 저장했습니다
         - Lite 모드에서도 profile.yaml에 기록했습니다
@@ -412,12 +416,16 @@ scenarios:
         - schema 초안 작성
         - Column Type과 Cell State 사용
         - sample 3-5개 검토 후 전체 표 진행
+        - values table 과 sources table 분리
+        - Verified 열은 사람이 확인할 빈 칸으로 둠
         - quote/location 또는 Source Grade 없으면 needs_review 처리
+        - quote mismatch 는 needs_review 로 낮춤
         - 책임제한·해지·개인정보 같은 법률 리스크 column은 계약 검토 또는 체크리스트 workflow로 확인
       response_contains:
         - schema
         - needs_review
         - Evidence
+        - Verified
       forbidden_behavior:
         - 전체 문서 읽은 것처럼 단정
         - 빈칸으로 미확인 상태 숨김
@@ -434,6 +442,7 @@ scenarios:
         - Cell State
         - needs_review
         - Evidence
+        - Verified
         - 계약 검토
         - 체크리스트
       forbidden_substrings:
