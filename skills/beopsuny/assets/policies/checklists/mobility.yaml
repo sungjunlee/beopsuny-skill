@@ -23,6 +23,17 @@ maintenance:
     - date: "2025-12-28"
       changes: "초기 버전 생성"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "candidate_checklist"
+  verify_with:
+    - "law.go.kr"
+    - "국토교통부/MOLIT 고시·안내"
+    - "gov.kr 또는 관할 지자체"
+  volatile_fields: [deadline, penalty, threshold, fee, form, authority, required_documents]
+  note: "운송 면허·플랫폼 규제·요금·자율주행 관련 요건은 후보로만 사용하고 소관 기관 공식 자료로 확인한다."
+
 triage_questions:
   - question: "어떤 유형의 모빌리티 사업인가?"
     options:
@@ -53,7 +64,6 @@ items:
     laws:
       - name: "여객자동차 운수사업법"
         articles: ["제4조 (면허)"]
-        law_id: "001640"
     notes: |
       - 노선여객: 시내버스, 시외버스 등
       - 구역여객: 택시, 전세버스 등
@@ -70,7 +80,6 @@ items:
     laws:
       - name: "여객자동차 운수사업법"
         articles: ["제24조 (운전업무 종사자격)"]
-        law_id: "001640"
     notes: |
       - 택시: 운전경력 1년 이상
       - 버스: 운전경력 1년 이상 + 대형면허
@@ -86,7 +95,6 @@ items:
     laws:
       - name: "여객자동차 운수사업법"
         articles: ["제8조"]
-        law_id: "001640"
     notes: |
       - 택시: 지자체 인가 요금
       - 전세버스: 자율요금 (범위 내)
@@ -105,7 +113,6 @@ items:
     laws:
       - name: "화물자동차 운수사업법"
         articles: ["제3조"]
-        law_id: "001641"
     notes: |
       - 일반화물: 1대 이상
       - 개별화물: 1대 (개인)
@@ -122,7 +129,6 @@ items:
     laws:
       - name: "화물자동차 운수사업법"
         articles: ["제8조"]
-        law_id: "001641"
     notes: |
       - 화물운송종사자격증 필요
       - 교통안전체험교육 이수
@@ -138,7 +144,6 @@ items:
     laws:
       - name: "화물자동차 운수사업법"
         articles: ["제5조"]
-        law_id: "001641"
     notes: |
       - 안전운임제 적용 품목 확인
       - 위반 시 과태료
@@ -157,7 +162,6 @@ items:
     laws:
       - name: "여객자동차 운수사업법"
         articles: ["제81조 (플랫폼운송사업)"]
-        law_id: "001640"
     notes: |
       - 운송가맹사업 or 플랫폼운송사업 등록
       - 가맹점 운송사업자 계약
@@ -173,7 +177,6 @@ items:
     laws:
       - name: "여객자동차 운수사업법"
         articles: ["제12조 (유상운송 금지)"]
-        law_id: "001640"
     notes: |
       - 무면허 유상운송 금지
       - 카풀 허용 시간대 제한
@@ -191,7 +194,6 @@ items:
     laws:
       - name: "자동차관리법"
         articles: ["제5조"]
-        law_id: "001639"
     notes: |
       - 영업용 번호판 발급
       - 자동차검사 주기 상이
@@ -207,7 +209,6 @@ items:
     laws:
       - name: "자동차손해배상보장법"
         articles: ["제5조"]
-        law_id: "001653"
     notes: |
       - 책임보험 필수
       - 영업용 특약 필요
@@ -226,7 +227,6 @@ items:
     laws:
       - name: "자동차관리법"
         articles: ["제27조"]
-        law_id: "001639"
       - name: "자율주행자동차 상용화 촉진 및 지원에 관한 법률"
         articles: ["제10조"]
     notes: |

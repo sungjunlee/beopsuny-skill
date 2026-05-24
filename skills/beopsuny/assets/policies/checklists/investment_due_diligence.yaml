@@ -26,6 +26,16 @@ maintenance:
     - date: "2025-12-09"
       changes: "maintenance 섹션 추가"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "investigation_plan"
+  verify_with:
+    - "law.go.kr"
+    - "공정거래위원회/산업통상자원부/금융당국 공식 자료"
+    - "거래 문서 원문과 최신 기관 안내"
+  note: "법률실사 질문 후보로만 사용하고, 기업결합·외국인투자·노동·인허가 기준은 live source로 재확인한다."
+
 # 중요 경고
 warnings:
   - "법률실사(Legal DD)는 잠재적 법적 리스크 발견이 목적"

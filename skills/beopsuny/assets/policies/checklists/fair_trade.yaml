@@ -31,6 +31,16 @@ maintenance:
     - date: "2025-12-09"
       changes: "maintenance 섹션 추가"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "investigation_plan"
+  verify_with:
+    - "law.go.kr"
+    - "공정거래위원회 고시/심결/보도자료"
+    - "대법원·하급심 판례 원문"
+  note: "공정거래 쟁점은 조사 질문 후보로만 사용하고, 시장획정·신고 기준·과징금·지급기한은 최신 공식 자료로 재확인한다."
+
 # 중요 경고
 warnings:
   - "이 가이드는 '조사 시작점'이며, 완료 체크리스트가 아닙니다"
@@ -69,7 +79,7 @@ related_laws_map:
   - context: "온라인 플랫폼"
     laws:
       - "온라인 플랫폼 중개거래의 공정화에 관한 법률 (플랫폼공정화법)"
-    note: "2025년 시행 - 최신 동향 확인"
+    note: "입법/시행 여부와 최신 동향을 공식 자료로 확인"
   - context: "기술 탈취"
     laws:
       - "하도급법 제12조의3 (기술자료 제공 요구 금지)"
@@ -96,7 +106,7 @@ items:
     research_actions:
       - "# 법망 API search: '정보교환 부당공동행위' --type prec"
       - "# 법망 API search: '공동행위' --type admrul"
-      - "WebSearch: '{업종} 정보교환 담합 판례 2024 2025 site:lawtimes.co.kr'"
+      - "WebSearch: '{업종} 정보교환 담합 최신 판례 공정위 심결'"
     related_laws:
       - name: "공정거래법"
         articles: ["제40조 (부당한 공동행위의 금지)"]
@@ -120,7 +130,7 @@ items:
     research_actions:
       - "# legalize-kr Read: '공정거래법' --with-admrul"
       - "# 법망 API search: '시장획정' --type prec"
-      - "WebSearch: '관련시장 획정 {업종} 공정위 2024 2025'"
+      - "WebSearch: '관련시장 획정 {업종} 최신 공정위 심결 판례'"
     related_laws:
       - name: "공정거래법"
         articles: ["제4조 (시장지배적사업자의 추정)", "제5조 (시장지배적지위의 남용금지)"]
@@ -140,7 +150,7 @@ items:
     research_actions:
       - "# legalize-kr Read: '하도급거래 공정화에 관한 법률'"
       - "# 법망 API search: '원사업자 수급사업자' --type prec"
-      - "WebSearch: '하도급법 적용대상 기준 2024 2025'"
+      - "WebSearch: '하도급법 적용대상 기준 최신 공정위'"
     related_laws:
       - name: "하도급법"
         articles: ["제2조 (정의)"]
@@ -156,7 +166,7 @@ items:
       현행 기준을 반드시 확인해야 함.
     research_actions:
       - "# 법망 API search: '하도급대금 지연이자' --type admrul"
-      - "WebSearch: '하도급대금 지연이자율 2025 현행'"
+      - "WebSearch: '하도급대금 지연이자율 현행 고시'"
     related_laws:
       - name: "하도급법"
         articles: ["제13조 (하도급대금의 지급 등)"]
@@ -248,7 +258,7 @@ items:
     research_actions:
       - "# legalize-kr Read: '공정거래법'"
       - "# 법망 API search: '기업결합 신고' --type admrul"
-      - "WebSearch: '기업결합 신고기준 2025 현행'"
+      - "WebSearch: '기업결합 신고기준 현행 공정거래위원회'"
     related_laws:
       - name: "공정거래법"
         articles: ["제11조 (기업결합의 신고)", "제12조 (기업결합의 제한)"]
@@ -309,7 +319,7 @@ not_covered:
 # ─────────────────────────────────────────────────────────
 enforcement_check_tips:
   - "공정위 보도자료 확인: ftc.go.kr/www/selectReportUserList.do"
-  - "최근 과징금 사례 검색: '{업종} 과징금 공정위 2024 2025'"
+  - "최근 과징금 사례 검색: '{업종} 과징금 공정위 최신'"
   - "심결례 검색: 공정거래위원회 심결정보 시스템"
   - "주의: 같은 행위도 시기/정권에 따라 제재 강도 다름"
 

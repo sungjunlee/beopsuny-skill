@@ -28,10 +28,21 @@ maintenance:
     - date: "2025-12-09"
       changes: "법인 처벌 규정 description 추가"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "candidate_checklist"
+  verify_with:
+    - "law.go.kr"
+    - "고용노동부/MOEL 고시·가이드라인"
+    - "대법원/하급심 판례 및 수사·처분 동향"
+  volatile_fields: [deadline, penalty, threshold, fee, form, authority, required_documents]
+  note: "적용 범위·안전보건 의무·처벌 수위·보관기간은 후보로만 사용하고 현행 법령과 집행 자료로 확인한다."
+
 # 중요 경고
 warnings:
   - "중대재해처벌법은 경영책임자에게 형사책임(징역)을 부과합니다"
-  - "2024년 1월 27일부터 상시 근로자 5인 이상 전 사업장 적용"
+  - "적용 개시일과 상시 근로자 기준은 현행 법령 부칙/개정 이력으로 확인"
   - "안전보건관리체계 구축·이행 여부가 핵심 쟁점"
   - "형사 사건 - 반드시 전문 변호사 자문 필요"
 
@@ -47,7 +58,7 @@ triage_questions:
   - question: "건설업인가?"
     branches:
       - "공사금액 50억 원 이상 → 전체 의무 적용"
-      - "공사금액 50억 원 미만 → 기본 의무 적용 (2024.1.27부터)"
+      - "공사금액 기준 및 적용 개시일은 현행 법령/부칙으로 확인"
   - question: "도급/용역/위탁을 주고 있는가?"
     if_yes: "시설·장비·장소 실질적 지배 시 수급인 종사자에 대한 의무 발생 (제5조)"
   - question: "다중이용시설/공중교통수단 운영하는가?"
@@ -78,7 +89,7 @@ scope:
     notes: |
       - 상시 근로자 = 1개월 평균 근로자 수 (일용직 포함)
       - 파견근로자는 사용사업주의 상시 근로자 수에 포함
-      - 2024.1.27부터 5인 이상 전 사업장 적용
+      - 적용 개시일과 대상 범위는 현행 법령/부칙으로 확인
 
   - id: "scope-02"
     task: "경영책임자 범위 확인"
@@ -294,21 +305,21 @@ penalties:
   individual:
     death:
       description: "사망 1명 이상 발생"
-      punishment: "1년 이상 징역 또는 10억원 이하 벌금 (병과 가능)"
+      punishment: "현행 제6조 벌칙 원문 확인"
     injury:
       description: "부상/질병 (6개월 이상 치료 2명 이상 또는 직업성 질병 1년 내 3명 이상)"
-      punishment: "7년 이하 징역 또는 1억원 이하 벌금"
+      punishment: "현행 제6조 벌칙 원문 확인"
     repeat:
-      description: "5년 내 재범"
-      punishment: "형의 1/2까지 가중"
+      description: "재범 가중 여부"
+      punishment: "현행 제6조 가중 규정 확인"
 
   corporation:
     death:
       description: "사망 사고 시"
-      punishment: "50억원 이하 벌금"
+      punishment: "현행 제7조 양벌규정 원문 확인"
     injury:
       description: "부상/질병 사고 시"
-      punishment: "10억원 이하 벌금"
+      punishment: "현행 제7조 양벌규정 원문 확인"
 
   civil:
     description: "징벌적 손해배상"

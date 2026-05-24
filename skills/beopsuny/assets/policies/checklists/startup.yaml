@@ -26,6 +26,17 @@ maintenance:
     - date: "2025-12-09"
       changes: "type 필드 추가, maintenance 섹션 추가"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "candidate_checklist"
+  verify_with:
+    - "law.go.kr"
+    - "등기소/국세청/4대보험 기관 공식 안내"
+    - "gov.kr 또는 업종별 관할 기관"
+  volatile_fields: [deadline, penalty, threshold, fee, form, authority, required_documents]
+  note: "설립·사업자등록·4대보험·업종별 인허가 기한은 후보로만 사용하고 현재 제출처와 기한은 공식 자료로 확인한다."
+
 # ─────────────────────────────────────────────────────────
 # 초기 분기 질문 (Quick Triage)
 # ─────────────────────────────────────────────────────────

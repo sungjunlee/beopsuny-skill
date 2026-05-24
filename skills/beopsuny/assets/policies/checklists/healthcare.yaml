@@ -23,6 +23,18 @@ maintenance:
     - date: "2025-12-28"
       changes: "초기 버전 생성"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "candidate_checklist"
+  verify_with:
+    - "law.go.kr"
+    - "식품의약품안전처/MFDS"
+    - "보건복지부/MOHW"
+    - "gov.kr 또는 관할 기관"
+  volatile_fields: [deadline, penalty, threshold, fee, form, authority, required_documents]
+  note: "의료기기·화장품·의료기관·디지털 헬스케어 요건은 후보로만 사용하고 등급·허가·신고 기준은 공식 소스로 확인한다."
+
 triage_questions:
   - question: "어떤 유형의 헬스케어 사업인가?"
     options:
@@ -54,7 +66,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제3조 (의료기기의 정의)"]
-        law_id: "009514"
     notes: |
       - 1등급: 인체 위해성 낮음 (신고)
       - 2등급: 중등도 위해성 (인증)
@@ -71,7 +82,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제17조"]
-        law_id: "009514"
     notes: |
       - 1~2등급: 시/군/구 신고
       - 3~4등급: 허가 필요
@@ -87,7 +97,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제6조"]
-        law_id: "009514"
     notes: |
       - 관할: 식품의약품안전처
       - GMP 인증 필요
@@ -103,7 +112,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제15조, 제16조, 제17조"]
-        law_id: "009514"
     notes: |
       - 1등급: 신고
       - 2등급: 인증 (인증기관)
@@ -123,7 +131,6 @@ items:
     laws:
       - name: "화장품법"
         articles: ["제3조"]
-        law_id: "002015"
     notes: |
       - 관할: 식품의약품안전처
       - 책임판매관리자 필요
@@ -139,7 +146,6 @@ items:
     laws:
       - name: "화장품법"
         articles: ["제3조의2"]
-        law_id: "002015"
     notes: |
       - 제조 없이 판매만 하는 경우
       - OEM/ODM 위탁 시 해당
@@ -155,7 +161,6 @@ items:
     laws:
       - name: "화장품법"
         articles: ["제4조"]
-        law_id: "002015"
     notes: |
       - 미백, 주름개선, 자외선차단 등
       - 사전 심사 또는 보고 필요
@@ -174,7 +179,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제2조"]
-        law_id: "009514"
     admin_rules:
       - name: "디지털치료기기 허가·심사 가이드라인"
     notes: |
@@ -192,7 +196,6 @@ items:
     laws:
       - name: "의료법"
         articles: ["제34조 (원격의료)"]
-        law_id: "001788"
     notes: |
       - 의료인 간 원격의료: 허용
       - 환자 대상 원격의료: 제한적 허용 (비대면 진료 한시 허용 등)
@@ -210,7 +213,6 @@ items:
     laws:
       - name: "개인정보 보호법"
         articles: ["제23조 (민감정보의 처리 제한)"]
-        law_id: "011357"
     notes: |
       - 건강정보는 민감정보
       - 별도 명시적 동의 필요
@@ -225,7 +227,6 @@ items:
     laws:
       - name: "의료법"
         articles: ["제21조 (기록 열람 등), 제23조 (전자의무기록)"]
-        law_id: "001788"
     notes: |
       - 진료기록 비밀유지 의무
       - 전자의무기록 보안기준
@@ -243,7 +244,6 @@ items:
     laws:
       - name: "의료기기법"
         articles: ["제24조 (광고의 금지 등)"]
-        law_id: "009514"
     notes: |
       - 허가/인증 받은 범위 내 광고
       - 허위·과대광고 금지
@@ -258,7 +258,6 @@ items:
     laws:
       - name: "화장품법"
         articles: ["제13조 (표시·광고의 범위)"]
-        law_id: "002015"
     notes: |
       - 의약품 오인 광고 금지
       - 기능성 표시는 심사 후만 가능
