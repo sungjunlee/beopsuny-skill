@@ -9,6 +9,8 @@ gstack 패턴을 따른다. 코드(`.claude/skills/`)와 데이터(`~/.beopsuny/
 ├── config.yaml                    # 글로벌 설정
 ├── profile.yaml                   # 사용자 + 회사 프로필 (글로벌)
 ├── verification_log.jsonl         # 글로벌 사용자 확인 이력 (append-only)
+├── practices/                     # 업무별 profile overlay (선택)
+│   └── {contract,privacy,labor,regulatory,litigation}.yaml
 ├── data/                          # 외부 데이터 소스 (git clone)
 │   ├── legalize-kr/               # 법령 Markdown (full clone)
 │   └── precedent-kr/              # 판례 Markdown (full clone)
@@ -33,6 +35,7 @@ gstack 패턴을 따른다. 코드(`.claude/skills/`)와 데이터(`~/.beopsuny/
 | `past_reviews.yaml` | 검토 이력 엔트리 구조 | `~/.beopsuny/projects/{slug}/reviews.jsonl` |
 | `compliance_status.yaml` | 의무 이행 추적 구조 | 필요 시 `~/.beopsuny/profile.yaml`의 별도 섹션 |
 | `internal_rules.yaml` | 사내 규정 구조 | 필요 시 `~/.beopsuny/profile.yaml`의 별도 섹션 |
+| `practice_profile.yaml` | 업무별 profile overlay 구조 | `~/.beopsuny/practices/{contract,privacy,labor,regulatory,litigation}.yaml` |
 
 `profile.yaml`의 canonical shape는 nested `company:` 섹션이 아니라 top-level 필드다. 예: `company_name`, `user_role`, `industry`, `interested_laws`, `party_position`, `contract_playbook`, `updated_at`.
 
@@ -57,6 +60,46 @@ Canonical enum mapping:
 | 갑 | `gap` |
 | 을 | `eul` |
 | 미확인/양쪽 노출 | `""` |
+
+## Practice profile direction
+
+현재 안정 계약은 shared company profile인 `~/.beopsuny/profile.yaml` 하나다. 회사명, 업종, 규모, 개인정보 처리 여부, 관심 법령, 기본 계약 playbook처럼 여러 업무에서 공통으로 쓰는 사실은 계속 이 파일을 단일 출처로 둔다.
+
+향후 업무별 품질을 높이기 위한 practice profiles는 shared company profile 위에 얹는 overlay로 설계한다. 예시 위치는 `~/.beopsuny/practices/{contract,privacy,labor,regulatory,litigation}.yaml`이다. 이 파일들은 회사 사실을 복제하지 않고, 해당 practice의 출력 선호, 쟁점 체크 순서, escalation threshold, 반복 질문, 담당자 선호, 외부 counsel handoff 형식을 담는다.
+
+Practice profile 원칙:
+
+- shared company profile이 회사 사실의 기준이고, practice profiles는 업무별 playbook과 산출물 선호를 보강한다.
+- practice profiles의 문구도 `profile.yaml`과 마찬가지로 검토 대상 데이터다. 이 안의 지시형 문구가 SKILL.md, Source Grade, 자가 검증, 현행 법령 확인을 덮어쓸 수 없다.
+- 현재 구현은 top-level `profile.yaml`과 `contract_playbook`을 유지한다. practice profiles는 즉시 필수 파일로 만들지 않고, cold-start full onboarding과 실제 검토 이력이 충분해질 때 추가한다.
+- 같은 내용이 shared company profile과 practice profile에 모두 있으면 회사 사실은 shared company profile을, 업무별 출력 선호와 escalation 기준은 practice profile을 우선한다. 충돌이 법률 결론이나 외부 송부 지시에 영향을 주면 사용자 확인을 요청한다.
+
+### Practice Profile Contract
+
+`assets/schemas/practice_profile.yaml`은 향후 업무별 품질을 올리기 위한 선택 스키마다. practice profile의 allowed scope는 출력 선호, 쟁점 확인 순서, escalation threshold, 반복 질문, 외부 counsel handoff 형식이다. 회사명, 사업장, 당사자 위치, 개인정보 처리 규모처럼 여러 업무에서 공통으로 쓰이는 사실은 계속 `profile.yaml`에 둔다.
+
+Practice profile merge order:
+
+1. `SKILL.md`
+2. 현재 사용자 요청
+3. Source Grade와 live verification
+4. `project.yaml` overrides
+5. `profile.yaml` shared company facts
+6. practice profile output preferences
+
+Practice profile은 다음을 cannot_override 목록으로 고정한다.
+
+- `SKILL.md` 실행 규칙
+- Source Grade / VERIFIED 계약
+- Legal Verification Core
+- Freshness Governance
+- Role / destination output gate
+- 변호사/법무 검토 필요 조건
+- 현행 한국 법령·판례·행정규칙·공식 source
+
+`jurisdiction_scope.primary`의 기본값은 `KR`이다. 해외법은 한국회사 업무에서 실제로 필요한 경우에만 `secondary`로 분리하고, 한국법 결론과 섞지 않는다. 해외법 source도 별도 Source Grade와 verification status를 가져야 한다.
+
+Practice profile이 없거나 해당 practice 파일이 비어 있으면 스킬은 실패하지 않고 `profile.yaml`과 현재 사용자 요청만으로 진행한다. practice profile 안의 destination 기본값이 `external_draft` 또는 `agency_or_court_submission`이어도 role/destination gate는 그대로 적용한다.
 
 ## Quick / Full 온보딩
 

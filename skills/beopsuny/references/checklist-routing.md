@@ -47,9 +47,27 @@
 - 전체 체크리스트를 그대로 나열하지 않는다.
 - 사용자 상황에 관련된 items만 출력한다.
 - 각 item의 법령·시행령·고시 근거를 확인한다.
+- 체크리스트 YAML은 triage 후보이지 현행 결론 근거가 아니다.
 - 인허가 요건, 수수료, 처리기간, 구비서류, 공식 서식 URL은 번들 데이터에 의존하지 않고 관할 기관·정부24·law.go.kr 등 공식 소스로 확인한다.
 - 이미 이행된 항목과 미확인 항목을 구분한다.
 - 여러 사업장, 여러 제품, 여러 계약을 표로 비교해야 하면 `references/bulk-tabular-review.md`로 schema를 먼저 확정하고, 각 셀의 법령 근거는 이 체크리스트 workflow로 확인한다.
+
+## Freshness Routing
+
+체크리스트 파일의 `maintenance.next_review`가 지났거나, 항목에 금액·기한·인원 기준·과징금·서식·구비서류처럼 변동성 높은 값이 있으면 `references/source-access.md#freshness-gate`를 적용한다. stale로 등록된 자산은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`을 함께 확인한다.
+
+처리 원칙:
+
+1. stale 체크리스트는 사용자 상황을 좁히는 후보로만 사용한다.
+2. 결론에 들어가는 법령명, 조문, 시행일, threshold, 금액, 기한, 구비서류는 live legal research로 재확인한다.
+3. live 확인에 실패하면 해당 항목은 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하고, "현재 확인된 의무"처럼 말하지 않는다.
+4. stale 상태는 검토자 메모의 `Currency` 또는 본문에 짧게 표시한다.
+
+예:
+
+```markdown
+**검토자 메모**: Sources food_business.yaml 후보 + 법망 API 확인 | Currency 체크리스트 next_review 지남, 인허가 서류는 gov.kr 원문 재확인 필요
+```
 
 ## Company Context
 

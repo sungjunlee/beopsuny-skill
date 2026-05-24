@@ -96,6 +96,37 @@ LEGAL_RISK_COLUMN_PATTERNS = [
     "permits",
     "sanctions",
 ]
+BUSINESS_USER_SECTIONS = [
+    "한 줄 결론",
+    "지금 할 일",
+    "하지 말 것",
+    "확인 필요 정보",
+    "변호사/법무에게 물어볼 질문",
+    "근거",
+]
+DIRECT_EXTERNAL_ACTION_PATTERNS = [
+    "바로 보내",
+    "바로 송부",
+    "그대로 보내",
+    "그대로 송부",
+    "제출하면 됩니다",
+    "서명하면 됩니다",
+    "발송하세요",
+]
+STALE_ANSWERED_PATTERNS = [
+    "현재 확인된 의무입니다",
+    "필수입니다",
+    "반드시 제출",
+    "구비서류는 다음과 같습니다",
+    "수수료는",
+]
+LEGAL_VERIFICATION_CORE_TERMS = [
+    "issue-to-authority",
+    "authority packet",
+    "citation ledger",
+    "contradiction scan",
+    "conclusion binding",
+]
 
 
 def load_yaml(path: Path) -> Any:
@@ -262,6 +293,39 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
     if rule == "self_verification_metadata":
         if not re.search(r"자가 검증\s*:", output):
             failures.append(f"{scenario_id}: common rule {rule} missing self-verification metadata")
+        return failures
+
+    if rule == "business_user_external_gate":
+        for section in BUSINESS_USER_SECTIONS:
+            if section not in output:
+                failures.append(f"{scenario_id}: common rule {rule} missing business-user section {section!r}")
+        if not any(marker in output for marker in ["외부 공유용 초안", "보내기 전 법무 검토", "법무 검토 전"]):
+            failures.append(f"{scenario_id}: common rule {rule} lacks external draft legal-review gate")
+        for pattern in DIRECT_EXTERNAL_ACTION_PATTERNS:
+            if pattern in output:
+                failures.append(f"{scenario_id}: common rule {rule} contains direct external action {pattern!r}")
+        if re.search(r"자가 검증\s*:", output) and "외부 공유용 초안" in output:
+            failures.append(f"{scenario_id}: common rule {rule} leaks internal self-verification into external draft")
+        return failures
+
+    if rule == "freshness_debt_triage_only":
+        if "[STALE]" not in output and "[INSUFFICIENT]" not in output:
+            failures.append(f"{scenario_id}: common rule {rule} missing stale/insufficient status")
+        if not any(marker in output for marker in ["triage", "후보", "needs_review", "재확인"]):
+            failures.append(f"{scenario_id}: common rule {rule} lacks triage/reverification framing")
+        for pattern in STALE_ANSWERED_PATTERNS:
+            if pattern in output and not any(marker in output for marker in ["재확인", "확인 전", "후보", "[STALE]", "[INSUFFICIENT]"]):
+                failures.append(f"{scenario_id}: common rule {rule} treats stale value as current obligation")
+        return failures
+
+    if rule == "legal_verification_core_trace":
+        for term in LEGAL_VERIFICATION_CORE_TERMS:
+            if term not in output:
+                failures.append(f"{scenario_id}: common rule {rule} missing {term!r}")
+        if "확인한 범위" not in output and "단정 불가" not in output and "결론 유보" not in output:
+            failures.append(f"{scenario_id}: common rule {rule} lacks conclusion-strength binding")
+        if "[CONTRADICTED]" in output and "단정" in output and "단정 불가" not in output:
+            failures.append(f"{scenario_id}: common rule {rule} has contradicted source but still sounds conclusive")
         return failures
 
     failures.append(f"{scenario_id}: unknown common rule {rule!r}")

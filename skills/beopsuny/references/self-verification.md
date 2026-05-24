@@ -10,6 +10,9 @@
 
 필수. 응답에 등장한 모든 법령, 판례, 행정규칙 인용을 확인한다.
 
+- `references/research-workflow.md#legal-verification-core`의 citation ledger에 없는 인용을 출력하지 않았는가
+- 복합 결론·외부 송부·기관 제출·소송/분쟁 포지션처럼 법적 효과가 큰 답변에서는 `assets/schemas/legal_verification_packet.yaml`의 최소 블록을 내부적으로 채웠는가
+- 각 ledger 항목에 `citation`, `pinpoint`, `source_grade`, `verification_status`, `provenance`, `currency`, `supports`가 있는가
 - 인용한 조문이 실제 존재하는가
 - 조/항/호 번호가 정확한가
 - 인용 내용 또는 paraphrase가 조문 취지를 왜곡하지 않는가
@@ -34,11 +37,15 @@
 
 필수. 결론의 법적 논리와 적용 범위를 확인한다.
 
+- 각 결론이 issue-to-authority map의 필수 authority와 연결되어 있는가
+- 결론 강도가 conclusion binding 규칙에 맞는가
+- `legal_verification_packet.yaml`의 `conclusion_binding.conclusion_strength`가 `verified`, `qualified`, `insufficient`, `contradicted`, `triage_only` 중 하나로 정리되었는가
 - 결론이 사용자 전제와 논리적으로 연결되는가
 - 법률 위계가 지켜졌는가: 헌법 -> 법률 -> 시행령 -> 시행규칙 -> 행정규칙
 - 단서, 예외, 적용 제외, 경과규정을 빠뜨리지 않았는가
 - 시행일과 공포일을 구분했는가
 - 실무 기준, 과징금, 신청 절차, 서식 질문에서 행정규칙을 확인했는가
+- source 간 모순을 contradiction scan으로 확인하고 `[CONTRADICTED]` 또는 결론 유보로 처리했는가
 
 논리가 불충분하면 결론을 유보하고 추가 확인 필요를 표시한다.
 
@@ -51,6 +58,7 @@
 - `~/.beopsuny/profile.yaml`의 업종, 규모, 갑/을 위치, 개인정보 처리 여부가 관련되면 반영했는가
 - 맥락이 결론을 좌우하는데 빠져 있다면 질문하거나 가정을 표시했는가
 - 긴 계약서, 대량 문서, 큰 데이터셋을 일부만 읽었다면 읽은 범위를 표시했는가
+- `profile.yaml.user_role`과 산출물 destination이 답변 형식과 법적 효과 gate에 반영되었는가
 
 ### 긴 입력의 읽은 범위
 
@@ -61,6 +69,16 @@
 - 결론 영향: 예) "개인정보 처리 조건은 DPA 원문 확인 전까지 부분 검토"
 
 읽은 범위가 결론을 좌우하면 결론을 유보하거나 추가 자료를 요청한다.
+
+### Role / Destination Gate
+
+사용자가 비법무 담당자이거나 역할이 불명확하면 `references/output-formats.md#role-based-output-modes`의 `business_user` 또는 `unknown` 기본 구조를 적용했는지 확인한다.
+
+- `business_user` 또는 `unknown`에게 서명, 송부, 제출, 확정 답변 사용을 바로 지시하지 않았는가
+- 상대방, 고객, 기관, 법원처럼 외부 destination이 있으면 `references/output-formats.md#destination-output-contracts`를 적용했는가
+- 외부 공유용 초안에 내부 검토자 메모, 자가 검증 블록, 내부용 미확인 메모를 그대로 붙이지 않았는가
+- 법무/변호사 검토 전 단계와 실제 외부 행동 단계를 분리했는가
+- 단순 조문·시행일·공식 링크 확인에 gate를 과잉 적용하지 않았는가
 
 ## Dim 4: Counter-drafting Quality
 

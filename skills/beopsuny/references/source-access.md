@@ -49,6 +49,24 @@ Fallback 원칙:
 - 링크 패턴이 확실하지 않으면 추정 링크를 만들지 않는다.
 - 현재 소스로 확인할 수 없는 조문·판례·시행일·금액은 만들지 않는다.
 
+## Freshness Gate
+
+번들 YAML과 과거 검토 이력은 현행 법령을 대신하지 않는다. 특히 아래 항목은 stale 가능성이 높으므로 답변 전에 live source로 재확인한다.
+
+- 과징금, 과태료, 벌칙, 신고기한, 처리기간, 수수료
+- 직원 수, 매출, 거래금액, 정보주체 수 같은 적용 threshold
+- 최저임금, 보험료율, 세율, 원천징수율
+- 인허가 구비서류, 관할 기관, 서식 번호
+- 행정규칙, 고시, 감독기준, 가이드라인
+
+`maintenance.next_review`가 지난 자산이나 `last_verified`가 오래된 항목은 답변에서 다음 중 하나로 처리한다. 등록된 stale 자산 목록과 제거 조건은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`을 따른다. 자산을 갱신하거나 registry에서 제거하려면 `assets/schemas/freshness_revalidation.yaml` 형식으로 확인한 공식 source family, volatile item 검토 결과, retirement decision을 남긴다.
+
+1. live source로 재확인하고 provenance를 표시한다.
+2. 재확인에 실패하면 `[STALE]` 또는 `[INSUFFICIENT]`로 낮추고 결론을 유보한다.
+3. 단순 후보로만 쓰고, 현행 법적 결론의 근거로 쓰지 않는다.
+
+Freshness gate는 Source Grade를 대체하지 않는다. Grade A 소스라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
+
 ## Full Mode: legalize-kr
 
 경로:

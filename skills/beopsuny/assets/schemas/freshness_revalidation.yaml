@@ -1,0 +1,44 @@
+# Freshness revalidation event template
+# Runtime use: append-only note or review artifact when a stale bundled asset is refreshed.
+# This is the evidence shape required before retiring an entry from freshness_debt.yaml.
+
+asset_path: ""                 # repo-relative path, e.g. skills/beopsuny/assets/policies/checklists/food_business.yaml
+checked_at: ""                 # ISO-8601 timestamp or YYYY-MM-DD
+checked_by: ""                 # user, maintainer, or agent identity
+tracked_issue: ""              # GitHub issue or review task URL
+
+source_families_checked:
+  - "law.go.kr"                # law.go.kr | competent_ministry | gov.kr | agency_notice | court | beopmang | local_legalize_kr | other
+
+official_sources:
+  - title: ""
+    url: ""
+    source_grade: ""           # A | B | C | D
+    verification_status: ""    # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
+    retrieved_at: ""
+    notes: ""
+
+volatile_items_checked:
+  - item: ""                   # deadline | fee | threshold | filing_requirement | form | authority | penalty | document | other
+    previous_value: ""
+    refreshed_value: ""
+    source_ref: ""             # official_sources.title or stable id
+    result: ""                 # unchanged | updated | removed | insufficient | contradicted
+
+asset_update:
+  updated: false
+  maintenance_next_review_before: ""
+  maintenance_next_review_after: ""
+  summary: ""
+
+retirement_decision:
+  decision: ""                 # keep_registered | retire | partial_refresh
+  reason: ""
+  remaining_stale_scope: ""
+
+self_check:
+  official_source_used: false
+  volatile_items_reviewed: false
+  next_review_advanced: false
+  freshness_debt_updated: false
+  no_current_obligation_from_stale_only: true
