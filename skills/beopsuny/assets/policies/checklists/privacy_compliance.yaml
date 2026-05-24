@@ -28,6 +28,17 @@ maintenance:
     - date: "2025-12-09"
       changes: "type 필드 추가"
 
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "candidate_checklist"
+  verify_with:
+    - "law.go.kr"
+    - "개인정보보호위원회/PIPC 고시·가이드라인"
+    - "KISA 또는 소관 기관 공식 자료"
+  volatile_fields: [deadline, penalty, threshold, fee, form, authority, required_documents]
+  note: "동의·국외이전·안전조치·신고기한·과징금 기준은 후보로만 사용하고 현행 공식 자료로 확인한다."
+
 # ─────────────────────────────────────────────────────────
 # 초기 분기 질문 (Quick Triage)
 # ─────────────────────────────────────────────────────────

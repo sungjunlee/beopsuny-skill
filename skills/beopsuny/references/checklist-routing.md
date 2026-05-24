@@ -48,9 +48,25 @@
 - 사용자 상황에 관련된 items만 출력한다.
 - 각 item의 법령·시행령·고시 근거를 확인한다.
 - 체크리스트 YAML은 triage 후보이지 현행 결론 근거가 아니다.
+- `type: checklist` 파일은 후보 체크리스트를 만들고, `type: research_guide` 파일은 조사 계획과 확인 질문을 만든다.
+- 두 타입 모두 `runtime_contract.triage_only: true`이며, `runtime_contract.live_check_required: true`이면 결론 전 공식 소스 확인이 필수다.
 - 인허가 요건, 수수료, 처리기간, 구비서류, 공식 서식 URL은 번들 데이터에 의존하지 않고 관할 기관·정부24·law.go.kr 등 공식 소스로 확인한다.
 - 이미 이행된 항목과 미확인 항목을 구분한다.
 - 여러 사업장, 여러 제품, 여러 계약을 표로 비교해야 하면 `references/bulk-tabular-review.md`로 schema를 먼저 확정하고, 각 셀의 법령 근거는 이 체크리스트 workflow로 확인한다.
+
+## Asset Type Contracts
+
+`type: checklist`:
+
+- 사용자 상황에 맞는 후보 의무·점검 항목만 추린다.
+- `deadline`, `penalty`, `threshold`, `fee`, `form`, `authority`, `required_documents` 같은 `volatile_fields`는 현재값으로 출력하기 전에 live source로 확인한다.
+- 확인하지 못한 항목은 `needs_review`, `[STALE]`, `[INSUFFICIENT]` 중 실제 상태로 둔다.
+
+`type: research_guide`:
+
+- 완료 체크리스트가 아니라 조사 질문, 확인할 권위자료, 쟁점 맵을 만든다.
+- 공정거래, M&A, 계약 검토처럼 맥락 의존성이 큰 영역은 조사 계획을 먼저 제시하고 결론은 Source Grade 확인 후 낸다.
+- 검색 명령·키워드는 research seed일 뿐 결론 근거가 아니다.
 
 ## Freshness Routing
 

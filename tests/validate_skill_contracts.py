@@ -789,6 +789,8 @@ def check_checklist_routing_freshness() -> None:
 
     for required in [
         "체크리스트 YAML은 triage 후보이지 현행 결론 근거가 아니다",
+        "`type: checklist`",
+        "`type: research_guide`",
         "Freshness Routing",
         "`maintenance.next_review`",
         "`references/source-access.md#freshness-gate`",
@@ -801,6 +803,71 @@ def check_checklist_routing_freshness() -> None:
         "Currency",
     ]:
         assert_contains(text, required, label)
+
+
+def walk_yaml_values(value: Any) -> Any:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            yield key, child
+            yield from walk_yaml_values(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from walk_yaml_values(child)
+
+
+def check_policy_checklist_runtime_contracts() -> None:
+    checklist_dir = ROOT / "skills/beopsuny/assets/policies/checklists"
+    for path in sorted(checklist_dir.glob("*.yaml")):
+        relative = path.relative_to(ROOT).as_posix()
+        data = load_yaml(relative)
+        if not isinstance(data, dict):
+            raise AssertionError(f"{relative}: expected mapping")
+
+        asset_type = data.get("type")
+        if asset_type not in {"checklist", "research_guide"}:
+            raise AssertionError(f"{relative}: unsupported type {asset_type!r}")
+
+        contract = data.get("runtime_contract")
+        if not isinstance(contract, dict):
+            raise AssertionError(f"{relative}: missing runtime_contract")
+        if contract.get("triage_only") is not True:
+            raise AssertionError(f"{relative}: runtime_contract.triage_only must be true")
+        if contract.get("live_check_required") is not True:
+            raise AssertionError(f"{relative}: runtime_contract.live_check_required must be true")
+        if not contract.get("verify_with"):
+            raise AssertionError(f"{relative}: runtime_contract.verify_with must name official source families")
+
+        expected_output = "candidate_checklist" if asset_type == "checklist" else "investigation_plan"
+        if contract.get("output_behavior") != expected_output:
+            raise AssertionError(
+                f"{relative}: output_behavior must be {expected_output!r} for type {asset_type!r}"
+            )
+
+        if asset_type == "checklist":
+            volatile_fields = set(contract.get("volatile_fields") or [])
+            for required in ["deadline", "penalty", "threshold", "fee", "form", "authority"]:
+                if required not in volatile_fields:
+                    raise AssertionError(f"{relative}: volatile_fields missing {required!r}")
+
+        serialized = path.read_text(encoding="utf-8")
+        if re.search(r"^\s*law_id\s*:", serialized, flags=re.M):
+            raise AssertionError(f"{relative}: checklist policies must not include direct law_id shortcuts")
+        if "related_permits" in serialized or re.search(r"\bpermit-\d+\b", serialized):
+            raise AssertionError(f"{relative}: stale permit id references must use live-check wording")
+
+
+def check_mandatory_provisions_candidate_index() -> None:
+    text = read_text("skills/beopsuny/assets/policies/mandatory_provisions.yaml")
+    label = "mandatory_provisions.yaml"
+
+    for required in [
+        "강행규정 후보 인덱스",
+        "issue spotting",
+        "결론 근거가 아니다",
+        "current primary source",
+    ]:
+        assert_contains(text, required, label)
+    assert_not_contains(text, "강행규정 단일 소스", label)
 
 
 def check_source_grading_verified_contract() -> None:
@@ -1630,6 +1697,8 @@ CHECKS = [
     check_bulk_tabular_review_reference,
     check_source_access_fallbacks,
     check_checklist_routing_freshness,
+    check_policy_checklist_runtime_contracts,
+    check_mandatory_provisions_candidate_index,
     check_source_grading_verified_contract,
     check_research_workflow_verification_core,
     check_asset_freshness_metadata_tracked,
