@@ -146,7 +146,7 @@ items:
         articles: ["제5조"]
     notes: |
       - 안전운임제 적용 품목 확인
-      - 위반 시 과태료
+      - 위반 제재는 현행 화물자동차 운수사업법령/국토교통부 안내로 확인
     deadline: "영업 개시 전"
     condition: "일반화물 운송 시"
     risk_level: "medium"

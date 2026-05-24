@@ -95,7 +95,7 @@ items:
     notes: |
       - 관할 세무서에 신청
       - 법인등기부등본, 정관, 임대차계약서 필요
-    deadline: "사업 개시일로부터 20일 이내"
+    deadline: "사업자등록 기한은 현행 국세청/부가가치세법령으로 확인"
     condition: null
     risk_level: "high"
     check_points:
@@ -120,7 +120,7 @@ items:
     notes: |
       - 국민연금공단, 건강보험공단에 신고
       - 4대사회보험정보연계센터 활용 가능
-    deadline: "근로자 채용 후 14일 이내"
+    deadline: "4대보험 신고기한은 현행 기관별 안내로 확인"
     condition: "근로자를 채용하는 경우"
     risk_level: "high"
     check_points:
@@ -271,9 +271,9 @@ items:
       - name: "상법"
         articles: ["제373조 (의사록)", "제391조의3 (이사회의 의사록)"]
     notes: |
-      - 정기 주주총회: 매 결산기 후 3개월 내
-      - 의사록 작성 및 보관 (본점에 10년)
-    deadline: "결산기 후 3개월 내 (정기총회)"
+      - 정기 주주총회 개최기한은 현행 상법/등기 실무로 확인
+      - 의사록 보관기간은 현행 상법/등기 실무로 확인
+    deadline: "정기총회 개최기한은 현행 상법/등기 실무로 확인"
     condition: null
     risk_level: "medium"
     check_points:
