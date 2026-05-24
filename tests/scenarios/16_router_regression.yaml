@@ -177,18 +177,16 @@ scenarios:
       should_load:
         - skills/beopsuny/references/checklist-routing.md
         - skills/beopsuny/assets/policies/checklists/food_business.yaml
-        - skills/beopsuny/assets/data/permits.yaml
-        - skills/beopsuny/assets/data/forms.yaml
       must_do:
         - 업종/판매 방식/제조 여부 triage
         - 관련 법령 원문 또는 공식 기관 링크 확인
         - 필요한 신고/허가와 미확인 조건 분리
       forbidden_behavior:
         - 전체 체크리스트 무차별 나열
-        - 법령 확인 없이 permits.yaml만 근거로 결론
+        - 법령 확인 없이 번들 데이터만 근거로 결론
     validation:
       - type: checklist_routing
-        description: 인허가 질문이 관련 checklist와 data로 좁혀지는지
+        description: 인허가 질문이 관련 checklist로 좁혀지고 공식 소스 확인으로 이어지는지
 
   - id: router-07
     name: 사용자 전제 법률 사실은 검증 후 사용
@@ -541,8 +539,8 @@ scenarios:
     name: stale 인허가 자산은 triage 후보로만 사용
     persona: 식품 커머스 창업자
     context: |
-      food_business.yaml과 permits.yaml은 freshness_debt registry에 등록되어 있다.
-      사용자는 현행 인허가와 구비서류를 묻지만, bundled stale 자산만으로 결론을 확정하면 안 된다.
+      food_business.yaml은 freshness_debt registry에 등록되어 있다.
+      사용자는 현행 인허가와 구비서류를 묻지만, bundled stale 후보만으로 결론을 확정하면 안 된다.
     question: "온라인 식품 판매 시작하려는데 현재 필요한 신고랑 구비서류를 바로 알려줘."
     expected:
       primary_intent: compliance_checklist
@@ -560,7 +558,7 @@ scenarios:
         - 재확인
         - "[STALE]"
       forbidden_behavior:
-        - permits.yaml만으로 현재 의무 단정
+        - 번들 후보만으로 현재 의무 단정
         - 구비서류를 현행 확정 목록처럼 출력
         - '"[VERIFIED]"로 승격'
     validation:

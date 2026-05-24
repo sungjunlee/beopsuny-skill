@@ -2,7 +2,7 @@
 # Runtime use: append-only note or review artifact when a stale bundled asset is refreshed.
 # This is the evidence shape required before retiring an entry from freshness_debt.yaml.
 
-asset_path: ""                 # repo-relative path, e.g. skills/beopsuny/assets/data/permits.yaml
+asset_path: ""                 # repo-relative path, e.g. skills/beopsuny/assets/policies/checklists/food_business.yaml
 checked_at: ""                 # ISO-8601 timestamp or YYYY-MM-DD
 checked_by: ""                 # user, maintainer, or agent identity
 tracked_issue: ""              # GitHub issue or review task URL

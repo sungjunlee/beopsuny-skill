@@ -48,7 +48,7 @@ description: |
 | `legal_research` | 조문 확인, 판례, 행정규칙, 과징금, 해고 절차, 개인정보 동의 | `references/source-access.md`, `references/research-workflow.md`, `references/source-grading.md` |
 | `contract_review` | 계약서 검토, NDA, SaaS 계약, 위험 조항, 협상 포인트 | `references/contract_review_guide.md`, `assets/policies/checklists/contract_review.yaml`, `assets/policies/review_mode.yaml`, `assets/data/clause_references.yaml` |
 | `bulk_tabular_review` | 여러 계약/문서/체크리스트를 표로 비교, 대량 검토 grid, "엑셀처럼 정리" | `references/bulk-tabular-review.md`, 필요 시 `references/contract_review_guide.md` 또는 `references/checklist-routing.md` |
-| `compliance_checklist` | 인허가, 연간 의무, 업종별 점검, "무엇을 준비해야 해?" | `references/checklist-routing.md`, `assets/policies/checklists/*.yaml`, 관련 `assets/data/*.yaml` |
+| `compliance_checklist` | 인허가, 연간 의무, 업종별 점검, "무엇을 준비해야 해?" | `references/checklist-routing.md`, `assets/policies/checklists/*.yaml` |
 | `law_change_detection` | 최근 개정, 법령 변경 내역, 관심 법령 변경 | `references/law-change-detection.md`, `references/source-access.md` |
 | `legal_terms` | 영한 법률용어, 계약 용어 뜻 | `assets/data/legal_terms.yaml`, 필요 시 `references/output-formats.md` |
 | `memory_profile` | 회사 정보 저장, 온보딩, playbook 설정, 프로젝트 전환, 과거 검토 이력, 관심 법령 | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml`, 필요 시 `assets/schemas/past_reviews.yaml`, `assets/schemas/watched_laws.yaml`, `assets/schemas/compliance_status.yaml`, `assets/schemas/internal_rules.yaml` |
@@ -149,14 +149,14 @@ Lite 모드 진입 시 한 번만 안내한다:
 
 ```text
 체크리스트 (진입점) ─┐
-데이터 (사실 베이스) ├─> 정책 (판정 로직) -> 검토 출력
+후보 데이터 (조항·용어) ├─> 정책 (판정 로직) -> 공식 소스 확인 -> 검토 출력
 메모리 (사용자 상태) ┘
 ```
 
 | 위치 | 역할 | 예시 |
 |------|------|------|
 | `assets/policies/` | 판정 로직 | 출처 등급, 검토 모드, 강행규정, 체크리스트 정책 |
-| `assets/data/` | 사실 베이스 | 법령 색인, 조항 참조, 인허가, 양식, 컴플라이언스 일정, 법률용어 |
+| `assets/data/` | 후보·해석 보조 | 계약 조항 참조, 법률용어 |
 | `assets/schemas/` | 사용자 상태 템플릿 | 회사 프로필, 관심 법령, 과거 검토 |
 | `references/` | 작업 흐름과 실행 환경 설명 | 소스 접근, 계약 가이드, 메모리, 출력 형식 |
 
@@ -180,7 +180,7 @@ Lite 모드 진입 시 한 번만 안내한다:
 
 1. 업종, 규모, 거래 구조, 개인정보 처리 여부 등 분기 질문을 최소한으로 확인한다.
 2. 해당 분기의 항목만 필터링한다. 전체 체크리스트를 무차별 나열하지 않는다.
-3. 각 항목의 `laws`를 현재 법령 원문 또는 공식 API로 확인한다.
+3. 각 항목의 `laws`와 인허가·서식·기한은 현재 법령 원문, 공식 API, 관할 기관 사이트로 확인한다.
 4. 복합 이슈면 관련 체크리스트를 안내하되, 결론 근거는 실시간 법률 조사로 확인한다.
 
 ## 회사 맥락과 기록

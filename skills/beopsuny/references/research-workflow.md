@@ -128,7 +128,7 @@ ledger에 없는 인용은 출력하지 않는다. ledger에 있지만 `supports
 |-------|--------|-----------|-----------|------|
 | 법령 | 법률 원문, 조/항/호 | legalize-kr | 법망 API 또는 law.go.kr | 필수 |
 | 하위법령 | 시행령, 시행규칙 | 같은 법령 디렉토리 | 법망 API/law.go.kr | 조건부 필수 |
-| 행정규칙 | 고시, 훈령, 예규 | 법망 API, `law_index.yaml` 보조 | 법망 API | 실무 기준이면 필수 |
+| 행정규칙 | 고시, 훈령, 예규 | 법망 API/law.go.kr | 법망 API/law.go.kr | 실무 기준이면 필수 |
 | 개정 확인 | 공포일, 시행일, 최근 변경 | git log/show | 법망 history/diff | 시행일 질문이면 필수 |
 | 해석례 | 법제처 해석 | 법망 API/korean-law-mcp | 법망 API/korean-law-mcp | 쟁점형 질문 |
 | 정책 동향 | 부처 보도자료, 가이드 | WebSearch | WebSearch | 집행 동향 질문 |

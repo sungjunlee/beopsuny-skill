@@ -41,9 +41,9 @@ related_checklists:
   - name: "startup"
     when: "신규 법인 설립 시"
 
-related_permits:
-  - permit-016  # 의료기기 판매업 신고
-  - permit-017  # 화장품 제조업 등록
+related_live_checks:
+  - 의료기기 판매업 신고
+  - 화장품 제조업 등록
 
 items:
   # ─────────────────────────────────────────────────────────

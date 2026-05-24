@@ -82,7 +82,7 @@ quote는 가능한 한 원문에서 연속된 문구를 그대로 옮긴다. 조
 - `date`, `duration`, `currency`, `number` 중 법정기한·수수료·과징금·직원 수·매출 기준을 담은 셀
 - 인허가 구비서류, 관할 기관, 신고/보고 기한
 - 행정규칙, 고시, 감독기준, 정부 가이드라인에서 온 값
-- `maintenance.next_review`가 지난 체크리스트·permits·calendar YAML에서 온 값
+- `maintenance.next_review`가 지난 체크리스트에서 온 값
 
 stale 후보 값은 아래처럼 처리한다.
 
@@ -91,7 +91,7 @@ value: "needs_review"
 state: "needs_review"
 source_grade: "[STALE]"
 quote: ""
-location: "assets/data/permits.yaml"
+location: "assets/policies/checklists/food_business.yaml"
 notes: "stale_candidate: live source verification required before answering"
 ```
 

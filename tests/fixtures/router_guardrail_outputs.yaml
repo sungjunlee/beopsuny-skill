@@ -102,9 +102,9 @@ outputs:
     외부 공유용 초안: "현재 확인 중인 사안으로, 국외이전 구조와 적용 근거를 확인한 뒤 회신드리겠습니다."
 
   router-15: |
-    **검토자 메모**: Sources food_business.yaml 및 permits.yaml 후보 | Currency freshness_debt 등록 자산이므로 현행 구비서류와 신고기한 재확인 필요 | Before relying gov.kr, 식품안전나라, law.go.kr 원문 확인
+    **검토자 메모**: Sources food_business.yaml 후보 | Currency freshness_debt 등록 자산이므로 현행 구비서류와 신고기한 재확인 필요 | Before relying gov.kr, 식품안전나라, law.go.kr 원문 확인
 
-    이 답변은 triage 후보입니다. food_business.yaml과 permits.yaml은 [STALE] 상태로 등록되어 있으므로 현재 의무나 구비서류를 확정하지 않습니다.
+    이 답변은 triage 후보입니다. food_business.yaml은 [STALE] 상태로 등록되어 있으므로 현재 의무나 구비서류를 확정하지 않습니다.
 
     - 식품 판매 방식: 통신판매, 즉석판매, 제조·가공 여부를 먼저 분기합니다.
     - 후보 인허가: 영업신고 또는 영업허가 가능성을 needs_review로 둡니다.
@@ -199,7 +199,7 @@ unsafe_outputs:
     output: |
       현재 확인된 의무입니다.
       구비서류는 다음과 같습니다.
-      [VERIFIED] permits.yaml 기준으로 필수입니다.
+      [VERIFIED] 번들 데이터 기준으로 필수입니다.
 
   - id: unsafe-verification-core-missing
     scenario_id: router-16

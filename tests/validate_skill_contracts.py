@@ -772,7 +772,7 @@ def check_source_access_fallbacks() -> None:
         "네트워크 없음",
         "[INSUFFICIENT]",
         "Freshness Gate",
-        "`law_index.yaml`의 ID가 비어 있거나 `[UNVERIFIED]` 주석",
+        "법령 ID, 인허가 요건, 공식 서식, 법정 기한",
         "live source로 재확인",
         "[STALE]",
         "references/freshness-governance.md",
@@ -817,7 +817,7 @@ def check_source_grading_verified_contract() -> None:
         "provenance 표시",
         "법망 API나 WebSearch의 요약·스니펫만 본 경우",
         "`assets/data/*.yaml` 또는 체크리스트 후보만 본 경우",
-        "법령 ID가 비어 있거나 중복 의심 상태",
+        "법령 ID, 인허가 요건, 서식, 법정 기한",
         "contradiction scan",
         "conclusion binding",
         "단정 결론으로 쓰지 않는다",
@@ -876,27 +876,6 @@ def check_research_workflow_verification_core() -> None:
         "conclusion binding",
     ]:
         assert_contains(skill_text, required, "SKILL.md")
-
-
-def check_law_index_direct_ids_unique() -> None:
-    data = load_yaml("skills/beopsuny/assets/data/law_index.yaml")
-    major_laws = data.get("major_laws")
-    if not isinstance(major_laws, dict):
-        raise AssertionError("law_index.yaml: major_laws must be a mapping")
-
-    seen: dict[str, str] = {}
-    duplicates: list[str] = []
-    for law_name, law_id in major_laws.items():
-        if law_id in (None, ""):
-            continue
-        law_id_text = str(law_id)
-        if law_id_text in seen:
-            duplicates.append(f"{law_id_text}: {seen[law_id_text]} / {law_name}")
-        else:
-            seen[law_id_text] = str(law_name)
-
-    if duplicates:
-        raise AssertionError(f"law_index.yaml: duplicate direct law IDs: {duplicates}")
 
 
 def parse_review_due(value: Any) -> date | None:
@@ -1653,7 +1632,6 @@ CHECKS = [
     check_checklist_routing_freshness,
     check_source_grading_verified_contract,
     check_research_workflow_verification_core,
-    check_law_index_direct_ids_unique,
     check_asset_freshness_metadata_tracked,
     check_freshness_debt_registry,
     check_freshness_governance_reference,
