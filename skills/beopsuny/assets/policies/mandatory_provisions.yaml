@@ -39,19 +39,19 @@ provisions:
   - law: "약관의 규제에 관한 법률"
     article: "제7조"
     clause_types: [indemnification, limitation_of_liability, exclusion_of_damages]
-    note: "고의/중과실로 인한 손해의 면책 조항은 무효 — 경과실만 면책 가능"
+    note: "고의/중과실 면책 조항의 효력 제한 가능성 검토 — 경과실 면책 범위는 현행 조문/판례 확인"
     enforced_at: null
 
   - law: "민법"
     article: "제103조"
     clause_types: [indemnification, non_compete, exclusivity]
-    note: "선량한 풍속 기타 사회질서에 위반한 법률행위는 무효 — 공서양속 위반 조항 전반 커버"
+    note: "공서양속 위반 가능성이 있는 조항 검토 — 효력 판단은 현행 조문/판례 확인"
     enforced_at: null
 
   - law: "민법"
     article: "제393조"
     clause_types: [limitation_of_liability, exclusion_of_damages]
-    note: "통상손해 배상 원칙 + 특별손해는 예견 가능성 요건. 결과적 손해 전면 배제는 무효 위험"
+    note: "통상손해/특별손해 구분 및 결과적 손해 전면 배제 위험 검토 — 현행 조문/판례 확인"
     enforced_at: null
 
   - law: "민법"
@@ -66,7 +66,7 @@ provisions:
   - law: "발명진흥법"
     article: "제15조"
     clause_types: [invention_assignment, work_product]
-    note: "직무발명의 사용자 승계 시 종업원에게 정당한 보상 필수 — 보상 포기 조항은 무효"
+    note: "직무발명 승계와 정당한 보상 쟁점 검토 — 보상 포기 조항의 효력은 현행 조문/판례 확인"
     enforced_at: null
 
   - law: "저작권법"
@@ -78,7 +78,7 @@ provisions:
   - law: "저작권법"
     article: "제14조"
     clause_types: [invention_assignment, work_product, intellectual_property]
-    note: "저작인격권은 일신전속 — 양도 불가. '저작인격권 양도' 조항은 무효"
+    note: "저작인격권 일신전속성과 양도 조항 쟁점 검토 — 효력은 현행 조문/판례 확인"
     enforced_at: null
 
   # ------------------------------------------------------------
@@ -87,13 +87,13 @@ provisions:
   - law: "개인정보보호법"
     article: "제26조"
     clause_types: [data_processing]
-    note: "업무 위탁 시 위탁자·수탁자 문서 명시 + 재위탁 제한 + 관리감독 — 계약 서면 필수"
+    note: "업무 위탁 시 문서 명시·재위탁 제한·관리감독 쟁점 검토 — 현행 조문/PIPC 안내 확인"
     enforced_at: null
 
   - law: "개인정보보호법"
     article: "제28조의8"
     clause_types: [data_processing]
-    note: "개인정보 국외이전 시 동의·표준계약서 등 요건 충족 필수 — 동의 없는 국외이전 조항은 무효. 2023 개정 신설"
+    note: "개인정보 국외이전 동의·표준계약서 등 요건 쟁점 검토 — 효력과 시행일은 현행 조문/PIPC 안내 확인"
     enforced_at: "2023-09-15"
 
   # ------------------------------------------------------------
@@ -102,19 +102,19 @@ provisions:
   - law: "독점규제 및 공정거래에 관한 법률"
     article: "제45조"
     clause_types: [exclusivity, non_compete, most_favored_customer, minimum_commitment]
-    note: "불공정거래행위 금지 (구 제23조) — 거래상 지위 남용, 구속조건부거래 등. 2021-12-30 시행 전면개정 기준"
+    note: "불공정거래행위 해당 가능성 검토 — 거래상 지위 남용, 구속조건부거래 등은 현행 조문/KFTC 지침 확인"
     enforced_at: "2021-12-30"
 
   - law: "하도급거래공정화에관한법률"
     article: "제3조"
     clause_types: [payment_terms, change_order, service_level_agreement]
-    note: "원사업자는 수급사업자에게 계약 체결 즉시 서면 발급 의무 — 구두 발주·사후 서면은 위반"
+    note: "하도급 서면 발급 쟁점 검토 — 발급 시기와 위반 여부는 현행 조문/KFTC 지침 확인"
     enforced_at: null
 
   - law: "하도급거래공정화에관한법률"
     article: "제13조"
     clause_types: [payment_terms]
-    note: "하도급 대금은 목적물 수령일부터 60일 이내 지급 — 60일 초과 지급기일 조항은 무효"
+    note: "하도급 대금 지급기한과 초과 지급기일 조항의 효력 쟁점 검토 — 현행 조문/KFTC 지침 확인"
     enforced_at: null
 
   # ------------------------------------------------------------
@@ -123,11 +123,11 @@ provisions:
   - law: "근로기준법"
     article: "제15조"
     clause_types: [term_and_termination, representations_and_warranties]
-    note: "근로기준법 기준에 미달하는 근로조건을 정한 근로계약은 그 부분에 한하여 무효"
+    note: "근로기준법 기준 미달 근로조건의 효력 쟁점 검토 — 현행 조문/판례 확인"
     enforced_at: null
 
   - law: "근로기준법"
     article: "제20조"
     clause_types: [liquidated_damages, non_compete]
-    note: "근로계약 불이행에 대한 위약금·손해배상액 예정 계약 체결 금지 — 근로자 대상 위약금 조항 무효"
+    note: "근로자 대상 위약금·손해배상액 예정 조항 쟁점 검토 — 현행 조문/판례 확인"
     enforced_at: null

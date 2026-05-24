@@ -805,14 +805,117 @@ def check_checklist_routing_freshness() -> None:
         assert_contains(text, required, label)
 
 
-def walk_yaml_values(value: Any) -> Any:
+LIVE_CHECK_CUES = (
+    "현행",
+    "공식",
+    "확인",
+    "재확인",
+    "검토",
+    "후보",
+    "live",
+    "원문",
+    "고시",
+    "소관",
+    "관할",
+    "법령",
+    "안내",
+)
+
+VOLATILE_TEXT_KEYS = {
+    "deadline",
+    "punishment",
+    "fee",
+    "authority",
+    "required_documents",
+}
+
+VOLATILE_NOTE_KEYWORDS = (
+    "처리기간",
+    "신고기한",
+    "유효기간",
+    "보관",
+    "교육",
+    "과태료",
+    "벌금",
+    "징역",
+    "처벌",
+    "영업정지",
+    "제재",
+    "수수료",
+    "서식",
+    "구비서류",
+)
+
+VOLATILE_LITERAL_RE = re.compile(r"\d|매년|반기|주기|과태료|벌금|징역|처벌|영업정지|제재|수수료|서식|구비서류")
+
+
+def has_live_check_cue(text: str) -> bool:
+    return any(cue in text for cue in LIVE_CHECK_CUES)
+
+
+def walk_yaml_values(value: Any, path: tuple[str, ...] = ()) -> Any:
     if isinstance(value, dict):
         for key, child in value.items():
-            yield key, child
-            yield from walk_yaml_values(child)
+            child_path = (*path, str(key))
+            yield child_path, key, child
+            yield from walk_yaml_values(child, child_path)
     elif isinstance(value, list):
-        for child in value:
-            yield from walk_yaml_values(child)
+        for index, child in enumerate(value):
+            yield from walk_yaml_values(child, (*path, str(index)))
+
+
+def check_volatile_policy_literals_require_live_check() -> None:
+    checklist_dir = ROOT / "skills/beopsuny/assets/policies/checklists"
+    for path in sorted(checklist_dir.glob("*.yaml")):
+        relative = path.relative_to(ROOT).as_posix()
+        data = load_yaml(relative)
+        if not isinstance(data, dict) or data.get("type") != "checklist":
+            continue
+
+        for value_path, key, value in walk_yaml_values(data):
+            if not isinstance(value, str):
+                continue
+
+            compact_path = ".".join(value_path)
+            if key in VOLATILE_TEXT_KEYS and VOLATILE_LITERAL_RE.search(value) and not has_live_check_cue(value):
+                raise AssertionError(f"{relative}:{compact_path}: volatile literal must require live check: {value!r}")
+
+            if key not in {"notes", "check_points"} and not any(
+                segment in {"notes", "check_points"} for segment in value_path
+            ):
+                continue
+            for line in value.splitlines():
+                stripped = line.strip().lstrip("- ").strip('"')
+                if not stripped:
+                    continue
+                if not any(keyword in stripped for keyword in VOLATILE_NOTE_KEYWORDS):
+                    continue
+                if VOLATILE_LITERAL_RE.search(stripped) and not has_live_check_cue(stripped):
+                    raise AssertionError(
+                        f"{relative}:{compact_path}: volatile note/checkpoint must require live check: {stripped!r}"
+                    )
+
+
+def check_mandatory_provision_notes_are_candidates() -> None:
+    data = load_yaml("skills/beopsuny/assets/policies/mandatory_provisions.yaml")
+    if not isinstance(data, dict):
+        raise AssertionError("mandatory_provisions.yaml: expected mapping")
+    provisions = data.get("provisions")
+    if not isinstance(provisions, list):
+        raise AssertionError("mandatory_provisions.yaml: provisions must be a list")
+
+    final_terms = ("무효", "위반", "필수", "금지", "불가", "의무")
+    for index, provision in enumerate(provisions):
+        if not isinstance(provision, dict):
+            raise AssertionError(f"mandatory_provisions.yaml: provisions[{index}] must be a mapping")
+        note = provision.get("note")
+        if not isinstance(note, str):
+            raise AssertionError(f"mandatory_provisions.yaml: provisions[{index}].note must be a string")
+        if any(term in note for term in final_terms) and not has_live_check_cue(note):
+            raise AssertionError(
+                "mandatory_provisions.yaml: "
+                f"provisions[{index}].note has conclusion-style wording without verification cue: {note!r}"
+            )
 
 
 def check_policy_checklist_runtime_contracts() -> None:
@@ -1698,7 +1801,9 @@ CHECKS = [
     check_source_access_fallbacks,
     check_checklist_routing_freshness,
     check_policy_checklist_runtime_contracts,
+    check_volatile_policy_literals_require_live_check,
     check_mandatory_provisions_candidate_index,
+    check_mandatory_provision_notes_are_candidates,
     check_source_grading_verified_contract,
     check_research_workflow_verification_core,
     check_asset_freshness_metadata_tracked,
