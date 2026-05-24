@@ -489,3 +489,139 @@ scenarios:
       forbidden_substrings:
         - 글로벌 verification_log에 저장했습니다
         - 거래금액을 글로벌 reusable fact로 기록
+
+  - id: router-14
+    name: 비법무 사용자의 외부 송부 초안은 role/destination gate를 적용
+    persona: 영업 담당자
+    context: |
+      profile.yaml.user_role이 business_user이고, 사용자가 고객에게 보낼 법적 효과가 있는 문안을 원한다.
+      산출물은 외부 공유용 초안이지만 내부 검토자 메모와 자가 검증 블록을 그대로 보내면 안 된다.
+    question: "고객에게 개인정보 국외이전 동의가 필요 없다고 답장 보내도 된다고 써줘."
+    expected:
+      primary_intent: legal_research
+      should_load:
+        - skills/beopsuny/references/output-formats.md
+        - skills/beopsuny/references/self-verification.md
+      must_do:
+        - business_user 출력 구조 적용
+        - 외부 공유용 초안과 내부 검토 메모 분리
+        - 보내기 전 법무 검토 gate 표시
+        - Source Grade와 verification status 유지
+      response_contains:
+        - 한 줄 결론
+        - 하지 말 것
+        - 변호사/법무에게 물어볼 질문
+        - 외부 공유용 초안
+      forbidden_behavior:
+        - 바로 송부하라고 지시
+        - 외부 초안에 자가 검증 블록 그대로 포함
+        - 법무 검토 없이 "동의 불필요" 단정
+    validation:
+      - type: role_destination_output_gate
+        description: 비법무 사용자와 외부 목적지에서 법적 효과 gate가 적용되는지
+    output_eval:
+      common_rules:
+        - business_user_external_gate
+        - legal_status_tag
+      required_substrings:
+        - 한 줄 결론
+        - 지금 할 일
+        - 하지 말 것
+        - 확인 필요 정보
+        - 변호사/법무에게 물어볼 질문
+        - 근거
+        - 외부 공유용 초안
+        - 보내기 전 법무 검토
+      forbidden_substrings:
+        - 그대로 보내세요
+        - 바로 송부하세요
+        - "자가 검증:"
+
+  - id: router-15
+    name: stale 인허가 자산은 triage 후보로만 사용
+    persona: 식품 커머스 창업자
+    context: |
+      food_business.yaml과 permits.yaml은 freshness_debt registry에 등록되어 있다.
+      사용자는 현행 인허가와 구비서류를 묻지만, bundled stale 자산만으로 결론을 확정하면 안 된다.
+    question: "온라인 식품 판매 시작하려는데 현재 필요한 신고랑 구비서류를 바로 알려줘."
+    expected:
+      primary_intent: compliance_checklist
+      should_load:
+        - skills/beopsuny/references/checklist-routing.md
+        - skills/beopsuny/references/freshness-governance.md
+        - skills/beopsuny/assets/policies/freshness_debt.yaml
+      must_do:
+        - stale 자산은 triage 후보로만 사용
+        - 법령명, 신고기한, 구비서류, 수수료는 live legal research로 재확인
+        - 확인 실패 시 "[STALE]" 또는 "[INSUFFICIENT]" 표시
+        - needs_review 또는 재확인 필요로 출력
+      response_contains:
+        - triage
+        - 재확인
+        - "[STALE]"
+      forbidden_behavior:
+        - permits.yaml만으로 현재 의무 단정
+        - 구비서류를 현행 확정 목록처럼 출력
+        - '"[VERIFIED]"로 승격'
+    validation:
+      - type: freshness_debt_boundary
+        description: stale 등록 자산이 현행 의무로 승격되지 않는지
+    output_eval:
+      common_rules:
+        - freshness_debt_triage_only
+      required_substrings:
+        - triage
+        - 후보
+        - 재확인
+        - "[STALE]"
+      forbidden_substrings:
+        - "[VERIFIED]"
+        - 현재 확인된 의무입니다
+        - 구비서류는 다음과 같습니다
+
+  - id: router-16
+    name: 복합 법률 결론은 legal verification core 흔적을 유지
+    persona: 사내변호사
+    context: |
+      사용자가 공정거래 관련 기준을 묻고, 과거 뉴스레터와 현행 시행령 후보가 섞여 있다.
+      결론 후보별 authority와 모순 처리를 분리하지 않으면 오래된 2차 자료가 결론을 오염시킬 수 있다.
+    question: "2024년 로펌 뉴스레터에는 기업결합 신고 기준이 이렇게 되어 있다는데, 지금도 그대로 보면 돼?"
+    expected:
+      primary_intent: legal_research
+      should_load:
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
+        - skills/beopsuny/references/self-verification.md
+      must_do:
+        - issue-to-authority map 작성
+        - authority packet과 citation ledger로 source를 분리
+        - 오래된 뉴스레터와 현행 공식 source의 contradiction scan 수행
+        - conclusion binding으로 결론 강도 조절
+      response_contains:
+        - issue-to-authority
+        - citation ledger
+        - conclusion binding
+      forbidden_behavior:
+        - 뉴스레터만으로 현행 기준 단정
+        - 모순을 숨김
+        - Grade C를 Grade A처럼 취급
+    validation:
+      - type: legal_verification_core
+        description: 복합 결론에서 authority mapping과 결론 강도 조절이 작동하는지
+    output_eval:
+      common_rules:
+        - legal_verification_core_trace
+        - legal_status_tag
+        - no_verified_uncertainty
+        - self_verification_metadata
+      required_substrings:
+        - issue-to-authority
+        - authority packet
+        - citation ledger
+        - contradiction scan
+        - conclusion binding
+        - "[EDITORIAL]"
+      forbidden_substrings:
+        - 뉴스레터 기준이 맞습니다
+        - Grade A 뉴스레터
+        - 현행 기준으로 단정합니다

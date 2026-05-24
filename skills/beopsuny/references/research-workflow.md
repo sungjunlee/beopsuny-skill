@@ -13,6 +13,115 @@
 6. 실무 적용 범위와 caveat 정리
 ```
 
+## Legal Verification Core
+
+모든 법률 결론은 답변 직전에 아래 verification core를 통과한다. 짧은 조문 확인처럼 단순한 경우에도 축약형으로 적용한다.
+
+`assets/schemas/legal_verification_packet.yaml`은 이 과정을 재사용 가능한 evidence shape로 고정한 템플릿이다. 기본은 내부 scratchpad이며, 사용자가 별도 검토 기록이나 handoff artifact를 요청한 경우에만 산출물로 저장하거나 노출한다.
+
+```text
+issue-to-authority map 작성
+  -> authority packet 구성
+  -> citation ledger 작성
+  -> contradiction scan
+  -> conclusion binding
+  -> self-verification
+```
+
+### 1. Issue-to-authority map
+
+사용자 질문을 결론 후보 단위로 나눈다. 각 결론 후보에는 필요한 authority type을 붙인다.
+
+| 결론 후보 | 필요한 authority |
+| --- | --- |
+| 조문 자체 | 법률 원문 + 시행일 |
+| 예외·단서 적용 | 법률 원문 + 시행령/시행규칙 |
+| 과징금·수수료·서식·처리기간 | 법률 원문 + 행정규칙/고시/기관 안내 |
+| 유효/무효/위법 판단 | 법률 원문 + 관련 판례 또는 해석례 |
+| 정책·집행 동향 | 현행 법령 결론과 분리된 공식 보도자료/가이드/처분례 |
+
+질문 안에 여러 결론 후보가 있으면 하나의 큰 답을 만들기 전에 후보별로 authority가 충분한지 본다. authority가 부족한 결론 후보는 결론에서 분리하고 `[INSUFFICIENT]` 또는 추가 확인 항목으로 둔다.
+
+### 2. Authority packet
+
+각 결론 후보마다 실제로 확인한 source를 packet으로 묶는다.
+
+```yaml
+issue: "개인정보 국외이전 동의 필요 여부"
+authorities:
+  - type: "statute"
+    citation: "개인정보 보호법 제28조의8"
+    source_grade: "A"
+    verification_status: "[VERIFIED]"
+    provenance: "law.go.kr 확인"
+    currency: "현행 원문 기준"
+  - type: "guidance"
+    citation: "개인정보보호위원회 가이드라인"
+    source_grade: "B"
+    verification_status: "[UNVERIFIED]"
+    provenance: "web — verify"
+    currency: "원문 미확인"
+```
+
+packet 안의 source가 모두 후보·스니펫·stale 자산이면 결론을 확정하지 않는다.
+
+### 3. Citation ledger
+
+답변에 실제로 노출할 모든 법령·판례·행정규칙 인용은 내부 citation ledger에 한 번씩 들어가야 한다. ledger는 출력 필수 형식은 아니지만, 검토자 메모와 자가 검증의 근거가 된다.
+
+필수 필드:
+
+| 필드 | 의미 |
+| --- | --- |
+| `citation` | 법령명+조/항/호, 판례 선고일+사건번호, 행정규칙명+발령기관 |
+| `pinpoint` | 인용한 조/항/호, 판시사항, 조문 위치 |
+| `source_grade` | A/B/C/D |
+| `verification_status` | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]` |
+| `provenance` | 이번 응답에서 실제 확인한 경로 |
+| `currency` | 현행/시행 예정/미시행/조회 실패/검토일 |
+| `supports` | 답변의 어느 결론을 뒷받침하는지 |
+
+ledger에 없는 인용은 출력하지 않는다. ledger에 있지만 `supports`가 없는 source는 배경 자료로만 표시하고 결론 근거로 쓰지 않는다.
+
+### 4. Contradiction scan
+
+같은 결론 후보에 대해 source가 서로 다르면 숨기지 않는다.
+
+- 상위 규범과 하위 규범이 충돌해 보이면 상위 규범을 우선하고 하위 규범의 적용 범위를 확인한다.
+- 현행 법령과 과거 뉴스레터·체크리스트가 다르면 과거 자료를 `[STALE]` 또는 `[EDITORIAL]`로 낮춘다.
+- 대법원 판례와 하급심 판례가 다르면 대법원을 우선하고 하급심은 변경 가능성을 표시한다.
+- 공식 기관 안내와 법령 원문 해석이 다르면 `[CONTRADICTED]`를 표시하고 결론 강도를 낮춘다.
+
+모순이 해소되지 않으면 단정 결론을 내지 않고, 어떤 source가 어떤 방향인지 나눠서 보여준다.
+
+### 5. Conclusion binding
+
+최종 결론의 강도는 가장 약한 필수 authority에 맞춘다.
+
+| 상태 | 결론 표현 |
+| --- | --- |
+| 모든 필수 authority가 Grade A/B + `[VERIFIED]` | “확인한 범위에서는 …” |
+| 일부 authority가 `[UNVERIFIED]` | “가능성이 있으나 원문/공식 확인 전 단정 불가” |
+| 필수 authority가 `[INSUFFICIENT]` | 결론 유보 + 확인할 source 제시 |
+| source 간 충돌 | `[CONTRADICTED]` 표시 + 결론 강도 낮춤 |
+| stale 자산만 있음 | triage 후보로만 제시 |
+
+### 6. Verification packet contract
+
+복합 결론, 외부 송부, 기관 제출, 소송·분쟁 포지션, 과징금·신고기한·서식처럼 법적 효과가 큰 답변에서는 내부적으로 `legal_verification_packet.yaml`의 최소 shape를 채운다고 가정한다. 단문 조문 확인은 같은 구조를 축약해도 되지만, 출력 인용은 citation ledger를 통과해야 한다.
+
+필수 블록:
+
+- `matter` — 질문, 관할, 사용자 역할, destination
+- `issue_to_authority_map` — 결론 후보, 필요한 authority, 법적 효과, 빠지면 결론 금지할 source
+- `authority_packets` — 실제 확인 source와 Source Grade, verification status, provenance, currency
+- `citation_ledger` — 답변에 노출할 인용의 허용 여부와 결론 연결
+- `contradiction_scan` — stale/current, 상하위 규범, 판례 분기, 공식 안내와 원문 해석 차이
+- `conclusion_binding` — 결론 강도와 다음 확인 필요 항목
+- `self_verification` — Source Grade, freshness, role/destination, unledgered citation 여부
+
+이 packet은 법률 조언을 자동 확정하는 양식이 아니다. source가 약하거나 모순되면 결론을 강하게 만드는 것이 아니라 `qualified`, `insufficient`, `contradicted`, `triage_only`로 낮추는 구조다. `output_allowed: true`가 아닌 ledger 항목은 사용자 답변의 인용으로 노출하지 않는다.
+
 ## Investigation Matrix
 
 | Phase | 무엇을 | Full 모드 | Lite 모드 | 기본 |

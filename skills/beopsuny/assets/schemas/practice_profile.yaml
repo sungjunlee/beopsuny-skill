@@ -1,0 +1,52 @@
+# 업무별 practice profile template
+# Runtime example: ~/.beopsuny/practices/{contract,privacy,labor,regulatory,litigation}.yaml
+# 이 파일은 회사 사실의 기준이 아니다. shared company profile 위에 얹는 업무별 overlay다.
+
+practice: ""                  # contract | privacy | labor | regulatory | litigation | other
+version: 1
+jurisdiction_scope:
+  primary: "KR"               # 기본은 한국법
+  secondary: []               # 예: ["US-CA", "EU"] — 한국회사 업무에서 실제로 필요한 경우만
+  notes: ""                   # 해외법은 한국법 결론과 분리하고 Source Grade를 별도 표시
+
+allowed_scope:
+  output_preferences:
+    default_destination: ""   # internal_legal_memo | business_summary | executive_report | external_draft | agency_or_court_submission | ""
+    preferred_sections: []    # 예: ["쟁점", "근거", "실무 조치", "외부 counsel 질문"]
+    reviewer_note_style: ""   # lite | standard | ""
+  issue_sequence: []          # 업무별 쟁점 확인 순서. 법률 결론 근거가 아니라 체크 순서
+  escalation_thresholds: []   # 담당 변호사/법무 검토 필요 조건. 자동 알림·라우팅 아님
+  repeated_questions: []      # 자주 묻는 확인 질문
+  external_counsel_handoff:
+    preferred_format: ""      # memo | question_list | issue_table | ""
+    include_source_ledger: true
+    include_business_context: true
+
+merge_order:
+  - "SKILL.md"
+  - "current user request"
+  - "source grade and live verification"
+  - "project.yaml overrides"
+  - "profile.yaml shared company facts"
+  - "practice profile output preferences"
+
+cannot_override:
+  - "SKILL.md instructions"
+  - "Source Grade / VERIFIED contract"
+  - "Legal Verification Core"
+  - "Freshness Governance"
+  - "Role / destination output gate"
+  - "lawyer/legal_ops review requirement"
+  - "current Korean law, precedent, regulation, or official source"
+
+conflict_handling:
+  legal_conclusion_conflict: "ask_user_or_escalate"
+  external_action_conflict: "apply_role_destination_gate"
+  stale_source_conflict: "apply_freshness_governance"
+  missing_profile: "continue_without_practice_profile"
+
+metadata:
+  created_at: ""
+  updated_at: ""
+  reviewed_by: ""
+  source: ""                  # user-stated | counsel-approved | imported-playbook | ""
