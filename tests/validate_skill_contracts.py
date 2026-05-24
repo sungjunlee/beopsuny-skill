@@ -282,7 +282,7 @@ def check_output_reviewer_note_lite() -> None:
     label = "output-formats.md"
 
     for required in [
-        "검토 메모 Lite",
+        "검토자 메모 Lite",
         "표준 검토자 메모",
         "출처 provenance",
         "legalize-kr 로컬 확인",

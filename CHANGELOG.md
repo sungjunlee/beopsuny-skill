@@ -22,6 +22,7 @@
 - `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
 - `skills/beopsuny/SKILL.md` 출력 계약에 `full`/`compact` 크기 조절 규칙 추가. 법률 결론에는 검토자 메모와 자가 검증을 유지하되, 비법률 운영 응답에는 법률용 메타데이터를 억지로 붙이지 않도록 정리
 - `skills/beopsuny/references/contract_review_guide.md`를 v0.3 router spine 기준으로 재작성. 구버전 "명령어 실행" 지시를 제거하고 Source Grade, verification status, review_mode, Counter-drafting 경계를 반영
+- `skills/beopsuny/references/*`의 출력 필드명 예시를 표준 `검토자 메모`로 정렬
 - `skills/beopsuny/references/memory-structure.md` full 온보딩을 evidence-based onboarding으로 강화. seed document는 사용자가 명시적으로 제공한 경우에만 읽고, stated position 과 signed practice 차이를 저장 전 표시
 - `skills/beopsuny/assets/schemas/company_profile.yaml` `contract_playbook.seed_documents`에 `stated_vs_signed_delta`와 `skipped_fields` 추가
 - `skills/beopsuny/references/source-access.md`에 Capability Matrix 추가. 로컬 데이터 없음, 법망 API 접근 불가, WebSearch 없음, 네트워크 없음 등 환경별 fallback과 `[INSUFFICIENT]` 유보 기준 명시

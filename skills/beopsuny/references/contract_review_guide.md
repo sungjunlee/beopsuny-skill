@@ -90,7 +90,7 @@ Proportionality 원칙:
 - `never_accept`: 법적 리스크 또는 회사 정책상 escalation 대상인 항목으로 표시한다.
 - `escalation_triggers`: 담당자에게 결정을 넘겨야 할 escalation 판단 기준 또는 표시 조건으로만 사용한다. 자동 알림, 라우팅, 티켓 생성을 약속하지 않는다.
 
-playbook이 없으면 일반 한국법 검토로 진행하고, 검토 메모에 `계약 playbook 미설정 — 한국법 일반 기준으로 검토`처럼 짧게 표시한다.
+playbook이 없으면 일반 한국법 검토로 진행하고, 검토자 메모에 `계약 playbook 미설정 — 한국법 일반 기준으로 검토`처럼 짧게 표시한다.
 
 금지:
 

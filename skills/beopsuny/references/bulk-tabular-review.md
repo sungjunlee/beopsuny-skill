@@ -119,7 +119,7 @@ schema:
 ## 출력 예시
 
 ```markdown
-**검토 메모**: 5개 계약 중 샘플 2개로 schema 확인 | 각 셀은 evidence 확인 전 검토 lead
+**검토자 메모**: Sources 사용자 제공 계약 5개 | Read 샘플 2개로 schema 확인 | Currency 계약 원문 기준 | Before relying 각 셀은 evidence 확인 전 검토 lead
 
 Values table:
 
@@ -140,7 +140,7 @@ Sources table:
 
 ## 대량 입력 안전장치
 
-- 읽은 문서 수, 제외된 문서 수, 읽은 범위를 검토 메모에 표시한다.
+- 읽은 문서 수, 제외된 문서 수, 읽은 범위를 검토자 메모에 표시한다.
 - 일부 문서만 읽었으면 전체 결론처럼 말하지 않는다.
 - 샘플 검토 후 schema가 맞지 않으면 전체 실행 전에 사용자에게 조정안을 보여준다.
 - 표가 10행을 넘거나 status/date/severity 열이 있으면 dashboard나 CSV는 제안할 수 있지만, 자동 생성은 별도 요청이 있을 때만 한다.
