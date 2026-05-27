@@ -214,7 +214,6 @@ user question
 - `contracts`, `employment`, `fair-trade` 등 seed workspace memo는 reference context일 뿐 taxonomy/retrieval hints/authority map처럼 소비하지 않는다.
 - retrieval hints는 initial route, 결론 근거, exhaustive checklist가 아니다.
 - authority map은 route oracle이 아니라 사후 누락 점검표다.
-- `../beopsuny-skill` 또는 sibling checkout 경로는 runtime ingestion contract가 아니다. local fallback은 명시적으로 설정되고 같은 검증을 통과할 때만 허용된다.
 - 이 레이어는 답변 품질을 보강하는 옵션이지 모든 개인정보 질문에 붙는 의무 절차가 아니다. 질문 난이도와 리스크에 맞춰 right-sized로 사용한다.
 
 ---
