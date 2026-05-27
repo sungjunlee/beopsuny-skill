@@ -194,7 +194,7 @@ Full/Lite 컬럼: ● = 기본 수행, ⬚ = 요청 시만, — = 생략.
 
 개인정보 쟁점이 실질적으로 있는 질문에서는 선택적으로 `beopsuny-knowledge`의 privacy active vertical 자산을 사용할 수 있다. 이 자산은 법령·판례·행정규칙 확인을 대체하지 않고, 검색을 넓히고 누락 축을 점검하는 보조 레이어다. 단순 조문 확인, 링크 확인, 짧은 시행일 확인처럼 쟁점 분해가 필요 없는 질문에는 이 레이어를 생략하고 기존 live legal research로 답한다.
 
-기본 channel은 `stable`이고, `canary`는 명시적 opt-in replay 또는 integration test에서만 쓴다.
+beopsuny-knowledge가 충분한 완성도에 도달할 때까지는 runtime manifest fetch를 유보하고, 아래 정적 스냅숏을 번들 사전지식으로 사용한다.
 
 권장 흐름:
 
@@ -214,9 +214,9 @@ user question
 - `contracts`, `employment`, `fair-trade` 등 seed workspace memo는 reference context일 뿐 taxonomy/retrieval hints/authority map처럼 소비하지 않는다.
 - retrieval hints는 initial route, 결론 근거, exhaustive checklist가 아니다.
 - authority map은 route oracle이 아니라 사후 누락 점검표다.
-- manifest fetch, schema/checksum, `publish_ready`, `url_status`, asset별 허용 usage 검증에 실패하면 knowledge injection 없이 기존 live legal research만 수행한다.
 - `../beopsuny-skill` 또는 sibling checkout 경로는 runtime ingestion contract가 아니다. local fallback은 명시적으로 설정되고 같은 검증을 통과할 때만 허용된다.
 - 이 레이어는 답변 품질을 보강하는 옵션이지 모든 개인정보 질문에 붙는 의무 절차가 아니다. 질문 난이도와 리스크에 맞춰 right-sized로 사용한다.
+- runtime manifest fetch는 beopsuny-knowledge가 충분한 완성도에 도달할 때까지 유보한다. 그 전까지는 아래 정적 스냅숏을 번들 사전지식으로 사용한다.
 
 ### 개인정보 사전지식 — 기본 점검 축
 
@@ -225,8 +225,10 @@ user question
 적용하지도 않는다 — 질문의 성격에 따라 필요한 축만 선택적으로 펼친다.
 
 이 사전지식은 `beopsuny-knowledge`의 `privacy` vertical 자산(taxonomy, authority map,
-retrieval hints)에서 추출한 정적 스냅숏이다. manifest 기반 runtime injection이
-구현되면(아래 Runtime fetch 참조) 이 정적 텍스트를 동적 주입으로 대체한다.
+retrieval hints)에서 추출해 법순이 번들에 복사한 정적 스냅숏이다.
+beopsuny-knowledge의 source watch·triage·asset update 사이클과 별개로 유지되며,
+지식 자산이 갱신되면 법순이 쪽으로 수동 sync한다.
+beopsuny-knowledge가 충분한 완성도에 도달하면 runtime manifest fetch로 전환한다.
 
 **기본 이슈 분해 (taxonomy 기반)**
 
@@ -252,36 +254,6 @@ retrieval hints)에서 추출한 정적 스냅숏이다. manifest 기반 runtime
 - 이 사전지식은 live search의 starting point일 뿐, 법령 원문 확인을 대체하지 않는다
 - 질문 난이도와 리스크에 맞춰 right-sized로 적용 — 단순 "개인정보 동의 필요한가요?"에는 6개 축을 전부 펼치지 않는다
 - 모든 축을 체크리스트처럼 강제하지 않는다 — 누락 리스크가 가장 큰 축 1~2개만 골라서 의식한다
-
-### Runtime manifest fetch
-
-복합 개인정보 질문(국외이전, DPA, 사고대응)에서는 `assets/policies/knowledge_manifest.yaml`에
-설정된 stable manifest URL에서 최신 taxonomy와 authority map을 fetch하여
-정적 사전지식보다 더 상세한 asset을 주입할 수 있다.
-
-**Fetch and usage**:
-
-```bash
-# GH_TOKEN 환경변수 필요 (private repo)
-MANIFEST_URL=$(grep -A2 'stable:' skills/beopsuny/assets/policies/knowledge_manifest.yaml | grep 'url:' | sed 's/.*url: "\(.*\)"/\1/')
-
-if [ -n "$GH_TOKEN" ]; then
-  curl -sS -H "Authorization: token $GH_TOKEN" "$MANIFEST_URL" -o /tmp/beopsuny-manifest.json 2>/dev/null
-fi
-```
-
-**실패 처리**:
-- GH_TOKEN 미설정 → skip, 정적 사전지식 사용
-- manifest fetch 실패(HTTP 4xx/5xx, timeout) → skip
-- sha256 불일치 → skip
-- 어떤 경우든 live legal research는 계속된다
-
-**채널**:
-- `stable`: production-like 기본 채널
-- `canary`: 명시적 opt-in replay 또는 integration test에서만
-
-**Context budget**: 정적 사전지식으로 충분한 경우 manifest fetch를 skip한다.
-복합 질문에만 fetch를 시도하고, fetch 결과는 8000자 이내로 제한한다.
 
 ---
 
