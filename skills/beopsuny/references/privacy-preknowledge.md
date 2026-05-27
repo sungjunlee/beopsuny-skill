@@ -1,3 +1,22 @@
+---
+snapshot_date: "2026-05-27"
+source_assets:
+  - file: "beopsuny-knowledge:privacy/assets/taxonomy.yaml"
+    version: "2026.04.20.1"
+    updated_at: "2026-04-20T11:10:00+09:00"
+  - file: "beopsuny-knowledge:privacy/assets/authority-map.core.yaml"
+    version: "2026.05.02.1"
+    updated_at: "2026-05-02T20:05:00+09:00"
+  - file: "beopsuny-knowledge:privacy/assets/authority-map.overlay.yaml"
+    version: "2026.04.24-overlay.18"
+    updated_at: "2026-05-02T20:42:00+09:00"
+note: >
+  이 파일은 위 source asset에서 핵심 축만 추출해 법순이 번들에 복사한
+  정적 스냅숏이다. source asset이 갱신되면 이 파일도 수동 sync한다.
+  현재 runtime manifest fetch를 사용하지 않는 이유는
+  beopsuny-knowledge의 완성도가 아직 그 단계가 아니기 때문이다.
+---
+
 # 개인정보 사전지식 — 기본 점검 축
 
 개인정보 쟁점이 실질적으로 있는 질문에서는, blind live search를 시작하기 전에
@@ -12,8 +31,8 @@
 | **제공·위탁** | `sharing_structure` | 수탁사 vs 제3자 제공 분기, 재위탁 구조, 처리방침의 이전받는 자 정보와 실제 위탁 계약의 일치 여부 |
 | **국외이전** | `cross_border` | 저장(Storage)·접근(Access)·백업(Backup)·지원접근(Support Access) 경로 분리 확인, DPA 체결, 서브프로세서 목록 최신성, 처리방침 고지 충실성 |
 | **안전성 확보조치** | `security_controls` | 접근권한 관리, 암호화(전송·저장), 접속기록(보존·점검), 내부관리계획, SDK/태그 이벤트의 목적별 매핑 증적 |
-| **정보주체 권리** | `data_subject_rights` | 열람·정정·삭제·처리정지 청구 절차, 본인확인 방법, 처리기한(10일/30일), opt-out 전파 확인(삭제요청 → 수탁사/서브프로세서까지) |
-| **침해사고** | `incident_response` | 통지·신고 기준(1천명 기준·민감정보 분기), 72시간 이내 신고, 24시간 이내 통지, 증적보전, 초기 차단 조치, 현행법 결론과 시행예정 전환 리스크 분리 |
+| **정보주체 권리** | `data_subject_rights` | 열람·정정·삭제·처리정지 청구 절차, 본인확인 방법, 처리기한(열람 10일·그 외 30일), opt-out 전파 확인(삭제요청 → 수탁사/서브프로세서까지) |
+| **침해사고** | `incident_response` | 통지·신고 기준(1천명 기준·민감정보 분기), 72시간 이내 PIPC 신고·지체 없이 정보주체 통지, 증적보전, 초기 차단 조치, 현행법 결론과 시행예정 전환 리스크 분리 |
 
 ## 자주 빠지는 축 (authority map 기반)
 
