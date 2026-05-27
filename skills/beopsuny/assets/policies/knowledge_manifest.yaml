@@ -1,0 +1,34 @@
+# beopsuny-knowledge manifest 채널 설정
+#
+# Runtime이 beopsuny-knowledge의 manifest를 fetch할 때 사용하는 config.
+# 이 파일은 beopsuny-skill이 읽으며, Git에 커밋되지만 token을 포함하지 않는다.
+#
+# GitHub token은 환경변수 GH_TOKEN 또는 GITHUB_TOKEN을 사용한다.
+# private repo이므로 token이 없으면 manifest fetch를 시도하지 않고
+# SKILL.md의 정적 사전지식으로 폴백한다.
+
+knowledge_manifest:
+  # 기본 채널 — production-like 소비
+  default_channel: "stable"
+
+  channels:
+    stable:
+      url: "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/_system/manifests/stable.json"
+      use: "production_like_default"
+      # private repo — GitHub raw는 token이 필요함
+      # public gist나 public repo로 전환 시 auth 불필요
+
+    canary:
+      url: "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/_system/manifests/canary.json"
+      use: "explicit_replay_or_integration_test_only"
+
+  # fetch timeout (seconds)
+  http_timeout_sec: 10
+
+  # context budget — knowledge asset이 세션 컨텍스트를 과도하게 점유하지 않도록
+  context_budget:
+    max_total_chars: 8000  # manifest + asset text 합계
+    max_per_asset_chars: 4000
+
+  # manifest 검증에 실패하면 injection을 건너뛰고 live legal research만 수행
+  fail_open: true
