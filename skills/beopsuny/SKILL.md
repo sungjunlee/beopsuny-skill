@@ -194,7 +194,7 @@ Full/Lite 컬럼: ● = 기본 수행, ⬚ = 요청 시만, — = 생략.
 
 개인정보 쟁점이 실질적으로 있는 질문에서는 선택적으로 `beopsuny-knowledge`의 privacy active vertical 자산을 사용할 수 있다. 이 자산은 법령·판례·행정규칙 확인을 대체하지 않고, 검색을 넓히고 누락 축을 점검하는 보조 레이어다. 단순 조문 확인, 링크 확인, 짧은 시행일 확인처럼 쟁점 분해가 필요 없는 질문에는 이 레이어를 생략하고 기존 live legal research로 답한다.
 
-복합 개인정보 질문(국외이전, DPA, 사고대응, 광고태그 등)에서는 `references/privacy-preknowledge.md`를 읽어 taxonomy 축과 authority map blind spot을 의식하고 live search에 들어간다.
+복합 개인정보 질문에서는 `references/privacy-preknowledge.md`를 읽어 Section 1(taxonomy)으로 issue framing을 넓히고 blind live search를 수행한 뒤, Section 2(authority map)로 post-search audit을 한다. 단순 조문 확인·링크·시행일 질문에는 이 파일을 생략한다.
 
 권장 흐름:
 
@@ -214,6 +214,7 @@ user question
 - `contracts`, `employment`, `fair-trade` 등 seed workspace memo는 reference context일 뿐 taxonomy/retrieval hints/authority map처럼 소비하지 않는다.
 - retrieval hints는 initial route, 결론 근거, exhaustive checklist가 아니다.
 - authority map은 route oracle이 아니라 사후 누락 점검표다.
+- 정적 snapshot과 live search 결과가 충돌하면 항상 live search를 우선한다. `privacy-preknowledge.md`의 `snapshot_date`가 30일 이상 지났으면 구체적 수치(처리기한, 시행일 등)는 확인 필요로 취급한다.
 - 이 레이어는 답변 품질을 보강하는 옵션이지 모든 개인정보 질문에 붙는 의무 절차가 아니다. 질문 난이도와 리스크에 맞춰 right-sized로 사용한다.
 
 ---
