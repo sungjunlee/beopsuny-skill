@@ -102,20 +102,21 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 레포의 `skills/beopsuny/SKILL.md`와 실제 에이전트가 읽는 설치본이 다르면 수정 결과가 런타임에 반영되지 않는다. 릴리즈 전에는 기본 계약 검증을 실행한다.
 
 ```bash
-python3 -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
-PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py
+PYTHON=${PYTHON:-python3}
+$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
+PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 ```
 
 시나리오 샘플 출력만 따로 확인하려면:
 
 ```bash
-PYTHONPATH=.test-deps python3 tests/evaluate_scenario_outputs.py
+PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 ```
 
 로컬 전역 설치본까지 비교하려면 설치 경로를 명시한다.
 
 ```bash
-BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py
+BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 ```
 
 ### 품질 계약 지도
@@ -148,7 +149,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 5. `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule을 추가해 금지 실패모드를 잡는다.
 6. `tests/validate_skill_contracts.py`에 문서·스키마·README·CHANGELOG drift 검사를 추가한다.
 7. README 품질 계약 지도와 CHANGELOG를 갱신한다.
-8. `python3 -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt`, `PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py`, `PYTHONPATH=.test-deps python3 tests/evaluate_scenario_outputs.py`, `python3 -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py`, `git diff --check`를 실행한다.
+8. `PYTHON=${PYTHON:-python3}`, `$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt`, `PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py`, `PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py`, `$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py`, `git diff --check`를 실행한다.
 
 기존 장점인 단일 라우터, 한국법 원문주의, Source Grade, 자가 검증을 약화시키는 변경은 기능 추가로 보지 않는다. 새 계약은 기존 gate를 우회하지 말고, 필요한 경우 결론 강도를 낮추는 방식으로 연결한다.
 
