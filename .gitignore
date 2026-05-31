@@ -12,6 +12,10 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Python
+.venv/
+__pycache__/
+
 # Node
 node_modules/
 TODOS.md
