@@ -135,6 +135,8 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny python tests/validate_sk
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
 
+`tests/forward_evals/beopsuny_guardrails.yaml`은 실제 모델 응답을 수동 또는 별도 harness로 점검하는 forward-eval prompt set이다. CI의 빠른 gate는 아니며, 실패 시 `guardrail_category`와 `source_router_scenario` 기준으로 이슈를 남긴다.
+
 GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, 테스트 harness compile을 실행한다.
 
 ### 품질 계약 변경 체크리스트
