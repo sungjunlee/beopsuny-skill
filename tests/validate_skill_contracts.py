@@ -1575,10 +1575,9 @@ def check_contract_tests_workflow() -> None:
     assert_contains(requirements, "PyYAML", "requirements-dev.txt")
     readme = read_text("README.md")
     for required in [
-        "python3 -m venv .venv",
-        "python -m pip install -r requirements-dev.txt",
-        "python tests/validate_skill_contracts.py",
-        "python tests/evaluate_scenario_outputs.py",
+        "python3 -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt",
+        "PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py",
+        "PYTHONPATH=.test-deps python3 tests/evaluate_scenario_outputs.py",
     ]:
         assert_contains(readme, required, "README.md")
 
