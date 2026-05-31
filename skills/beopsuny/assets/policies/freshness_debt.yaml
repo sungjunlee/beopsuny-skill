@@ -1,14 +1,14 @@
 name: "Freshness debt registry"
-description: "Bundled assets whose maintenance.next_review has passed and must stay triage-only until refreshed."
+description: "Bundled assets and reference docs with stale-prone facts that must stay triage-only until refreshed."
 tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/101"
 policy:
   status_values:
     - stale_registered
   allowed_runtime_use: "triage_only"
   required_before_legal_conclusion: "live legal research against official or primary sources"
-  forbidden_runtime_use: "Do not present registered stale asset values as current legal obligations, thresholds, deadlines, fees, forms, or filing requirements."
-  retirement_rule: "Remove an asset from this registry only after its bundled source has been reverified, maintenance.next_review has been advanced, and the verification notes identify the source family checked."
-  revalidation_record_required: "Before retiring an asset or advancing maintenance.next_review, record the review using the fields in assets/schemas/freshness_revalidation.yaml."
+  forbidden_runtime_use: "Do not present registered stale values from assets or references as current legal obligations, thresholds, deadlines, fees, forms, source counts, treaty counts, or filing requirements."
+  retirement_rule: "Remove an asset or reference from this registry only after its bundled source has been reverified, maintenance.next_review or registry next_review has been advanced, and the verification notes identify the source family checked."
+  revalidation_record_required: "Before retiring an asset/reference or advancing maintenance.next_review, record the review using the fields in assets/schemas/freshness_revalidation.yaml."
 assets:
   - path: "skills/beopsuny/assets/policies/checklists/contract_review.yaml"
     status: "stale_registered"
@@ -73,3 +73,10 @@ assets:
     allowed_use: "startup formation triage only"
     verification_required: "confirm current registry, tax, employment-insurance, and permit requirements through official sources before answering"
     retire_when: "startup formation references are refreshed and maintenance.next_review is advanced"
+  - path: "skills/beopsuny/references/international_guide.md"
+    status: "stale_registered"
+    next_review: "2026-05-31"
+    risk: "cross-border thresholds, treaty/source counts, CSDDD phase-in dates, technology-control lists, and filing deadlines can change independently of this reference"
+    allowed_use: "international expansion issue-spotting triage only"
+    verification_required: "confirm current law.go.kr, competent ministry, NTS, MOFA, KFTC, PIPC, EU official sources, and other primary sources before stating current thresholds, counts, filing duties, or deadlines"
+    retire_when: "dated volatile reference claims are removed, reframed as live-check hints, or revalidated with official-source notes"
