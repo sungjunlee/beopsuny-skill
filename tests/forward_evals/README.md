@@ -12,7 +12,8 @@
 기존 빠른 CI gate는 계속 아래 명령이다.
 
 ```bash
-python3 -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
-PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py
-PYTHONPATH=.test-deps python3 tests/evaluate_scenario_outputs.py
+PYTHON=${PYTHON:-python3}
+$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
+PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
+PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 ```
