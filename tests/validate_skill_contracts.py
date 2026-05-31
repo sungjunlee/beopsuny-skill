@@ -1345,6 +1345,47 @@ def check_readme_asset_inventory_counts() -> None:
         assert_contains(text, f"`{policy_name}`", label)
 
 
+def check_law_change_automation_promise_drift() -> None:
+    sensitive_docs = {
+        "CLAUDE.md": read_text("CLAUDE.md"),
+        "watched_laws.yaml": read_text("skills/beopsuny/assets/schemas/watched_laws.yaml"),
+    }
+    forbidden_phrases = [
+        "법 개정 시 자동 알림",
+        "자동 추가",
+        "자동으로 추가",
+        "자동으로 알려",
+        "크론",
+        "cron",
+        "notification",
+        "push",
+        "푸시",
+        "스케줄",
+        "정기적으로 알려",
+        "주기적으로 체크",
+        "자동 모니터링",
+    ]
+
+    for label, text in sensitive_docs.items():
+        for phrase in forbidden_phrases:
+            assert_not_contains(text, phrase, label)
+
+    watched_laws = sensitive_docs["watched_laws.yaml"]
+    for required in [
+        "조회 후보",
+        "사용자가 저장을 확인한 경우에만 추가",
+    ]:
+        assert_contains(watched_laws, required, "watched_laws.yaml")
+
+    law_change = read_text("skills/beopsuny/references/law-change-detection.md")
+    for required in [
+        "법령 변경 감지는 pull 방식이다",
+        "사용자가 명시적으로 automation을 요청하지 않으면",
+        "이 스킬의 기본 변경 감지와 섞지 않는다",
+    ]:
+        assert_contains(law_change, required, "law-change-detection.md")
+
+
 def check_readme_quality_verification_refs_resolve() -> None:
     text = read_text("README.md")
     label = "README.md"
@@ -1846,6 +1887,7 @@ CHECKS = [
     check_skill_quality_contract_router_map,
     check_readme_quality_contract_map,
     check_readme_asset_inventory_counts,
+    check_law_change_automation_promise_drift,
     check_readme_quality_verification_refs_resolve,
     check_quality_contract_reference_targets,
     check_changelog_quality_contract_notes,
