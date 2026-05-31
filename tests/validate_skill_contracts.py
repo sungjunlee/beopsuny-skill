@@ -1500,12 +1500,23 @@ def check_contract_tests_workflow() -> None:
         "master",
         "actions/checkout@v4",
         "actions/setup-python@v5",
-        "pyyaml",
+        "requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
         "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
     ]:
         assert_contains(text, required, label)
+
+    requirements = read_text("requirements-dev.txt")
+    assert_contains(requirements, "PyYAML", "requirements-dev.txt")
+    readme = read_text("README.md")
+    for required in [
+        "python3 -m venv .venv",
+        "python -m pip install -r requirements-dev.txt",
+        "python tests/validate_skill_contracts.py",
+        "python tests/evaluate_scenario_outputs.py",
+    ]:
+        assert_contains(readme, required, "README.md")
 
 
 def check_self_verification_guardrails() -> None:
