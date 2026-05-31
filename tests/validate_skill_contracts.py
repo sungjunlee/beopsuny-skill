@@ -1156,21 +1156,76 @@ def check_freshness_debt_registry() -> None:
         if "triage" not in str(item["allowed_use"]):
             raise AssertionError(f"{label}: {path} allowed_use must keep stale asset triage-only")
 
-        asset_path = ROOT / path
-        if not asset_path.exists():
+        registered_path = ROOT / path
+        if not registered_path.exists():
             raise AssertionError(f"{label}: registered asset does not exist: {path}")
-        asset_data = load_yaml(path)
-        maintenance = asset_data.get("maintenance") if isinstance(asset_data, dict) else None
-        if not isinstance(maintenance, dict):
-            raise AssertionError(f"{label}: registered asset has no maintenance metadata: {path}")
-        if str(maintenance.get("next_review")) != str(item["next_review"]):
-            raise AssertionError(
-                f"{label}: {path} next_review drift: registry={item['next_review']!r}, "
-                f"asset={maintenance.get('next_review')!r}"
-            )
+        if registered_path.suffix == ".yaml":
+            asset_data = load_yaml(path)
+            maintenance = asset_data.get("maintenance") if isinstance(asset_data, dict) else None
+            if not isinstance(maintenance, dict):
+                raise AssertionError(f"{label}: registered asset has no maintenance metadata: {path}")
+            if str(maintenance.get("next_review")) != str(item["next_review"]):
+                raise AssertionError(
+                    f"{label}: {path} next_review drift: registry={item['next_review']!r}, "
+                    f"asset={maintenance.get('next_review')!r}"
+                )
+        elif not path.startswith("skills/beopsuny/references/") or registered_path.suffix != ".md":
+            raise AssertionError(f"{label}: non-YAML entries must be reference markdown files: {path}")
         due = parse_review_due(item["next_review"])
         if not due or due > today:
             raise AssertionError(f"{label}: registered asset is not currently stale: {path}")
+
+
+VOLATILE_REFERENCE_PATTERNS = [
+    re.compile(pattern)
+    for pattern in [
+        r"\d{4}년 기준",
+        r"\d{4}년 \d{1,2}월 법 개정",
+        r"\d{4}년 개정",
+        r"\d+개국",
+        r"\d+개 분야",
+        r"\d+개 기술",
+        r"\d{1,3}(?:,\d{3})*억원",
+        r"\d+일 내",
+        r"전 세계 매출 \d+%",
+        r"\d+(?:\.\d+)?억 유로",
+    ]
+]
+
+
+def volatile_reference_hits(path: Path) -> list[str]:
+    hits: list[str] = []
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        if "[STALE]" in line or "뉴스레터" in line:
+            continue
+        for pattern in VOLATILE_REFERENCE_PATTERNS:
+            if pattern.search(line):
+                relative = path.relative_to(ROOT).as_posix()
+                hits.append(f"{relative}:{line_number}: {line.strip()}")
+                break
+    return hits
+
+
+def check_reference_freshness_debt_scan() -> None:
+    registry = freshness_debt_registry()
+    registered_paths = {
+        str(item.get("path"))
+        for item in registry.get("assets", [])
+        if isinstance(item, dict)
+    }
+    untracked: list[str] = []
+
+    for path in sorted((ROOT / "skills/beopsuny/references").glob("*.md")):
+        relative = path.relative_to(ROOT).as_posix()
+        hits = volatile_reference_hits(path)
+        if hits and relative not in registered_paths:
+            untracked.extend(hits)
+
+    if untracked:
+        raise AssertionError(
+            "dated volatile reference claims must be removed, reframed as live-check hints, "
+            f"or tracked in freshness_debt.yaml: {untracked}"
+        )
 
 
 def check_freshness_governance_reference() -> None:
@@ -1188,6 +1243,8 @@ def check_freshness_governance_reference() -> None:
         "Debt Register Contract",
         "Revalidation Record",
         "Registered Stale Assets",
+        "reference 문서",
+        "treaty/source count",
         "Retirement Rule",
         "live legal research",
         "`source_families_checked`",
@@ -1893,6 +1950,7 @@ CHECKS = [
     check_research_workflow_verification_core,
     check_asset_freshness_metadata_tracked,
     check_freshness_debt_registry,
+    check_reference_freshness_debt_scan,
     check_freshness_governance_reference,
     check_output_contract_right_sizing,
     check_skill_quality_contract_router_map,
