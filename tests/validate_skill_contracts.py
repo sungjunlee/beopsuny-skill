@@ -156,6 +156,13 @@ def router_output_eval_ids() -> set[str]:
     }
 
 
+def forward_eval_prompts() -> dict[str, Any]:
+    data = load_yaml("tests/forward_evals/beopsuny_guardrails.yaml")
+    if not isinstance(data, dict):
+        raise AssertionError("beopsuny_guardrails.yaml: expected mapping")
+    return data
+
+
 def check_version_sync() -> None:
     plugin = load_json(".claude-plugin/plugin.json")
     marketplace = load_json(".claude-plugin/marketplace.json")
@@ -1837,6 +1844,87 @@ def check_router_output_eval() -> None:
         raise AssertionError(details.strip())
 
 
+def check_forward_eval_prompt_set() -> None:
+    data = forward_eval_prompts()
+    label = "beopsuny_guardrails.yaml"
+    for required in ["name", "source_of_truth", "runbook", "prompts"]:
+        if required not in data:
+            raise AssertionError(f"{label}: missing {required!r}")
+
+    source_of_truth = data["source_of_truth"]
+    if not isinstance(source_of_truth, dict):
+        raise AssertionError(f"{label}: source_of_truth must be a mapping")
+    for required in [
+        "tests/scenarios/16_router_regression.yaml",
+        "tests/evaluate_scenario_outputs.py",
+        "tests/validate_skill_contracts.py",
+    ]:
+        assert_contains(str(source_of_truth), required, label)
+
+    runbook = data["runbook"]
+    if not isinstance(runbook, dict):
+        raise AssertionError(f"{label}: runbook must be a mapping")
+    for required in ["manual_or_model_harness", "expected_guardrails", "forbidden_failures"]:
+        assert_contains(str(runbook), required, label)
+
+    prompts = data["prompts"]
+    if not isinstance(prompts, list) or not (8 <= len(prompts) <= 12):
+        raise AssertionError(f"{label}: prompts must contain 8-12 entries")
+
+    scenario_ids = router_scenario_ids()
+    expected_categories = {
+        "beopmang_api_maintenance_fallback",
+        "automation_promise_boundary",
+        "role_destination_gate",
+        "stale_asset_triage_only",
+        "grade_c_single_source_boundary",
+        "memory_prompt_injection_boundary",
+    }
+    seen_ids: set[str] = set()
+    seen_categories: set[str] = set()
+    for prompt in prompts:
+        if not isinstance(prompt, dict):
+            raise AssertionError(f"{label}: prompt must be a mapping: {prompt!r}")
+        for required in [
+            "id",
+            "guardrail_category",
+            "source_router_scenario",
+            "source_references",
+            "prompt",
+            "expected_guardrails",
+            "forbidden_failures",
+        ]:
+            if not prompt.get(required):
+                raise AssertionError(f"{label}: prompt missing {required!r}: {prompt!r}")
+
+        prompt_id = str(prompt["id"])
+        if prompt_id in seen_ids:
+            raise AssertionError(f"{label}: duplicate prompt id {prompt_id!r}")
+        seen_ids.add(prompt_id)
+
+        scenario_id = str(prompt["source_router_scenario"])
+        if scenario_id not in scenario_ids:
+            raise AssertionError(f"{label}: prompt {prompt_id} references unknown scenario {scenario_id!r}")
+
+        references = prompt["source_references"]
+        if not isinstance(references, list) or not references:
+            raise AssertionError(f"{label}: prompt {prompt_id} source_references must be non-empty")
+        for reference in references:
+            if not (ROOT / str(reference)).exists():
+                raise AssertionError(f"{label}: prompt {prompt_id} missing reference {reference!r}")
+
+        for field in ["expected_guardrails", "forbidden_failures"]:
+            values = prompt[field]
+            if not isinstance(values, list) or len(values) < 2:
+                raise AssertionError(f"{label}: prompt {prompt_id} {field} must have at least two entries")
+
+        seen_categories.add(str(prompt["guardrail_category"]))
+
+    missing_categories = expected_categories - seen_categories
+    if missing_categories:
+        raise AssertionError(f"{label}: missing high-risk categories {sorted(missing_categories)!r}")
+
+
 def check_volatile_api_docs() -> None:
     text = read_text("skills/beopsuny/references/beopmang-api.md")
     label = "beopmang-api.md"
@@ -1970,6 +2058,7 @@ CHECKS = [
     check_router_guardrail_scenarios,
     check_router_fixture_integrity,
     check_router_output_eval,
+    check_forward_eval_prompt_set,
     check_volatile_api_docs,
     check_international_index_routing,
     check_optional_installed_skill_drift,
