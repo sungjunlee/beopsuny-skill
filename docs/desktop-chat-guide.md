@@ -93,17 +93,17 @@ Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(M
 
 | 용도 | 호출 |
 |------|------|
-| 법령 검색 | `law?action=search&query={검색어}` |
-| 법령 조회 | `law?action=get&id={법령ID}` |
-| 개정 이력 | `law?action=history&id={법령ID}` |
-| 개정 비교 | `law?action=diff&id={법령ID}` |
-| 행정규칙 | `law?action=search&query={검색어}&type=admrul` |
-| 해석례 | `law?action=search&query={검색어}&type=expc` |
-| 판례 검색 | `case?action=search&query={키워드}` |
-| 판례 상세 | `case?action=get&id={prec_id}` |
+| 법령 검색 | `law?action=search&q={검색어}` |
+| 법령 조회 | `law?action=get&law_id={law_id}&article={조문}` |
+| 개정 이력 | `law?action=history&law_id={law_id}` |
+| 개정 비교 | `law?action=diff&law_id={law_id}&from={이전기준}` |
+| 행정규칙 | `law?action=search&q={검색어}&type=admrul` |
+| 해석례 | `law?action=search&q={검색어}&type=expc` |
+| 판례 검색 | `case?action=search&q={키워드}` |
+| 판례 상세 | `case?action=get&prec_id={prec_id}` |
 
 fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback.
-응답에 `"error": "service_maintenance"`가 오면 WebSearch로 전환.
+응답에 `"error": "service_maintenance"`가 오거나 timeout, 5xx, 빈 응답이면 WebSearch 또는 공식 사이트로 전환하고 조회 실패 범위를 표시한다. API 실패를 검색 0건, 규범 부존재, 개정 없음으로 쓰지 않는다.
 
 ### 2순위: WebSearch
 
@@ -130,7 +130,7 @@ OC 코드 발급: https://open.law.go.kr/LSO/openApi/guideList.do (무료, 1분)
 | 1. 법령 | 법률 + 시행령 원문 | 법망 `law/search` → `law/get` |
 | 2. 행정규칙 | 고시/훈령/예규 | 법망 `type=admrul` |
 | 3. 판례 | 관련 판결 | 법망 `case/search` → `case/get` |
-| 4. 개정 확인 | 최근 변경 | 법망 `law/history` |
+| 4. 개정 확인 | 최근 변경 | 법망 `law/search`로 `law_id` 확인 → `law/history` |
 | 5. 집행 동향 | 해석례/보도자료/제재/계류 의안 | 법망 `type=expc` + WebSearch (요청 시) |
 
 ## 링크 형식
