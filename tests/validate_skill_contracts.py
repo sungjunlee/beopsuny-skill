@@ -1736,6 +1736,13 @@ def check_volatile_api_docs() -> None:
         "운영 정보",
         "운영 정보는 변동될 수 있으므로",
         "문서에 고정하지 않는다",
+        "help?action=schema",
+        "`q`",
+        "`law_id`",
+        "`article`",
+        "`service_maintenance`",
+        "조회 실패",
+        "개정 없음",
     ]:
         assert_contains(text, required, label)
     for stale in [
@@ -1744,6 +1751,32 @@ def check_volatile_api_docs() -> None:
         "법령 5,573",
     ]:
         assert_not_contains(text, stale, label)
+
+    docs = {
+        "skills/beopsuny/references/beopmang-api.md": read_text(
+            "skills/beopsuny/references/beopmang-api.md"
+        ),
+        "skills/beopsuny/references/source-access.md": read_text(
+            "skills/beopsuny/references/source-access.md"
+        ),
+        "skills/beopsuny/references/law-change-detection.md": read_text(
+            "skills/beopsuny/references/law-change-detection.md"
+        ),
+        "docs/desktop-chat-guide.md": read_text("docs/desktop-chat-guide.md"),
+    }
+    stale_patterns = [
+        "action=search&query=",
+        "action=get&id=",
+        "action=history&id=",
+        "action=diff&id=",
+        "case?action=get&id=",
+    ]
+    failure_terms = ["service_maintenance", "timeout", "5xx", "빈 응답", "조회 실패"]
+    for doc_label, doc_text in docs.items():
+        for pattern in stale_patterns:
+            assert_not_contains(doc_text, pattern, doc_label)
+        for required in failure_terms:
+            assert_contains(doc_text, required, doc_label)
 
 
 def check_international_index_routing() -> None:
