@@ -4,6 +4,8 @@
 
 이 문서는 API 사용 패턴과 fallback을 정리한다. 인증 방식, rate limit, endpoint 상태, 데이터 규모 같은 운영 정보는 변동될 수 있으므로 답변에서 확정 사실처럼 말하기 전에 현재 응답 또는 공식 안내를 확인한다.
 
+법망 API wrapper의 `[VERIFIED]` 승격 조건은 `references/citation-verification-contract.md`를 따른다. 검색 결과, 요약·스니펫, 유사도 결과만 확인한 경우에는 원문 대조가 아니므로 `법망 API search 결과만 확인` 같은 provenance와 함께 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
+
 실행 전 가능하면 `https://api.beopmang.org/api/v4/help?action=schema` 또는 랜딩 페이지의 현재 예시를 확인한다. 현재 기본 예시는 검색에 `q`, 법령 본문/이력/비교에 `law_id`, 조문 조회에 `article`을 사용한다. 과거 예시의 `query` 또는 `id` alias는 보조 단서로만 보고, 새 문서와 답변의 1차 예시는 현재 schema를 따른다.
 
 API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니다. Full 모드면 legalize-kr/precedent-kr 로컬 데이터로 fallback하고, Lite 모드면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.

@@ -2,6 +2,7 @@
 
 > 법순이가 인용하는 모든 법령·판례·2차 소스에 대한 등급 규칙.
 > 기계 판독용 정책은 [`assets/policies/source_grades.yaml`](../assets/policies/source_grades.yaml).
+> `[VERIFIED]`, provenance, source family별 확인 조건은 [`references/citation-verification-contract.md`](citation-verification-contract.md)를 단일 계약으로 따른다.
 
 ## 왜 필요한가
 
@@ -45,7 +46,7 @@
 
 `[VERIFIED]`는 소스의 등급이 높다는 뜻이 아니라, **이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조했다**는 뜻이다. Grade와 verification status는 분리한다.
 
-`[VERIFIED]`를 붙이려면 아래 네 가지가 모두 충족되어야 한다.
+`[VERIFIED]`를 붙이려면 `references/citation-verification-contract.md`의 VERIFIED minimum conditions가 모두 충족되어야 한다. 요약하면 아래 네 가지다.
 
 1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 식별자가 충분하다.
 2. **원문 대조**: local legalize-kr/precedent-kr 원문, law.go.kr/glaw.scourt.go.kr, 법망 API의 원문 필드, 또는 공식 MCP 응답에서 실제 문구나 구조를 확인했다.

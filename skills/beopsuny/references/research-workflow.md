@@ -18,6 +18,7 @@
 모든 법률 결론은 답변 직전에 아래 verification core를 통과한다. 짧은 조문 확인처럼 단순한 경우에도 축약형으로 적용한다.
 
 `assets/schemas/legal_verification_packet.yaml`은 이 과정을 재사용 가능한 evidence shape로 고정한 템플릿이다. 기본은 내부 scratchpad이며, 사용자가 별도 검토 기록이나 handoff artifact를 요청한 경우에만 산출물로 저장하거나 노출한다.
+`[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다.
 
 ```text
 issue-to-authority map 작성
