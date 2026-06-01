@@ -20,6 +20,10 @@ last_updated: "2025-12-09"
 maintenance:
   review_cycle: "semi-annual"
   next_review: "2026-01"
+  last_verified: "2025-12-09"
+  source_url: "https://www.ftc.go.kr/"
+  freshness_days: 180
+  must_reverify: true
   volatile_items:
     - "과징금 부과기준 (시행령)"
     - "기업결합 신고 기준 금액"

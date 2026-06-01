@@ -18,6 +18,10 @@ last_updated: "2025-12-09"
 maintenance:
   review_cycle: "annual"
   next_review: "2026-01"
+  last_verified: "2025-12-09"
+  source_url: "https://www.law.go.kr/"
+  freshness_days: 365
+  must_reverify: true
   volatile_items:
     - "기업결합 신고 기준 (공정거래법)"
     - "외국인투자 신고 기준"

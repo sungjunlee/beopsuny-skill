@@ -14,6 +14,10 @@ last_updated: "2025-12-28"
 maintenance:
   review_cycle: "annual"
   next_review: "2026-12"
+  last_verified: "2025-12-28"
+  source_url: "https://www.molit.go.kr/"
+  freshness_days: 365
+  must_reverify: true
   volatile_items:
     - "중개보수 요율"
     - "임대차 3법 관련 규정"

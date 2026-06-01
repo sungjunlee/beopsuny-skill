@@ -18,6 +18,10 @@ last_updated: "2025-12-09"
 maintenance:
   review_cycle: "quarterly"
   next_review: "2026-01"
+  last_verified: "2025-12-09"
+  source_url: "https://www.moel.go.kr/"
+  freshness_days: 90
+  must_reverify: true
   volatile_items:
     - "적용 대상 범위 (개정 논의 활발)"
     - "처벌 수위 (형량 조정 논의)"
