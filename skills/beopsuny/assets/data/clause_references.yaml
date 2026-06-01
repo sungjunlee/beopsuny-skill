@@ -49,6 +49,39 @@
 version: "1.2.0"
 last_updated: "2026-04-12"
 taxonomy_ref: "assets/policies/clause_taxonomy.yaml"
+
+maintenance:
+  review_cycle: "quarterly"
+  next_review: "2026-04"
+  last_verified: "2026-04-12"
+  source_url: "https://www.law.go.kr/"
+  freshness_days: 45
+  must_reverify: true
+  volatile_items:
+    - "법정 이율과 지급 기한"
+    - "벌칙 상한과 과징금/과태료 기준"
+    - "계약금액 대비 비율, SLA 수치, statutory threshold"
+  note: "계약 조항별 법령 매핑과 숫자·기간 예시는 issue spotting 후보이며, 현행 원문 확인 전 결론 근거가 아니다."
+
+runtime_contract:
+  triage_only: true
+  live_check_required: true
+  output_behavior: "investigation_plan"
+  verify_with:
+    - "law.go.kr 법령·시행령·시행규칙·행정규칙"
+    - "법망 API 또는 local legalize-kr/precedent-kr 원문"
+    - "대법원/헌법재판소/소관 기관 공식 자료"
+  volatile_fields:
+    - "deadline"
+    - "penalty"
+    - "threshold"
+    - "amount"
+    - "rate"
+    - "period"
+    - "form"
+    - "authority"
+  note: "조항 유형과 확인할 권위자료를 고르는 후보 데이터다. 조문·판례·시행일·금액·비율·기한은 live source 확인 전 결론 근거가 아니다."
+
 disclaimer: |
   이 레퍼런스는 일반적인 참고 자료이며, 구체적인 계약 검토는
   변호사 자문이 필요합니다. 계약서 유형과 상황에 따라
@@ -464,7 +497,7 @@ clauses:
         - 위약벌/손해배상 예정 구분 — 위약벌은 별도 손해배상 청구 가능
         - 근로계약이면 이 조항 자체 제거
       eul:  # 우리가 을 (위약금 부담 측)
-        - 계약금액 대비 비율 상한 명시 (10% 등 관행 참고)
+        - 계약금액 대비 비율 상한은 업종·거래 관행과 현행 법령 원문 확인 전 후보로만 표시
         - 지연 vs 전면 불이행 구분해 단계적 설정
         - 일방적 해지 사유에 대한 위약금은 상호주의로 수정
     alt_wording_hint: |
@@ -942,7 +975,7 @@ clauses:
           description: 업무방해죄 (위계/위력에 의한 영업비밀 침해 시 적용 가능)
         - law: 산업기술의 유출방지 및 보호에 관한 법률
           articles: ["제14조", "제36조", "제37조"]
-          description: 국가핵심기술 유출금지, 형사처벌 (최대 15년/15억원)
+          description: 국가핵심기술 유출금지, 형사처벌 상한은 현행 법령 원문 확인 필요
           note: 기술집약 산업, 반도체, 배터리 등 국가핵심기술 관련 계약 시 확인 필요
       considerations:
         - 퇴직 후 비밀유지 의무 범위
@@ -1075,16 +1108,16 @@ clauses:
           description: 이행기, 법정이율
         - law: 상법
           articles: ["제54조"]
-          description: 상사법정이율 (연 6%)
+          description: 상사법정이율은 현행 상법 원문 확인 필요
         - law: 하도급거래 공정화에 관한 법률
           articles: ["제13조"]
           description: 하도급대금 지급기일
           data_source: "legalize-kr: '하도급거래 공정화에 관한 법률'"
       considerations:
-        - 하도급법 적용 시 60일 이내 지급
+        - 하도급법 적용 시 지급기한은 현행 하도급법 원문 확인 필요
         - 지연이자율 상한 (이자제한법)
         - 선급금, 기성금 지급 조건
-        - 현행 법정이율 5% (민법 제379조). 2025.2.7 법정이율 변동제 도입 입법예고 - 시행일 확인 필요
+        - 민법상 법정이율과 변동제 도입 여부는 현행 원문·입법예고 시행일 확인 필요
     review_points:
       - 지급 기일의 합리성
       - 지연이자율
@@ -1213,7 +1246,7 @@ clauses:
       considerations:
         - 클라우드컴퓨팅법 적용 검토
     review_points:
-      - 가용성 보장 수준 (99.9% 등)
+      - 가용성 보장 수준은 계약상 SLA 후보로만 표시하고 업종·서비스 특성 확인 필요
       - SLA 위반 시 구제수단 (크레딧/환불)
       - 측정 방법 및 기준
     risk_level: high
@@ -1454,7 +1487,7 @@ clauses:
       primary:
         - law: 독점규제 및 공정거래에 관한 법률
           articles: ["제45조"]
-          description: 불공정거래행위의 금지 (차별취급 포함 — 2021 개정 시행 기준 조문번호)
+          description: 불공정거래행위의 금지 (차별취급 포함 — 현행 조문번호 원문 확인 필요)
           note: 구 제23조 → 현 제45조 (2020-12-29 전면개정, 2021-12-30 시행)
     review_points:
       - 비교 대상 범위

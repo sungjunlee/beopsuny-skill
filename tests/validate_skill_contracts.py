@@ -1426,6 +1426,40 @@ VOLATILE_REFERENCE_PATTERNS = [
 ]
 
 
+VOLATILE_DOC_PATHS = [
+    "README.md",
+    "docs/desktop-chat-guide.md",
+    "skills/beopsuny/references/output-formats.md",
+]
+
+VOLATILE_DOC_PATTERNS = [
+    re.compile(pattern)
+    for pattern in [
+        r"\d+(?:\.\d+)?%",
+        r"\d{1,3}(?:,\d{3})*(?:건|파일)",
+        r"\d+만건",
+        r"\d{4}\.\s*\d{1,2}\.\s*\d{1,2}\.",
+        r"\d{4}[가-힣]{1,3}\d{3,}",
+    ]
+]
+
+VOLATILE_DOC_ALLOWED_MARKERS = (
+    "예시",
+    "YYYY",
+    "{",
+    "[STALE]",
+    "[UNVERIFIED]",
+    "[INSUFFICIENT]",
+    "확인 필요",
+    "원문 확인",
+    "실시간 확인",
+    "현행성",
+    "live",
+    "upstream",
+    "최신 개수",
+)
+
+
 def volatile_reference_hits(path: Path) -> list[str]:
     hits: list[str] = []
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -1459,6 +1493,64 @@ def check_reference_freshness_debt_scan() -> None:
             "dated volatile reference claims must be removed, reframed as live-check hints, "
             f"or tracked in freshness_debt.yaml: {untracked}"
         )
+
+
+def check_volatile_doc_claim_markers() -> None:
+    hits: list[str] = []
+
+    for relative in VOLATILE_DOC_PATHS:
+        path = ROOT / relative
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            if any(marker in line for marker in VOLATILE_DOC_ALLOWED_MARKERS):
+                continue
+            if any(pattern.search(line) for pattern in VOLATILE_DOC_PATTERNS):
+                hits.append(f"{relative}:{line_number}: {line.strip()}")
+
+    if hits:
+        raise AssertionError(
+            "volatile README/docs claims must be removed, converted to placeholders, "
+            f"or marked with live-check/freshness context: {hits}"
+        )
+
+
+def check_volatile_data_assets_runtime_contracts() -> None:
+    volatile_assets = {
+        "skills/beopsuny/assets/data/clause_references.yaml": {
+            "output_behavior": "investigation_plan",
+            "volatile_fields": {"deadline", "penalty", "threshold", "amount", "rate", "period"},
+        },
+    }
+
+    for relative, expected in volatile_assets.items():
+        data = load_yaml(relative)
+        if not isinstance(data, dict):
+            raise AssertionError(f"{relative}: expected mapping")
+
+        maintenance = data.get("maintenance")
+        if not isinstance(maintenance, dict):
+            raise AssertionError(f"{relative}: missing maintenance freshness metadata")
+        for required in ["last_verified", "source_url", "freshness_days", "must_reverify"]:
+            if required not in maintenance:
+                raise AssertionError(f"{relative}: maintenance missing {required!r}")
+
+        runtime_contract = data.get("runtime_contract")
+        if not isinstance(runtime_contract, dict):
+            raise AssertionError(f"{relative}: missing runtime_contract")
+        if runtime_contract.get("triage_only") is not True:
+            raise AssertionError(f"{relative}: runtime_contract.triage_only must be true")
+        if runtime_contract.get("live_check_required") is not True:
+            raise AssertionError(f"{relative}: runtime_contract.live_check_required must be true")
+        if runtime_contract.get("output_behavior") != expected["output_behavior"]:
+            raise AssertionError(
+                f"{relative}: output_behavior must be {expected['output_behavior']!r}"
+            )
+        if not runtime_contract.get("verify_with"):
+            raise AssertionError(f"{relative}: runtime_contract.verify_with must name source families")
+
+        volatile_fields = set(runtime_contract.get("volatile_fields") or [])
+        missing_fields = sorted(expected["volatile_fields"] - volatile_fields)
+        if missing_fields:
+            raise AssertionError(f"{relative}: volatile_fields missing {missing_fields}")
 
 
 def check_freshness_governance_reference() -> None:
@@ -2269,6 +2361,8 @@ CHECKS = [
     check_asset_freshness_metadata_tracked,
     check_freshness_debt_registry,
     check_reference_freshness_debt_scan,
+    check_volatile_doc_claim_markers,
+    check_volatile_data_assets_runtime_contracts,
     check_freshness_governance_reference,
     check_output_contract_right_sizing,
     check_skill_quality_contract_router_map,
