@@ -633,6 +633,144 @@ def check_freshness_revalidation_schema() -> None:
         assert_contains(text, required, label)
 
 
+REVALIDATION_REQUIRED_FIELDS = [
+    "asset_path",
+    "checked_at",
+    "checked_by",
+    "tracked_issue",
+    "source_families_checked",
+    "official_sources",
+    "volatile_items_checked",
+    "asset_update",
+    "retirement_decision",
+    "self_check",
+]
+
+REVALIDATION_OFFICIAL_SOURCE_FAMILIES = {
+    "agency_notice",
+    "beopmang",
+    "competent_ministry",
+    "court",
+    "gov.kr",
+    "law.go.kr",
+    "local_legalize_kr",
+}
+
+REVALIDATION_DECISIONS = {"keep_registered", "retire", "partial_refresh"}
+REVALIDATION_ITEM_RESULTS = {"unchanged", "updated", "removed", "insufficient", "contradicted"}
+
+
+def check_freshness_revalidation_records() -> None:
+    registry_paths = {
+        str(item.get("path"))
+        for item in freshness_debt_registry().get("assets", [])
+        if isinstance(item, dict)
+    }
+    fixtures_dir = ROOT / "tests/fixtures/freshness_revalidations"
+    label = "tests/fixtures/freshness_revalidations"
+    fixture_paths = sorted(fixtures_dir.glob("*.yaml")) if fixtures_dir.exists() else []
+    if not fixture_paths:
+        raise AssertionError(f"{label}: add at least one freshness revalidation record fixture")
+
+    for path in fixture_paths:
+        relative = path.relative_to(ROOT).as_posix()
+        record = load_yaml(relative)
+        if not isinstance(record, dict):
+            raise AssertionError(f"{relative}: expected mapping")
+        for required in REVALIDATION_REQUIRED_FIELDS:
+            if required not in record:
+                raise AssertionError(f"{relative}: missing {required!r}")
+
+        asset_path = str(record["asset_path"])
+        if not (ROOT / asset_path).exists():
+            raise AssertionError(f"{relative}: asset_path does not exist: {asset_path}")
+        if not re.search(r"/issues/\d+", str(record["tracked_issue"])):
+            raise AssertionError(f"{relative}: tracked_issue must reference a GitHub issue URL")
+
+        source_families = record["source_families_checked"]
+        if not isinstance(source_families, list) or not source_families:
+            raise AssertionError(f"{relative}: source_families_checked must be a non-empty list")
+        if not any(str(source) in REVALIDATION_OFFICIAL_SOURCE_FAMILIES for source in source_families):
+            raise AssertionError(f"{relative}: source_families_checked must include an official source family")
+        forbidden_sources = {"memory", "old_bundled_yaml", "secondary_commentary_only"}
+        if any(str(source) in forbidden_sources for source in source_families):
+            raise AssertionError(f"{relative}: source_families_checked cannot rely on stale-only evidence")
+
+        official_titles: dict[str, str] = {}
+        official_sources = record["official_sources"]
+        if not isinstance(official_sources, list) or not official_sources:
+            raise AssertionError(f"{relative}: official_sources must be a non-empty list")
+        for index, source in enumerate(official_sources):
+            if not isinstance(source, dict):
+                raise AssertionError(f"{relative}: official_sources[{index}] must be a mapping")
+            for required in ["title", "url", "source_grade", "verification_status", "retrieved_at", "notes"]:
+                if not source.get(required):
+                    raise AssertionError(f"{relative}: official_sources[{index}] missing {required!r}")
+            if source["source_grade"] not in SOURCE_GRADES:
+                raise AssertionError(f"{relative}: official_sources[{index}].source_grade invalid")
+            if source["verification_status"] not in VERIFICATION_STATUSES:
+                raise AssertionError(f"{relative}: official_sources[{index}].verification_status invalid")
+            if not str(source["url"]).startswith("https://"):
+                raise AssertionError(f"{relative}: official_sources[{index}].url must be https")
+            official_titles[str(source["title"])] = str(source["verification_status"])
+
+        volatile_items = record["volatile_items_checked"]
+        if not isinstance(volatile_items, list) or not volatile_items:
+            raise AssertionError(f"{relative}: volatile_items_checked must be a non-empty list")
+        for index, item in enumerate(volatile_items):
+            if not isinstance(item, dict):
+                raise AssertionError(f"{relative}: volatile_items_checked[{index}] must be a mapping")
+            for required in ["item", "previous_value", "refreshed_value", "source_ref", "result"]:
+                if required not in item:
+                    raise AssertionError(f"{relative}: volatile_items_checked[{index}] missing {required!r}")
+            if item["result"] not in REVALIDATION_ITEM_RESULTS:
+                raise AssertionError(f"{relative}: volatile_items_checked[{index}].result invalid")
+            if str(item["source_ref"]) not in official_titles:
+                raise AssertionError(f"{relative}: volatile_items_checked[{index}].source_ref must match official source title")
+
+        asset_update = record["asset_update"]
+        if not isinstance(asset_update, dict):
+            raise AssertionError(f"{relative}: asset_update must be a mapping")
+        for required in ["updated", "maintenance_next_review_before", "maintenance_next_review_after", "summary"]:
+            if required not in asset_update:
+                raise AssertionError(f"{relative}: asset_update missing {required!r}")
+        if not isinstance(asset_update["updated"], bool):
+            raise AssertionError(f"{relative}: asset_update.updated must be boolean")
+
+        decision = record["retirement_decision"]
+        if not isinstance(decision, dict) or decision.get("decision") not in REVALIDATION_DECISIONS:
+            raise AssertionError(f"{relative}: retirement_decision.decision invalid")
+        decision_value = str(decision["decision"])
+        if decision_value == "retire":
+            if asset_path in registry_paths:
+                raise AssertionError(f"{relative}: retire decisions must remove asset_path from freshness_debt")
+            for source_title, status in official_titles.items():
+                if status != "[VERIFIED]":
+                    raise AssertionError(f"{relative}: retire source {source_title!r} must be [VERIFIED]")
+            for index, item in enumerate(volatile_items):
+                if item["result"] in {"insufficient", "contradicted"}:
+                    raise AssertionError(f"{relative}: retire item {index} must be verified as unchanged, updated, or removed")
+        elif asset_path not in registry_paths:
+            raise AssertionError(f"{relative}: non-retire decisions must keep asset_path in freshness_debt")
+        elif not decision.get("remaining_stale_scope"):
+            raise AssertionError(f"{relative}: non-retire decisions must record remaining_stale_scope")
+
+        self_check = record["self_check"]
+        if not isinstance(self_check, dict):
+            raise AssertionError(f"{relative}: self_check must be a mapping")
+        if self_check.get("official_source_used") is not True:
+            raise AssertionError(f"{relative}: self_check.official_source_used must be true")
+        if self_check.get("volatile_items_reviewed") is not True:
+            raise AssertionError(f"{relative}: self_check.volatile_items_reviewed must be true")
+        if self_check.get("no_current_obligation_from_stale_only") is not True:
+            raise AssertionError(f"{relative}: stale-only conclusions must remain forbidden")
+        if decision_value == "retire":
+            if self_check.get("freshness_debt_updated") is not True:
+                raise AssertionError(f"{relative}: retire decisions must update freshness_debt")
+            if self_check.get("next_review_advanced") is not True:
+                raise AssertionError(f"{relative}: retire decisions must advance next_review")
+
+
 def check_freshness_metadata_schema() -> None:
     data = load_yaml("skills/beopsuny/assets/schemas/freshness_metadata.yaml")
     text = read_text("skills/beopsuny/assets/schemas/freshness_metadata.yaml")
@@ -1567,7 +1705,9 @@ def check_freshness_governance_reference() -> None:
         "Verification Before Answering",
         "Debt Register Contract",
         "Revalidation Record",
+        "Maintainer Workflow",
         "Registered Stale Assets",
+        "tests/fixtures/freshness_revalidations",
         "reference 문서",
         "treaty/source count",
         "Retirement Rule",
@@ -1576,6 +1716,7 @@ def check_freshness_governance_reference() -> None:
         "`volatile_items_checked`",
         "`retirement_decision`",
         "`keep_registered`, `retire`, `partial_refresh`",
+        "`freshness_debt_updated: true`",
         "공식 source 없이 사용자 기억, 오래된 뉴스레터, stale 번들 YAML만으로 `retire` 결정을 내리지 않는다",
         "`[STALE]` 또는 `[INSUFFICIENT]`",
         "새 stale 예외는 테스트 코드에 직접 추가하지 않는다",
@@ -2346,6 +2487,7 @@ CHECKS = [
     check_practice_profile_overlay_schema,
     check_legal_verification_packet_schema,
     check_freshness_revalidation_schema,
+    check_freshness_revalidation_records,
     check_freshness_metadata_schema,
     check_bulk_tabular_review_reference,
     check_source_access_fallbacks,

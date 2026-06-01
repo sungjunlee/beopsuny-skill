@@ -1,0 +1,62 @@
+asset_path: "skills/beopsuny/assets/data/clause_references.yaml"
+checked_at: "2026-06-01"
+checked_by: "codex"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/147"
+
+source_families_checked:
+  - "law.go.kr"
+  - "competent_ministry"
+
+official_sources:
+  - title: "국가법령정보센터 법령 원문 검색"
+    url: "https://www.law.go.kr/"
+    source_grade: "A"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-06-01"
+    notes: "Fixture records the revalidation workflow shape only. Individual statutory rates, deadlines, and penalty caps were not refreshed in this issue."
+  - title: "소관 기관 공식 자료 확인 경로"
+    url: "https://www.gov.kr/"
+    source_grade: "A"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-06-01"
+    notes: "Competent-agency source family is identified for future item-level revalidation; no current legal obligation is concluded from this fixture."
+
+volatile_items_checked:
+  - item: "rate"
+    previous_value: "상사법정이율, 민법상 법정이율, 차임 증액 상한 등 rate 후보"
+    refreshed_value: ""
+    source_ref: "국가법령정보센터 법령 원문 검색"
+    result: "insufficient"
+  - item: "deadline"
+    previous_value: "하도급대금 지급기한 등 deadline 후보"
+    refreshed_value: ""
+    source_ref: "국가법령정보센터 법령 원문 검색"
+    result: "insufficient"
+  - item: "penalty"
+    previous_value: "산업기술보호법 등 벌칙 상한 후보"
+    refreshed_value: ""
+    source_ref: "국가법령정보센터 법령 원문 검색"
+    result: "insufficient"
+  - item: "threshold"
+    previous_value: "계약금액 대비 비율, SLA 수치, statutory threshold 후보"
+    refreshed_value: ""
+    source_ref: "소관 기관 공식 자료 확인 경로"
+    result: "insufficient"
+
+asset_update:
+  updated: false
+  maintenance_next_review_before: "2026-04"
+  maintenance_next_review_after: "2026-04"
+  summary: "Smoke record only. The asset remains stale_registered because volatile clause-reference values were not item-by-item refreshed."
+
+retirement_decision:
+  decision: "keep_registered"
+  reason: "Official source families were identified, but this issue did not refresh each volatile rate, deadline, penalty, or threshold. The asset must remain triage_only."
+  remaining_stale_scope: "All bundled clause-reference rates, deadlines, penalty caps, legal thresholds, and example SLA values still require live source verification before legal conclusions."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: false
+  freshness_debt_updated: false
+  no_current_obligation_from_stale_only: true
