@@ -1,0 +1,657 @@
+# Golden citation fixtures for Beopsuny citation-shape regression tests.
+# These fixtures pin citation identity, official-source family, and required
+# output metadata. They do not replace live legal-source verification.
+
+metadata:
+  purpose: "Core Korean legal citation fixtures for statute, administrative-rule, and failure-path guardrails."
+  provenance_policy: "fixed_provenance entries identify official source families and URLs; bundled fixtures stay [UNVERIFIED] until runtime opens the current official source."
+  retrieved_at: "2026-06-01"
+  runtime_recheck_required: true
+  not_a_legal_answer_judge: true
+
+statutes:
+  - id: statute-civil-750
+    authority_type: statute
+    law_name: "민법"
+    article: "제750조"
+    citation: "민법 제750조"
+    official_url: "https://www.law.go.kr/법령/민법/제750조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: &statute_output_fields
+      - citation
+      - article
+      - effective_date
+      - official_url
+      - source_grade
+      - verification_status
+      - provenance
+
+  - id: statute-civil-390
+    authority_type: statute
+    law_name: "민법"
+    article: "제390조"
+    citation: "민법 제390조"
+    official_url: "https://www.law.go.kr/법령/민법/제390조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-civil-398
+    authority_type: statute
+    law_name: "민법"
+    article: "제398조"
+    citation: "민법 제398조"
+    official_url: "https://www.law.go.kr/법령/민법/제398조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-civil-103
+    authority_type: statute
+    law_name: "민법"
+    article: "제103조"
+    citation: "민법 제103조"
+    official_url: "https://www.law.go.kr/법령/민법/제103조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-civil-2
+    authority_type: statute
+    law_name: "민법"
+    article: "제2조"
+    citation: "민법 제2조"
+    official_url: "https://www.law.go.kr/법령/민법/제2조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-15
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제15조"
+    citation: "개인정보 보호법 제15조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제15조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-17
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제17조"
+    citation: "개인정보 보호법 제17조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제17조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-18
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제18조"
+    citation: "개인정보 보호법 제18조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제18조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-22
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제22조"
+    citation: "개인정보 보호법 제22조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제22조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-26
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제26조"
+    citation: "개인정보 보호법 제26조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제26조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-28-2
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제28조의2"
+    citation: "개인정보 보호법 제28조의2"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제28조의2"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-28-8
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제28조의8"
+    citation: "개인정보 보호법 제28조의8"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제28조의8"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-29
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제29조"
+    citation: "개인정보 보호법 제29조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제29조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-privacy-30
+    authority_type: statute
+    law_name: "개인정보 보호법"
+    article: "제30조"
+    citation: "개인정보 보호법 제30조"
+    official_url: "https://www.law.go.kr/법령/개인정보보호법/제30조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-23
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제23조"
+    citation: "근로기준법 제23조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제23조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-24
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제24조"
+    citation: "근로기준법 제24조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제24조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-26
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제26조"
+    citation: "근로기준법 제26조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제26조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-50
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제50조"
+    citation: "근로기준법 제50조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제50조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-55
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제55조"
+    citation: "근로기준법 제55조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제55조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-labor-60
+    authority_type: statute
+    law_name: "근로기준법"
+    article: "제60조"
+    citation: "근로기준법 제60조"
+    official_url: "https://www.law.go.kr/법령/근로기준법/제60조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-terms-6
+    authority_type: statute
+    law_name: "약관의 규제에 관한 법률"
+    article: "제6조"
+    citation: "약관의 규제에 관한 법률 제6조"
+    official_url: "https://www.law.go.kr/법령/약관의규제에관한법률/제6조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-terms-7
+    authority_type: statute
+    law_name: "약관의 규제에 관한 법률"
+    article: "제7조"
+    citation: "약관의 규제에 관한 법률 제7조"
+    official_url: "https://www.law.go.kr/법령/약관의규제에관한법률/제7조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-terms-8
+    authority_type: statute
+    law_name: "약관의 규제에 관한 법률"
+    article: "제8조"
+    citation: "약관의 규제에 관한 법률 제8조"
+    official_url: "https://www.law.go.kr/법령/약관의규제에관한법률/제8조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-terms-9
+    authority_type: statute
+    law_name: "약관의 규제에 관한 법률"
+    article: "제9조"
+    citation: "약관의 규제에 관한 법률 제9조"
+    official_url: "https://www.law.go.kr/법령/약관의규제에관한법률/제9조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-subcontract-3
+    authority_type: statute
+    law_name: "하도급거래 공정화에 관한 법률"
+    article: "제3조"
+    citation: "하도급거래 공정화에 관한 법률 제3조"
+    official_url: "https://www.law.go.kr/법령/하도급거래공정화에관한법률/제3조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-subcontract-13
+    authority_type: statute
+    law_name: "하도급거래 공정화에 관한 법률"
+    article: "제13조"
+    citation: "하도급거래 공정화에 관한 법률 제13조"
+    official_url: "https://www.law.go.kr/법령/하도급거래공정화에관한법률/제13조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-fairtrade-45
+    authority_type: statute
+    law_name: "독점규제 및 공정거래에 관한 법률"
+    article: "제45조"
+    citation: "독점규제 및 공정거래에 관한 법률 제45조"
+    official_url: "https://www.law.go.kr/법령/독점규제및공정거래에관한법률/제45조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-copyright-9
+    authority_type: statute
+    law_name: "저작권법"
+    article: "제9조"
+    citation: "저작권법 제9조"
+    official_url: "https://www.law.go.kr/법령/저작권법/제9조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-copyright-14
+    authority_type: statute
+    law_name: "저작권법"
+    article: "제14조"
+    citation: "저작권법 제14조"
+    official_url: "https://www.law.go.kr/법령/저작권법/제14조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-invention-15
+    authority_type: statute
+    law_name: "발명진흥법"
+    article: "제15조"
+    citation: "발명진흥법 제15조"
+    official_url: "https://www.law.go.kr/법령/발명진흥법/제15조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-serious-accident-4
+    authority_type: statute
+    law_name: "중대재해 처벌 등에 관한 법률"
+    article: "제4조"
+    citation: "중대재해 처벌 등에 관한 법률 제4조"
+    official_url: "https://www.law.go.kr/법령/중대재해처벌등에관한법률/제4조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+  - id: statute-ecommerce-17
+    authority_type: statute
+    law_name: "전자상거래 등에서의 소비자보호에 관한 법률"
+    article: "제17조"
+    citation: "전자상거래 등에서의 소비자보호에 관한 법률 제17조"
+    official_url: "https://www.law.go.kr/법령/전자상거래등에서의소비자보호에관한법률/제17조"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 법령 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    effective_date_required: true
+    expected_output_fields: *statute_output_fields
+
+other_authorities:
+  - id: admin-privacy-security
+    authority_type: admin_rule
+    authority_name: "개인정보의 안전성 확보조치 기준"
+    citation: "개인정보의 안전성 확보조치 기준"
+    official_url: "https://www.law.go.kr/행정규칙/개인정보의안전성확보조치기준"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-privacy-standard
+    authority_type: admin_rule
+    authority_name: "표준 개인정보 보호지침"
+    citation: "표준 개인정보 보호지침"
+    official_url: "https://www.law.go.kr/행정규칙/표준개인정보보호지침"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-privacy-impact
+    authority_type: admin_rule
+    authority_name: "개인정보 영향평가에 관한 고시"
+    citation: "개인정보 영향평가에 관한 고시"
+    official_url: "https://www.law.go.kr/행정규칙/개인정보영향평가에관한고시"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-labor-supervisor
+    authority_type: admin_rule
+    authority_name: "근로감독관집무규정"
+    citation: "근로감독관집무규정"
+    official_url: "https://www.law.go.kr/행정규칙/근로감독관집무규정"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-safety-education
+    authority_type: admin_rule
+    authority_name: "산업안전보건교육규정"
+    citation: "산업안전보건교육규정"
+    official_url: "https://www.law.go.kr/행정규칙/산업안전보건교육규정"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-fairtrade-unfair
+    authority_type: admin_rule
+    authority_name: "불공정거래행위 심사지침"
+    citation: "불공정거래행위 심사지침"
+    official_url: "https://www.law.go.kr/행정규칙/불공정거래행위심사지침"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-fairtrade-cartel
+    authority_type: admin_rule
+    authority_name: "부당한 공동행위 심사기준"
+    citation: "부당한 공동행위 심사기준"
+    official_url: "https://www.law.go.kr/행정규칙/부당한공동행위심사기준"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-subcontract-guide
+    authority_type: admin_rule
+    authority_name: "하도급거래 공정화지침"
+    citation: "하도급거래 공정화지침"
+    official_url: "https://www.law.go.kr/행정규칙/하도급거래공정화지침"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-ad-penalty
+    authority_type: admin_rule
+    authority_name: "표시ㆍ광고의 공정화에 관한 법률 위반사업자 등에 대한 과징금 부과기준"
+    citation: "표시ㆍ광고의 공정화에 관한 법률 위반사업자 등에 대한 과징금 부과기준"
+    official_url: "https://www.law.go.kr/행정규칙/표시ㆍ광고의공정화에관한법률위반사업자등에대한과징금부과기준"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: admin-ecommerce-consumer
+    authority_type: admin_rule
+    authority_name: "전자상거래 등에서의 소비자보호 지침"
+    citation: "전자상거래 등에서의 소비자보호 지침"
+    official_url: "https://www.law.go.kr/행정규칙/전자상거래등에서의소비자보호지침"
+    source_grade: "A"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixed provenance: law.go.kr 행정규칙 원문 URL"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report current effective date"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+failure_fixtures:
+  - id: failure-api-maintenance
+    failure_mode: "official API returned service_maintenance or 5xx"
+    verification_status: "[INSUFFICIENT]"
+    must_withhold_conclusion: true
+    expected_response:
+      status_tag: "[INSUFFICIENT]"
+      provenance_limit: "법망 API 장애 또는 점검으로 원문 확인 실패"
+      next_check: "law.go.kr 또는 local legalize-kr/precedent-kr로 재조회"
+
+  - id: failure-search-snippet-only
+    failure_mode: "only WebSearch snippet or result title was available"
+    verification_status: "[UNVERIFIED]"
+    must_withhold_conclusion: true
+    expected_response:
+      status_tag: "[UNVERIFIED]"
+      provenance_limit: "WebSearch 요약·스니펫만 확인"
+      next_check: "공식 원문 URL을 열어 citation과 pinpoint 재확인"
+
+  - id: failure-stale-bundled-yaml
+    failure_mode: "only bundled YAML candidate or stale checklist value was available"
+    verification_status: "[STALE]"
+    must_withhold_conclusion: true
+    expected_response:
+      status_tag: "[STALE]"
+      provenance_limit: "번들 후보 데이터만 확인"
+      next_check: "현행 법령, 행정규칙, 소관 기관 공식 안내로 재확인"
