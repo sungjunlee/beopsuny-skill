@@ -90,6 +90,23 @@ QUALITY_CONTRACT_REFERENCES = {
 }
 
 
+SOURCE_GRADES = {"A", "B", "C", "D"}
+VERIFICATION_STATUSES = {
+    "[VERIFIED]",
+    "[UNVERIFIED]",
+    "[INSUFFICIENT]",
+    "[CONTRADICTED]",
+    "[STALE]",
+    "[EDITORIAL]",
+}
+FAILURE_STATUSES = {
+    "[UNVERIFIED]",
+    "[INSUFFICIENT]",
+    "[STALE]",
+    "[CONTRADICTED]",
+}
+
+
 def markdown_heading_slugs(text: str) -> set[str]:
     slugs: set[str] = set()
     counts: dict[str, int] = {}
@@ -1036,6 +1053,137 @@ def check_citation_verification_contract_single_source() -> None:
     }
     for doc_label, doc_text in docs.items():
         assert_contains(doc_text, "references/citation-verification-contract.md", doc_label)
+
+
+def check_golden_citation_fixtures() -> None:
+    data = load_yaml("tests/fixtures/golden_citations.yaml")
+    label = "golden_citations.yaml"
+
+    if not isinstance(data, dict):
+        raise AssertionError(f"{label}: expected mapping")
+    for required in ["metadata", "statutes", "other_authorities", "failure_fixtures"]:
+        if required not in data:
+            raise AssertionError(f"{label}: missing {required!r}")
+
+    metadata = data["metadata"]
+    if not isinstance(metadata, dict):
+        raise AssertionError(f"{label}: metadata must be a mapping")
+    for required in [
+        "purpose",
+        "provenance_policy",
+        "retrieved_at",
+        "runtime_recheck_required",
+        "not_a_legal_answer_judge",
+    ]:
+        if required not in metadata:
+            raise AssertionError(f"{label}: metadata missing {required!r}")
+    if metadata["runtime_recheck_required"] is not True:
+        raise AssertionError(f"{label}: runtime_recheck_required must be true")
+    if metadata["not_a_legal_answer_judge"] is not True:
+        raise AssertionError(f"{label}: not_a_legal_answer_judge must be true")
+
+    statutes = data["statutes"]
+    if not isinstance(statutes, list) or len(statutes) < 30:
+        raise AssertionError(f"{label}: expected at least 30 statute fixtures")
+    seen_ids: set[str] = set()
+    for item in statutes:
+        if not isinstance(item, dict):
+            raise AssertionError(f"{label}: statute fixture must be a mapping: {item!r}")
+        check_golden_fixture_common(item, label, seen_ids)
+        if item.get("authority_type") != "statute":
+            raise AssertionError(f"{label}: statute {item.get('id')!r} authority_type must be statute")
+        for required in [
+            "law_name",
+            "article",
+            "official_url",
+            "effective_date_required",
+            "expected_output_fields",
+        ]:
+            if required not in item:
+                raise AssertionError(f"{label}: statute {item.get('id')!r} missing {required!r}")
+        if not re.match(r"^제\d+조(의\d+)?$", str(item["article"])):
+            raise AssertionError(f"{label}: statute {item['id']} has invalid article {item['article']!r}")
+        if "/법령/" not in str(item["official_url"]):
+            raise AssertionError(f"{label}: statute {item['id']} official_url must point to law.go.kr 법령")
+        if item["effective_date_required"] is not True:
+            raise AssertionError(f"{label}: statute {item['id']} must require effective-date reporting")
+        for expected in [
+            "citation",
+            "article",
+            "effective_date",
+            "official_url",
+            "source_grade",
+            "verification_status",
+            "provenance",
+        ]:
+            if expected not in item["expected_output_fields"]:
+                raise AssertionError(f"{label}: statute {item['id']} expected_output_fields missing {expected!r}")
+
+    other_authorities = data["other_authorities"]
+    if not isinstance(other_authorities, list) or len(other_authorities) < 10:
+        raise AssertionError(f"{label}: expected at least 10 case/admin/interpretation fixtures")
+    for item in other_authorities:
+        if not isinstance(item, dict):
+            raise AssertionError(f"{label}: other authority fixture must be a mapping: {item!r}")
+        check_golden_fixture_common(item, label, seen_ids)
+        if item.get("authority_type") not in {"precedent", "admin_rule", "interpretation"}:
+            raise AssertionError(f"{label}: other authority {item.get('id')!r} has unsupported authority_type")
+        for required in ["authority_name", "official_url", "pinpoint_required"]:
+            if required not in item:
+                raise AssertionError(f"{label}: other authority {item.get('id')!r} missing {required!r}")
+        if item["pinpoint_required"] is not True:
+            raise AssertionError(f"{label}: other authority {item['id']} must require pinpoint reporting")
+        if not any(host in str(item["official_url"]) for host in ["law.go.kr", "glaw.scourt.go.kr"]):
+            raise AssertionError(f"{label}: other authority {item['id']} must point to an official legal source")
+
+    failures = data["failure_fixtures"]
+    if not isinstance(failures, list) or len(failures) < 3:
+        raise AssertionError(f"{label}: expected at least 3 failure fixtures")
+    for item in failures:
+        if not isinstance(item, dict):
+            raise AssertionError(f"{label}: failure fixture must be a mapping: {item!r}")
+        for required in ["id", "failure_mode", "verification_status", "must_withhold_conclusion", "expected_response"]:
+            if required not in item:
+                raise AssertionError(f"{label}: failure fixture missing {required!r}")
+        if item["verification_status"] not in FAILURE_STATUSES:
+            raise AssertionError(f"{label}: failure {item['id']} has unsafe verification_status")
+        if item["must_withhold_conclusion"] is not True:
+            raise AssertionError(f"{label}: failure {item['id']} must withhold conclusion")
+        for required in ["status_tag", "provenance_limit", "next_check"]:
+            if required not in item["expected_response"]:
+                raise AssertionError(f"{label}: failure {item['id']} expected_response missing {required!r}")
+
+
+def check_golden_fixture_common(item: dict[str, Any], label: str, seen_ids: set[str]) -> None:
+    for required in [
+        "id",
+        "authority_type",
+        "citation",
+        "source_grade",
+        "verification_status",
+        "provenance",
+        "provenance_type",
+        "currency",
+        "runtime_recheck_required",
+    ]:
+        if required not in item:
+            raise AssertionError(f"{label}: fixture missing {required!r}: {item!r}")
+
+    fixture_id = str(item["id"])
+    if fixture_id in seen_ids:
+        raise AssertionError(f"{label}: duplicate fixture id {fixture_id!r}")
+    seen_ids.add(fixture_id)
+
+    if item["source_grade"] not in SOURCE_GRADES:
+        raise AssertionError(f"{label}: fixture {fixture_id} has invalid source_grade")
+    if item["verification_status"] not in VERIFICATION_STATUSES:
+        raise AssertionError(f"{label}: fixture {fixture_id} has invalid verification_status")
+    if item["provenance_type"] not in {"fixed_provenance", "live_source"}:
+        raise AssertionError(f"{label}: fixture {fixture_id} has invalid provenance_type")
+    if item["runtime_recheck_required"] is not True:
+        raise AssertionError(f"{label}: fixture {fixture_id} must require runtime re-check")
+    if not str(item["provenance"]).strip():
+        raise AssertionError(f"{label}: fixture {fixture_id} must include provenance")
 
 
 def check_research_workflow_verification_core() -> None:
@@ -2072,6 +2220,7 @@ CHECKS = [
     check_mandatory_provision_notes_are_candidates,
     check_source_grading_verified_contract,
     check_citation_verification_contract_single_source,
+    check_golden_citation_fixtures,
     check_research_workflow_verification_core,
     check_asset_freshness_metadata_tracked,
     check_freshness_debt_registry,
