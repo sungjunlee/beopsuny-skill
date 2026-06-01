@@ -12,7 +12,7 @@
 
 > 고의 또는 과실로 인한 위법행위로 타인에게 손해를 가한 자는...
 
-- **시행일**: 2025. 1. 31.
+- **시행일**: 원문 확인 결과 기재 (예: YYYY. M. D.)
 - **법령 원문**: https://www.law.go.kr/법령/민법/제750조
 ```
 
@@ -35,17 +35,17 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 대법원은 Grade A, 하급심은 Grade B다. 하급심 인용 시 상급심 변경 가능성을 언급한다.
 
 ```markdown
-## 대법원 2023. 1. 12. 선고 2022다12345 판결
+## 대법원 {선고일} 선고 {사건번호} 판결
 **[Grade A] [VERIFIED]** — precedent-kr 로컬
 
 - **사건명**: 손해배상(기)
 - **판시사항**: ...
-- **법원 원문**: https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query=2022다12345
-- **법령정보**: https://www.law.go.kr/판례/(2022다12345)
+- **법원 원문**: https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query={사건번호}
+- **법령정보**: https://www.law.go.kr/판례/({사건번호})
 ```
 
 ```markdown
-## 서울고등법원 2022나56789 판결
+## 서울고등법원 {사건번호} 판결
 **[Grade B] [VERIFIED]** — precedent-kr 로컬
 ※ 상급심에 의해 변경 가능 — Grade A 판례와 교차검증 권장
 ```

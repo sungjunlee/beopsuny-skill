@@ -10,6 +10,13 @@ policy:
   retirement_rule: "Remove an asset or reference from this registry only after its bundled source has been reverified, maintenance.next_review or registry next_review has been advanced, and the verification notes identify the source family checked."
   revalidation_record_required: "Before retiring an asset/reference or advancing maintenance.next_review, record the review using the fields in assets/schemas/freshness_revalidation.yaml."
 assets:
+  - path: "skills/beopsuny/assets/data/clause_references.yaml"
+    status: "stale_registered"
+    next_review: "2026-04"
+    risk: "contract clause mappings include legal rates, payment deadlines, penalty caps, SLA examples, and statutory threshold hints that may be outdated"
+    allowed_use: "contract clause issue-spotting triage only"
+    verification_required: "confirm current statutes, enforcement decrees, court sources, and competent-agency guidance before stating clause obligations, rates, deadlines, caps, or thresholds"
+    retire_when: "volatile clause-reference values are refreshed or converted to live-check-only hints and maintenance.next_review is advanced"
   - path: "skills/beopsuny/assets/policies/checklists/contract_review.yaml"
     status: "stale_registered"
     next_review: "2026-01"
