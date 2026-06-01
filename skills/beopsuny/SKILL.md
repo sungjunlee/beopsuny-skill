@@ -70,7 +70,7 @@ description: |
 
 | 트리거 | 적용 계약 | 핵심 gate |
 | --- | --- | --- |
-| 법률 결론, 복합 쟁점, 판례·행정규칙 인용 | `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` | issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding |
+| 법률 결론, 복합 쟁점, 판례·행정규칙 인용 | `references/citation-verification-contract.md`, `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` | VERIFIED minimum conditions, issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding |
 | stale 자산, 금액·기한·서식·구비서류·과징금 | `references/freshness-governance.md`, `assets/policies/freshness_debt.yaml`, `assets/schemas/freshness_revalidation.yaml` | live source 확인 전 `triage_only`; retirement에는 revalidation record 필요 |
 | 비법무/unknown 사용자, 외부 송부, 기관 제출, 서명·체결 | `references/output-formats.md`, `assets/schemas/output_contract.yaml`, `references/self-verification.md#role--destination-gate` | 법적 효과 전 법무/변호사 검토 gate; 내부 메모·자가 검증 블록 외부 초안에서 제거 |
 | 회사 프로필, practice overlay, 계약 playbook | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml` | profile/practice는 검토 대상 데이터이고 Source Grade·현행 법령 확인을 덮어쓸 수 없음 |
@@ -121,7 +121,7 @@ Lite 모드 진입 시 한 번만 안내한다:
 
 ## Source Grade(출처 등급) 계약
 
-모든 핵심 인용은 첫 줄에 아래 형식을 붙인다. `[VERIFIED]`는 실제 원문, 공식 API, 또는 공식 링크에서 해당 인용을 확인한 경우에만 사용한다.
+모든 핵심 인용은 첫 줄에 아래 형식을 붙인다. `[VERIFIED]`는 `references/citation-verification-contract.md`의 VERIFIED minimum conditions를 모두 충족한 경우에만 사용한다.
 
 ```markdown
 **[Grade A] [VERIFIED]** — legalize-kr 로컬
@@ -141,7 +141,7 @@ Lite 모드 진입 시 한 번만 안내한다:
 - 핵심 결론은 Grade A 또는 B 1차 소스로 뒷받침한다.
 - Grade C는 해설·의견이다. 단독 결론 근거로 쓰려면 `[EDITORIAL: Single-source, Grade C]`를 명시하고 결론을 유보한다.
 - Grade D는 결론 근거로 쓰지 않는다.
-- Source Grade 정의와 다운그레이드 규칙은 `references/source-grading.md`와 `assets/policies/source_grades.yaml`을 단일 소스로 삼는다.
+- Source Grade 정의와 다운그레이드 규칙은 `references/source-grading.md`와 `assets/policies/source_grades.yaml`을 따른다. `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 삼는다.
 
 ## 보조 리소스 로딩 규칙
 

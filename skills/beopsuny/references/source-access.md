@@ -2,6 +2,8 @@
 
 이 문서는 법순이가 어떤 소스를 어떤 환경에서 어떻게 접근하는지 정리한다. `SKILL.md`는 우선순위와 게이트만 들고, 실제 명령·URL·fallback은 여기서 확인한다.
 
+`[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다. 이 문서의 source priority는 접근 순서이지, 요약·스니펫을 `[VERIFIED]`로 승격하는 규칙이 아니다.
+
 ## Source Priority
 
 | 순위 | Full 모드 | Lite 모드 | 기본 Grade |

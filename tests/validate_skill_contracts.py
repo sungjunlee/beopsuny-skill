@@ -67,6 +67,7 @@ QUALITY_CONTRACT_REFERENCES = {
     "README.md": [
         ("skills/beopsuny/references/research-workflow.md", "legal-verification-core"),
         ("skills/beopsuny/assets/schemas/legal_verification_packet.yaml", None),
+        ("skills/beopsuny/references/citation-verification-contract.md", None),
         ("skills/beopsuny/references/self-verification.md", None),
         ("skills/beopsuny/references/source-grading.md", None),
         ("skills/beopsuny/assets/policies/source_grades.yaml", None),
@@ -1000,6 +1001,41 @@ def check_source_grading_verified_contract() -> None:
         "단정 결론으로 쓰지 않는다",
     ]:
         assert_contains(text, required, label)
+
+
+def check_citation_verification_contract_single_source() -> None:
+    text = read_text("skills/beopsuny/references/citation-verification-contract.md")
+    label = "citation-verification-contract.md"
+
+    for required in [
+        "단일 citation verification contract",
+        "VERIFIED minimum conditions",
+        "Grade와 verification status는 서로 다른 축",
+        "법망 API wrapper",
+        "law.go.kr",
+        "glaw.scourt.go.kr",
+        "local legalize-kr / precedent-kr",
+        "WebSearch",
+        "요약·스니펫",
+        "번들 YAML 후보",
+        "provenance는 이번 응답에서 실제로 확인한 경로",
+        "원문 필드 또는 공식 원문 화면",
+        "official source 확인 없이",
+        "[UNVERIFIED]",
+        "[INSUFFICIENT]",
+    ]:
+        assert_contains(text, required, label)
+
+    docs = {
+        "SKILL.md": read_text("skills/beopsuny/SKILL.md"),
+        "source-grading.md": read_text("skills/beopsuny/references/source-grading.md"),
+        "research-workflow.md": read_text("skills/beopsuny/references/research-workflow.md"),
+        "source-access.md": read_text("skills/beopsuny/references/source-access.md"),
+        "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
+        "beopmang-api.md": read_text("skills/beopsuny/references/beopmang-api.md"),
+    }
+    for doc_label, doc_text in docs.items():
+        assert_contains(doc_text, "references/citation-verification-contract.md", doc_label)
 
 
 def check_research_workflow_verification_core() -> None:
@@ -2035,6 +2071,7 @@ CHECKS = [
     check_mandatory_provisions_candidate_index,
     check_mandatory_provision_notes_are_candidates,
     check_source_grading_verified_contract,
+    check_citation_verification_contract_single_source,
     check_research_workflow_verification_core,
     check_asset_freshness_metadata_tracked,
     check_freshness_debt_registry,

@@ -2,6 +2,8 @@
 
 모든 법률 정보에는 원소스 링크와 Source Grade 태그를 제공한다. 링크는 패턴이 확실할 때만 만들고 추정 링크를 만들지 않는다.
 
+`[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다. 출력 예시는 이 계약을 통과한 경우의 표시 형식이다.
+
 ## 법령 인용
 
 ```markdown
@@ -176,7 +178,7 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 **검토자 메모**: Sources 사용자 제공 계약서 일부 · legalize-kr 로컬 확인 | Read 본문 1-18쪽과 DPA 별첨만 확인, 부속서 B/C 원문 미확인 | Currency 법령 원문 기준 | Before relying 미제공 부속서가 결론을 바꿀 수 있음
 ```
 
-출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 확인`, `법망 API 확인`, `law.go.kr 확인`, `사용자 제공`, `web — verify`, `확인 불가`. Source Grade는 소스의 신뢰도이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다.
+출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 확인`, `법망 API 확인`, `법망 API 원문 필드 확인`, `law.go.kr 확인`, `사용자 제공`, `web — verify`, `확인 불가`. Source Grade는 소스의 신뢰도이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다. `법망 API search 결과만 확인`이나 `WebSearch 스니펫 확인`은 `[VERIFIED]`가 아니라 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
 
 검토자 메모 필드:
 
