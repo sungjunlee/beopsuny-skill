@@ -18,6 +18,10 @@ last_updated: "2025-12-28"
 maintenance:
   review_cycle: "quarterly"
   next_review: "2026-03"
+  last_verified: "2025-12-28"
+  source_url: "https://www.foodsafetykorea.go.kr/"
+  freshness_days: 90
+  must_reverify: true
   volatile_items:
     - "HACCP 의무 적용 품목"
     - "식품표시 기준 (고시 개정 빈번)"

@@ -18,6 +18,10 @@ last_updated: "2025-12-09"
 maintenance:
   review_cycle: "quarterly"  # quarterly, semi-annual, annual
   next_review: "2026-01"
+  last_verified: "2025-12-09"
+  source_url: "https://www.moel.go.kr/"
+  freshness_days: 90
+  must_reverify: true
   volatile_items:
     - "장애인 의무고용률 및 적용 기준 (고시/개정 일정 확인)"
     - "최저임금 (매년 변경)"

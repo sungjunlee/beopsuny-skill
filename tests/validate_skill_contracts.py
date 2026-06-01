@@ -14,7 +14,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -73,6 +73,7 @@ QUALITY_CONTRACT_REFERENCES = {
         ("skills/beopsuny/assets/policies/source_grades.yaml", None),
         ("skills/beopsuny/references/freshness-governance.md", None),
         ("skills/beopsuny/assets/policies/freshness_debt.yaml", None),
+        ("skills/beopsuny/assets/schemas/freshness_metadata.yaml", None),
         ("skills/beopsuny/assets/schemas/freshness_revalidation.yaml", None),
         ("skills/beopsuny/references/source-access.md", "freshness-gate"),
         ("skills/beopsuny/references/output-formats.md", None),
@@ -630,6 +631,29 @@ def check_freshness_revalidation_schema() -> None:
         "keep_registered",
     ]:
         assert_contains(text, required, label)
+
+
+def check_freshness_metadata_schema() -> None:
+    data = load_yaml("skills/beopsuny/assets/schemas/freshness_metadata.yaml")
+    text = read_text("skills/beopsuny/assets/schemas/freshness_metadata.yaml")
+    label = "freshness_metadata.yaml"
+
+    for required in [
+        "Freshness metadata schema",
+        "next_review",
+        "last_verified",
+        "source_url",
+        "freshness_days",
+        "must_reverify",
+        "stale_registered",
+        "freshness_debt.yaml",
+        "triage_only",
+        "[STALE]",
+    ]:
+        assert_contains(text, required, label)
+    for required in ["review_cycle", "next_review", "last_verified", "source_url", "freshness_days", "must_reverify"]:
+        if required not in data:
+            raise AssertionError(f"{label}: missing {required!r}")
 
 
 def check_output_contract_schema() -> None:
@@ -1279,11 +1303,29 @@ def check_asset_freshness_metadata_tracked() -> None:
         maintenance = data.get("maintenance")
         if not isinstance(maintenance, dict):
             continue
-        for required in ["review_cycle", "next_review"]:
+        for required in [
+            "review_cycle",
+            "next_review",
+            "last_verified",
+            "source_url",
+            "freshness_days",
+            "must_reverify",
+        ]:
             if required not in maintenance:
                 raise AssertionError(f"{relative}: maintenance missing {required!r}")
+        if not str(maintenance["source_url"]).startswith("https://"):
+            raise AssertionError(f"{relative}: maintenance.source_url must be an official https source")
+        if not isinstance(maintenance["must_reverify"], bool) or maintenance["must_reverify"] is not True:
+            raise AssertionError(f"{relative}: maintenance.must_reverify must be true")
+        if not isinstance(maintenance["freshness_days"], int) or maintenance["freshness_days"] <= 0:
+            raise AssertionError(f"{relative}: maintenance.freshness_days must be a positive integer")
+
         due = parse_review_due(maintenance.get("next_review"))
-        if due and due <= today and relative not in registered_assets:
+        last_verified_due = date.fromisoformat(str(maintenance["last_verified"])) + timedelta(
+            days=maintenance["freshness_days"]
+        )
+        expired = (due and due <= today) or last_verified_due <= today
+        if expired and relative not in registered_assets:
             stale_untracked.append(f"{relative}: next_review={maintenance.get('next_review')}")
 
     if stale_untracked:
@@ -1530,7 +1572,8 @@ def check_readme_quality_contract_map() -> None:
         ".github/workflows/contract-tests.yml",
         "router guardrail 평가",
         "assets/policies/` (5 files)",
-        "assets/schemas/` (9 files",
+        "assets/schemas/` (10 files",
+        "freshness_metadata.yaml",
         "`freshness_debt.yaml`",
         "`freshness_revalidation.yaml`",
         "`practice_profile.yaml`",
@@ -2211,6 +2254,7 @@ CHECKS = [
     check_practice_profile_overlay_schema,
     check_legal_verification_packet_schema,
     check_freshness_revalidation_schema,
+    check_freshness_metadata_schema,
     check_bulk_tabular_review_reference,
     check_source_access_fallbacks,
     check_checklist_routing_freshness,

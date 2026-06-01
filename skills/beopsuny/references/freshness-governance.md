@@ -2,7 +2,7 @@
 
 법순이의 번들 YAML과 reference 문서의 dated claim은 빠른 triage와 issue spotting을 위한 로컬 지식이다. 현행 법령, 시행령, 고시, 서식, 수수료, 과징금, 신고기한, 인허가 요건, treaty/source count, 단계적 시행일, statutory threshold를 대신하지 않는다.
 
-이 문서는 `references/source-access.md#freshness-gate`와 `references/checklist-routing.md#freshness-routing`의 운영 계약을 보강한다. 구조화된 stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
+이 문서는 `references/source-access.md#freshness-gate`와 `references/checklist-routing.md#freshness-routing`의 운영 계약을 보강한다. 자산별 공통 freshness metadata는 `assets/schemas/freshness_metadata.yaml`, 구조화된 stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
 
 ## Runtime Rule
 
@@ -53,6 +53,8 @@ stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live
 | `retire_when` | registry에서 제거할 수 있는 조건 |
 
 새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
+
+각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. `next_review`가 지나거나 `last_verified + freshness_days`가 지난 자산은 현재 날짜 기준 CI에서 보이며, registry에 등록되지 않았으면 실패한다.
 
 ## Revalidation Record
 

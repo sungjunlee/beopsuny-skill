@@ -1,0 +1,17 @@
+# Freshness metadata schema
+# Apply this shape under asset-level `maintenance` blocks.
+# It tells CI when a bundled checklist or guide is stale and must stay triage-only.
+
+review_cycle: ""          # quarterly | semi-annual | annual | ad_hoc
+next_review: ""           # YYYY-MM or YYYY-MM-DD
+last_verified: ""         # YYYY-MM-DD, date the bundled asset was last checked against source_url
+source_url: ""            # primary official source family used for the last verification
+freshness_days: 0         # max age from last_verified before CI requires tracking/refresh
+must_reverify: true       # true means current legal conclusions require live source verification
+
+runtime_contract:
+  if_expired: "stale_registered"
+  registry: "freshness_debt.yaml"
+  allowed_use: "triage_only"
+  output_status: "[STALE]"
+  legal_conclusion_rule: "Do not present stale bundled values as current obligations unless live official sources are checked."

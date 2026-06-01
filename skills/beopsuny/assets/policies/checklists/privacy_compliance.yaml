@@ -17,6 +17,10 @@ last_updated: "2025-12-09"
 maintenance:
   review_cycle: "quarterly"
   next_review: "2026-01"
+  last_verified: "2025-12-09"
+  source_url: "https://www.pipc.go.kr/"
+  freshness_days: 90
+  must_reverify: true
   volatile_items:
     - "과징금 상한 (현행 개인정보보호법령 확인)"
     - "안전성 확보조치 기준 고시"
