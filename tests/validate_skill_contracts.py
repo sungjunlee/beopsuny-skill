@@ -1163,11 +1163,15 @@ def check_mandatory_provisions_candidate_index() -> None:
 def check_source_authority_verified_contract() -> None:
     text = read_text("skills/beopsuny/references/source-grading.md")
     label = "source-grading.md"
+    policy = load_yaml("skills/beopsuny/assets/policies/source_grades.yaml")
 
     for required in [
         "VERIFIED 계약",
         "이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조",
         "출처 권위 라벨과 verification status는 분리",
+        "A/B/C/D 같은 점수형 등급을 공개 출력에 쓰지 않는다",
+        "공식 실무자료: 미확정",
+        "공식 원문 없이 단독 법률 결론으로 승격하지 않는다",
         "대상 특정",
         "원문 대조",
         "최신성 표시",
@@ -1180,6 +1184,45 @@ def check_source_authority_verified_contract() -> None:
         "단정 결론으로 쓰지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    if not isinstance(policy, dict):
+        raise AssertionError("source_grades.yaml: expected mapping")
+    if "grades" in policy:
+        raise AssertionError("source_grades.yaml: public A/B/C/D grades must not be reintroduced")
+
+    source_classes = policy.get("source_classes")
+    if not isinstance(source_classes, dict):
+        raise AssertionError("source_grades.yaml: source_classes missing")
+    labels = {
+        str(source_class.get("label"))
+        for source_class in source_classes.values()
+        if isinstance(source_class, dict)
+    }
+    missing_labels = SOURCE_AUTHORITIES - labels
+    if missing_labels:
+        raise AssertionError(f"source_grades.yaml: source authority labels missing: {sorted(missing_labels)!r}")
+
+    default_labels = policy.get("default_labels")
+    if not isinstance(default_labels, dict) or not default_labels:
+        raise AssertionError("source_grades.yaml: default_labels missing")
+    for source_name, default_label in default_labels.items():
+        if not isinstance(default_label, dict):
+            raise AssertionError(f"source_grades.yaml: default_labels[{source_name!r}] must be a mapping")
+        if default_label.get("source_class") not in source_classes:
+            raise AssertionError(f"source_grades.yaml: default_labels[{source_name!r}] has unknown source_class")
+        if default_label.get("label") not in SOURCE_AUTHORITIES:
+            raise AssertionError(f"source_grades.yaml: default_labels[{source_name!r}] has invalid label")
+
+    docs = {
+        "bulk-tabular-review.md": read_text("skills/beopsuny/references/bulk-tabular-review.md"),
+        "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
+        "research-workflow.md": read_text("skills/beopsuny/references/research-workflow.md"),
+        "source-access.md": read_text("skills/beopsuny/references/source-access.md"),
+    }
+    for doc_label, doc_text in docs.items():
+        assert_not_contains(doc_text, 'source_authority: "[STALE]"', doc_label)
+        assert_not_contains(doc_text, 'source_authority: "[UNVERIFIED]"', doc_label)
+        assert_not_contains(doc_text, 'source_authority: "[INSUFFICIENT]"', doc_label)
 
 
 def check_citation_verification_contract_single_source() -> None:

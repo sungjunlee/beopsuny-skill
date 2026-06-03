@@ -12,39 +12,40 @@
 - `skills/beopsuny/references/freshness-governance.md` — stale 번들 YAML은 `triage_only`로만 쓰고 live source 확인 전 현행 의무·구비서류·기한·금액으로 승격하지 않는 Freshness Governance 문서 추가
 - `skills/beopsuny/assets/policies/freshness_debt.yaml` — issue #101에 묶인 stale 자산 registry 추가. 각 자산별 `risk`, `allowed_use`, `verification_required`, `retire_when` 기록
 - `skills/beopsuny/assets/schemas/freshness_revalidation.yaml` — stale 자산 갱신 또는 registry retirement 전에 남길 공식 source family, volatile item, next_review 변경, retirement decision evidence shape 추가
-- `skills/beopsuny/assets/schemas/practice_profile.yaml` — 업무별 profile overlay 선택 스키마 추가. allowed scope, merge order, cannot_override, jurisdiction_scope를 고정해 practice profile이 법률 결론·Source Grade·role/destination gate를 덮어쓰지 못하게 함
+- `skills/beopsuny/assets/schemas/practice_profile.yaml` — 업무별 profile overlay 선택 스키마 추가. allowed scope, merge order, cannot_override, jurisdiction_scope를 고정해 practice profile이 법률 결론·출처 권위 라벨·role/destination gate를 덮어쓰지 못하게 함
 - `skills/beopsuny/assets/schemas/legal_verification_packet.yaml` — Legal Verification Core의 issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding, self-verification 최소 evidence shape 추가
 - `skills/beopsuny/assets/schemas/output_contract.yaml` — 역할별 output mode, destination별 must_include/must_strip, legal_effect_triggers, non_overrides를 고정해 외부 송부·제출·서명 gate가 출력 선호에 밀리지 않도록 함
-- `skills/beopsuny/references/output-formats.md` — 법령/판례/행정규칙/Grade C/INSUFFICIENT 출력 예시 분리
+- `skills/beopsuny/references/output-formats.md` — 법령/판례/행정규칙/INSUFFICIENT 출력 예시 분리
 - `skills/beopsuny/references/output-formats.md` — `full` 법률 답변용 표준 `검토자 메모` 필드(Sources/Read/Currency/Before relying) 추가. `compact` 응답에는 강제하지 않음
 - `skills/beopsuny/references/output-formats.md` — 역할별 output mode(`lawyer`/`legal_ops`/`business_user`/`unknown`)와 destination output contract(`internal_legal_memo`, `external_draft`, `agency_or_court_submission` 등) 추가
 - `skills/beopsuny/references/contract_review_guide.md` — 계약 질문의 Proportionality 분류와 Destination routing 추가. 상대방 송부용·기관 제출용 산출물은 내부 검토 메타와 분리
 - `skills/beopsuny/references/bulk-tabular-review.md` — values table / sources table 분리, `Verified` 빈 칸, quote/location spot-check, quote mismatch downgrade 규칙 추가
-- `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 16건으로 확장. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, Grade C/D 단독 결론 금지, 인허가 checklist routing, role/destination gate, freshness debt, legal verification core 검증
+- `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 16건으로 확장. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, 해설/의견 단독 결론 금지, 인허가 checklist routing, role/destination gate, freshness debt, legal verification core 검증
 - `tests/fixtures/router_guardrail_outputs.yaml` + `tests/evaluate_scenario_outputs.py` — router-07~16 샘플 출력과 unsafe fixture 7건을 평가하는 guardrail harness 추가
 - `tests/validate_skill_contracts.py` — plugin 메타데이터 버전 정합, 최소 SKILL frontmatter, 계약 검토 가이드 경계, source fallback, 출력 크기 조절, 라우터 필수 reference, legal verification core, freshness debt registry, output/profile 계약, router fixture integrity, README 품질 계약 지도, README 회귀 검증 참조, 품질 계약 지도 reference target, CI workflow를 검증하는 정적 계약 검사 추가. `BEOPSUNY_INSTALLED_SKILL_PATH` 지정 시 설치본 content drift도 감지
 - `.github/workflows/contract-tests.yml` — PR 및 main/master push에서 문서 계약 검증, router guardrail 평가, 테스트 harness compile 실행
 
 ### Changed
-- `skills/beopsuny/SKILL.md` 762줄 → 277줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + Source Grade 계약 + 필수 자가 검증 중심 문서로 재작성하고, 법적 효과가 있는 행동에는 `user_role`/목적지 gate를 적용하도록 보강
+- 점수형 A/B/C/D 공개 출력 체계를 출처 권위 라벨(`공식 원문`, `공식 원문: 하급심`, `공식 실무자료`, `공식 실무자료: 미확정`, `해설/의견`, `참고 제외`)과 verification status 병기로 전환. `source_grades.yaml` 파일명은 호환성 때문에 유지하되, 내용은 `source_classes`/`default_labels` 계약으로 정리
+- `skills/beopsuny/SKILL.md` 762줄 → 277줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + 출처 권위 라벨 계약 + 필수 자가 검증 중심 문서로 재작성하고, 법적 효과가 있는 행동에는 `user_role`/목적지 gate를 적용하도록 보강
 - `skills/beopsuny/SKILL.md`에 품질 계약 매핑을 추가해 Legal Verification Core, Freshness Governance, Output role/destination gate, Profile/practice direction이 어떤 트리거에서 함께 적용되는지 단일 라우터 안에 고정
 - `skills/beopsuny/SKILL.md`의 `memory_profile` 라우터에서 `assets/schemas/*.yaml` glob을 제거하고 memory 관련 schema만 명시. legal verification, freshness, output contract schema가 memory 온보딩에 과잉 로드되는 drift 방지
 - `skills/beopsuny/SKILL.md` frontmatter에서 비필수 `metadata.author/language/updated/version` 제거. 스킬 발견에 필요한 `name`/`description`만 유지하고, 배포 메타데이터는 `.claude-plugin/plugin.json`로 단일화. 한국 사용자 대상 스킬에 맞춰 `description`과 주요 라우터 문구를 한국어 중심으로 정리
 - `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
 - `skills/beopsuny/SKILL.md` 출력 계약에 `full`/`compact` 크기 조절 규칙 추가. 법률 결론에는 검토자 메모와 자가 검증을 유지하되, 비법률 운영 응답에는 법률용 메타데이터를 억지로 붙이지 않도록 정리
-- `skills/beopsuny/references/contract_review_guide.md`를 v0.3 router spine 기준으로 재작성. 구버전 "명령어 실행" 지시를 제거하고 Source Grade, verification status, review_mode, Counter-drafting 경계를 반영
+- `skills/beopsuny/references/contract_review_guide.md`를 v0.3 router spine 기준으로 재작성. 구버전 "명령어 실행" 지시를 제거하고 출처 권위 라벨, verification status, review_mode, Counter-drafting 경계를 반영
 - `skills/beopsuny/references/*`의 출력 필드명 예시를 표준 `검토자 메모`로 정렬
 - `skills/beopsuny/references/memory-structure.md` full 온보딩을 evidence-based onboarding으로 강화. seed document는 사용자가 명시적으로 제공한 경우에만 읽고, stated position 과 signed practice 차이를 저장 전 표시
 - `skills/beopsuny/references/memory-structure.md`에 practice profile direction 추가. 현재는 top-level `profile.yaml`과 `contract_playbook`을 유지하고, 향후 업무별 profile은 `~/.beopsuny/practices/{contract,privacy,labor,regulatory,litigation}.yaml` overlay로 설계
 - `skills/beopsuny/assets/schemas/company_profile.yaml` `contract_playbook.seed_documents`에 `stated_vs_signed_delta`와 `skipped_fields` 추가
 - `skills/beopsuny/references/source-access.md`에 Capability Matrix 추가. 로컬 데이터 없음, 법망 API 접근 불가, WebSearch 없음, 네트워크 없음 등 환경별 fallback과 `[INSUFFICIENT]` 유보 기준 명시
-- `README.md`에 개발/설치본 drift 확인 절차, 품질 계약 지도, 품질 계약 변경 체크리스트 추가. Legal verification core, Source Grade/VERIFIED, Freshness governance, Output role/destination gate, Profile/practice direction, Bulk evidence grid의 기준 문서와 회귀 검증을 연결하고 새 법률 기능 추가 시 router, reference, schema/policy, scenario, unsafe fixture, 정적 검사, README/CHANGELOG를 함께 갱신하도록 명문화
+- `README.md`에 개발/설치본 drift 확인 절차, 품질 계약 지도, 품질 계약 변경 체크리스트 추가. Legal verification core, 출처 권위/VERIFIED, Freshness governance, Output role/destination gate, Profile/practice direction, Bulk evidence grid의 기준 문서와 회귀 검증을 연결하고 새 법률 기능 추가 시 router, reference, schema/policy, scenario, unsafe fixture, 정적 검사, README/CHANGELOG를 함께 갱신하도록 명문화
 - `DESIGN.md`에 2026-05-10 아키텍처 결정 기록 추가: 물리적 multi-skill 전환 보류, 단일 스킬 유지 + 내부 router spine 전환
 
 ### Notes
 - 외부 artifact 이름은 계속 `beopsuny`
 - 물리적 multi-skill 전환은 DOCX redline, 자동 알림/스케줄링, MCP/updater 배포, 계약 검토 단독 사용 피드백이 생길 때 재검토
-- 새 Source Grade 태그 없음. 기존 6개 상태 태그 + Grade A/B/C/D 유지
+- 새 verification status 태그 없음. 기존 6개 상태 태그 유지, 공개 출력은 출처 권위 라벨을 병기
 
 ## [0.3.1] - 2026-04-12
 

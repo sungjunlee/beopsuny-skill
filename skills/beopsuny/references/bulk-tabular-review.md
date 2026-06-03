@@ -89,7 +89,8 @@ stale 후보 값은 아래처럼 처리한다.
 ```yaml
 value: "needs_review"
 state: "needs_review"
-source_authority: "[STALE]"
+source_authority: ""
+verification_status: "[STALE]"
 quote: ""
 location: "assets/policies/checklists/food_business.yaml"
 notes: "stale_candidate: live source verification required before answering"
