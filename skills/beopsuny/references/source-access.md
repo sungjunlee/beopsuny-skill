@@ -6,13 +6,13 @@
 
 ## Source Priority
 
-| 순위 | Full 모드 | Lite 모드 | 기본 Grade |
+| 순위 | Full 모드 | Lite 모드 | 기본 출처 권위 라벨 |
 |------|----------|----------|-----------|
-| 1 | 로컬 Git `legalize-kr` + `precedent-kr` | 법망 API | A, 하급심은 B |
-| 2 | 법망 API | WebSearch | 행정규칙/해석례 A, 의안 B |
-| 3 | korean-law-mcp, OC 코드 필요 | korean-law-mcp, OC 코드 필요 | A |
-| 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr | A |
-| 백업 | WebSearch 공식/해설 자료 | WebSearch 공식/해설 자료 | B/C/D |
+| 1 | 로컬 Git `legalize-kr` + `precedent-kr` | 법망 API | 공식 원문, 하급심은 공식 원문: 하급심 |
+| 2 | 법망 API | WebSearch | 행정규칙/해석례는 공식 원문, 의안은 공식 실무자료: 미확정 |
+| 3 | korean-law-mcp, OC 코드 필요 | korean-law-mcp, OC 코드 필요 | 공식 원문 |
+| 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr | 공식 원문 |
+| 백업 | WebSearch 공식/해설 자료 | WebSearch 공식/해설 자료 | 공식 실무자료 / 해설·의견 / 참고 제외 |
 
 ## Mode Detection
 
@@ -67,7 +67,7 @@ Fallback 원칙:
 2. 재확인에 실패하면 `[STALE]` 또는 `[INSUFFICIENT]`로 낮추고 결론을 유보한다.
 3. 단순 후보로만 쓰고, 현행 법적 결론의 근거로 쓰지 않는다.
 
-Freshness gate는 Source Grade를 대체하지 않는다. Grade A 소스라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
+Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 소스라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
 
 ## Full Mode: legalize-kr
 
@@ -143,13 +143,13 @@ https://korean-law-mcp.fly.dev/mcp?oc={OC코드}
 
 WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부처 해설, 제재 동향 조사에서만 사용한다.
 
-| 도메인 | 예시 | Grade |
+| 도메인 | 예시 | 출처 권위 라벨 |
 |--------|------|-------|
-| 정부·규제기관 공식 | `*.go.kr`, PIPC, MOEL, FTC, FSC | B |
-| 로펌·학술·법률매체 | 로펌 뉴스레터, 법률신문 | C |
-| 뉴스·블로그·SNS | 언론, 개인 블로그 | D |
+| 정부·규제기관 공식 | `*.go.kr`, PIPC, MOEL, FTC, FSC | 공식 실무자료 |
+| 로펌·학술·법률매체 | 로펌 뉴스레터, 법률신문 | 해설/의견 |
+| 뉴스·블로그·SNS | 언론, 개인 블로그 | 참고 제외 |
 
-Grade C는 `[EDITORIAL]` 보조 자료다. Grade D는 결론 근거로 쓰지 않는다.
+해설/의견은 `[EDITORIAL]` 보조 자료다. 참고 제외는 결론 근거로 쓰지 않는다.
 
 ## 원문 링크
 

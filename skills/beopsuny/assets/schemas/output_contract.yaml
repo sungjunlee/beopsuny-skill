@@ -13,11 +13,11 @@ role_modes:
       - "검토자 메모"
     legal_effect_gate: "confirm destination before external send or filing"
     must_include:
-      - "Source Grade"
+      - "출처 권위 라벨"
       - "verification status"
       - "unresolved assumptions"
     must_not:
-      - "treat Grade C/D as verified authority"
+      - "treat 해설/의견·참고 제외 as verified authority"
   - role: "legal_ops"
     default_destination: "business_summary"
     default_sections:
@@ -43,7 +43,7 @@ role_modes:
     legal_effect_gate: "do not directly instruct signing, sending, filing, or final legal reliance"
     must_include:
       - "lawyer/legal_ops review before legal effect"
-      - "plain-language Source Grade explanation when useful"
+      - "plain-language 출처 권위 라벨 explanation when useful"
     must_not:
       - "send as-is"
       - "file as-is"
@@ -69,7 +69,7 @@ destinations:
     required_gate: "show assumptions, source limits, and conclusion strength"
     must_include:
       - "검토자 메모"
-      - "Source Grade"
+      - "출처 권위 라벨"
       - "verification status"
     must_strip: []
   - destination: "business_summary"
@@ -122,7 +122,7 @@ legal_effect_triggers:
 
 non_overrides:
   - "Legal Verification Core"
-  - "Source Grade / VERIFIED contract"
+  - "출처 권위 / VERIFIED contract"
   - "Freshness Governance"
   - "Role / Destination Gate"
   - "lawyer/legal_ops review requirement"

@@ -65,7 +65,7 @@
 `type: research_guide`:
 
 - 완료 체크리스트가 아니라 조사 질문, 확인할 권위자료, 쟁점 맵을 만든다.
-- 공정거래, M&A, 계약 검토처럼 맥락 의존성이 큰 영역은 조사 계획을 먼저 제시하고 결론은 Source Grade 확인 후 낸다.
+- 공정거래, M&A, 계약 검토처럼 맥락 의존성이 큰 영역은 조사 계획을 먼저 제시하고 결론은 출처 권위 라벨 확인 후 낸다.
 - 검색 명령·키워드는 research seed일 뿐 결론 근거가 아니다.
 
 ## Freshness Routing
@@ -108,4 +108,4 @@ Lite 모드에서 파일 접근이 없으면 필요한 맥락만 사용자에게
 - 대기업이 중소기업에게 용역 위탁 -> `contract_review.yaml` + `fair_trade.yaml`
 - 식품 온라인 판매 -> `food_business.yaml` + `privacy_compliance.yaml` 가능성
 
-관련 체크리스트를 안내하더라도 결론은 확인된 법령과 Source Grade 기준으로 낸다.
+관련 체크리스트를 안내하더라도 결론은 확인된 법령과 출처 권위 라벨 기준으로 낸다.

@@ -7,7 +7,7 @@ version: 1
 jurisdiction_scope:
   primary: "KR"               # 기본은 한국법
   secondary: []               # 예: ["US-CA", "EU"] — 한국회사 업무에서 실제로 필요한 경우만
-  notes: ""                   # 해외법은 한국법 결론과 분리하고 Source Grade를 별도 표시
+  notes: ""                   # 해외법은 한국법 결론과 분리하고 출처 권위 라벨을 별도 표시
 
 allowed_scope:
   output_preferences:
@@ -32,7 +32,7 @@ merge_order:
 
 cannot_override:
   - "SKILL.md instructions"
-  - "Source Grade / VERIFIED contract"
+  - "출처 권위 / VERIFIED contract"
   - "Legal Verification Core"
   - "Freshness Governance"
   - "Role / destination output gate"

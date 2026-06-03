@@ -11,7 +11,7 @@
 # 설계 원칙:
 #   - 기본값은 반드시 moderate (하위 호환: 기존 시나리오가 그대로 통과)
 #   - 태그 체계는 변경 없음 (6개 기존 태그만 사용)
-#   - Source Grading 정책(assets/policies/source_grades.yaml)과 독립적으로 동작
+#   - 출처 권위 라벨 정책(assets/policies/source_grades.yaml)과 독립적으로 동작
 # ============================================================
 
 version: "1.1.0"
@@ -27,7 +27,7 @@ modes:
   strict:
     label: "엄격 검토 — 보수적 관점, 모든 위험 플래그"
     description: |
-      모든 위험 조항을 플래그하고 Grade C 단독 결론을 허용하지 않으며,
+      모든 위험 조항을 플래그하고 해설/의견 단독 결론을 허용하지 않으며,
       Primary Authority Rule 을 엄격히 적용하는 모드.
       Phase 0 횡단 이슈는 트리거 여부와 무관하게 전수 확인한다.
     risk_flagging:
@@ -39,9 +39,9 @@ modes:
       scope: "전수 확인"
       require_all: true  # 트리거 없어도 국제거래/하도급/약관/표준계약서 모두 체크
     source_grading:
-      primary_authority_rule: "strict"   # Grade C 단독 결론 금지 — [EDITORIAL] 태그만
+      primary_authority_rule: "strict"   # 해설/의견 단독 결론 금지 — [EDITORIAL] 태그만
       grade_c_conclusion: "forbidden"
-      require_cross_check: true          # Grade B 이상이라도 교차검증 요구
+      require_cross_check: true          # 공식 실무자료 이상이라도 교차검증 요구
     output:
       verbosity: "high"
       include_missing_clauses_section: true
@@ -54,7 +54,7 @@ modes:
   moderate:
     label: "표준 검토 — 실무 균형, 기본값"
     description: |
-      위험도 상(high) 조항을 우선 플래그하고 Grade B 이상 소스 교차검증을 요구.
+      위험도 상(high) 조항을 우선 플래그하고 공식 실무자료 이상 소스 교차검증을 요구.
       Phase 0 은 트리거된 항목(해외법인·하도급 관계 등)만 확인한다.
       기존 법순이 기본 동작과 동일.
     risk_flagging:
@@ -68,7 +68,7 @@ modes:
     source_grading:
       primary_authority_rule: "standard"
       grade_c_conclusion: "with_editorial_tag"   # [EDITORIAL] 태그 시에만 허용
-      require_cross_check: false                 # Grade A 단독 결론 허용
+      require_cross_check: false                 # 공식 원문 단독 결론 허용
     output:
       verbosity: "medium"
       include_missing_clauses_section: false
@@ -167,7 +167,7 @@ tag_policy:
     - "[EDITORIAL]"
   note: |
     모드별 차이는 "어떤 태그를 언제 강제하느냐"로만 표현한다.
-    예: strict 모드는 Grade C 결론에 반드시 [EDITORIAL] + 상위 Grade 보강 요구.
+    예: strict 모드는 해설/의견 결론에 반드시 [EDITORIAL] + 공식 원문 또는 공식 실무자료 보강 요구.
     새 태그를 도입하지 않는다.
 
 # ─────────────────────────────────────────────────────────

@@ -91,7 +91,7 @@ QUALITY_CONTRACT_REFERENCES = {
 }
 
 
-SOURCE_GRADES = {"A", "B", "C", "D"}
+SOURCE_AUTHORITIES = {"공식 원문", "공식 원문: 하급심", "공식 실무자료", "공식 실무자료: 미확정", "해설/의견", "참고 제외"}
 VERIFICATION_STATUSES = {
     "[VERIFIED]",
     "[UNVERIFIED]",
@@ -249,7 +249,7 @@ def check_contract_review_guide() -> None:
         assert_not_contains(text, stale, label)
 
     for required in [
-        "Source Grade",
+        "출처 권위 라벨",
         "verification status",
         "review_mode.yaml",
         "Counter-drafting",
@@ -302,7 +302,7 @@ def check_memory_profile_workflow() -> None:
         "비기밀 reusable legal-source fact",
         "matter-specific fact",
         "verification_log.jsonl",
-        "Source Grade A/B는 현재 세션에서",
+        "출처 권위 라벨은 현재 세션에서",
         "project.yaml.confidentiality: \"heightened\"",
         "freshness_days",
         "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
@@ -409,7 +409,7 @@ def check_practice_profile_overlay_schema() -> None:
         raise AssertionError(f"{label}: cannot_override must be a list")
     for required in [
         "SKILL.md instructions",
-        "Source Grade / VERIFIED contract",
+        "출처 권위 / VERIFIED contract",
         "Legal Verification Core",
         "Freshness Governance",
         "Role / destination output gate",
@@ -483,7 +483,7 @@ def check_legal_verification_packet_schema() -> None:
         "type",
         "citation",
         "pinpoint",
-        "source_grade",
+        "source_authority",
         "verification_status",
         "provenance",
         "currency",
@@ -500,7 +500,7 @@ def check_legal_verification_packet_schema() -> None:
         "authority_id",
         "citation",
         "pinpoint",
-        "source_grade",
+        "source_authority",
         "verification_status",
         "provenance",
         "currency",
@@ -527,7 +527,7 @@ def check_legal_verification_packet_schema() -> None:
     if not isinstance(self_check, dict):
         raise AssertionError(f"{label}: self_verification must be a mapping")
     for required in [
-        "source_grade_applied",
+        "source_authority_applied",
         "ledger_covers_output_citations",
         "freshness_gate_checked",
         "role_destination_gate_checked",
@@ -576,7 +576,7 @@ def check_freshness_revalidation_schema() -> None:
         raise AssertionError(f"{label}: source_families_checked must be a non-empty list")
 
     official_source = first_mapping(data["official_sources"], label, "official_sources")
-    for required in ["title", "url", "source_grade", "verification_status", "retrieved_at", "notes"]:
+    for required in ["title", "url", "source_authority", "verification_status", "retrieved_at", "notes"]:
         if required not in official_source:
             raise AssertionError(f"{label}: official_sources entry missing {required!r}")
 
@@ -703,11 +703,11 @@ def check_freshness_revalidation_records() -> None:
         for index, source in enumerate(official_sources):
             if not isinstance(source, dict):
                 raise AssertionError(f"{relative}: official_sources[{index}] must be a mapping")
-            for required in ["title", "url", "source_grade", "verification_status", "retrieved_at", "notes"]:
+            for required in ["title", "url", "source_authority", "verification_status", "retrieved_at", "notes"]:
                 if not source.get(required):
                     raise AssertionError(f"{relative}: official_sources[{index}] missing {required!r}")
-            if source["source_grade"] not in SOURCE_GRADES:
-                raise AssertionError(f"{relative}: official_sources[{index}].source_grade invalid")
+            if source["source_authority"] not in SOURCE_AUTHORITIES:
+                raise AssertionError(f"{relative}: official_sources[{index}].source_authority invalid")
             if source["verification_status"] not in VERIFICATION_STATUSES:
                 raise AssertionError(f"{relative}: official_sources[{index}].verification_status invalid")
             if not str(source["url"]).startswith("https://"):
@@ -886,7 +886,7 @@ def check_output_contract_schema() -> None:
         raise AssertionError(f"{label}: non_overrides must be a list")
     for required in [
         "Legal Verification Core",
-        "Source Grade / VERIFIED contract",
+        "출처 권위 / VERIFIED contract",
         "Freshness Governance",
         "Role / Destination Gate",
         "lawyer/legal_ops review requirement",
@@ -925,8 +925,8 @@ def check_bulk_tabular_review_reference() -> None:
         "`needs_review`",
         "quote/location을 확보하지 못하면",
         'state: "needs_review"',
-        'source_grade: ""',
-        "`answered`는 quote/location 또는 live Source Grade verification이 있을 때만 허용",
+        'source_authority: ""',
+        "`answered`는 quote/location 또는 live 출처 권위 verification이 있을 때만 허용",
         "Evidence Rule",
         "Output Grid",
         "values table",
@@ -1160,14 +1160,14 @@ def check_mandatory_provisions_candidate_index() -> None:
     assert_not_contains(text, "강행규정 단일 소스", label)
 
 
-def check_source_grading_verified_contract() -> None:
+def check_source_authority_verified_contract() -> None:
     text = read_text("skills/beopsuny/references/source-grading.md")
     label = "source-grading.md"
 
     for required in [
         "VERIFIED 계약",
         "이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조",
-        "Grade와 verification status는 분리",
+        "출처 권위 라벨과 verification status는 분리",
         "대상 특정",
         "원문 대조",
         "최신성 표시",
@@ -1189,7 +1189,7 @@ def check_citation_verification_contract_single_source() -> None:
     for required in [
         "단일 citation verification contract",
         "VERIFIED minimum conditions",
-        "Grade와 verification status는 서로 다른 축",
+        "출처 권위 라벨과 verification status는 서로 다른 축",
         "법망 API wrapper",
         "law.go.kr",
         "glaw.scourt.go.kr",
@@ -1274,7 +1274,7 @@ def check_golden_citation_fixtures() -> None:
             "article",
             "effective_date",
             "official_url",
-            "source_grade",
+            "source_authority",
             "verification_status",
             "provenance",
         ]:
@@ -1321,7 +1321,7 @@ def check_golden_fixture_common(item: dict[str, Any], label: str, seen_ids: set[
         "id",
         "authority_type",
         "citation",
-        "source_grade",
+        "source_authority",
         "verification_status",
         "provenance",
         "provenance_type",
@@ -1336,8 +1336,8 @@ def check_golden_fixture_common(item: dict[str, Any], label: str, seen_ids: set[
         raise AssertionError(f"{label}: duplicate fixture id {fixture_id!r}")
     seen_ids.add(fixture_id)
 
-    if item["source_grade"] not in SOURCE_GRADES:
-        raise AssertionError(f"{label}: fixture {fixture_id} has invalid source_grade")
+    if item["source_authority"] not in SOURCE_AUTHORITIES:
+        raise AssertionError(f"{label}: fixture {fixture_id} has invalid source_authority")
     if item["verification_status"] not in VERIFICATION_STATUSES:
         raise AssertionError(f"{label}: fixture {fixture_id} has invalid verification_status")
     if item["provenance_type"] not in {"fixed_provenance", "live_source"}:
@@ -1368,7 +1368,7 @@ def check_research_workflow_verification_core() -> None:
         "packet 안의 source가 모두 후보·스니펫·stale 자산이면 결론을 확정하지 않는다",
         "`citation`",
         "`pinpoint`",
-        "`source_grade`",
+        "`source_authority`",
         "`verification_status`",
         "`provenance`",
         "`currency`",
@@ -1826,7 +1826,7 @@ def check_readme_quality_contract_map() -> None:
         "unsafe fixture 또는 guardrail rule",
         "`tests/validate_skill_contracts.py`",
         "README 품질 계약 지도와 CHANGELOG",
-        "기존 장점인 단일 라우터, 한국법 원문주의, Source Grade, 자가 검증",
+        "기존 장점인 단일 라우터, 한국법 원문주의, 출처 권위 라벨, 자가 검증",
         "새 계약은 기존 gate를 우회하지 말고",
     ]:
         assert_contains(text, required, label)
@@ -2052,7 +2052,7 @@ def check_self_verification_guardrails() -> None:
         "citation ledger",
         "assets/schemas/legal_verification_packet.yaml",
         "법적 효과가 큰 답변에서는",
-        "`citation`, `pinpoint`, `source_grade`, `verification_status`, `provenance`, `currency`, `supports`",
+        "`citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`, `supports`",
         "issue-to-authority map",
         "conclusion binding",
         "`conclusion_binding.conclusion_strength`",
@@ -2113,7 +2113,7 @@ def check_output_role_destination_contracts() -> None:
         "확인 필요 정보",
         "변호사/법무에게 물어볼 질문",
         "서명·송부·제출·확정 답변을 바로 지시하지 않고",
-        "Source Grade와 verification status를 대체하지 않는다",
+        "출처 권위 라벨과 verification status를 대체하지 않는다",
         "Destination output contracts",
         "`internal_legal_memo`",
         "`business_summary`",
@@ -2146,12 +2146,12 @@ def check_memory_practice_profile_direction() -> None:
         "Practice profile merge order",
         "cannot_override",
         "`jurisdiction_scope.primary`의 기본값은 `KR`",
-        "해외법 source도 별도 Source Grade와 verification status",
+        "해외법 source도 별도 출처 권위 라벨과 verification status",
         "practice profile 안의 destination 기본값이 `external_draft`",
         "role/destination gate는 그대로 적용",
         "회사 사실을 복제하지 않고",
         "검토 대상 데이터",
-        "SKILL.md, Source Grade, 자가 검증, 현행 법령 확인을 덮어쓸 수 없다",
+        "SKILL.md, 출처 권위 라벨, 자가 검증, 현행 법령 확인을 덮어쓸 수 없다",
         "top-level `profile.yaml`과 `contract_playbook`을 유지",
         "cold-start full onboarding",
         "업무별 출력 선호와 escalation 기준",
@@ -2163,7 +2163,7 @@ def check_router_scenario_references() -> None:
     data = load_yaml("tests/scenarios/16_router_regression.yaml")
     refs = data.get("global_rules", {}).get("mandatory_references", {})
     expected = {
-        "source_grade": "skills/beopsuny/references/source-grading.md",
+        "source_authority": "skills/beopsuny/references/source-grading.md",
         "self_verification": "skills/beopsuny/references/self-verification.md",
         "source_access": "skills/beopsuny/references/source-access.md",
     }
@@ -2496,7 +2496,7 @@ CHECKS = [
     check_volatile_policy_literals_require_live_check,
     check_mandatory_provisions_candidate_index,
     check_mandatory_provision_notes_are_candidates,
-    check_source_grading_verified_contract,
+    check_source_authority_verified_contract,
     check_citation_verification_contract_single_source,
     check_golden_citation_fixtures,
     check_research_workflow_verification_core,

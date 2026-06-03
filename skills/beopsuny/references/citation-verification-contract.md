@@ -1,18 +1,18 @@
 # Citation Verification Contract
 
-이 문서는 법순이의 단일 citation verification contract다. Source Grade, verification status, provenance를 분리하고, `[VERIFIED]`를 붙일 수 있는 최소 조건을 고정한다. 세부 등급표는 `source-grading.md`와 `assets/policies/source_grades.yaml`을 따르되, VERIFIED minimum conditions는 여기의 계약을 우선한다.
+이 문서는 법순이의 단일 citation verification contract다. 출처 권위 라벨, verification status, provenance를 분리하고, `[VERIFIED]`를 붙일 수 있는 최소 조건을 고정한다. 세부 라벨표는 `source-grading.md`와 `assets/policies/source_grades.yaml`을 따르되, VERIFIED minimum conditions는 여기의 계약을 우선한다.
 
 ## Core Contract
 
-Grade와 verification status는 서로 다른 축이다.
+출처 권위 라벨과 verification status는 서로 다른 축이다.
 
 | 축 | 의미 | 예시 |
 | --- | --- | --- |
-| Source Grade | 소스 자체의 법적 권위와 신뢰도 | Grade A 법령 원문, Grade C 로펌 해설 |
+| 출처 권위 라벨 | 소스 자체의 법적 성격과 사용 가능성 | 공식 원문 법령 원문, 해설/의견 로펌 해설 |
 | verification status | 이번 응답에서 해당 법률 사실을 실제로 확인했는지 | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]` |
 | provenance | 이번 응답에서 실제로 확인한 경로 | `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`, `web — verify` |
 
-`[VERIFIED]`는 Grade A라는 뜻이 아니다. `[VERIFIED]`는 이번 응답에서 특정 citation과 pinpoint를 실제 원문 또는 공식 응답으로 대조했고, 그 확인 경로와 최신성 한계를 답변에 남겼다는 뜻이다.
+`[VERIFIED]`는 공식 원문이라는 뜻이 아니다. `[VERIFIED]`는 이번 응답에서 특정 citation과 pinpoint를 실제 원문 또는 공식 응답으로 대조했고, 그 확인 경로와 최신성 한계를 답변에 남겼다는 뜻이다.
 
 ## VERIFIED Minimum Conditions
 
@@ -51,12 +51,12 @@ Grade와 verification status는 서로 다른 축이다.
 
 ## Output Binding
 
-답변에 노출하는 각 citation은 citation ledger의 `source_grade`, `verification_status`, `provenance`, `currency`, `supports`와 연결되어야 한다. ledger에 없거나 `supports`가 비어 있는 source는 결론 근거로 쓰지 않는다.
+답변에 노출하는 각 citation은 citation ledger의 `source_authority`, `verification_status`, `provenance`, `currency`, `supports`와 연결되어야 한다. ledger에 없거나 `supports`가 비어 있는 source는 결론 근거로 쓰지 않는다.
 
 출력 형식은 다음 원칙을 따른다.
 
 ```markdown
-**[Grade A] [VERIFIED]** — law.go.kr 원문 확인
+**[공식 원문] [VERIFIED]** — law.go.kr 원문 확인
 ```
 
-검토자 메모나 business-user용 쉬운 라벨은 Source Grade와 verification status를 대체하지 않는다. `확인된 1차 근거` 같은 쉬운 표현을 쓰더라도 citation 줄에는 Grade, status, provenance를 유지한다.
+검토자 메모나 business-user용 쉬운 라벨은 출처 권위 라벨과 verification status를 대체하지 않는다. `확인된 1차 근거` 같은 쉬운 표현을 쓰더라도 citation 줄에는 출처 권위 라벨, status, provenance를 유지한다.
