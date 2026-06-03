@@ -1,6 +1,6 @@
 # 출력 형식
 
-모든 법률 정보에는 원소스 링크와 Source Grade 태그를 제공한다. 링크는 패턴이 확실할 때만 만들고 추정 링크를 만들지 않는다.
+모든 법률 정보에는 원소스 링크와 출처 권위 라벨을 제공한다. 링크는 패턴이 확실할 때만 만들고 추정 링크를 만들지 않는다.
 
 `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다. 출력 예시는 이 계약을 통과한 경우의 표시 형식이다.
 
@@ -8,7 +8,7 @@
 
 ```markdown
 ## 민법 제750조 (불법행위의 내용)
-**[Grade A] [VERIFIED]** — legalize-kr 로컬
+**[공식 원문] [VERIFIED]** — legalize-kr 로컬
 
 > 고의 또는 과실로 인한 위법행위로 타인에게 손해를 가한 자는...
 
@@ -32,11 +32,11 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ## 판례 인용
 
-대법원은 Grade A, 하급심은 Grade B다. 하급심 인용 시 상급심 변경 가능성을 언급한다.
+대법원과 하급심 모두 원문이면 공식 원문이다. 하급심 인용 시 `공식 원문: 하급심`으로 표시하고 상급심 변경 가능성을 언급한다.
 
 ```markdown
 ## 대법원 {선고일} 선고 {사건번호} 판결
-**[Grade A] [VERIFIED]** — precedent-kr 로컬
+**[공식 원문] [VERIFIED]** — precedent-kr 로컬
 
 - **사건명**: 손해배상(기)
 - **판시사항**: ...
@@ -46,8 +46,8 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ```markdown
 ## 서울고등법원 {사건번호} 판결
-**[Grade B] [VERIFIED]** — precedent-kr 로컬
-※ 상급심에 의해 변경 가능 — Grade A 판례와 교차검증 권장
+**[공식 원문: 하급심] [VERIFIED]** — precedent-kr 로컬
+※ 상급심에 의해 변경 가능 — 대법원 판례와 교차검증 권장
 ```
 
 ## 행정규칙 인용
@@ -56,7 +56,7 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ```markdown
 ## {고시명} — {발령기관}
-**[Grade A] [VERIFIED]** — 법망 API (type=admrul)
+**[공식 원문] [VERIFIED]** — 법망 API (type=admrul)
 
 > {본문 인용}
 
@@ -65,14 +65,13 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ## 2차 소스 인용
 
-로펌 뉴스레터, 학술 논문, 법률 매체 해설은 Grade C다. 단독 결론 근거로 쓰지 않는다.
+로펌 뉴스레터, 학술 논문, 법률 매체 해설은 `해설/의견`이다. 단독 결론 근거로 쓰지 않는다.
 
 ```markdown
 ## 관련 해설
-**[Grade C]** 김장 법률사무소 뉴스레터 (2024-10)
-[EDITORIAL: Single-source, Grade C]
+**[해설/의견] [EDITORIAL]** 김장 법률사무소 뉴스레터 (2024-10)
 
-※ 위는 단일 2차 소스의 의견입니다. 결론은 Grade A/B 법령·판례를 우선 참조하세요.
+※ 위는 단일 2차 소스의 의견입니다. 결론은 공식 원문 또는 공식 실무자료를 우선 참조하세요.
 ```
 
 ## 확인 불가
@@ -141,22 +140,22 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 - ...
 
 ## 근거
-- **[Grade A] [VERIFIED]** ...
+- **[공식 원문] [VERIFIED]** ...
 ```
 
-비법무 사용자에게는 Source Grade를 숨기지 않되, 본문에서는 `확인된 1차 근거`, `추가 확인 필요`, `현행성 재확인 필요`처럼 쉬운 라벨을 함께 쓸 수 있다. 이 라벨은 Source Grade와 verification status를 대체하지 않는다.
+비법무 사용자에게는 출처 권위 라벨을 숨기지 않되, 본문에서는 `확인된 1차 근거`, `추가 확인 필요`, `현행성 재확인 필요`처럼 쉬운 라벨을 함께 쓸 수 있다. 이 라벨은 출처 권위 라벨과 verification status를 대체하지 않는다.
 
 ## Destination output contracts
 
 사용자가 산출물의 수신자나 사용처를 말하면, 같은 결론이라도 아래 destination 계약을 적용한다.
 
-`assets/schemas/output_contract.yaml`의 `legal_effect_triggers`에 해당하는 요청이면 role mode와 destination contract를 함께 적용한다. `non_overrides`에 있는 Legal Verification Core, Source Grade / VERIFIED 계약, Freshness Governance, 변호사/법무 검토 필요 조건은 어떤 output preference로도 덮어쓸 수 없다.
+`assets/schemas/output_contract.yaml`의 `legal_effect_triggers`에 해당하는 요청이면 role mode와 destination contract를 함께 적용한다. `non_overrides`에 있는 Legal Verification Core, 출처 권위 / VERIFIED 계약, Freshness Governance, 변호사/법무 검토 필요 조건은 어떤 output preference로도 덮어쓸 수 없다.
 
-`practice_profile.yaml`이 default destination이나 preferred section을 제안할 수는 있다. 그러나 practice profile은 출력 선호일 뿐이므로 `business_user`/`unknown` gate, 외부 송부 전 법무 검토, Source Grade와 verification status를 덮어쓰지 못한다. practice profile과 현재 사용자 요청이 충돌하면 현재 사용자 요청과 role/destination gate를 우선한다.
+`practice_profile.yaml`이 default destination이나 preferred section을 제안할 수는 있다. 그러나 practice profile은 출력 선호일 뿐이므로 `business_user`/`unknown` gate, 외부 송부 전 법무 검토, 출처 권위 라벨과 verification status를 덮어쓰지 못한다. practice profile과 현재 사용자 요청이 충돌하면 현재 사용자 요청과 role/destination gate를 우선한다.
 
 | 목적지 | 출력 방식 | 금지/주의 |
 | --- | --- | --- |
-| `internal_legal_memo` | 검토자 메모, Source Grade, 자가 검증, 미확인 범위를 모두 포함 | 사실관계가 불완전하면 결론 강도를 낮춤 |
+| `internal_legal_memo` | 검토자 메모, 출처 권위 라벨, 자가 검증, 미확인 범위를 모두 포함 | 사실관계가 불완전하면 결론 강도를 낮춤 |
 | `business_summary` | 의사결정 포인트, 실행 항목, 법무 확인 필요 항목 중심 | 내부 법리 논증 전체를 그대로 노출하지 않음 |
 | `executive_report` | 핵심 리스크, 선택지, 비용/일정/책임 owner 중심 | 조문 나열만으로 끝내지 않음 |
 | `external_draft` | 외부 공유용 초안임을 표시하고, 보내기 전 법무 검토 필요 문구를 포함 | 내부 검토자 메모와 자가 검증 블록을 그대로 포함하지 않는다 |
@@ -178,18 +177,18 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 **검토자 메모**: Sources 사용자 제공 계약서 일부 · legalize-kr 로컬 확인 | Read 본문 1-18쪽과 DPA 별첨만 확인, 부속서 B/C 원문 미확인 | Currency 법령 원문 기준 | Before relying 미제공 부속서가 결론을 바꿀 수 있음
 ```
 
-출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 확인`, `법망 API 확인`, `법망 API 원문 필드 확인`, `law.go.kr 확인`, `사용자 제공`, `web — verify`, `확인 불가`. Source Grade는 소스의 신뢰도이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다. `법망 API search 결과만 확인`이나 `WebSearch 스니펫 확인`은 `[VERIFIED]`가 아니라 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
+출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 확인`, `법망 API 확인`, `법망 API 원문 필드 확인`, `law.go.kr 확인`, `사용자 제공`, `web — verify`, `확인 불가`. 출처 권위 라벨은 소스의 성격과 사용 가능성이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다. `법망 API search 결과만 확인`이나 `WebSearch 스니펫 확인`은 `[VERIFIED]`가 아니라 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
 
 검토자 메모 필드:
 
 | 필드 | 의미 | 생략 가능 여부 |
 | --- | --- | --- |
-| `Sources` | 이번 응답에서 실제 확인한 provenance와 Source Grade 범위 | 법률 인용이 없으면 생략 가능 |
+| `Sources` | 이번 응답에서 실제 확인한 provenance와 출처 권위 라벨 범위 | 법률 인용이 없으면 생략 가능 |
 | `Read` | 읽은 문서, 페이지, 조항, 제외된 범위 | 단문 조문 확인이면 생략 가능 |
 | `Currency` | 최신성 확인 기준일, 현행/미시행/조회 실패 여부 | 시행일·개정 여부가 쟁점이면 필수 |
 | `Before relying` | 의존 전 사용자가 확인해야 할 1-2개 항목 | 확정 결론이 아니거나 대외 사용 예정이면 필수 |
 
-검토자 메모에는 새로운 verification status 태그를 만들지 않는다. `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]`과 Grade A-D 체계를 그대로 사용한다.
+검토자 메모에는 새로운 verification status 태그를 만들지 않는다. `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]`과 출처 권위 라벨 체계를 그대로 사용한다.
 
 ## 자가 검증 메타데이터
 

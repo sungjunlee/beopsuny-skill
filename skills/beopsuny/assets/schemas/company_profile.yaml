@@ -46,7 +46,7 @@ party_position:
 
 # 계약 검토 playbook (v0.4.0~)
 # 한국법 강행규정과 공식 근거가 항상 우선한다. playbook은 협상 선호와 escalation 기준일 뿐
-# Source Grade A/B 법령·판례 근거를 대체하지 않는다.
+# 출처 권위 라벨 A/B 법령·판례 근거를 대체하지 않는다.
 contract_playbook:
   default_role: ""          # customer | supplier | platform | unknown
   risk_posture: ""          # conservative | moderate | aggressive | ""

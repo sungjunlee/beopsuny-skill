@@ -13,7 +13,7 @@ source_families_checked:
 official_sources:
   - title: ""
     url: ""
-    source_grade: ""           # A | B | C | D
+    source_authority: ""           # 공식 원문 | 공식 실무자료 | 해설/의견 | 참고 제외
     verification_status: ""    # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
     retrieved_at: ""
     notes: ""

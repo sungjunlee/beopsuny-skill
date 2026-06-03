@@ -150,7 +150,7 @@ scenarios:
       - type: expansion_not_routing
         description: support access, backup, DPA, subprocessor를 post-blind 확장으로만 쓰는지
       - type: conclusion_boundary
-        description: 최종 결론이 live official source와 Source Grade로만 뒷받침되는지
+        description: 최종 결론이 live official source와 출처 권위 라벨로만 뒷받침되는지
       - type: right_sized_use
         description: 복합 국외이전/vendor 질문이라 knowledge 보강은 허용되지만, manifest가 결론의 전제조건이 되지 않는지
 
