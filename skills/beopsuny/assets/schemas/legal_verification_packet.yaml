@@ -25,7 +25,7 @@ authority_packets:
         type: ""               # statute | decree | regulation | guidance | precedent | form | fee_schedule | official_notice | other
         citation: ""
         pinpoint: ""
-        source_authority: ""       # 공식 원문 | 공식 실무자료 | 해설/의견 | 참고 제외
+        source_authority: ""       # 공식 원문 | 공식 원문: 하급심 | 공식 원문 기반 로컬 미러 | 공식 원문 기반 로컬 미러: 하급심 | 공식 실무자료 | 공식 실무자료: 미확정 | 해설/의견 | 참고 제외
         verification_status: "" # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
         provenance: ""         # 이번 응답에서 실제 확인한 경로
         currency: ""           # 현행 | 시행 예정 | 미시행 | 조회 실패 | 검토일

@@ -140,6 +140,16 @@ LOCAL_MIRROR_PROVENANCE_MARKERS = [
     "law.go.kr 원문 확인",
     "glaw.scourt.go.kr 원문 확인",
 ]
+SOURCE_AUTHORITY_DOC_VALUES = [
+    "공식 원문",
+    "공식 원문: 하급심",
+    "공식 원문 기반 로컬 미러",
+    "공식 원문 기반 로컬 미러: 하급심",
+    "공식 실무자료",
+    "공식 실무자료: 미확정",
+    "해설/의견",
+    "참고 제외",
+]
 
 
 def markdown_heading_slugs(text: str) -> set[str]:
@@ -1276,6 +1286,15 @@ def check_source_authority_verified_contract() -> None:
         assert_not_contains(doc_text, 'source_authority: "[STALE]"', doc_label)
         assert_not_contains(doc_text, 'source_authority: "[UNVERIFIED]"', doc_label)
         assert_not_contains(doc_text, 'source_authority: "[INSUFFICIENT]"', doc_label)
+
+    source_authority_docs = {
+        "research-workflow.md": docs["research-workflow.md"],
+        "legal_verification_packet.yaml": read_text("skills/beopsuny/assets/schemas/legal_verification_packet.yaml"),
+        "freshness_revalidation.yaml": read_text("skills/beopsuny/assets/schemas/freshness_revalidation.yaml"),
+    }
+    for doc_label, doc_text in source_authority_docs.items():
+        for value in SOURCE_AUTHORITY_DOC_VALUES:
+            assert_contains(doc_text, value, doc_label)
 
     source_docs = {
         "source-grading.md": text,
