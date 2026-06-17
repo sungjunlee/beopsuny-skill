@@ -91,7 +91,16 @@ QUALITY_CONTRACT_REFERENCES = {
 }
 
 
-SOURCE_AUTHORITIES = {"공식 원문", "공식 원문: 하급심", "공식 실무자료", "공식 실무자료: 미확정", "해설/의견", "참고 제외"}
+SOURCE_AUTHORITIES = {
+    "공식 원문",
+    "공식 원문: 하급심",
+    "공식 원문 기반 로컬 미러",
+    "공식 원문 기반 로컬 미러: 하급심",
+    "공식 실무자료",
+    "공식 실무자료: 미확정",
+    "해설/의견",
+    "참고 제외",
+}
 VERIFICATION_STATUSES = {
     "[VERIFIED]",
     "[UNVERIFIED]",
@@ -119,6 +128,28 @@ LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-14",
     "router-16",
 }
+LOCAL_MIRROR_DEFAULT_LABELS = {
+    "legalize-kr (로컬 미러 법령 Markdown)": "공식 원문 기반 로컬 미러",
+    "precedent-kr (로컬 미러 대법원 판례)": "공식 원문 기반 로컬 미러",
+    "precedent-kr (로컬 미러 하급심 판례)": "공식 원문 기반 로컬 미러: 하급심",
+}
+LOCAL_MIRROR_DIRECT_LABELS = {"공식 원문", "공식 원문: 하급심"}
+LOCAL_MIRROR_PROVENANCE_MARKERS = [
+    "로컬 미러 확인",
+    "직접 공식 사이트 확인 아님",
+    "law.go.kr 원문 확인",
+    "glaw.scourt.go.kr 원문 확인",
+]
+SOURCE_AUTHORITY_DOC_VALUES = [
+    "공식 원문",
+    "공식 원문: 하급심",
+    "공식 원문 기반 로컬 미러",
+    "공식 원문 기반 로컬 미러: 하급심",
+    "공식 실무자료",
+    "공식 실무자료: 미확정",
+    "해설/의견",
+    "참고 제외",
+]
 
 
 def markdown_heading_slugs(text: str) -> set[str]:
@@ -1226,6 +1257,25 @@ def check_source_authority_verified_contract() -> None:
         if default_label.get("label") not in SOURCE_AUTHORITIES:
             raise AssertionError(f"source_grades.yaml: default_labels[{source_name!r}] has invalid label")
 
+    for source_name, expected_label in LOCAL_MIRROR_DEFAULT_LABELS.items():
+        default_label = default_labels.get(source_name)
+        if not isinstance(default_label, dict):
+            raise AssertionError(f"source_grades.yaml: local mirror default label missing: {source_name!r}")
+        actual_label = default_label.get("label")
+        if actual_label != expected_label:
+            raise AssertionError(
+                f"source_grades.yaml: {source_name!r} must use {expected_label!r}, got {actual_label!r}"
+            )
+        if actual_label in LOCAL_MIRROR_DIRECT_LABELS:
+            raise AssertionError(
+                f"source_grades.yaml: {source_name!r} must not look like direct official-site verification"
+            )
+        rationale = str(default_label.get("rationale", ""))
+        if "로컬 미러" not in rationale or "직접 공식 사이트 확인 아님" not in rationale:
+            raise AssertionError(
+                f"source_grades.yaml: {source_name!r} rationale must distinguish local mirror provenance"
+            )
+
     docs = {
         "bulk-tabular-review.md": read_text("skills/beopsuny/references/bulk-tabular-review.md"),
         "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
@@ -1236,6 +1286,28 @@ def check_source_authority_verified_contract() -> None:
         assert_not_contains(doc_text, 'source_authority: "[STALE]"', doc_label)
         assert_not_contains(doc_text, 'source_authority: "[UNVERIFIED]"', doc_label)
         assert_not_contains(doc_text, 'source_authority: "[INSUFFICIENT]"', doc_label)
+
+    source_authority_docs = {
+        "research-workflow.md": docs["research-workflow.md"],
+        "legal_verification_packet.yaml": read_text("skills/beopsuny/assets/schemas/legal_verification_packet.yaml"),
+        "freshness_revalidation.yaml": read_text("skills/beopsuny/assets/schemas/freshness_revalidation.yaml"),
+    }
+    for doc_label, doc_text in source_authority_docs.items():
+        for value in SOURCE_AUTHORITY_DOC_VALUES:
+            assert_contains(doc_text, value, doc_label)
+    assert_not_contains(docs["research-workflow.md"], "공식 원문/공식 실무자료", "research-workflow.md")
+
+    source_docs = {
+        "source-grading.md": text,
+        "source_grades.yaml": read_text("skills/beopsuny/assets/policies/source_grades.yaml"),
+        "output-formats.md": docs["output-formats.md"],
+        "source-access.md": docs["source-access.md"],
+    }
+    for doc_label, doc_text in source_docs.items():
+        for required in LOCAL_MIRROR_PROVENANCE_MARKERS:
+            assert_contains(doc_text, required, doc_label)
+        assert_not_contains(doc_text, "— legalize-kr 로컬\n", doc_label)
+        assert_not_contains(doc_text, "— precedent-kr 로컬\n", doc_label)
 
 
 def check_citation_verification_contract_single_source() -> None:
@@ -1279,7 +1351,7 @@ def check_golden_citation_fixtures() -> None:
 
     if not isinstance(data, dict):
         raise AssertionError(f"{label}: expected mapping")
-    for required in ["metadata", "statutes", "other_authorities", "failure_fixtures"]:
+    for required in ["metadata", "local_mirror_examples", "statutes", "other_authorities", "failure_fixtures"]:
         if required not in data:
             raise AssertionError(f"{label}: missing {required!r}")
 
@@ -1299,6 +1371,16 @@ def check_golden_citation_fixtures() -> None:
         raise AssertionError(f"{label}: runtime_recheck_required must be true")
     if metadata["not_a_legal_answer_judge"] is not True:
         raise AssertionError(f"{label}: not_a_legal_answer_judge must be true")
+    for required in ["direct official source URLs", "로컬 미러 확인", "직접 공식 사이트 확인 아님"]:
+        assert_contains(str(metadata["provenance_policy"]), required, label)
+
+    local_mirror_examples = data["local_mirror_examples"]
+    if not isinstance(local_mirror_examples, list) or len(local_mirror_examples) < 2:
+        raise AssertionError(f"{label}: expected at least 2 local mirror provenance examples")
+    local_mirror_sources = {str(item.get("source_family", "")) for item in local_mirror_examples if isinstance(item, dict)}
+    for required_source in ["legalize-kr", "precedent-kr"]:
+        if required_source not in local_mirror_sources:
+            raise AssertionError(f"{label}: local_mirror_examples missing {required_source}")
 
     statutes = data["statutes"]
     if not isinstance(statutes, list) or len(statutes) < 30:
@@ -1353,6 +1435,21 @@ def check_golden_citation_fixtures() -> None:
             raise AssertionError(f"{label}: other authority {item['id']} must require pinpoint reporting")
         if not any(host in str(item["official_url"]) for host in ["law.go.kr", "glaw.scourt.go.kr"]):
             raise AssertionError(f"{label}: other authority {item['id']} must point to an official legal source")
+
+    for item in local_mirror_examples:
+        if not isinstance(item, dict):
+            raise AssertionError(f"{label}: local mirror fixture must be a mapping: {item!r}")
+        check_golden_fixture_common(item, label, seen_ids)
+        source_family = str(item.get("source_family", ""))
+        if source_family not in {"legalize-kr", "precedent-kr"}:
+            raise AssertionError(f"{label}: local mirror {item.get('id')!r} has invalid source_family")
+        if item["source_authority"] in LOCAL_MIRROR_DIRECT_LABELS:
+            raise AssertionError(f"{label}: local mirror {item['id']} uses direct official-source label")
+        if item["source_authority"] not in set(LOCAL_MIRROR_DEFAULT_LABELS.values()):
+            raise AssertionError(f"{label}: local mirror {item['id']} has wrong source_authority")
+        provenance = str(item["provenance"])
+        if "로컬 미러 확인" not in provenance or "직접 공식 사이트 확인 아님" not in provenance:
+            raise AssertionError(f"{label}: local mirror {item['id']} has ambiguous provenance")
 
     failures = data["failure_fixtures"]
     if not isinstance(failures, list) or len(failures) < 3:
@@ -2172,8 +2269,11 @@ def check_output_reviewer_note_lite() -> None:
         "검토자 메모 Lite",
         "표준 검토자 메모",
         "출처 provenance",
-        "legalize-kr 로컬 확인",
+        "legalize-kr 로컬 미러 확인",
+        "직접 공식 사이트 확인 아님",
         "법망 API 확인",
+        "law.go.kr 원문 확인",
+        "glaw.scourt.go.kr 원문 확인",
         "web — verify",
         "Before relying",
     ]:
@@ -2351,6 +2451,12 @@ def check_router_fixture_integrity() -> None:
     empty_outputs = sorted(scenario_id for scenario_id, output in outputs.items() if not str(output).strip())
     if empty_outputs:
         raise AssertionError(f"router_guardrail_outputs.yaml: empty sample outputs {empty_outputs!r}")
+
+    fixture_text = read_text("tests/fixtures/router_guardrail_outputs.yaml")
+    for required in ["공식 원문 기반 로컬 미러", "로컬 미러 확인", "직접 공식 사이트 확인 아님"]:
+        assert_contains(fixture_text, required, "router_guardrail_outputs.yaml")
+    if re.search(r"source_authority:\s*.*후보", fixture_text):
+        raise AssertionError("router_guardrail_outputs.yaml: source_authority must not carry candidate status")
 
     unsafe_outputs = fixture.get("unsafe_outputs")
     if not isinstance(unsafe_outputs, list) or not unsafe_outputs:

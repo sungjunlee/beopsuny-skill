@@ -8,11 +8,13 @@
 
 | 순위 | Full 모드 | Lite 모드 | 기본 출처 권위 라벨 |
 |------|----------|----------|-----------|
-| 1 | 로컬 Git `legalize-kr` + `precedent-kr` | 법망 API | 공식 원문, 하급심은 공식 원문: 하급심 |
+| 1 | 로컬 Git `legalize-kr` + `precedent-kr` | 법망 API | Full 로컬은 공식 원문 기반 로컬 미러, 하급심은 공식 원문 기반 로컬 미러: 하급심 |
 | 2 | 법망 API | WebSearch | 행정규칙/해석례는 공식 원문, 의안은 공식 실무자료: 미확정 |
 | 3 | korean-law-mcp, OC 코드 필요 | korean-law-mcp, OC 코드 필요 | 공식 원문 |
 | 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr | 공식 원문 |
 | 백업 | WebSearch 공식/해설 자료 | WebSearch 공식/해설 자료 | 공식 실무자료 / 해설·의견 / 참고 제외 |
+
+Full 모드에서 `legalize-kr` 또는 `precedent-kr` 파일을 읽은 경우 provenance는 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)` 또는 `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 쓴다. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
 
 ## Mode Detection
 
@@ -36,12 +38,12 @@ ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/
 
 | 상황 | 사용 가능한 경로 | 답변 경계 |
 | --- | --- | --- |
-| Full 모드 + 네트워크 가능 | local legalize-kr/precedent-kr, 법망 API, korean-law-mcp, WebSearch | 가장 강한 모드. 그래도 행정규칙·최신 개정은 API/공식 링크로 확인 |
+| Full 모드 + 네트워크 가능 | local legalize-kr/precedent-kr, 법망 API, korean-law-mcp, WebSearch | 로컬 미러와 직접 공식 소스를 모두 쓸 수 있다. 행정규칙·최신 개정은 API/공식 링크로 확인 |
 | 로컬 데이터 없음 | 법망 API, WebSearch, 공식 링크 | Lite 모드로 안내. 로컬 전문·git history 전제 금지 |
 | 법망 API 접근 불가 | local data, law.go.kr/glaw.scourt.go.kr, WebSearch 공식 자료 | 행정규칙·해석례 원문 확인 실패 시 `[INSUFFICIENT]` 또는 `[UNVERIFIED]` |
 | WebSearch 없음 | local data, 법망 API, 사용 가능한 MCP/공식 링크 | 정책 동향·제재 동향은 생략하거나 확인 필요 표시 |
 | korean-law-mcp 또는 OC 코드 없음 | local data, 법망 API, WebSearch | 헌재·행정심판·자치법규·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내 |
-| 네트워크 없음 | local legalize-kr/precedent-kr만 사용 | 최신성, 행정규칙, 정책 동향, 공식 링크 검증을 제한사항으로 표시 |
+| 네트워크 없음 | local legalize-kr/precedent-kr만 사용 | 로컬 미러 확인으로 표시하고, 최신성, 행정규칙, 정책 동향, 공식 링크 검증을 제한사항으로 표시 |
 | 로컬 데이터와 네트워크 모두 없음 | 번들 YAML은 후보·체크리스트로만 사용 | 법률 결론을 만들지 말고 `[INSUFFICIENT]`로 유보 |
 
 Fallback 원칙:
@@ -67,7 +69,7 @@ Fallback 원칙:
 2. 재확인에 실패하면 `[STALE]` 또는 `[INSUFFICIENT]`로 낮추고 결론을 유보한다.
 3. 단순 후보로만 쓰고, 현행 법적 결론의 근거로 쓰지 않는다.
 
-Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 소스라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
+Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 소스나 공식 원문 기반 로컬 미러라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
 
 ## Full Mode: legalize-kr
 
@@ -89,6 +91,12 @@ git -C ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr log --oneline -20 -- 
 
 `git log --name-only`로 한국어 경로를 볼 때는 octal escape 방지를 위해 `-c core.quotePath=false`를 사용한다.
 
+출력 provenance 예시:
+
+```markdown
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
+```
+
 ## Full Mode: precedent-kr
 
 경로:
@@ -102,6 +110,12 @@ ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/
 ```bash
 find ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr -name "*2022다12345*"
 cat ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/민사/대법원/2022다12345.md
+```
+
+출력 provenance 예시:
+
+```markdown
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
 ```
 
 ## 법망 API
