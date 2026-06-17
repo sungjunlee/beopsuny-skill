@@ -127,9 +127,17 @@ outputs:
     citation ledger:
     - citation: 공정거래법/시행령 기업결합 신고 기준
     - pinpoint: 신고 기준 조항 및 금액 threshold
-    - source_authority: 공식 원문 후보 또는 공식 원문 기반 로컬 미러 후보
+    - source_authority: 공식 원문
     - verification_status: [UNVERIFIED]
-    - provenance: law.go.kr 원문 확인 또는 legalize-kr 로컬 미러 확인(직접 공식 사이트 확인 아님) 필요
+    - provenance: law.go.kr 원문 확인 필요
+    - currency: 현행성 확인 전
+    - supports: 현재 신고 기준 결론
+
+    - citation: 공정거래법/시행령 기업결합 신고 기준
+    - pinpoint: 신고 기준 조항 및 금액 threshold
+    - source_authority: 공식 원문 기반 로컬 미러
+    - verification_status: [UNVERIFIED]
+    - provenance: legalize-kr 로컬 미러 확인(직접 공식 사이트 확인 아님) 필요
     - currency: 현행성 확인 전
     - supports: 현재 신고 기준 결론
 

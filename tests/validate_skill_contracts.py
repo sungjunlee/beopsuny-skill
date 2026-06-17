@@ -2454,6 +2454,8 @@ def check_router_fixture_integrity() -> None:
     fixture_text = read_text("tests/fixtures/router_guardrail_outputs.yaml")
     for required in ["공식 원문 기반 로컬 미러", "로컬 미러 확인", "직접 공식 사이트 확인 아님"]:
         assert_contains(fixture_text, required, "router_guardrail_outputs.yaml")
+    if re.search(r"source_authority:\s*.*후보", fixture_text):
+        raise AssertionError("router_guardrail_outputs.yaml: source_authority must not carry candidate status")
 
     unsafe_outputs = fixture.get("unsafe_outputs")
     if not isinstance(unsafe_outputs, list) or not unsafe_outputs:
