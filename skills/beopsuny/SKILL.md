@@ -41,18 +41,28 @@ description: |
 
 ## 의도 라우터
 
-먼저 사용자 요청을 하나의 주 의도로 분류한다. 복합 요청이면 주 의도를 선택하고 필요한 보조 작업 흐름만 읽는다.
+먼저 사용자 요청을 하나의 주 의도로 분류한다. 복합 요청이면 주 의도를 선택하고 필요한 보조 작업 흐름만 읽는다. 아래 표는 의도별 workflow reference만 고른다.
 
-| 의도 | 트리거 예시 | 읽을 자료 |
+| 의도 | 트리거 예시 | 의도별 workflow reference |
 |--------|-------------|-----------|
 | `legal_research` | 조문 확인, 판례, 행정규칙, 과징금, 해고 절차, 개인정보 동의 | `references/source-access.md`, `references/research-workflow.md`, `references/source-grading.md` |
 | `contract_review` | 계약서 검토, NDA, SaaS 계약, 위험 조항, 협상 포인트 | `references/contract_review_guide.md`, `assets/policies/checklists/contract_review.yaml`, `assets/policies/review_mode.yaml`, `assets/data/clause_references.yaml` |
 | `bulk_tabular_review` | 여러 계약/문서/체크리스트를 표로 비교, 대량 검토 grid, "엑셀처럼 정리" | `references/bulk-tabular-review.md`, 필요 시 `references/contract_review_guide.md` 또는 `references/checklist-routing.md` |
 | `compliance_checklist` | 인허가, 연간 의무, 업종별 점검, "무엇을 준비해야 해?" | `references/checklist-routing.md`, `assets/policies/checklists/*.yaml` |
 | `law_change_detection` | 최근 개정, 법령 변경 내역, 관심 법령 변경 | `references/law-change-detection.md`, `references/source-access.md` |
-| `legal_terms` | 영한 법률용어, 계약 용어 뜻 | `assets/data/legal_terms.yaml`, 필요 시 `references/output-formats.md` |
+| `legal_terms` | 영한 법률용어, 계약 용어 뜻 | `assets/data/legal_terms.yaml` |
 | `memory_profile` | 회사 정보 저장, 온보딩, playbook 설정, 프로젝트 전환, 과거 검토 이력, 관심 법령 | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml`, 필요 시 `assets/schemas/past_reviews.yaml`, `assets/schemas/watched_laws.yaml`, `assets/schemas/compliance_status.yaml`, `assets/schemas/internal_rules.yaml` |
 | `privacy_knowledge_layer` | 개인정보 쟁점이 복잡하고 누락 검색어/audit 보강이 유용한 경우 | `references/knowledge-injection.md` |
+
+법률 결론 always-on gate는 의도별 workflow reference와 별도로 항상 적용한다.
+
+| Gate | 필수 reference | 적용 범위 |
+| --- | --- | --- |
+| Citation verification | `references/citation-verification-contract.md` | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |
+| Self verification | `references/self-verification.md` | 법률 결론, 계약 검토, 컴플라이언스 판단, 법령 변경 확인 전 출력 직전 점검 |
+| Output contract | `references/output-formats.md` | 법률 결론의 크기, 검토자 메모, 자가 검증 블록, 역할·목적지별 출력 구조 |
+
+이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용하지만, 계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다.
 
 라우팅 원칙:
 
@@ -66,7 +76,7 @@ description: |
 
 ## 품질 계약 매핑
 
-단일 public skill을 유지하되, 법률 결론·현행성·출력 목적지·회사 맥락은 아래 계약을 함께 적용한다. 이 표는 새 세부 문서를 자동으로 읽으라는 뜻이 아니라, 해당 실패모드가 보이면 어떤 계약을 우선 확인해야 하는지 정하는 router map이다.
+단일 public skill을 유지하되, 법률 결론·현행성·출력 목적지·회사 맥락은 아래 계약을 함께 적용한다. 위 always-on gate를 먼저 적용하고, 이 표는 해당 실패모드가 보이면 어떤 계약을 우선 확인해야 하는지 정하는 router map이다.
 
 | 트리거 | 적용 계약 | 핵심 gate |
 | --- | --- | --- |

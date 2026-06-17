@@ -106,6 +106,19 @@ FAILURE_STATUSES = {
     "[STALE]",
     "[CONTRADICTED]",
 }
+ALWAYS_ON_LEGAL_GATES = {
+    "citation_verification": "skills/beopsuny/references/citation-verification-contract.md",
+    "self_verification": "skills/beopsuny/references/self-verification.md",
+    "output_contract": "skills/beopsuny/references/output-formats.md",
+}
+LEGAL_RESEARCH_GATE_SCENARIOS = {
+    "router-01",
+    "router-03",
+    "router-05",
+    "router-07",
+    "router-14",
+    "router-16",
+}
 
 
 def markdown_heading_slugs(text: str) -> set[str]:
@@ -1802,6 +1815,12 @@ def check_skill_quality_contract_router_map() -> None:
 
     for required in [
         "품질 계약 매핑",
+        "법률 결론 always-on gate",
+        "의도별 workflow reference와 별도로 항상 적용",
+        "references/citation-verification-contract.md",
+        "references/self-verification.md",
+        "references/output-formats.md",
+        "계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다",
         "해당 실패모드가 보이면 어떤 계약을 우선 확인해야 하는지 정하는 router map",
         "references/research-workflow.md#legal-verification-core",
         "assets/schemas/legal_verification_packet.yaml",
@@ -1823,6 +1842,25 @@ def check_skill_quality_contract_router_map() -> None:
     ]:
         assert_contains(text, required, label)
 
+    router_block_match = re.search(r"## 의도 라우터\n(?P<body>.*?)\n## 품질 계약 매핑", text, flags=re.S)
+    if not router_block_match:
+        raise AssertionError(f"{label}: intent router block missing")
+    router_body = router_block_match.group("body")
+    intent_table_match = re.search(
+        r"\| 의도 \|.*?(?=\n\n법률 결론 always-on gate|\n라우팅 원칙:)",
+        router_body,
+        flags=re.S,
+    )
+    if not intent_table_match:
+        raise AssertionError(f"{label}: intent router table missing")
+    intent_table = intent_table_match.group(0)
+    for gate_ref in ALWAYS_ON_LEGAL_GATES.values():
+        compact_ref = gate_ref.removeprefix("skills/beopsuny/")
+        if compact_ref in intent_table:
+            raise AssertionError(
+                f"{label}: always-on gate {compact_ref!r} must stay out of intent-specific router rows"
+            )
+
 
 def check_readme_quality_contract_map() -> None:
     text = read_text("README.md")
@@ -1830,6 +1868,7 @@ def check_readme_quality_contract_map() -> None:
 
     for required in [
         "품질 계약 지도",
+        "Always-on legal conclusion gates",
         "Legal verification core",
         "Freshness governance",
         "Role / destination output gate",
@@ -1840,6 +1879,8 @@ def check_readme_quality_contract_map() -> None:
         "router-14",
         "router-15",
         "router-16",
+        "router-01",
+        "router-05",
         "check_freshness_debt_registry",
         "check_output_role_destination_contracts",
         "check_memory_practice_profile_direction",
@@ -2047,6 +2088,9 @@ def check_changelog_quality_contract_notes() -> None:
         "router fixture integrity",
         "contract-tests.yml",
         "품질 계약 지도",
+        "Always-on legal conclusion gates",
+        "router-01",
+        "router-05",
         "품질 계약 변경 체크리스트",
         "README 회귀 검증 참조",
         "새 법률 기능 추가 시 router, reference, schema/policy, scenario, unsafe fixture, 정적 검사, README/CHANGELOG",
@@ -2207,11 +2251,32 @@ def check_router_scenario_references() -> None:
     refs = data.get("global_rules", {}).get("mandatory_references", {})
     expected = {
         "source_authority": "skills/beopsuny/references/source-grading.md",
-        "self_verification": "skills/beopsuny/references/self-verification.md",
         "source_access": "skills/beopsuny/references/source-access.md",
     }
     if refs != expected:
         raise AssertionError(f"router mandatory references drift: {refs!r}")
+
+
+def check_router_always_on_legal_gates() -> None:
+    data = load_yaml("tests/scenarios/16_router_regression.yaml")
+    gates = data.get("global_rules", {}).get("always_on_legal_gates", {})
+    if gates != ALWAYS_ON_LEGAL_GATES:
+        raise AssertionError(f"router always-on legal gates drift: {gates!r}")
+
+    scenarios = router_scenarios()
+    for scenario_id in LEGAL_RESEARCH_GATE_SCENARIOS:
+        scenario = scenarios.get(scenario_id)
+        if not scenario:
+            raise AssertionError(f"{scenario_id}: router scenario missing")
+        expected = scenario.get("expected", {})
+        if expected.get("primary_intent") != "legal_research":
+            raise AssertionError(f"{scenario_id}: expected primary_intent legal_research")
+        scenario_gates = expected.get("always_apply_gates")
+        if scenario_gates != list(ALWAYS_ON_LEGAL_GATES):
+            raise AssertionError(
+                f"{scenario_id}: always_apply_gates must be {list(ALWAYS_ON_LEGAL_GATES)!r}, "
+                f"got {scenario_gates!r}"
+            )
 
 
 def check_router_guardrail_scenarios() -> None:
@@ -2564,6 +2629,7 @@ CHECKS = [
     check_output_role_destination_contracts,
     check_memory_practice_profile_direction,
     check_router_scenario_references,
+    check_router_always_on_legal_gates,
     check_router_guardrail_scenarios,
     check_router_fixture_integrity,
     check_router_output_eval,

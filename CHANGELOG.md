@@ -28,8 +28,9 @@
 
 ### Changed
 - 점수형 A/B/C/D 공개 출력 체계를 출처 권위 라벨(`공식 원문`, `공식 원문: 하급심`, `공식 실무자료`, `공식 실무자료: 미확정`, `해설/의견`, `참고 제외`)과 verification status 병기로 전환. `source_grades.yaml` 파일명은 호환성 때문에 유지하되, 내용은 `source_classes`/`default_labels` 계약으로 정리
-- `skills/beopsuny/SKILL.md` 762줄 → 277줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + 출처 권위 라벨 계약 + 필수 자가 검증 중심 문서로 재작성하고, 법적 효과가 있는 행동에는 `user_role`/목적지 gate를 적용하도록 보강
+- `skills/beopsuny/SKILL.md` 762줄 → 303줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + 출처 권위 라벨 계약 + 필수 자가 검증 중심 문서로 재작성하고, 법적 효과가 있는 행동에는 `user_role`/목적지 gate를 적용하도록 보강
 - `skills/beopsuny/SKILL.md`에 품질 계약 매핑을 추가해 Legal Verification Core, Freshness Governance, Output role/destination gate, Profile/practice direction이 어떤 트리거에서 함께 적용되는지 단일 라우터 안에 고정
+- `skills/beopsuny/SKILL.md` 의도 라우터에 Always-on legal conclusion gates를 추가해 citation verification, self-verification, output contract를 의도별 workflow reference와 분리. `router-01`, `router-05` 등 단순 legal research도 계약/체크리스트/knowledge workflow로 over-route하지 않으면서 gate 적용을 고정
 - `skills/beopsuny/SKILL.md`의 `memory_profile` 라우터에서 `assets/schemas/*.yaml` glob을 제거하고 memory 관련 schema만 명시. legal verification, freshness, output contract schema가 memory 온보딩에 과잉 로드되는 drift 방지
 - `skills/beopsuny/SKILL.md` frontmatter에서 비필수 `metadata.author/language/updated/version` 제거. 스킬 발견에 필요한 `name`/`description`만 유지하고, 배포 메타데이터는 `.claude-plugin/plugin.json`로 단일화. 한국 사용자 대상 스킬에 맞춰 `description`과 주요 라우터 문구를 한국어 중심으로 정리
 - `skills/beopsuny/references/self-verification.md`를 근거 자료 아카이브에서 실제 자가 검증 절차 문서로 확장
