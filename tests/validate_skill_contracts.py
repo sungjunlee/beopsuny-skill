@@ -1295,6 +1295,7 @@ def check_source_authority_verified_contract() -> None:
     for doc_label, doc_text in source_authority_docs.items():
         for value in SOURCE_AUTHORITY_DOC_VALUES:
             assert_contains(doc_text, value, doc_label)
+    assert_not_contains(docs["research-workflow.md"], "공식 원문/공식 실무자료", "research-workflow.md")
 
     source_docs = {
         "source-grading.md": text,
