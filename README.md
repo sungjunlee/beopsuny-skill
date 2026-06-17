@@ -113,6 +113,13 @@ PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 ```
 
+high-risk forward eval harness를 dry/sample 모드로 확인하려면:
+
+```bash
+PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample \
+  --evidence tests/forward_evals/runs/sample.yaml
+```
+
 로컬 전역 설치본까지 비교하려면 설치 경로를 명시한다.
 
 ```bash
@@ -134,7 +141,7 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
 
-`tests/forward_evals/beopsuny_guardrails.yaml`은 실제 모델 응답을 수동 또는 별도 harness로 점검하는 forward-eval prompt set이다. CI의 빠른 gate는 아니며, 실패 시 `guardrail_category`와 `source_router_scenario` 기준으로 이슈를 남긴다.
+`tests/forward_evals/beopsuny_guardrails.yaml`은 실제 모델 응답을 수동 또는 `tests/forward_eval_harness.py`로 점검하는 forward-eval prompt set이다. CI의 빠른 gate는 아니며, sample/template/score/command 모드 evidence는 `tests/forward_evals/runs/`에 기록한다. 실패 시 `prompt_id`, `guardrail_category`, `source_router_scenario`, output evidence 기준으로 이슈를 남긴다.
 
 GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, 테스트 harness compile을 실행한다.
 
@@ -149,7 +156,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 5. `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule을 추가해 금지 실패모드를 잡는다.
 6. `tests/validate_skill_contracts.py`에 문서·스키마·README·CHANGELOG drift 검사를 추가한다.
 7. README 품질 계약 지도와 CHANGELOG를 갱신한다.
-8. `PYTHON=${PYTHON:-python3}`, `$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt`, `PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py`, `PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py`, `$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py`, `git diff --check`를 실행한다.
+8. `PYTHON=${PYTHON:-python3}`, `$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt`, `PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py`, `PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py`, `PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evidence tests/forward_evals/runs/sample.yaml`, `$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py`, `git diff --check`를 실행한다.
 
 기존 장점인 단일 라우터, 한국법 원문주의, 출처 권위 라벨, 자가 검증을 약화시키는 변경은 기능 추가로 보지 않는다. 새 계약은 기존 gate를 우회하지 말고, 필요한 경우 결론 강도를 낮추는 방식으로 연결한다.
 

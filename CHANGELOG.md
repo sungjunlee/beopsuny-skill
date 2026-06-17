@@ -22,6 +22,7 @@
 - `skills/beopsuny/references/bulk-tabular-review.md` — values table / sources table 분리, `Verified` 빈 칸, quote/location spot-check, quote mismatch downgrade 규칙 추가
 - `tests/scenarios/16_router_regression.yaml` — 라우터 회귀 시나리오 16건으로 확장. 단순 조문 확인, 계약 검토, 개인정보 knowledge boundary, push 알림 경계, 해설/의견 단독 결론 금지, 인허가 checklist routing, role/destination gate, freshness debt, legal verification core 검증
 - `tests/fixtures/router_guardrail_outputs.yaml` + `tests/evaluate_scenario_outputs.py` — router-07~16 샘플 출력과 unsafe fixture 7건을 평가하는 guardrail harness 추가
+- `tests/forward_eval_harness.py` — `tests/forward_evals/beopsuny_guardrails.yaml` 10개 high-risk prompt를 sample/template/score/command 모드로 실행·채점하고, `prompt_id`/`guardrail_category`/output evidence를 YAML로 남기는 forward eval harness 추가. live model/API 실행은 CI 필수 gate가 아니라 수동·nightly 경로로 유지
 - `tests/validate_skill_contracts.py` — plugin 메타데이터 버전 정합, 최소 SKILL frontmatter, 계약 검토 가이드 경계, source fallback, 출력 크기 조절, 라우터 필수 reference, legal verification core, freshness debt registry, output/profile 계약, router fixture integrity, README 품질 계약 지도, README 회귀 검증 참조, 품질 계약 지도 reference target, CI workflow를 검증하는 정적 계약 검사 추가. `BEOPSUNY_INSTALLED_SKILL_PATH` 지정 시 설치본 content drift도 감지
 - `.github/workflows/contract-tests.yml` — PR 및 main/master push에서 문서 계약 검증, router guardrail 평가, 테스트 harness compile 실행
 
