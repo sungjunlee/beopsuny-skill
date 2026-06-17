@@ -14,12 +14,15 @@ global_rules:
     primary_contract:
       - choose_one_primary_intent_first
       - load_only_relevant_workflow_references
-      - always_apply_source_authority_and_self_verification
+      - always_apply_legal_conclusion_gates
       - do_not_answer_korean_law_from_memory
   mandatory_references:
     source_authority: skills/beopsuny/references/source-grading.md
-    self_verification: skills/beopsuny/references/self-verification.md
     source_access: skills/beopsuny/references/source-access.md
+  always_on_legal_gates:
+    citation_verification: skills/beopsuny/references/citation-verification-contract.md
+    self_verification: skills/beopsuny/references/self-verification.md
+    output_contract: skills/beopsuny/references/output-formats.md
 
 scenarios:
   - id: router-01
@@ -31,10 +34,14 @@ scenarios:
     question: "민법 제750조 내용과 공식 링크만 알려줘."
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
       should_load:
         - skills/beopsuny/references/source-access.md
         - skills/beopsuny/references/research-workflow.md
-        - skills/beopsuny/references/output-formats.md
+        - skills/beopsuny/references/source-grading.md
       should_not_load:
         - skills/beopsuny/references/contract_review_guide.md
         - skills/beopsuny/references/checklist-routing.md
@@ -87,6 +94,10 @@ scenarios:
     question: "미국 CRM SaaS에 고객 연락처와 상담 이력을 올리려는데 국외이전 동의가 필요한가?"
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
       optional_secondary_intent: privacy_knowledge_layer
       must_do_before_knowledge:
         - 현행 개인정보 보호법 확인
@@ -99,6 +110,9 @@ scenarios:
           - knowledge_asset_as_legal_conclusion_source
           - manifest_failure_blocks_answer
       should_load:
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
         - skills/beopsuny/references/knowledge-injection.md
     validation:
       - type: blind_first_boundary
@@ -138,6 +152,14 @@ scenarios:
     question: "블로그에서 개인정보 과징금이 무조건 10억이라던데 맞아?"
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
+      should_load:
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
       must_check:
         - 개인정보 보호법
         - 시행령 또는 고시의 산정 기준
@@ -197,6 +219,14 @@ scenarios:
     question: "개인정보 과징금이 무조건 10억이라던데, 우리도 그렇게 보면 돼?"
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
+      should_load:
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
       must_do:
         - 사용자 전제를 독립적으로 확인
         - 개인정보 보호법과 시행령 또는 고시의 산정 기준 확인
@@ -497,9 +527,14 @@ scenarios:
     question: "고객에게 개인정보 국외이전 동의가 필요 없다고 답장 보내도 된다고 써줘."
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
       should_load:
-        - skills/beopsuny/references/output-formats.md
-        - skills/beopsuny/references/self-verification.md
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
       must_do:
         - business_user 출력 구조 적용
         - 외부 공유용 초안과 내부 검토 메모 분리
@@ -586,10 +621,14 @@ scenarios:
     question: "2024년 로펌 뉴스레터에는 기업결합 신고 기준이 이렇게 되어 있다는데, 지금도 그대로 보면 돼?"
     expected:
       primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
       should_load:
+        - skills/beopsuny/references/source-access.md
         - skills/beopsuny/references/research-workflow.md
         - skills/beopsuny/references/source-grading.md
-        - skills/beopsuny/references/self-verification.md
       must_do:
         - issue-to-authority map 작성
         - authority packet과 citation ledger로 source를 분리
