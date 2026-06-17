@@ -134,7 +134,7 @@ Lite 모드 진입 시 한 번만 안내한다:
 모든 핵심 인용은 첫 줄에 아래 형식을 붙인다. `[VERIFIED]`는 `references/citation-verification-contract.md`의 VERIFIED minimum conditions를 모두 충족한 경우에만 사용한다.
 
 ```markdown
-**[공식 원문] [VERIFIED]** — legalize-kr 로컬
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
 ```
 
 상태 태그는 기존 6개만 사용한다:

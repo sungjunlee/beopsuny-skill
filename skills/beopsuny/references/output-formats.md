@@ -8,12 +8,19 @@
 
 ```markdown
 ## 민법 제750조 (불법행위의 내용)
-**[공식 원문] [VERIFIED]** — legalize-kr 로컬
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
 
 > 고의 또는 과실로 인한 위법행위로 타인에게 손해를 가한 자는...
 
 - **시행일**: 원문 확인 결과 기재 (예: YYYY. M. D.)
 - **법령 원문**: https://www.law.go.kr/법령/민법/제750조
+```
+
+law.go.kr를 직접 열어 확인한 경우에는 다음처럼 표시한다.
+
+```markdown
+## 민법 제750조 (불법행위의 내용)
+**[공식 원문] [VERIFIED]** — law.go.kr 원문 확인
 ```
 
 항까지 특정할 때:
@@ -32,11 +39,11 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ## 판례 인용
 
-대법원과 하급심 모두 원문이면 공식 원문이다. 하급심 인용 시 `공식 원문: 하급심`으로 표시하고 상급심 변경 가능성을 언급한다.
+대법원과 하급심 모두 직접 공식 사이트 원문이면 `공식 원문`이다. precedent-kr 로컬 미러 파일만 확인했다면 `공식 원문 기반 로컬 미러`로 표시한다. 하급심 로컬 미러 인용 시 `공식 원문 기반 로컬 미러: 하급심`으로 표시하고 상급심 변경 가능성을 언급한다.
 
 ```markdown
 ## 대법원 {선고일} 선고 {사건번호} 판결
-**[공식 원문] [VERIFIED]** — precedent-kr 로컬
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
 
 - **사건명**: 손해배상(기)
 - **판시사항**: ...
@@ -46,8 +53,15 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 
 ```markdown
 ## 서울고등법원 {사건번호} 판결
-**[공식 원문: 하급심] [VERIFIED]** — precedent-kr 로컬
+**[공식 원문 기반 로컬 미러: 하급심] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
 ※ 상급심에 의해 변경 가능 — 대법원 판례와 교차검증 권장
+```
+
+glaw.scourt.go.kr를 직접 열어 확인한 경우에는 다음처럼 표시한다.
+
+```markdown
+## 대법원 {선고일} 선고 {사건번호} 판결
+**[공식 원문] [VERIFIED]** — glaw.scourt.go.kr 원문 확인
 ```
 
 ## 행정규칙 인용
@@ -174,10 +188,10 @@ https://www.law.go.kr/법령/개인정보보호법/제15조제1항
 긴 계약서나 일부 문서만 읽은 경우:
 
 ```markdown
-**검토자 메모**: Sources 사용자 제공 계약서 일부 · legalize-kr 로컬 확인 | Read 본문 1-18쪽과 DPA 별첨만 확인, 부속서 B/C 원문 미확인 | Currency 법령 원문 기준 | Before relying 미제공 부속서가 결론을 바꿀 수 있음
+**검토자 메모**: Sources 사용자 제공 계약서 일부 · legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님) | Read 본문 1-18쪽과 DPA 별첨만 확인, 부속서 B/C 원문 미확인 | Currency 법령 원문 기준 | Before relying 미제공 부속서가 결론을 바꿀 수 있음
 ```
 
-출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 확인`, `법망 API 확인`, `법망 API 원문 필드 확인`, `law.go.kr 확인`, `사용자 제공`, `web — verify`, `확인 불가`. 출처 권위 라벨은 소스의 성격과 사용 가능성이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다. `법망 API search 결과만 확인`이나 `WebSearch 스니펫 확인`은 `[VERIFIED]`가 아니라 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
+출처 provenance는 실제 수행한 확인을 기준으로 적는다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `법망 API 확인`, `법망 API 원문 필드 확인`, `law.go.kr 원문 확인`, `glaw.scourt.go.kr 원문 확인`, `사용자 제공`, `web — verify`, `확인 불가`. 출처 권위 라벨은 소스의 성격과 사용 가능성이고, provenance는 이번 응답에서 실제로 무엇을 확인했는지다. `법망 API search 결과만 확인`이나 `WebSearch 스니펫 확인`은 `[VERIFIED]`가 아니라 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
 
 검토자 메모 필드:
 

@@ -4,10 +4,40 @@
 
 metadata:
   purpose: "Core Korean legal citation fixtures for statute, administrative-rule, and failure-path guardrails."
-  provenance_policy: "fixed_provenance entries identify official source families and URLs; bundled fixtures stay [UNVERIFIED] until runtime opens the current official source."
+  provenance_policy: "fixed_provenance entries identify direct official source URLs; local mirror examples use 로컬 미러 확인 / 직접 공식 사이트 확인 아님 vocabulary; bundled fixtures stay [UNVERIFIED] until runtime opens the current official source or reads the current local mirror."
   retrieved_at: "2026-06-01"
   runtime_recheck_required: true
   not_a_legal_answer_judge: true
+
+local_mirror_examples:
+  - id: local-mirror-statute-civil-750
+    source_family: "legalize-kr"
+    authority_type: statute
+    law_name: "민법"
+    article: "제750조"
+    citation: "민법 제750조"
+    official_url: "https://www.law.go.kr/법령/민법/제750조"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixture candidate: legalize-kr 로컬 미러 확인 필요 (직접 공식 사이트 확인 아님)"
+    provenance_type: "fixed_provenance"
+    currency: "fixture captured 2026-06-01; runtime must report local mirror commit/effective date or direct law.go.kr status"
+    runtime_recheck_required: true
+    effective_date_required: true
+
+  - id: local-mirror-precedent-shape
+    source_family: "precedent-kr"
+    authority_type: precedent
+    authority_name: "대법원 판례"
+    citation: "대법원 {선고일} 선고 {사건번호} 판결"
+    official_url: "https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query={사건번호}"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixture candidate: precedent-kr 로컬 미러 확인 필요 (직접 공식 사이트 확인 아님)"
+    provenance_type: "fixed_provenance"
+    currency: "shape fixture captured 2026-06-01; runtime must report local mirror commit/date or direct glaw.scourt.go.kr status"
+    runtime_recheck_required: true
+    pinpoint_required: true
 
 statutes:
   - id: statute-civil-750
@@ -636,7 +666,7 @@ failure_fixtures:
     expected_response:
       status_tag: "[INSUFFICIENT]"
       provenance_limit: "법망 API 장애 또는 점검으로 원문 확인 실패"
-      next_check: "law.go.kr 또는 local legalize-kr/precedent-kr로 재조회"
+      next_check: "law.go.kr 원문 확인 또는 legalize-kr/precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)"
 
   - id: failure-search-snippet-only
     failure_mode: "only WebSearch snippet or result title was available"

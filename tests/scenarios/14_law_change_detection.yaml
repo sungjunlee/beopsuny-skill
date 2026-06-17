@@ -80,7 +80,7 @@ scenarios:
       # discovery 결과(법령 리스트)는 메타 없음 → 각 법령마다 특정 법령 flow 로 재조회
     validation:
       - type: mode_detection
-        description: Full 모드 (legalize-kr 로컬 데이터 존재) 에서 git log 명령 경로를 사용하는지
+        description: Full 모드 (legalize-kr 로컬 미러 데이터 존재) 에서 git log 명령 경로를 사용하는지
       - type: pull_boundary
         description: Push 뉘앙스(알림/스케줄/크론) 없이 Pull 방식 응답인지
       - type: date_axis
@@ -261,7 +261,7 @@ scenarios:
       # 법령ID 는 먼저 law?action=search&query={법령명} 으로 확인.
     validation:
       - type: mode_detection
-        description: Lite 모드 (legalize-kr 로컬 데이터 없음) 에서 법망 API 경로를 사용하는지
+        description: Lite 모드 (legalize-kr 로컬 미러 데이터 없음) 에서 법망 API 경로를 사용하는지
       - type: no_local_git
         description: Lite 모드에서 git log 명령을 쓰지 않는지
       - type: pull_boundary

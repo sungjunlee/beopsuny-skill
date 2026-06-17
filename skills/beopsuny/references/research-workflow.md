@@ -54,7 +54,7 @@ authorities:
     citation: "개인정보 보호법 제28조의8"
     source_authority: "공식 원문"
     verification_status: "[VERIFIED]"
-    provenance: "law.go.kr 확인"
+    provenance: "law.go.kr 원문 확인"
     currency: "현행 원문 기준"
   - type: "guidance"
     citation: "개인정보보호위원회 가이드라인"
