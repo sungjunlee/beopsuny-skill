@@ -31,22 +31,62 @@ scenarios:
         description: 없는 판례를 있다고 하지 않는지
 
   - id: edge-02
-    name: 존재하지 않는 법령 요청
+    name: 인공지능기본법 약칭과 현행법 최신성 확인
     persona: 테스터
     context: |
-      가상의 법령명으로 검색
+      사용자가 공식 법령명이 아닌 약칭으로 질문한다.
+      과거 fixture가 stale한 미제정 판단을 고정했던 사례이므로,
+      답변은 먼저 공식 원문에서 현재 유효한 법령명과 상태를 확인해야 한다.
     question: "인공지능기본법 내용 알려줘"
     expected:
-      note: |
-        2024년 12월 기준 아직 제정되지 않은 법률.
-        시점에 따라 결과 다를 수 있음.
+      should_treat_as_alias: true
+      shorthand: 인공지능기본법
+      official_title: 인공지능 발전과 신뢰 기반 조성 등에 관한 기본법
+      freshness_requirement: |
+        이 fixture는 current-law freshness regression이다.
+        약칭만으로 결론을 내지 말고 law.go.kr 등 공식 원문에서
+        현행 법령 여부, 공식 제목, 시행 상태를 확인한 뒤 내용 답변으로 넘어간다.
       acceptable_responses:
-        - "해당 법령이 없습니다"
+        - '"인공지능기본법"은 공식 제목 확인이 필요한 약칭입니다'
+        - '공식 법령명은 "인공지능 발전과 신뢰 기반 조성 등에 관한 기본법"입니다'
+        - "현행 법령 여부를 공식 원문에서 확인한 뒤 조문/시행일을 답하겠습니다"
+      unacceptable:
         - "아직 제정되지 않은 법률입니다"
-        - "현재 국회 계류 중인 법안입니다"  # 사실인 경우
+        - "현재 국회 계류 중인 법안입니다"
+        - 약칭만으로 공식 법령명을 확정하지 않고 조문 내용을 단정
+        - 오래된 fixture note를 현행 결론으로 사용
     data_source: |
-      # legalize-kr에서 Read: ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/*.md
-      # 법령: "인공지능기본법"
+      # law.go.kr 법령 검색/원문 확인
+      # 약칭 후보: "인공지능기본법"
+      # 공식 제목: "인공지능 발전과 신뢰 기반 조성 등에 관한 기본법"
+    validation:
+      - type: freshness_alias_matching
+        description: 약칭을 공식 제목과 매칭하고 현행 공식 원문 확인 전 내용을 단정하지 않는지
+      - type: stale_fixture_regression
+        description: 과거 미제정 fixture 문구를 답변 근거로 재사용하지 않는지
+
+  - id: edge-09
+    name: 실제로 존재하지 않는 법령 요청
+    persona: 테스터
+    context: |
+      법령명처럼 보이는 가상 명칭으로 검색하여 환각 여부를 확인한다.
+      존재 여부는 답변 시점의 공식 법령 검색 결과로 확인해야 한다.
+    question: "초광속통신기본법 제3조 내용 알려줘"
+    expected:
+      should_not_hallucinate: true
+      acceptable_responses:
+        - "해당 법령을 찾을 수 없습니다"
+        - "공식 법령 원문에서 확인되지 않습니다"
+        - "법령명 또는 공식 제목을 다시 확인해 주세요"
+      unacceptable:
+        - 가상의 조문 내용 생성
+        - 유사한 다른 법령으로 대체 (명시 없이)
+    data_source: |
+      # law.go.kr 법령 검색/원문 확인
+      # 검색어: "초광속통신기본법"
+    validation:
+      - type: no_hallucination
+        description: 없는 법령과 조문을 만들어내지 않는지
 
   - id: edge-03
     name: 폐지된 법령 질문
