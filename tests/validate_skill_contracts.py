@@ -16,7 +16,7 @@ import subprocess
 import sys
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, NamedTuple
 
 import yaml
 
@@ -2691,59 +2691,199 @@ def directory_fingerprint(path: Path) -> str:
     return digest.hexdigest()
 
 
-CHECKS = [
-    check_version_sync,
-    check_skill_frontmatter_minimal,
-    check_skill_router_schema_references_precise,
-    check_contract_review_guide,
-    check_memory_profile_workflow,
-    check_company_profile_playbook_schema,
-    check_practice_profile_overlay_schema,
-    check_legal_verification_packet_schema,
-    check_freshness_revalidation_schema,
-    check_freshness_revalidation_records,
-    check_freshness_metadata_schema,
-    check_bulk_tabular_review_reference,
-    check_source_access_fallbacks,
-    check_checklist_routing_freshness,
-    check_policy_checklist_runtime_contracts,
-    check_volatile_policy_literals_require_live_check,
-    check_mandatory_provisions_candidate_index,
-    check_mandatory_provision_notes_are_candidates,
-    check_source_authority_verified_contract,
-    check_citation_verification_contract_single_source,
-    check_golden_citation_fixtures,
-    check_research_workflow_verification_core,
-    check_asset_freshness_metadata_tracked,
-    check_freshness_debt_registry,
-    check_reference_freshness_debt_scan,
-    check_volatile_doc_claim_markers,
-    check_volatile_data_assets_runtime_contracts,
-    check_freshness_governance_reference,
-    check_output_contract_right_sizing,
-    check_skill_quality_contract_router_map,
-    check_readme_quality_contract_map,
-    check_readme_asset_inventory_counts,
-    check_law_change_automation_promise_drift,
-    check_readme_quality_verification_refs_resolve,
-    check_quality_contract_reference_targets,
-    check_changelog_quality_contract_notes,
-    check_contract_tests_workflow,
-    check_self_verification_guardrails,
-    check_output_reviewer_note_lite,
-    check_output_contract_schema,
-    check_output_role_destination_contracts,
-    check_memory_practice_profile_direction,
-    check_router_scenario_references,
-    check_router_always_on_legal_gates,
-    check_router_guardrail_scenarios,
-    check_router_fixture_integrity,
-    check_router_output_eval,
-    check_forward_eval_prompt_set,
-    check_volatile_api_docs,
-    check_international_index_routing,
-    check_optional_installed_skill_drift,
-]
+Check = Callable[[], None]
+
+
+class CheckGroup(NamedTuple):
+    domain: str
+    checks: tuple[Check, ...]
+
+
+NON_REGISTRY_CHECK_FUNCTIONS = {
+    # Helper called by check_golden_citation_fixtures; not a standalone gate.
+    "check_golden_fixture_common",
+}
+
+
+def flatten_check_groups(groups: tuple[CheckGroup, ...]) -> tuple[Check, ...]:
+    return tuple(check for group in groups for check in group.checks)
+
+
+def check_contract_check_registry_complete() -> None:
+    malformed_groups = [group.domain for group in CHECK_GROUPS if not group.domain.strip() or not group.checks]
+
+    registered_names: list[str] = []
+    duplicate_names: set[str] = set()
+    seen_names: set[str] = set()
+    for group in CHECK_GROUPS:
+        for check in group.checks:
+            check_name = getattr(check, "__name__", "")
+            registered_names.append(check_name)
+            if check_name in seen_names:
+                duplicate_names.add(check_name)
+            seen_names.add(check_name)
+
+    defined_names = defined_check_functions()
+    expected_names = defined_names - NON_REGISTRY_CHECK_FUNCTIONS
+    registered_name_set = set(registered_names)
+    missing_names = sorted(expected_names - registered_name_set)
+    unknown_names = sorted(registered_name_set - defined_names)
+
+    failures: list[str] = []
+    if malformed_groups:
+        failures.append(f"malformed groups={malformed_groups!r}")
+    if duplicate_names:
+        failures.append(f"duplicate checks={sorted(duplicate_names)!r}")
+    if missing_names:
+        failures.append(f"missing checks={missing_names!r}")
+    if unknown_names:
+        failures.append(f"unknown checks={unknown_names!r}")
+    if failures:
+        raise AssertionError("; ".join(failures))
+
+
+# Groups are ordered to preserve the legacy CHECKS execution order.
+CHECK_GROUPS = (
+    CheckGroup(
+        "repo/docs/package drift: package metadata",
+        (
+            check_version_sync,
+        ),
+    ),
+    CheckGroup(
+        "router/loading: skill entrypoint",
+        (
+            check_skill_frontmatter_minimal,
+            check_skill_router_schema_references_precise,
+        ),
+    ),
+    CheckGroup(
+        "profile/practice: contract review and memory schemas",
+        (
+            check_contract_review_guide,
+            check_memory_profile_workflow,
+            check_company_profile_playbook_schema,
+            check_practice_profile_overlay_schema,
+        ),
+    ),
+    CheckGroup(
+        "source/citation: legal verification packet",
+        (
+            check_legal_verification_packet_schema,
+        ),
+    ),
+    CheckGroup(
+        "freshness: schemas and revalidation records",
+        (
+            check_freshness_revalidation_schema,
+            check_freshness_revalidation_records,
+            check_freshness_metadata_schema,
+        ),
+    ),
+    CheckGroup(
+        "source/citation: checklist triage and runtime boundaries",
+        (
+            check_bulk_tabular_review_reference,
+            check_source_access_fallbacks,
+            check_checklist_routing_freshness,
+            check_policy_checklist_runtime_contracts,
+            check_volatile_policy_literals_require_live_check,
+            check_mandatory_provisions_candidate_index,
+            check_mandatory_provision_notes_are_candidates,
+        ),
+    ),
+    CheckGroup(
+        "source/citation: authority verification fixtures",
+        (
+            check_source_authority_verified_contract,
+            check_citation_verification_contract_single_source,
+            check_golden_citation_fixtures,
+            check_research_workflow_verification_core,
+        ),
+    ),
+    CheckGroup(
+        "freshness: debt registry and volatile scans",
+        (
+            check_asset_freshness_metadata_tracked,
+            check_freshness_debt_registry,
+            check_reference_freshness_debt_scan,
+            check_volatile_doc_claim_markers,
+            check_volatile_data_assets_runtime_contracts,
+            check_freshness_governance_reference,
+        ),
+    ),
+    CheckGroup(
+        "output: right-sizing contract",
+        (
+            check_output_contract_right_sizing,
+        ),
+    ),
+    CheckGroup(
+        "router/loading: quality contract map",
+        (
+            check_skill_quality_contract_router_map,
+        ),
+    ),
+    CheckGroup(
+        "repo/docs/package drift: docs and CI",
+        (
+            check_readme_quality_contract_map,
+            check_readme_asset_inventory_counts,
+            check_law_change_automation_promise_drift,
+            check_readme_quality_verification_refs_resolve,
+            check_quality_contract_reference_targets,
+            check_changelog_quality_contract_notes,
+            check_contract_tests_workflow,
+        ),
+    ),
+    CheckGroup(
+        "output: role and destination gates",
+        (
+            check_self_verification_guardrails,
+            check_output_reviewer_note_lite,
+            check_output_contract_schema,
+            check_output_role_destination_contracts,
+        ),
+    ),
+    CheckGroup(
+        "profile/practice: practice direction",
+        (
+            check_memory_practice_profile_direction,
+        ),
+    ),
+    CheckGroup(
+        "router/loading: scenario guardrails",
+        (
+            check_router_scenario_references,
+            check_router_always_on_legal_gates,
+            check_router_guardrail_scenarios,
+            check_router_fixture_integrity,
+            check_router_output_eval,
+        ),
+    ),
+    CheckGroup(
+        "router/source access: high-risk eval and API routing",
+        (
+            check_forward_eval_prompt_set,
+            check_volatile_api_docs,
+            check_international_index_routing,
+        ),
+    ),
+    CheckGroup(
+        "optional installed-skill drift",
+        (
+            check_optional_installed_skill_drift,
+        ),
+    ),
+    CheckGroup(
+        "registry self-check",
+        (
+            check_contract_check_registry_complete,
+        ),
+    ),
+)
+
+CHECKS = flatten_check_groups(CHECK_GROUPS)
 
 
 def main() -> int:
