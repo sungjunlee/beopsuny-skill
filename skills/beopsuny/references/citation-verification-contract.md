@@ -8,7 +8,7 @@
 
 | 축 | 의미 | 예시 |
 | --- | --- | --- |
-| 출처 권위 라벨 | 소스 자체의 법적 성격과 사용 가능성 | 공식 원문 law.go.kr 원문, 공식 원문 기반 로컬 미러 legalize-kr, 해설/의견 로펌 해설 |
+| 출처 권위 라벨 | 소스 자체의 법적 성격과 사용 가능성 | 공식 원문 law.go.kr 원문, 공식 원문 기반 로컬 미러 legalize-kr/admrule-kr, 해설/의견 로펌 해설 |
 | verification status | 이번 응답에서 해당 법률 사실을 실제로 확인했는지 | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]` |
 | provenance | 이번 응답에서 실제로 확인한 경로 | `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`, `web — verify` |
 
@@ -21,7 +21,7 @@
 1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 재조회 가능한 citation과 pinpoint가 있다.
 2. **원문 대조**: 원문 필드 또는 공식 원문 화면, 또는 공식 원문 기반 로컬 미러 파일에서 실제 문구, 조문 구조, 판시사항, 시행일, 발령기관 중 답변 결론에 필요한 부분을 확인했다.
 3. **최신성 표시**: 현행, 시행 예정, 미시행, 조회 실패, 검토일 중 해당 상태를 드러냈다. 금액, 기한, 과징금, 서식, 구비서류처럼 변동성이 큰 사실은 freshness gate를 통과해야 한다.
-4. **provenance 표시**: provenance는 이번 응답에서 실제로 확인한 경로로 적는다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `glaw.scourt.go.kr 원문 확인`, `법망 API 원문 필드 확인`.
+4. **provenance 표시**: provenance는 이번 응답에서 실제로 확인한 경로로 적는다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `glaw.scourt.go.kr 원문 확인`, `법망 API 원문 필드 확인`.
 
 하나라도 빠지면 `[VERIFIED]`를 쓰지 않는다. 결론 강도는 `[UNVERIFIED]`, `[INSUFFICIENT]`, `[STALE]`, `[CONTRADICTED]`, `[EDITORIAL]` 중 실제 상태로 낮춘다.
 
@@ -29,7 +29,7 @@
 
 | Source family | 역할 | `[VERIFIED]` 가능 조건 |
 | --- | --- | --- |
-| local legalize-kr / precedent-kr | Full 모드의 법령·판례 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일 또는 사건 식별자를 직접 읽고 provenance를 `로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
+| local legalize-kr / precedent-kr / admrule-kr / ordinance-kr | Full 모드의 법령·판례·행정규칙·자치법규 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일, 발령기관, 지자체 식별자 중 결론에 필요한 부분을 직접 읽고 provenance를 `{source_family} 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
 | 법망 API wrapper | Lite 모드 원문 조회, 행정규칙·해석례·판례 discovery | 검색 결과나 요약이 아니라 `law?action=get`, `case?action=get`, `tools?action=verify` 등에서 원문 필드 또는 공식 식별자 검증 결과를 확인한 경우 |
 | law.go.kr | 법령, 행정규칙, 판례 공식 원문 화면 | 실제 원문 화면 또는 공식 원문 응답을 열어 citation과 pinpoint를 확인한 경우 |
 | glaw.scourt.go.kr | 법원 판례 원문 화면 | 사건번호와 판결 요지/본문을 공식 화면에서 확인한 경우 |
@@ -38,7 +38,9 @@
 
 법망 API wrapper는 공식 데이터를 감싸는 접근 경로지만, wrapper의 요약·스니펫, 검색 result title, 유사도 결과만으로는 원문 대조가 아니다. `법망 API 확인`이라고만 쓰지 말고 `법망 API 원문 필드 확인`, `법망 API search 결과만 확인`, `법망 API 장애로 조회 실패`처럼 확인 수준을 적는다.
 
-local legalize-kr/precedent-kr는 공식 원문 기반 로컬 미러다. 이번 응답에서 로컬 파일만 읽었다면 source_authority는 `공식 원문 기반 로컬 미러` 또는 `공식 원문 기반 로컬 미러: 하급심`이고, provenance는 직접 공식 사이트 확인이 아님을 명시한다. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트나 공식 응답을 실제로 연 경우에만 쓴다.
+local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 로컬 미러다. 이번 응답에서 로컬 파일만 읽었다면 source_authority는 `공식 원문 기반 로컬 미러` 또는 `공식 원문 기반 로컬 미러: 하급심`이고, provenance는 직접 공식 사이트 확인이 아님을 명시한다. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트나 공식 응답을 실제로 연 경우에만 쓴다.
+
+`admrule-kr`와 `ordinance-kr` 파일에서 `본문출처: parsing-failed`처럼 본문 원문이 비어 있거나 첨부파일로만 제공되는 경우, frontmatter만으로는 원문 대조 조건을 충족하지 않는다. 이때는 첨부파일 또는 law.go.kr 공식 화면을 추가 확인하거나 `[UNVERIFIED]`/`[INSUFFICIENT]`로 낮춘다.
 
 ## Downgrade Rules
 

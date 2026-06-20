@@ -39,6 +39,34 @@ local_mirror_examples:
     runtime_recheck_required: true
     pinpoint_required: true
 
+  - id: local-mirror-admrule-shape
+    source_family: "admrule-kr"
+    authority_type: admin_rule
+    authority_name: "행정규칙"
+    citation: "{행정규칙명} ({발령기관}, {행정규칙종류})"
+    official_url: "https://www.law.go.kr/행정규칙/{행정규칙명}"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixture candidate: admrule-kr 로컬 미러 확인 필요 (직접 공식 사이트 확인 아님)"
+    provenance_type: "fixed_provenance"
+    currency: "shape fixture captured 2026-06-20; runtime must report local mirror commit/date, 시행일자, and 본문출처 status"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
+  - id: local-mirror-ordinance-shape
+    source_family: "ordinance-kr"
+    authority_type: ordinance
+    authority_name: "자치법규"
+    citation: "{지자체기관명} {자치법규명} {조문}"
+    official_url: "https://www.law.go.kr/자치법규/{자치법규명}"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[UNVERIFIED]"
+    provenance: "fixture candidate: ordinance-kr 로컬 미러 확인 필요 (직접 공식 사이트 확인 아님)"
+    provenance_type: "fixed_provenance"
+    currency: "shape fixture captured 2026-06-20; runtime must report local mirror commit/date, 시행일자, and 지역 scope"
+    runtime_recheck_required: true
+    pinpoint_required: true
+
 statutes:
   - id: statute-civil-750
     authority_type: statute
@@ -666,7 +694,7 @@ failure_fixtures:
     expected_response:
       status_tag: "[INSUFFICIENT]"
       provenance_limit: "법망 API 장애 또는 점검으로 원문 확인 실패"
-      next_check: "law.go.kr 원문 확인 또는 legalize-kr/precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)"
+      next_check: "law.go.kr 원문 확인 또는 사용 가능한 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)"
 
   - id: failure-search-snippet-only
     failure_mode: "only WebSearch snippet or result title was available"

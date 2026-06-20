@@ -130,9 +130,12 @@ LEGAL_RESEARCH_GATE_SCENARIOS = {
 }
 LOCAL_MIRROR_DEFAULT_LABELS = {
     "legalize-kr (로컬 미러 법령 Markdown)": "공식 원문 기반 로컬 미러",
+    "admrule-kr (로컬 미러 행정규칙 Markdown)": "공식 원문 기반 로컬 미러",
+    "ordinance-kr (로컬 미러 자치법규 Markdown)": "공식 원문 기반 로컬 미러",
     "precedent-kr (로컬 미러 대법원 판례)": "공식 원문 기반 로컬 미러",
     "precedent-kr (로컬 미러 하급심 판례)": "공식 원문 기반 로컬 미러: 하급심",
 }
+LOCAL_MIRROR_SOURCE_FAMILIES = {"legalize-kr", "admrule-kr", "ordinance-kr", "precedent-kr"}
 LOCAL_MIRROR_DIRECT_LABELS = {"공식 원문", "공식 원문: 하급심"}
 LOCAL_MIRROR_PROVENANCE_MARKERS = [
     "로컬 미러 확인",
@@ -1378,7 +1381,7 @@ def check_golden_citation_fixtures() -> None:
     if not isinstance(local_mirror_examples, list) or len(local_mirror_examples) < 2:
         raise AssertionError(f"{label}: expected at least 2 local mirror provenance examples")
     local_mirror_sources = {str(item.get("source_family", "")) for item in local_mirror_examples if isinstance(item, dict)}
-    for required_source in ["legalize-kr", "precedent-kr"]:
+    for required_source in sorted(LOCAL_MIRROR_SOURCE_FAMILIES):
         if required_source not in local_mirror_sources:
             raise AssertionError(f"{label}: local_mirror_examples missing {required_source}")
 
@@ -1441,7 +1444,7 @@ def check_golden_citation_fixtures() -> None:
             raise AssertionError(f"{label}: local mirror fixture must be a mapping: {item!r}")
         check_golden_fixture_common(item, label, seen_ids)
         source_family = str(item.get("source_family", ""))
-        if source_family not in {"legalize-kr", "precedent-kr"}:
+        if source_family not in LOCAL_MIRROR_SOURCE_FAMILIES:
             raise AssertionError(f"{label}: local mirror {item.get('id')!r} has invalid source_family")
         if item["source_authority"] in LOCAL_MIRROR_DIRECT_LABELS:
             raise AssertionError(f"{label}: local mirror {item['id']} uses direct official-source label")

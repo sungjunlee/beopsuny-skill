@@ -104,7 +104,8 @@ description: |
 질문 파악
   -> Full/Lite 가능 여부 확인
   -> 법령/하위법령/행정규칙/판례/개정 여부 중 필요한 범위 선택
-  -> 1차 소스 또는 공식 API 우선 확인
+  -> 사용 가능한 로컬 Git 공식 원문 미러 우선 확인
+  -> 없는 family나 discovery가 필요한 범위는 법망 API/공식 링크로 확인
   -> 출처 권위 라벨 + 검증 상태 부여
   -> 자가 검증 후 답변
 ```
@@ -114,20 +115,30 @@ description: |
 
 ## Full / Lite 판별
 
-스킬 시작 시 로컬 데이터 접근 가능성을 확인해 Full/Lite 모드를 판단한다.
+스킬 시작 시 로컬 데이터 접근 가능성을 source family별로 확인한다.
 
 ```text
 ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ 있음
-  -> Full 모드: 로컬 legalize-kr / precedent-kr + 법망 API
+  -> 법령 Full 모드
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr/ 있음
+  -> 행정규칙 로컬 미러 사용 가능
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/ 있음
+  -> 판례 로컬 미러 사용 가능
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr/ 있음
+  -> 자치법규 로컬 미러 사용 가능
 없음
   -> Lite 모드: 법망 API + WebSearch + 가능한 MCP/공식 링크
 ```
+
+`Full 모드`는 단일 스위치가 아니라 사용 가능한 source family의 묶음이다. 예를 들어 법령은 `legalize-kr`로 확인하되 행정규칙은 법망 API로 확인할 수 있다. 상세 family map과 초기화 절차는 `references/source-access.md`를 따른다.
+
+기본 원칙은 Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 해당 family가 없거나 keyword discovery·교차확인이 필요한 경우 법망 API, law.go.kr, glaw.scourt.go.kr, korean-law-mcp를 다음 경로로 쓴다는 것이다.
 
 데이터가 없다고 자동으로 복제하지 않는다. 사용자가 Full 모드 설정이나 데이터 다운로드를 요청할 때만 `references/source-access.md`의 초기화 절차를 따른다.
 
 Lite 모드 진입 시 한 번만 안내한다:
 
-> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령/판례 데이터로 Full 모드를 사용하려면 Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하세요.
+> 💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령·판례·행정규칙 데이터로 Full 모드를 사용하려면 Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하세요.
 
 ## 출처 권위 라벨 계약
 
