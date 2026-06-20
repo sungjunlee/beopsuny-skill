@@ -106,7 +106,7 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 | Source family | 대표 탐색 |
 | --- | --- |
 | `legalize-kr` | `ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ \| grep 개인정보`; `cat .../legalize-kr/kr/{법령명}/법률.md`; `git -C .../legalize-kr log --oneline -20 -- kr/{법령명}/` |
-| `admrule-kr` | `find .../admrule-kr -path '*고시*' -name '본문.md' \| rg '개인정보|과징금|안전보건'`; `git -C .../admrule-kr -c core.quotePath=false log --oneline -20 -- '{기관경로}/{행정규칙종류}/{행정규칙명}/본문.md'` |
+| `admrule-kr` | `rg -l '개인정보|과징금|안전보건' .../admrule-kr -g '본문.md'`; `git -C .../admrule-kr -c core.quotePath=false log --oneline -20 -- '{기관경로}/{행정규칙종류}/{행정규칙명}/본문.md'` |
 | `precedent-kr` | `find .../precedent-kr -name "*2022다12345*"`; 사건번호가 없으면 먼저 법망 API로 discovery |
 | `ordinance-kr` | `{광역}/{기초 또는 _본청 또는 _교육청}/{자치법규종류}/{자치법규명}/본문.md`; 지역을 먼저 좁힌 뒤 탐색 |
 
