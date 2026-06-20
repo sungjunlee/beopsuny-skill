@@ -8,7 +8,7 @@
 
 실행 전 가능하면 `https://api.beopmang.org/api/v4/help?action=schema` 또는 랜딩 페이지의 현재 예시를 확인한다. 현재 기본 예시는 검색에 `q`, 법령 본문/이력/비교에 `law_id`, 조문 조회에 `article`을 사용한다. 과거 예시의 `query` 또는 `id` alias는 보조 단서로만 보고, 새 문서와 답변의 1차 예시는 현재 schema를 따른다.
 
-API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니다. Full 모드면 legalize-kr/precedent-kr 로컬 미러 데이터로 fallback하고, Lite 모드면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.
+API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니다. Full 모드면 사용 가능한 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 로컬 미러 데이터로 fallback하고, Lite 모드면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.
 
 ## 엔드포인트 맵
 
@@ -28,7 +28,9 @@ API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니
 
 ## 실무 활용 패턴
 
-### 행정규칙 찾기 (legalize-kr에 없는 핵심 자료)
+### 행정규칙 찾기
+
+Full 모드에서 `admrule-kr`가 있으면 로컬 미러를 먼저 읽을 수 있다. 법망 API는 Lite 모드의 기본 경로이며, Full 모드에서도 discovery와 교차확인에 사용한다.
 
 ```
 # "과징금" 관련 고시/훈령/예규 검색

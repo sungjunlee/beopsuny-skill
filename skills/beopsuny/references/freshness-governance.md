@@ -29,7 +29,7 @@ stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live
 
 1. law.go.kr 법령·시행령·시행규칙·행정규칙
 2. 소관 기관 공식 고시, 예규, 가이드라인, 민원안내
-3. 법망 API 또는 로컬 legalize-kr/precedent-kr 원문
+3. 법망 API 또는 로컬 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 원문
 4. 공식 원문에 접근할 수 없을 때만 해설/의견 해설을 보조 자료로 사용
 
 확인 실패 시:

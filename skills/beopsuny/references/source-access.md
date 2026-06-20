@@ -4,17 +4,45 @@
 
 `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다. 이 문서의 source priority는 접근 순서이지, 요약·스니펫을 `[VERIFIED]`로 승격하는 규칙이 아니다.
 
-## Source Priority
+## Sourcing Model
 
-| 순위 | Full 모드 | Lite 모드 | 기본 출처 권위 라벨 |
-|------|----------|----------|-----------|
-| 1 | 로컬 Git `legalize-kr` + `precedent-kr` | 법망 API | Full 로컬은 공식 원문 기반 로컬 미러, 하급심은 공식 원문 기반 로컬 미러: 하급심 |
-| 2 | 법망 API | WebSearch | 행정규칙/해석례는 공식 원문, 의안은 공식 실무자료: 미확정 |
-| 3 | korean-law-mcp, OC 코드 필요 | korean-law-mcp, OC 코드 필요 | 공식 원문 |
-| 링크 | law.go.kr / glaw.scourt.go.kr | law.go.kr / glaw.scourt.go.kr | 공식 원문 |
-| 백업 | WebSearch 공식/해설 자료 | WebSearch 공식/해설 자료 | 공식 실무자료 / 해설·의견 / 참고 제외 |
+소싱은 네 축을 분리한다.
 
-Full 모드에서 `legalize-kr` 또는 `precedent-kr` 파일을 읽은 경우 provenance는 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)` 또는 `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 쓴다. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
+| 축 | 의미 | 예시 |
+| --- | --- | --- |
+| `source_family` | 어디서 찾았는가 | `legalize-kr`, `admrule-kr`, `law.go.kr`, `법망 API wrapper` |
+| `source_authority` | 소스 자체의 법적 성격 | `공식 원문`, `공식 원문 기반 로컬 미러`, `해설/의견` |
+| `verification_status` | 이번 응답에서 실제 확인했는가 | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]` |
+| `provenance` | 이번 응답의 실제 확인 경로 | `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)` |
+
+`source_family`가 늘어나도 출처 권위 라벨과 `[VERIFIED]` 조건은 바뀌지 않는다. 새 source family는 아래 family map에 추가하고, 라벨은 `assets/policies/source_grades.yaml`, 검증 조건은 `references/citation-verification-contract.md`를 따른다.
+
+## Primary Sourcing Rule
+
+영속 환경에서는 Git으로 받은 공식 원문 기반 로컬 미러를 우선한다. 즉, 법령은 `legalize-kr`, 행정규칙은 `admrule-kr`, 판례는 `precedent-kr`, 지역이 특정된 자치법규는 `ordinance-kr` 파일을 먼저 탐색한다.
+
+법망 API, law.go.kr, glaw.scourt.go.kr, korean-law-mcp는 다음 경우에 사용한다.
+
+- 해당 source family가 로컬에 없거나 Lite 모드인 경우
+- 키워드 discovery가 로컬 파일 탐색보다 효율적인 경우
+- 로컬 미러의 최신성, 첨부파일, `본문출처: parsing-failed`를 공식 원문으로 교차확인해야 하는 경우
+- 로컬 미러가 커버하지 않는 해석례, 헌재, 행정심판, 조세심판, 조약, 정책·제재 동향을 확인하는 경우
+
+## Source Family Map
+
+| Source family | 주 용도 | 기본 라벨 | 사용 기준 |
+| --- | --- | --- | --- |
+| `legalize-kr` | 법률, 시행령, 시행규칙, 법령 개정 이력 | 공식 원문 기반 로컬 미러 | Full 모드 기본 1차 경로. 법령명 디렉토리와 본문 파일을 직접 읽은 경우만 `[VERIFIED]` 후보 |
+| `admrule-kr` | 고시, 훈령, 예규, 행정규칙 본문과 첨부 메타데이터 | 공식 원문 기반 로컬 미러 | 행정규칙이 실무 기준이면 Full 모드 기본 1차 경로 |
+| `precedent-kr` | 대법원/하급심 판례 전문 | 공식 원문 기반 로컬 미러 / 하급심 caveat | 사건번호를 알 때 직접 조회. 키워드 discovery는 법망 API가 더 적합 |
+| `ordinance-kr` | 조례, 규칙 등 자치법규 | 공식 원문 기반 로컬 미러 | 지자체·지역이 특정된 질문의 1차 경로. 전역 검색은 비용이 크므로 피한다 |
+| `law.go.kr` | 법령, 행정규칙, 자치법규, 일부 판례 공식 화면 | 공식 원문 | 직접 원문 화면 또는 공식 응답을 연 경우 |
+| `glaw.scourt.go.kr` | 법원 판례 공식 화면 | 공식 원문 | 사건번호와 판결 본문/요지를 직접 확인한 경우 |
+| `법망 API wrapper` | Lite 모드 검색/원문 조회, 법령·행정규칙·해석례·판례 discovery | 공식 원문 또는 공식 실무자료: 미확정 | 검색 결과만으로는 `[VERIFIED]` 금지. 원문 필드나 verify 결과 필요 |
+| `korean-law-mcp` | 헌재, 행정심판, 조세심판, 자치법규, 조약, 별표/서식 | 공식 원문 | OC 코드 또는 설치된 MCP 도구가 있을 때 사용 |
+| `WebSearch` | 공식 사이트 discovery, 정책·제재 동향, 보도자료·해설 보조 | 공식 실무자료 / 해설·의견 / 참고 제외 | 공식 원문 접근을 돕는 보조. 검색 스니펫 자체는 `[VERIFIED]` 아님 |
+
+로컬 미러를 읽은 경우 provenance는 각 source family를 명시한다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
 
 ## Mode Detection
 
@@ -24,27 +52,27 @@ Full 모드에서 `legalize-kr` 또는 `precedent-kr` 파일을 읽은 경우 pr
 ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
 ```
 
-Full 모드 판별:
+Source family inventory:
 
 ```bash
 ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr
 ```
 
-결과가 있으면 Full 모드, 없으면 Lite 모드다. 데이터가 없다고 자동 clone하지 않는다. 사용자가 Full 모드 설정 또는 데이터 다운로드를 요청할 때만 초기화한다.
+`legalize-kr/kr/`가 있으면 법령 Full 모드다. 다른 로컬 미러는 family별 capability로 판단한다. 예를 들어 `legalize-kr`만 있으면 법령은 Full, 행정규칙은 법망 API/law.go.kr fallback이다. 데이터가 없다고 자동 clone하지 않는다. 사용자가 Full 모드 설정 또는 데이터 다운로드를 요청할 때만 초기화한다.
 
 ## Capability Matrix
 
 실행 환경마다 사용할 수 있는 소스가 다르다. 없는 도구를 있다고 가정하지 말고, 가능한 경로로 좁히거나 결론을 유보한다.
 
-| 상황 | 사용 가능한 경로 | 답변 경계 |
-| --- | --- | --- |
-| Full 모드 + 네트워크 가능 | local legalize-kr/precedent-kr, 법망 API, korean-law-mcp, WebSearch | 로컬 미러와 직접 공식 소스를 모두 쓸 수 있다. 행정규칙·최신 개정은 API/공식 링크로 확인 |
-| 로컬 데이터 없음 | 법망 API, WebSearch, 공식 링크 | Lite 모드로 안내. 로컬 전문·git history 전제 금지 |
-| 법망 API 접근 불가 | local data, law.go.kr/glaw.scourt.go.kr, WebSearch 공식 자료 | 행정규칙·해석례 원문 확인 실패 시 `[INSUFFICIENT]` 또는 `[UNVERIFIED]` |
-| WebSearch 없음 | local data, 법망 API, 사용 가능한 MCP/공식 링크 | 정책 동향·제재 동향은 생략하거나 확인 필요 표시 |
-| korean-law-mcp 또는 OC 코드 없음 | local data, 법망 API, WebSearch | 헌재·행정심판·자치법규·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내 |
-| 네트워크 없음 | local legalize-kr/precedent-kr만 사용 | 로컬 미러 확인으로 표시하고, 최신성, 행정규칙, 정책 동향, 공식 링크 검증을 제한사항으로 표시 |
-| 로컬 데이터와 네트워크 모두 없음 | 번들 YAML은 후보·체크리스트로만 사용 | 법률 결론을 만들지 말고 `[INSUFFICIENT]`로 유보 |
+- 로컬 데이터 없음: Lite 모드로 안내하고 법망 API, WebSearch, 공식 링크를 사용한다. 로컬 전문·git history 전제는 금지한다.
+- 법망 API 접근 불가: 사용 가능한 local data, law.go.kr/glaw.scourt.go.kr, WebSearch 공식 자료로 좁힌다. 그래도 원문을 확인하지 못한 범위는 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 낮춘다.
+- WebSearch 없음: local data, 법망 API, 사용 가능한 MCP/공식 링크만 사용한다. 정책 동향·제재 동향은 생략하거나 확인 필요 표시를 한다.
+- korean-law-mcp 또는 OC 코드 없음: 헌재·행정심판·조세심판·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내로 남긴다.
+- 네트워크 없음: 사용 가능한 local mirror만 사용하고, 최신성·정책 동향·공식 링크 검증 한계를 표시한다.
+- 로컬 데이터와 네트워크 모두 없음: 번들 YAML은 후보·체크리스트로만 쓰고 법률 결론을 만들지 않는다.
 
 Fallback 원칙:
 
@@ -71,52 +99,18 @@ Fallback 원칙:
 
 Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 소스나 공식 원문 기반 로컬 미러라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
 
-## Full Mode: legalize-kr
+## Local Git Mirror Commands
 
-경로:
+법령명 디렉토리는 띄어쓰기를 제거한 이름을 사용한다. `git log --name-only`로 한국어 경로를 볼 때는 octal escape 방지를 위해 `-c core.quotePath=false`를 붙인다.
 
-```text
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/
-```
+| Source family | 대표 탐색 |
+| --- | --- |
+| `legalize-kr` | `ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ \| grep 개인정보`; `cat .../legalize-kr/kr/{법령명}/법률.md`; `git -C .../legalize-kr log --oneline -20 -- kr/{법령명}/` |
+| `admrule-kr` | `find .../admrule-kr -path '*고시*' -name '본문.md' \| rg '개인정보|과징금|안전보건'`; `git -C .../admrule-kr -c core.quotePath=false log --oneline -20 -- '{기관경로}/{행정규칙종류}/{행정규칙명}/본문.md'` |
+| `precedent-kr` | `find .../precedent-kr -name "*2022다12345*"`; 사건번호가 없으면 먼저 법망 API로 discovery |
+| `ordinance-kr` | `{광역}/{기초 또는 _본청 또는 _교육청}/{자치법규종류}/{자치법규명}/본문.md`; 지역을 먼저 좁힌 뒤 탐색 |
 
-법령명 디렉토리는 띄어쓰기를 제거한 이름을 사용한다.
-
-```bash
-ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ | grep 개인정보
-cat ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/법률.md
-cat ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/시행령.md
-ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/{법령명}/
-git -C ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr log --oneline -20 -- kr/{법령명}/
-```
-
-`git log --name-only`로 한국어 경로를 볼 때는 octal escape 방지를 위해 `-c core.quotePath=false`를 사용한다.
-
-출력 provenance 예시:
-
-```markdown
-**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
-```
-
-## Full Mode: precedent-kr
-
-경로:
-
-```text
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/
-```
-
-사건번호를 아는 경우에만 직접 파일을 찾는다. 키워드 검색은 파일 수가 많으므로 법망 API가 기본이다.
-
-```bash
-find ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr -name "*2022다12345*"
-cat ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/민사/대법원/2022다12345.md
-```
-
-출력 provenance 예시:
-
-```markdown
-**[공식 원문 기반 로컬 미러] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
-```
+`admrule-kr`와 `ordinance-kr`의 frontmatter는 citation ledger 후보로 쓴다. 핵심 필드는 식별자, 명칭, 종류, 발령·공포기관, 발령·공포일자, 시행일자, `본문출처`, `출처`, `첨부파일`이다. `본문출처: parsing-failed`이면 metadata와 첨부 링크만으로 결론을 확정하지 말고 law.go.kr 원문 또는 첨부 파일을 다시 확인한다.
 
 ## 법망 API
 
@@ -130,7 +124,7 @@ https://api.beopmang.org/api/v4/law?action=get&law_id={law_id}&article={조문}
 https://api.beopmang.org/api/v4/case?action=search&q={키워드}
 ```
 
-legalize-kr에는 행정규칙이 없다. 고시, 훈령, 예규, 구체적 과징금·절차·서식 기준은 법망 API 또는 공식 사이트로 확인한다.
+법망 API는 Lite 모드의 기본 검색 경로이고, Full 모드에서도 discovery와 교차확인에 유용하다. `admrule-kr` 또는 `ordinance-kr`가 없으면 행정규칙·자치법규는 법망 API, law.go.kr, korean-law-mcp로 확인한다.
 
 법망 응답이 `service_maintenance`, timeout, 5xx, 빈 응답이면 조회 실패로 표시한다. 이는 검색 0건, 규범 부존재, 개정 없음의 근거가 아니다.
 
@@ -189,12 +183,21 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 mkdir -p ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
 git clone https://github.com/legalize-kr/legalize-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr
 git clone https://github.com/legalize-kr/precedent-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr
+git clone https://github.com/legalize-kr/admrule-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr
 ```
 
-이미 있으면 pull한다. `legalize-kr` pull 실패 시 re-clone할 수 있다.
+자치법규까지 다루는 환경에서만 `ordinance-kr`를 추가한다. 체크아웃 파일 수가 매우 많으므로 기본 초기화에 강제하지 않는다.
 
 ```bash
-git -C ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr pull --ff-only || \
-  (rm -rf ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr && \
-   git clone https://github.com/legalize-kr/legalize-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr)
+git clone https://github.com/legalize-kr/ordinance-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr
 ```
+
+이미 있으면 pull한다. `legalize-kr`, `admrule-kr`, `ordinance-kr` 계열은 upstream 파이프라인 개선으로 force-push될 수 있으므로 `pull --ff-only` 실패가 "데이터 없음"을 뜻하지 않는다. 동기화 정책은 사용자가 요청한 데이터 루트에만 적용한다.
+
+```bash
+for repo in legalize-kr precedent-kr admrule-kr; do
+  git -C "${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/${repo}" pull --ff-only
+done
+```
+
+`pull --ff-only`가 force-push 때문에 실패하면 자동으로 덮어쓰지 않는다. 사용자가 해당 데이터 루트 재동기화를 요청한 경우에만 해당 repo를 새로 clone하거나 upstream 안내에 따라 재설정한다.

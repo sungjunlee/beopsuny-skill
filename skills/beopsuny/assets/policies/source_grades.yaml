@@ -45,13 +45,15 @@ source_classes:
 
   official_primary_local_mirror:
     label: "공식 원문 기반 로컬 미러"
-    description: "법제처·대법원 공식 원문을 Markdown으로 변환한 로컬 Git 미러. 원문 성격의 자료이지만 이번 응답의 확인 경로는 직접 공식 사이트/API가 아니라 로컬 미러다."
+    description: "법제처·대법원 등 공식 원문을 Markdown으로 변환한 로컬 Git 미러. 원문 성격의 자료이지만 이번 응답의 확인 경로는 직접 공식 사이트/API가 아니라 로컬 미러다."
     trust_level: "authoritative_mirror"
     use_allowed: "conclusion_basis"
     can_be_sole_basis: true
     requires_note: "provenance에 로컬 미러 확인과 직접 공식 사이트 확인 아님을 표시한다. 최신 개정·변동성 쟁점은 law.go.kr 원문 확인 또는 glaw.scourt.go.kr 원문 확인으로 교차확인한다."
     examples:
       - "legalize-kr 로컬 미러 법령 Markdown"
+      - "admrule-kr 로컬 미러 행정규칙 Markdown"
+      - "ordinance-kr 로컬 미러 자치법규 Markdown"
       - "precedent-kr 로컬 미러 대법원 판례 Markdown"
 
   official_primary_local_mirror_lower_court:
@@ -169,6 +171,16 @@ default_labels:
     source_class: official_primary_local_mirror
     label: "공식 원문 기반 로컬 미러"
     rationale: "법제처 공식 법령 원문의 Markdown 로컬 미러 — 직접 공식 사이트 확인 아님"
+
+  "admrule-kr (로컬 미러 행정규칙 Markdown)":
+    source_class: official_primary_local_mirror
+    label: "공식 원문 기반 로컬 미러"
+    rationale: "국가법령정보센터 OpenAPI 기반 행정규칙 Markdown 로컬 미러 — 직접 공식 사이트 확인 아님"
+
+  "ordinance-kr (로컬 미러 자치법규 Markdown)":
+    source_class: official_primary_local_mirror
+    label: "공식 원문 기반 로컬 미러"
+    rationale: "국가법령정보센터 OpenAPI 기반 자치법규 Markdown 로컬 미러 — 직접 공식 사이트 확인 아님"
 
   "precedent-kr (로컬 미러 대법원 판례)":
     source_class: official_primary_local_mirror

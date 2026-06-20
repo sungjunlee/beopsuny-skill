@@ -36,7 +36,7 @@ runtime_contract:
   output_behavior: "investigation_plan"
   verify_with:
     - "law.go.kr"
-    - "법망 API 또는 local legalize-kr/precedent-kr 원문"
+    - "법망 API 또는 local legalize-kr/admrule-kr/precedent-kr 원문"
     - "대법원/헌법재판소/소관 기관 공식 자료"
   note: "계약 쟁점과 확인할 권위자료를 고르는 후보 가이드이며, 조문·판례·시행일은 원문 확인 전 결론 근거가 아니다."
 

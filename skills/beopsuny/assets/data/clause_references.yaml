@@ -69,7 +69,7 @@ runtime_contract:
   output_behavior: "investigation_plan"
   verify_with:
     - "law.go.kr 법령·시행령·시행규칙·행정규칙"
-    - "법망 API 또는 local legalize-kr/precedent-kr 원문"
+    - "법망 API 또는 local legalize-kr/admrule-kr/precedent-kr 원문"
     - "대법원/헌법재판소/소관 기관 공식 자료"
   volatile_fields:
     - "deadline"
