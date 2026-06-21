@@ -159,7 +159,7 @@ Lite 모드 진입 시 한 번만 안내한다:
 
 결론 기준:
 
-- 핵심 결론은 공식 원문 또는 공식 실무자료로 뒷받침한다.
+- 핵심 결론은 공식 원문으로 뒷받침하는 것을 우선한다. 공식 실무자료는 현재 적용되는 자료임이 확인된 경우에만 보조 근거로 쓰고, `공식 실무자료: 미확정`은 현재법 결론의 `[VERIFIED]` 근거로 쓰지 않는다.
 - 해설/의견은 단독 결론 근거로 쓰지 않는다. 사용하면 `[EDITORIAL]`을 명시하고 결론을 유보한다.
 - 참고 제외 자료는 결론 근거로 쓰지 않는다.
 - 출처 권위 라벨 정의와 다운그레이드 규칙은 `references/source-grading.md`와 `assets/policies/source_grades.yaml`을 따른다. `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 삼는다.

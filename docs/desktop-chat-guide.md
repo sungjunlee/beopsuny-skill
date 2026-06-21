@@ -82,6 +82,14 @@ Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(M
 4. **시행일 확인** — 미시행 법령은 "⚠️ 미시행" 표시
 5. **환각 방지** — 모르면 "확인 필요"라고 쓴다. 없는 조문을 만들지 않는다
 
+## Lite Gate Card
+
+- 상태 태그는 `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]`만 쓴다.
+- `[VERIFIED]`는 공식 원문, 법망 API 원문 필드, law.go.kr 본문, glaw.scourt.go.kr 원문처럼 실제 원문 또는 원문 필드를 확인한 경우에만 쓴다.
+- WebSearch 스니펫, 법망 API 검색 결과, 로컬 미러, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다. 이 경우 source/provenance를 분리하고 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
+- 시행일, 개정, 행정규칙, 고시, 과징금, 인허가처럼 최신성이 핵심이면 stale/live 여부를 표시하고 현재법 결론을 유보한다.
+- 사용자가 비법무 담당자이거나 외부 송부용 초안을 요청하면 role/destination gate를 적용한다. 고객·기관·상대방에게 보낼 문구는 법무 검토 전 확정 결론처럼 쓰지 않는다.
+
 답변 마지막에 면책 고지:
 > ⚠️ **참고**: 이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.
 
