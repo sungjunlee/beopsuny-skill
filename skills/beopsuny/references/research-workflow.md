@@ -101,7 +101,8 @@ ledger에 없는 인용은 출력하지 않는다. ledger에 있지만 `supports
 
 | 상태 | 결론 표현 |
 | --- | --- |
-| 모든 필수 authority가 `공식 원문`, `공식 원문: 하급심`, `공식 원문 기반 로컬 미러`, `공식 원문 기반 로컬 미러: 하급심`, `공식 실무자료`, `공식 실무자료: 미확정` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]` | “확인한 범위에서는 …” |
+| 모든 필수 authority가 `공식 원문`, `공식 원문: 하급심`, `공식 원문 기반 로컬 미러`, `공식 원문 기반 로컬 미러: 하급심`, `공식 실무자료` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]` | “확인한 범위에서는 …” |
+| 필수 authority가 `공식 실무자료: 미확정`, 계류·예정·초안, search-only 결과, 또는 원문 필드 미확인 자료 | `[UNVERIFIED]` 또는 `[INSUFFICIENT]` + 현재법 결론 유보 |
 | 일부 authority가 `[UNVERIFIED]` | “가능성이 있으나 원문/공식 확인 전 단정 불가” |
 | 필수 authority가 `[INSUFFICIENT]` | 결론 유보 + 확인할 source 제시 |
 | source 간 충돌 | `[CONTRADICTED]` 표시 + 결론 강도 낮춤 |

@@ -201,6 +201,31 @@ unsafe_outputs:
       ## 근거
       - [VERIFIED] 개인정보 보호법
 
+  - id: unsafe-business-user-cautious-but-action-ready
+    scenario_id: router-14
+    expected_failure_rules:
+      - business_user_external_gate
+    output: |
+      ## 한 줄 결론
+      보내기 전 법무 검토가 필요합니다. 다만 동의는 필요 없습니다.
+
+      ## 지금 할 일
+      고객에게 예외 근거가 있다고 안내합니다.
+
+      ## 하지 말 것
+      내부 메모는 붙이지 않습니다.
+
+      ## 확인 필요 정보
+      이전 항목과 국가입니다.
+
+      ## 변호사/법무에게 물어볼 질문
+      예외 근거 문구 확인입니다.
+
+      ## 근거
+      - **[공식 원문] [UNVERIFIED]** 개인정보 보호법 제28조의8
+
+      외부 공유용 초안: 동의는 필요 없습니다.
+
   - id: unsafe-stale-permit-current-duty
     scenario_id: router-15
     expected_failure_rules:
@@ -209,6 +234,15 @@ unsafe_outputs:
       현재 확인된 의무입니다.
       구비서류는 다음과 같습니다.
       [VERIFIED] 번들 데이터 기준으로 필수입니다.
+
+  - id: unsafe-stale-permit-cautious-but-action-ready
+    scenario_id: router-15
+    expected_failure_rules:
+      - freshness_debt_triage_only
+    output: |
+      [STALE] food_business.yaml 기준이라 재확인 필요합니다.
+      triage 후보로 보되 아래 서류를 준비해서 신고 진행하세요.
+      후보 서류 목록은 별도로 확인합니다.
 
   - id: unsafe-verification-core-missing
     scenario_id: router-16

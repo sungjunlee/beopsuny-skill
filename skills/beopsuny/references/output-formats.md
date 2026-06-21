@@ -66,15 +66,25 @@ glaw.scourt.go.kr를 직접 열어 확인한 경우에는 다음처럼 표시한
 
 ## 행정규칙 인용
 
-행정규칙은 법망 API 또는 공식 링크로 확인하고, law.go.kr 검색 링크를 제공한다.
+행정규칙은 법망 API 또는 공식 링크로 확인하고, law.go.kr 검색 링크를 제공한다. provenance는 실제 확인 수준을 나눠 쓴다.
 
 ```markdown
 ## {고시명} — {발령기관}
-**[공식 원문] [VERIFIED]** — 법망 API (type=admrul)
+**[공식 원문] [VERIFIED]** — 법망 API 원문 필드 확인 (type=admrul) + law.go.kr 원문 링크 확인
 
 > {본문 인용}
 
 - **원문 검색**: https://www.law.go.kr/행정규칙/{고시명}
+```
+
+검색 결과나 메타데이터만 확인했으면 `[VERIFIED]`가 아니다.
+
+```markdown
+## {고시명} — {발령기관}
+**[공식 실무자료: 미확정] [INSUFFICIENT]** — 법망 API 검색 결과만 확인 (type=admrul), 원문 필드·law.go.kr 본문 미확인
+
+- **원문 검색 후보**: https://www.law.go.kr/행정규칙/{고시명}
+- **의존 전 확인**: 원문 본문, 발령기관, 시행일, 개정 여부
 ```
 
 ## 2차 소스 인용

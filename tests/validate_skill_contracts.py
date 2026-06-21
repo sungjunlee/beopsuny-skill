@@ -1557,6 +1557,41 @@ def check_research_workflow_verification_core() -> None:
         assert_contains(skill_text, required, "SKILL.md")
 
 
+def check_current_law_verified_binding_excludes_unconfirmed_practice_material() -> None:
+    research = read_text("skills/beopsuny/references/research-workflow.md")
+    skill = read_text("skills/beopsuny/SKILL.md")
+
+    assert_not_contains(
+        research,
+        "공식 실무자료`, `공식 실무자료: 미확정` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]`",
+        "research-workflow.md",
+    )
+    for required in [
+        "필수 authority가 `공식 실무자료: 미확정`",
+        "`[UNVERIFIED]` 또는 `[INSUFFICIENT]` + 현재법 결론 유보",
+    ]:
+        assert_contains(research, required, "research-workflow.md")
+    for required in [
+        "공식 원문으로 뒷받침하는 것을 우선한다",
+        "`공식 실무자료: 미확정`은 현재법 결론의 `[VERIFIED]` 근거로 쓰지 않는다",
+    ]:
+        assert_contains(skill, required, "SKILL.md")
+
+
+def check_admin_rule_provenance_examples_split_search_and_original_confirmation() -> None:
+    text = read_text("skills/beopsuny/references/output-formats.md")
+    label = "output-formats.md"
+
+    assert_not_contains(text, "**[공식 원문] [VERIFIED]** — 법망 API (type=admrul)", label)
+    for required in [
+        "법망 API 원문 필드 확인 (type=admrul) + law.go.kr 원문 링크 확인",
+        "검색 결과나 메타데이터만 확인했으면 `[VERIFIED]`가 아니다",
+        "**[공식 실무자료: 미확정] [INSUFFICIENT]** — 법망 API 검색 결과만 확인",
+        "원문 필드·law.go.kr 본문 미확인",
+    ]:
+        assert_contains(text, required, label)
+
+
 def parse_review_due(value: Any) -> date | None:
     if isinstance(value, date):
         return value
@@ -2214,6 +2249,7 @@ def check_contract_tests_workflow() -> None:
         "requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
+        "python -m unittest tests/test_forward_eval_harness.py",
         "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
     ]:
         assert_contains(text, required, label)
@@ -2228,6 +2264,73 @@ def check_contract_tests_workflow() -> None:
         "PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py",
     ]:
         assert_contains(readme, required, "README.md")
+
+
+def check_release_workflow_preflight() -> None:
+    text = read_text(".github/workflows/release.yml")
+    label = "release.yml"
+
+    for required in [
+        "actions/setup-python@v5",
+        "python -m pip install -r requirements-dev.txt",
+        "python tests/validate_skill_contracts.py",
+        "python tests/evaluate_scenario_outputs.py",
+        "python -m unittest tests/test_forward_eval_harness.py",
+        "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
+        "Verify release tag matches plugin metadata",
+        "TAG_VERSION",
+        ".claude-plugin/plugin.json",
+        ".claude-plugin/marketplace.json",
+        "version mismatch",
+    ]:
+        assert_contains(text, required, label)
+
+    release_zip_index = text.find("Create release zips")
+    preflight_index = text.find("Validate skill document contracts")
+    version_index = text.find("Verify release tag matches plugin metadata")
+    if not (0 <= preflight_index < release_zip_index and 0 <= version_index < release_zip_index):
+        raise AssertionError(f"{label}: preflight checks must run before release zip creation")
+
+
+def check_desktop_chat_lite_gate_card() -> None:
+    text = read_text("docs/desktop-chat-guide.md")
+    label = "desktop-chat-guide.md"
+
+    for required in [
+        "## Lite Gate Card",
+        "[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]",
+        "법망 API 원문 필드",
+        "WebSearch 스니펫, 법망 API 검색 결과, 로컬 미러, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다",
+        "source/provenance를 분리",
+        "stale/live 여부를 표시",
+        "role/destination gate",
+        "법무 검토 전 확정 결론처럼 쓰지 않는다",
+    ]:
+        assert_contains(text, required, label)
+
+
+def check_todos_current_release_blockers() -> None:
+    text = read_text("TODOS.md")
+    label = "TODOS.md"
+
+    for issue in ["#164", "#165", "#166", "#167", "#168", "#169"]:
+        assert_contains(text, issue, label)
+    for required in [
+        "release-blocking trust-contract hardening",
+        "GitHub Issues가 source of truth",
+        "Retired roadmap",
+        "spec/charter.md",
+        "source authority label",
+        "verification status",
+        "provenance 분리 계약",
+        "python3 -m unittest tests/test_forward_eval_harness.py",
+    ]:
+        assert_contains(text, required, label)
+    for stale in [
+        "법순이 로드맵. `/gstack-plan-eng-review` (2026-04-12) 결과.",
+        "## TODO 2: Source Grading A/B/C/D 적용 (첫 PR)",
+    ]:
+        assert_not_contains(text, stale, label)
 
 
 def check_self_verification_guardrails() -> None:
@@ -2802,6 +2905,8 @@ CHECK_GROUPS = (
             check_citation_verification_contract_single_source,
             check_golden_citation_fixtures,
             check_research_workflow_verification_core,
+            check_current_law_verified_binding_excludes_unconfirmed_practice_material,
+            check_admin_rule_provenance_examples_split_search_and_original_confirmation,
         ),
     ),
     CheckGroup(
@@ -2837,6 +2942,9 @@ CHECK_GROUPS = (
             check_quality_contract_reference_targets,
             check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
+            check_release_workflow_preflight,
+            check_desktop_chat_lite_gate_card,
+            check_todos_current_release_blockers,
         ),
     ),
     CheckGroup(
