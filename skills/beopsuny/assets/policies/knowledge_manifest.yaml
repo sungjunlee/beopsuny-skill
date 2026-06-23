@@ -1,0 +1,40 @@
+knowledge_manifest:
+  default_channel: stable
+  active_verticals:
+    - privacy
+  channels:
+    stable:
+      url: "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/_system/manifests/stable.json"
+      use: production_like_default
+      source_type: github_raw_private_or_authenticated
+    canary:
+      url: "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/_system/manifests/canary.json"
+      use: explicit_replay_or_integration_test_only
+      source_type: github_raw_private_or_authenticated
+  required_publication_fields:
+    publish_ready: true
+    url_status: live
+  required_asset_keys:
+    taxonomy:
+      usage: issue_framing_only
+    retrieval_hints:
+      usage: expansion_after_blind_search
+    authority_map.core:
+      usage: post_search_audit_only
+    authority_map.overlay:
+      usage: post_search_audit_only
+    session_schema:
+      usage: validation_reference_only
+  asset_requirements:
+    - sha256
+    - asset_type
+    - usage_mode
+    - version
+  failure_behavior:
+    fetch_auth_schema_checksum_or_usage_mode_failure: skip_knowledge_injection_and_continue_live_legal_research
+  boundaries:
+    - knowledge_assets_are_not_legal_authority
+    - stable_is_default
+    - canary_requires_explicit_opt_in
+    - privacy_is_the_only_structured_ingestion_vertical
+    - seed_workspace_materials_are_reference_context_only

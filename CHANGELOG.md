@@ -5,6 +5,7 @@
 **테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.
 
 ### Added
+- `skills/beopsuny/assets/policies/knowledge_manifest.yaml` — `beopsuny-knowledge` privacy manifest의 stable/canary channel, required asset keys, sha256/usage_mode 검증 경계, 실패 시 live legal research continuation 정책 추가
 - `skills/beopsuny/references/source-access.md` — Full/Lite 모드, legalize-kr, precedent-kr, 법망 API, korean-law-mcp, WebSearch fallback, 원문 링크, 데이터 초기화 절차를 분리
 - `skills/beopsuny/references/research-workflow.md` — 법령·하위법령·행정규칙·판례·개정안 조사 깊이 조절 규칙 분리. `Legal Verification Core` 추가: issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding
 - `skills/beopsuny/references/checklist-routing.md` — checklist 선택, triage, filtering, related checklist, 회사 맥락 적용 규칙 분리
@@ -27,6 +28,9 @@
 - `.github/workflows/contract-tests.yml` — PR 및 main/master push에서 문서 계약 검증, router guardrail 평가, 테스트 harness compile 실행
 
 ### Changed
+- README 예시와 제품 설명을 확정 자문 톤이 아니라 확인 가능한 1차 소스 중심 조사 보조 톤으로 조정
+- `DESIGN.md`의 현재 아키텍처 용어를 Source Grade에서 source authority labels + verification status로 정렬
+- `SKILL.md` 개인정보 보조 지식 레이어에 static privacy pre-knowledge 점검 축을 추가하되, 결론 근거·최초 route·비개인정보 질문 적용을 금지하는 경계를 명시
 - 점수형 A/B/C/D 공개 출력 체계를 출처 권위 라벨(`공식 원문`, `공식 원문: 하급심`, `공식 실무자료`, `공식 실무자료: 미확정`, `해설/의견`, `참고 제외`)과 verification status 병기로 전환. `source_grades.yaml` 파일명은 호환성 때문에 유지하되, 내용은 `source_classes`/`default_labels` 계약으로 정리
 - `skills/beopsuny/SKILL.md` 762줄 → 303줄. 상세 매뉴얼에서 의도 라우터 + Full/Lite 판별 + 출처 권위 라벨 계약 + 필수 자가 검증 중심 문서로 재작성하고, 법적 효과가 있는 행동에는 `user_role`/목적지 gate를 적용하도록 보강
 - `skills/beopsuny/SKILL.md`에 품질 계약 매핑을 추가해 Legal Verification Core, Freshness Governance, Output role/destination gate, Profile/practice direction이 어떤 트리거에서 함께 적용되는지 단일 라우터 안에 고정

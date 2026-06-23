@@ -2023,7 +2023,7 @@ def check_readme_quality_contract_map() -> None:
         "pull request",
         ".github/workflows/contract-tests.yml",
         "router guardrail 평가",
-        "assets/policies/` (5 files)",
+        "assets/policies/` (6 files)",
         "assets/schemas/` (10 files",
         "freshness_metadata.yaml",
         "`freshness_debt.yaml`",
@@ -2084,8 +2084,123 @@ def check_readme_asset_inventory_counts() -> None:
         "review_mode.yaml",
         "source_grades.yaml",
         "freshness_debt.yaml",
+        "knowledge_manifest.yaml",
     ]:
         assert_contains(text, f"`{policy_name}`", label)
+
+
+def check_readme_investigation_assist_posture() -> None:
+    text = read_text("README.md")
+    label = "README.md"
+
+    for required in [
+        "확인 가능한 1차 소스 중심의 법률 조사를 보조",
+        "출처 권위 라벨, verification status, 최신성 caveat",
+        "[INSUFFICIENT] 법인세법·조세조약·원천징수율은 live source 확인 전 결론 금지",
+        "[UNVERIFIED] 다수 이용자 대상 표준 약관 가능성",
+        "[UNVERIFIED] 고의/중과실 면책 제한 가능성",
+        "[UNVERIFIED] 위탁·국외이전 쟁점 후보",
+    ]:
+        assert_contains(text, required, label)
+    assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
+
+
+def check_design_current_architecture_uses_source_authority_terms() -> None:
+    text = read_text("DESIGN.md")
+    label = "DESIGN.md"
+
+    for required in [
+        "출처 권위 라벨 + verification status",
+        "source authority labels + verification status + self verification",
+    ]:
+        assert_contains(text, required, label)
+    for stale in [
+        "| v0.1.x | **패턴 고도화** (현재) | Source Grading A/B/C/D",
+        "-> Source Grade + self verification",
+    ]:
+        assert_not_contains(text, stale, label)
+
+
+def check_knowledge_manifest_policy_config() -> None:
+    data = load_yaml("skills/beopsuny/assets/policies/knowledge_manifest.yaml")
+    text = read_text("skills/beopsuny/references/knowledge-injection.md")
+    label = "knowledge_manifest.yaml"
+
+    manifest = data.get("knowledge_manifest")
+    if not isinstance(manifest, dict):
+        raise AssertionError(f"{label}: knowledge_manifest mapping missing")
+    if manifest.get("default_channel") != "stable":
+        raise AssertionError(f"{label}: default channel must be stable")
+    if manifest.get("active_verticals") != ["privacy"]:
+        raise AssertionError(f"{label}: structured ingestion must be privacy-only")
+
+    channels = manifest.get("channels")
+    if not isinstance(channels, dict):
+        raise AssertionError(f"{label}: channels must be a mapping")
+    stable = channels.get("stable", {})
+    canary = channels.get("canary", {})
+    if "stable.json" not in str(stable.get("url", "")):
+        raise AssertionError(f"{label}: stable channel must point to stable.json")
+    if stable.get("use") != "production_like_default":
+        raise AssertionError(f"{label}: stable channel must be production-like default")
+    if "canary.json" not in str(canary.get("url", "")):
+        raise AssertionError(f"{label}: canary channel must point to canary.json")
+    if canary.get("use") != "explicit_replay_or_integration_test_only":
+        raise AssertionError(f"{label}: canary must be explicit opt-in")
+
+    publication = manifest.get("required_publication_fields")
+    if publication != {"publish_ready": True, "url_status": "live"}:
+        raise AssertionError(f"{label}: publish_ready/url_status gates drifted: {publication!r}")
+
+    required_assets = manifest.get("required_asset_keys")
+    expected_assets = {
+        "taxonomy": "issue_framing_only",
+        "retrieval_hints": "expansion_after_blind_search",
+        "authority_map.core": "post_search_audit_only",
+        "authority_map.overlay": "post_search_audit_only",
+        "session_schema": "validation_reference_only",
+    }
+    if not isinstance(required_assets, dict):
+        raise AssertionError(f"{label}: required_asset_keys must be a mapping")
+    for key, expected_usage in expected_assets.items():
+        value = required_assets.get(key)
+        if not isinstance(value, dict) or value.get("usage") != expected_usage:
+            raise AssertionError(f"{label}: asset {key!r} must use {expected_usage!r}")
+
+    for requirement in ["sha256", "asset_type", "usage_mode", "version"]:
+        if requirement not in manifest.get("asset_requirements", []):
+            raise AssertionError(f"{label}: missing asset requirement {requirement!r}")
+    failure_behavior = manifest.get("failure_behavior", {})
+    if "skip_knowledge_injection_and_continue_live_legal_research" not in str(failure_behavior):
+        raise AssertionError(f"{label}: failure behavior must continue live legal research")
+
+    for required in [
+        "assets/policies/knowledge_manifest.yaml",
+        "stable manifest",
+        "sha256",
+        "usage_mode",
+    ]:
+        assert_contains(text, required, "knowledge-injection.md")
+
+
+def check_static_privacy_preknowledge_boundaries() -> None:
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md"
+
+    for required in [
+        "Privacy 사전지식",
+        "이 축이 결론을 강제하지 않는다",
+        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
+        "수집·이용",
+        "제공·위탁",
+        "국외이전",
+        "안전성 확보조치",
+        "정보주체 권리",
+        "침해사고",
+        "server-side tag forwarding",
+        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
+    ]:
+        assert_contains(text, required, label)
 
 
 def check_law_change_automation_promise_drift() -> None:
@@ -2937,6 +3052,10 @@ CHECK_GROUPS = (
         (
             check_readme_quality_contract_map,
             check_readme_asset_inventory_counts,
+            check_readme_investigation_assist_posture,
+            check_design_current_architecture_uses_source_authority_terms,
+            check_knowledge_manifest_policy_config,
+            check_static_privacy_preknowledge_boundaries,
             check_law_change_automation_promise_drift,
             check_readme_quality_verification_refs_resolve,
             check_quality_contract_reference_targets,

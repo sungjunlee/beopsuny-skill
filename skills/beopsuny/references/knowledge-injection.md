@@ -48,7 +48,7 @@ Operational preference:
 | `stable` | production-like 기본 소비 채널 | validation, replay/readiness evidence, triage disposition을 통과한 privacy asset |
 | `canary` | guarded replay 또는 integration test | stable 승격 전 변경을 좁은 범위에서 검증 |
 
-Runtime은 환경이 지정한 manifest source를 사용한다. source 위치와 접근 방식은 skill 본문이 아니라 integration config에서 관리한다.
+Runtime은 환경이 지정한 manifest source를 사용한다. source 위치와 접근 방식은 skill 본문이 아니라 integration config에서 관리한다. 기본 채널과 허용 asset key는 `assets/policies/knowledge_manifest.yaml`에 기록한다.
 
 ## 소비 순서
 
@@ -157,7 +157,7 @@ Runtime 구현은 아래 조건을 모두 확인해야 한다. 실패하면 know
 
 ## Local fallback
 
-Production-like runtime의 canonical source는 integration config가 지정한 manifest source다. `../beopsuny-skill` 또는 sibling checkout path는 runtime ingestion contract가 아니다.
+Production-like runtime의 canonical source는 `assets/policies/knowledge_manifest.yaml`의 stable channel 또는 integration config가 명시적으로 지정한 manifest source다. `../beopsuny-skill` 또는 sibling checkout path는 runtime ingestion contract가 아니다.
 
 Local development에서만 명시적 absolute checkout path 또는 pinned local manifest fixture를 fallback으로 둘 수 있다. 이 경우에도 schema, checksum, channel, usage-mode 검증을 우회하지 않는다.
 

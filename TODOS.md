@@ -6,12 +6,12 @@
 
 ## Release-blocking checklist
 
-1. [ ] [#164](https://github.com/sungjunlee/beopsuny-skill/issues/164) VERIFIED current-law binding에서 `공식 실무자료: 미확정`을 결론 근거로 쓰지 않게 유지한다.
-2. [ ] [#165](https://github.com/sungjunlee/beopsuny-skill/issues/165) 법망 API provenance를 검색 결과, 원문 필드 확인, 공식 원문 확인으로 분리한다.
-3. [ ] [#166](https://github.com/sungjunlee/beopsuny-skill/issues/166) Desktop Chat Lite 템플릿에 항상 적용되는 legal gate card를 유지한다.
-4. [ ] [#167](https://github.com/sungjunlee/beopsuny-skill/issues/167) 외부 초안과 stale-law 답변의 action-ready 누수를 unsafe fixture로 막는다.
-5. [ ] [#168](https://github.com/sungjunlee/beopsuny-skill/issues/168) CI와 release workflow가 forward-eval unittest, contract tests, version preflight를 실행한다.
-6. [ ] [#169](https://github.com/sungjunlee/beopsuny-skill/issues/169) 오래된 2026-04 TODO 로드맵을 이 체크리스트와 GitHub Issues로 대체한다.
+1. [x] [#164](https://github.com/sungjunlee/beopsuny-skill/issues/164) VERIFIED current-law binding에서 `공식 실무자료: 미확정`을 결론 근거로 쓰지 않게 유지한다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
+2. [x] [#165](https://github.com/sungjunlee/beopsuny-skill/issues/165) 법망 API provenance를 검색 결과, 원문 필드 확인, 공식 원문 확인으로 분리한다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
+3. [x] [#166](https://github.com/sungjunlee/beopsuny-skill/issues/166) Desktop Chat Lite 템플릿에 항상 적용되는 legal gate card를 유지한다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
+4. [x] [#167](https://github.com/sungjunlee/beopsuny-skill/issues/167) 외부 초안과 stale-law 답변의 action-ready 누수를 unsafe fixture로 막는다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
+5. [x] [#168](https://github.com/sungjunlee/beopsuny-skill/issues/168) CI와 release workflow가 forward-eval unittest, contract tests, version preflight를 실행한다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
+6. [x] [#169](https://github.com/sungjunlee/beopsuny-skill/issues/169) 오래된 2026-04 TODO 로드맵을 이 체크리스트와 GitHub Issues로 대체한다. 완료: [#170](https://github.com/sungjunlee/beopsuny-skill/pull/170)
 
 ## Retired roadmap
 
