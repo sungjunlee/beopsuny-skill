@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-06-23
+
 **테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.
 
 ### Added
