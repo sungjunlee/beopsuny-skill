@@ -5,6 +5,8 @@
 **테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.
 
 ### Added
+- `skills/beopsuny/assets/tools/knowledge_manifest_ingest.py` — `beopsuny-knowledge` privacy manifest와 required assets를 fetch/검증하고, 실패 시 knowledge injection을 건너뛰면서 live legal research를 계속하도록 하는 fail-open ingestion helper 추가
+- `tests/test_knowledge_manifest_ingest.py` — 임시 manifest/assets fixture와 local `beopsuny-knowledge` checkout을 이용해 checksum, schema, usage-mode, private raw failure downgrade를 검증
 - `skills/beopsuny/assets/policies/knowledge_manifest.yaml` — `beopsuny-knowledge` privacy manifest의 stable/canary channel, required asset keys, sha256/usage_mode 검증 경계, 실패 시 live legal research continuation 정책 추가
 - `skills/beopsuny/references/source-access.md` — Full/Lite 모드, legalize-kr, precedent-kr, 법망 API, korean-law-mcp, WebSearch fallback, 원문 링크, 데이터 초기화 절차를 분리
 - `skills/beopsuny/references/research-workflow.md` — 법령·하위법령·행정규칙·판례·개정안 조사 깊이 조절 규칙 분리. `Legal Verification Core` 추가: issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding

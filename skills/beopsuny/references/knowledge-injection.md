@@ -50,6 +50,8 @@ Operational preference:
 
 Runtime은 환경이 지정한 manifest source를 사용한다. source 위치와 접근 방식은 skill 본문이 아니라 integration config에서 관리한다. 기본 채널과 허용 asset key는 `assets/policies/knowledge_manifest.yaml`에 기록한다.
 
+초기 integration/runtime check는 `assets/tools/knowledge_manifest_ingest.py`를 사용할 수 있다. helper는 stable manifest와 required asset을 fetch한 뒤 `sha256`, `schema_version`, `publish_ready`, `url_status`, `usage_mode`를 검증하고, 성공하면 answer 근거가 아닌 보조 `injection_packet`을 만든다. private raw URL은 `BEOPSUNY_KNOWLEDGE_TOKEN` 또는 `GITHUB_TOKEN`이 있을 때만 인증 헤더를 붙인다. network/auth, schema, checksum, usage-mode 실패는 기본적으로 `status: skipped`, `continue_live_legal_research: true`로 fail-open 처리한다. 배포 gate나 fixture 검증에서 실패를 잡고 싶을 때만 `--strict`를 쓴다.
+
 ## 소비 순서
 
 ```text
@@ -160,6 +162,12 @@ Runtime 구현은 아래 조건을 모두 확인해야 한다. 실패하면 know
 Production-like runtime의 canonical source는 `assets/policies/knowledge_manifest.yaml`의 stable channel 또는 integration config가 명시적으로 지정한 manifest source다. `../beopsuny-skill` 또는 sibling checkout path는 runtime ingestion contract가 아니다.
 
 Local development에서만 명시적 absolute checkout path 또는 pinned local manifest fixture를 fallback으로 둘 수 있다. 이 경우에도 schema, checksum, channel, usage-mode 검증을 우회하지 않는다.
+
+```bash
+python3 assets/tools/knowledge_manifest_ingest.py \
+  --manifest-file /absolute/path/to/beopsuny-knowledge/_system/manifests/stable.json \
+  --knowledge-root /absolute/path/to/beopsuny-knowledge
+```
 
 ## 답변 경계
 

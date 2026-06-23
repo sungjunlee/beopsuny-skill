@@ -86,6 +86,8 @@ QUALITY_CONTRACT_REFERENCES = {
         ("tests/validate_skill_contracts.py", None),
         ("tests/scenarios/16_router_regression.yaml", None),
         ("tests/evaluate_scenario_outputs.py", None),
+        ("skills/beopsuny/assets/tools/knowledge_manifest_ingest.py", None),
+        ("tests/test_knowledge_manifest_ingest.py", None),
         (".github/workflows/contract-tests.yml", None),
     ],
 }
@@ -2124,6 +2126,7 @@ def check_design_current_architecture_uses_source_authority_terms() -> None:
 def check_knowledge_manifest_policy_config() -> None:
     data = load_yaml("skills/beopsuny/assets/policies/knowledge_manifest.yaml")
     text = read_text("skills/beopsuny/references/knowledge-injection.md")
+    helper = read_text("skills/beopsuny/assets/tools/knowledge_manifest_ingest.py")
     label = "knowledge_manifest.yaml"
 
     manifest = data.get("knowledge_manifest")
@@ -2176,11 +2179,31 @@ def check_knowledge_manifest_policy_config() -> None:
 
     for required in [
         "assets/policies/knowledge_manifest.yaml",
+        "assets/tools/knowledge_manifest_ingest.py",
         "stable manifest",
         "sha256",
         "usage_mode",
+        "continue_live_legal_research: true",
+        "--strict",
     ]:
         assert_contains(text, required, "knowledge-injection.md")
+
+    for required in [
+        "DEFAULT_POLICY",
+        "skip",
+        "continue_live_legal_research",
+        "sha256",
+        "usage_mode",
+        "publish_ready",
+        "url_status",
+        "--knowledge-root",
+        "--strict",
+        "RAW_MAIN_MARKER",
+        "BEOPSUNY_KNOWLEDGE_TOKEN",
+        "GITHUB_TOKEN",
+        "Authorization",
+    ]:
+        assert_contains(helper, required, "knowledge_manifest_ingest.py")
 
 
 def check_static_privacy_preknowledge_boundaries() -> None:
@@ -2364,8 +2387,10 @@ def check_contract_tests_workflow() -> None:
         "requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
-        "python -m unittest tests/test_forward_eval_harness.py",
+        "python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
         "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
+        "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
+        "tests/test_knowledge_manifest_ingest.py",
     ]:
         assert_contains(text, required, label)
 
@@ -2377,6 +2402,7 @@ def check_contract_tests_workflow() -> None:
         "$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt",
         "PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py",
         "PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py",
+        "PYTHONPATH=.test-deps $PYTHON -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
     ]:
         assert_contains(readme, required, "README.md")
 
@@ -2390,8 +2416,10 @@ def check_release_workflow_preflight() -> None:
         "python -m pip install -r requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
-        "python -m unittest tests/test_forward_eval_harness.py",
+        "python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
         "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
+        "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
+        "tests/test_knowledge_manifest_ingest.py",
         "Verify release tag matches plugin metadata",
         "TAG_VERSION",
         ".claude-plugin/plugin.json",

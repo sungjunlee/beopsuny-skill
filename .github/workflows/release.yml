@@ -30,10 +30,10 @@ jobs:
         run: python tests/evaluate_scenario_outputs.py
 
       - name: Test forward eval harness
-        run: python -m unittest tests/test_forward_eval_harness.py
+        run: python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py
 
       - name: Compile test harnesses
-        run: python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py
+        run: python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py skills/beopsuny/assets/tools/knowledge_manifest_ingest.py tests/test_knowledge_manifest_ingest.py
 
       - name: Verify release tag matches plugin metadata
         run: |
