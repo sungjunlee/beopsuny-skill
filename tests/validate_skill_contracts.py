@@ -1951,14 +1951,12 @@ def check_skill_quality_contract_router_map() -> None:
     label = "SKILL.md"
 
     for required in [
-        "품질 계약 매핑",
         "법률 결론 always-on gate",
         "의도별 workflow reference와 별도로 항상 적용",
         "references/citation-verification-contract.md",
         "references/self-verification.md",
         "references/output-formats.md",
         "계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다",
-        "해당 실패모드가 보이면 어떤 계약을 우선 확인해야 하는지 정하는 router map",
         "references/research-workflow.md#legal-verification-core",
         "assets/schemas/legal_verification_packet.yaml",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
@@ -1979,7 +1977,13 @@ def check_skill_quality_contract_router_map() -> None:
     ]:
         assert_contains(text, required, label)
 
-    router_block_match = re.search(r"## 의도 라우터\n(?P<body>.*?)\n## 품질 계약 매핑", text, flags=re.S)
+    # 게이트 라우팅의 단일 소스는 의도 라우터의 gate 표다. 과거의 중복 라우터
+    # 섹션(품질 계약 매핑)과 self-verification 차원 상세 재수록이 되살아나면 실패한다.
+    assert_not_contains(text, "## 품질 계약 매핑", label)
+    assert_not_contains(text, "해당 실패모드가 보이면", label)
+    assert_not_contains(text, "| Counter-drafting Quality |", label)
+
+    router_block_match = re.search(r"## 의도 라우터\n(?P<body>.*?)\n## 기본 조사 계약", text, flags=re.S)
     if not router_block_match:
         raise AssertionError(f"{label}: intent router block missing")
     router_body = router_block_match.group("body")
@@ -2040,7 +2044,7 @@ def check_readme_quality_contract_map() -> None:
         "triage_only",
         "품질 계약 변경 체크리스트",
         "새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay",
-        "SKILL.md`의 의도 라우터 또는 품질 계약 매핑",
+        "SKILL.md`의 의도 라우터(의도 표 또는 gate 표)",
         "`tests/scenarios/16_router_regression.yaml`",
         "`tests/fixtures/router_guardrail_outputs.yaml`",
         "`tests/evaluate_scenario_outputs.py`",

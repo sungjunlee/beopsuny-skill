@@ -151,7 +151,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 
 새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay를 추가할 때는 아래 순서로 갱신한다.
 
-1. `skills/beopsuny/SKILL.md`의 의도 라우터 또는 품질 계약 매핑에 새 트리거와 적용 계약을 연결한다.
+1. `skills/beopsuny/SKILL.md`의 의도 라우터(의도 표 또는 gate 표)에 새 트리거와 적용 계약을 연결한다.
 2. 기준 문서(`references/*.md`)에 성공 기준, 금지 행동, 실패 시 downgrade 방식을 적는다.
 3. 구조화가 필요한 계약이면 `assets/schemas/*.yaml` 또는 `assets/policies/*.yaml`에 최소 evidence shape를 추가한다.
 4. `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오를 추가하거나 기존 router 시나리오의 `must_do`/`forbidden_behavior`를 갱신한다.

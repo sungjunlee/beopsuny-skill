@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+- `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
+- `tests/validate_skill_contracts.py` — `check_skill_quality_contract_router_map`을 통합된 gate 표 구조에 맞게 갱신. 삭제된 중복 라우터 섹션(`## 품질 계약 매핑`)과 self-verification 차원 상세 재수록이 되살아나면 실패하는 회귀 가드 추가
+- `README.md` — 품질 계약 변경 체크리스트 1번 항목을 의도 라우터(의도 표 또는 gate 표) 기준으로 갱신
+
 ## [0.3.2] - 2026-06-23
 
 **테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.

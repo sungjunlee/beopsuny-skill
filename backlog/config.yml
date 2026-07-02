@@ -1,0 +1,7 @@
+project_name: "beopsuny-skill"
+default_status: "To Do"
+statuses: ["To Do", "In Progress", "Done"]
+task_prefix: "BACK"
+labels: []
+milestones: []
+auto_commit: false
