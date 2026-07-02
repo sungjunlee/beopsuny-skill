@@ -27,7 +27,7 @@ Batch 3 — 행동 변화 (기준선 확보 후, 전후 시나리오 비교):
 - [x] #177 Legal Verification Core 2단 트리거(light/full) 도입 (~1.5h)
 
 Batch 4 — 계측 기반 감사 (마지막):
-- [ ] #178 시나리오 기반 asset 감사 + retire 사이클 (~2h)
+- [x] #178 시나리오 기반 asset 감사 + retire 사이클 (~2h)
 
 검증 게이트 (모든 batch 공통):
 - `PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py` PASS (O1)
@@ -42,4 +42,10 @@ Batch 4 — 계측 기반 감사 (마지막):
 
 ## Progress
 
-- 2026-07-02: 스프린트 생성. #174 에픽 + #175-178 등록, 이슈 미러 pull 완료. 다음: Batch 1 (#175).
+- 2026-07-02: 스프린트 생성. #174 에픽 + #175-178 등록, 이슈 미러 pull 완료.
+- 2026-07-03: Batch 1-4 전부 완료, `sprint/skill-pruning` 브랜치에 4 커밋. O1/O2 전 배치 그린.
+  - #175: 품질 계약 매핑 삭제 + gate 표 5행 통합 + 응답 품질 게이트 2줄 축약 (SKILL.md 326→302줄)
+  - #176: 라우팅 원칙 1(Right-sizing) 단일 기준화, 중복 4곳 pointer/삭제
+  - #177: LVC light/full 2단 트리거 + "축약형" 금지 회귀 가드
+  - #178: 참조 그래프 감사 → external-sites.md retire, freshness-governance에 Unrouted Asset Rule(retire-first), append-only 방침 폐기
+  - 감사 결과 기록: 체크리스트 YAML은 checklist-routing 경유 로드 경로 있어 유지 (freshness_debt registry에서 관리). 미참조 자산은 external-sites.md 하나.

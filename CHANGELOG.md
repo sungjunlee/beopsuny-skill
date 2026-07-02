@@ -11,6 +11,12 @@
 - `skills/beopsuny/references/research-workflow.md` — Legal Verification Core의 재량형 "축약형" 적용 조건을 판정 가능한 2단 트리거(light/full)로 교체 (#177). `light`(결론 후보 1개 + 원문 확인 종결)는 별도 map·packet·ledger 문서 없이 출력 citation 줄이 한 줄 ledger 항목을 겸하고, `full`(결론 후보 2개 이상 / 금액·기한·과징금·서식 / 계약 검토 결론 / 외부 송부·기관 제출·소송 포지션)은 6단계 core 전체를 적용. 애매하면 `full`로 승급
 - `skills/beopsuny/SKILL.md`, `references/self-verification.md` — Legal Verification Core 적용 강도 문구를 2단 트리거 기준으로 정렬 (#177)
 - `tests/validate_skill_contracts.py` — 2단 트리거 표 존재와 재량형 "축약형" 표현 부활 방지 회귀 가드 추가 (#177)
+- `skills/beopsuny/references/freshness-governance.md` — Unrouted Asset Rule(retire-first) 추가 (#178). 로드 경로가 없는 자산은 registry에 등록하지 않고 삭제하며, 복구는 git 이력으로 충분하다는 원칙을 명문화
+- `skills/beopsuny/references/self-verification.md` — 설계 메모의 연구 인용 append-only 방침을 폐기하고 대체된 연구는 삭제하도록 변경 (#178)
+- `tests/scenarios/16_router_regression.yaml` — router-01(light), router-05(full)에 `verification_tier` 주석 필드 추가 (#177/#178)
+
+### Removed
+- `skills/beopsuny/references/external-sites.md` — 참조 그래프 감사 결과 SKILL.md 라우터·reference·시나리오·테스트 어디에서도 로드 경로가 없는 dead reference로 확인되어 retire (#178). 공식 1차 소스 접근은 `references/source-access.md`가 커버
 
 ## [0.3.2] - 2026-06-23
 

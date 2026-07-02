@@ -168,4 +168,4 @@
 
 - 자가 검증은 출처 권위 라벨의 `downgrade_triggers`(`assets/policies/source_grades.yaml`)와 연동한다.
 - tag 체계 외 새 타입을 도입하지 않고 기존 6개 상태 태그만 사용한다.
-- 향후 연구 인용이 추가되면 본 문서 하단에 append-only로 쌓아 `SKILL.md`가 길어지지 않도록 한다.
+- 향후 연구 인용은 본 문서 하단에 모아 `SKILL.md`가 길어지지 않도록 한다. 다만 append-only가 아니다 — 대체된 연구는 남기지 말고 삭제한다 (`references/freshness-governance.md#unrouted-asset-rule-retire-first`).
