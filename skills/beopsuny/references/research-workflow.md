@@ -15,7 +15,14 @@
 
 ## Legal Verification Core
 
-모든 법률 결론은 답변 직전에 아래 verification core를 통과한다. 짧은 조문 확인처럼 단순한 경우에도 축약형으로 적용한다.
+모든 법률 결론은 답변 직전에 verification core를 통과한다. 적용 강도는 아래 2단 트리거로 정한다. 트리거는 라우팅 시점에 질문 형태로 판정하고, 애매하면 `full`로 올린다.
+
+| Tier | 트리거 | 적용 |
+| --- | --- | --- |
+| `light` | 결론 후보가 1개이고 조문·시행일·공식 링크의 원문 확인으로 종결되는 질문 | 별도 map·packet·ledger 문서를 만들지 않는다. 출력 citation 줄이 한 줄 ledger 항목으로서 `citation`(pinpoint 포함), `source_authority`, `verification_status`, `provenance`, `currency`를 직접 담는다. contradiction scan은 확인한 원문이 사용자 전제와 다를 때만 수행한다. |
+| `full` | 결론 후보 2개 이상, 또는 금액·기한·과징금·서식·구비서류, 또는 계약 검토 결론, 또는 외부 송부·기관 제출·소송/분쟁 포지션 | 아래 6단계 core 전체를 적용한다. |
+
+light에서도 인용 없는 결론 금지, 상태 태그 downgrade, 출처 권위 라벨 규칙은 동일하게 적용된다.
 
 `assets/schemas/legal_verification_packet.yaml`은 이 과정을 재사용 가능한 evidence shape로 고정한 템플릿이다. 기본은 내부 scratchpad이며, 사용자가 별도 검토 기록이나 handoff artifact를 요청한 경우에만 산출물로 저장하거나 노출한다.
 `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다.
@@ -110,7 +117,7 @@ ledger에 없는 인용은 출력하지 않는다. ledger에 있지만 `supports
 
 ### 6. Verification packet contract
 
-복합 결론, 외부 송부, 기관 제출, 소송·분쟁 포지션, 과징금·신고기한·서식처럼 법적 효과가 큰 답변에서는 내부적으로 `legal_verification_packet.yaml`의 최소 shape를 채운다고 가정한다. 단문 조문 확인은 같은 구조를 축약해도 되지만, 출력 인용은 citation ledger를 통과해야 한다.
+`full` tier 중에서도 복합 결론, 외부 송부, 기관 제출, 소송·분쟁 포지션, 과징금·신고기한·서식처럼 법적 효과가 큰 답변에서는 내부적으로 `legal_verification_packet.yaml`의 최소 shape를 채운다고 가정한다. `light` tier에서는 packet을 만들지 않는다. 어느 tier든 출력 인용은 citation ledger 계약을 통과해야 한다 — `light`의 ledger는 출력 citation 줄 그 자체다.
 
 필수 블록:
 

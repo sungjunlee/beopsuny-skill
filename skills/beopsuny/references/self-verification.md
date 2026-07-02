@@ -11,6 +11,7 @@
 필수. 응답에 등장한 모든 법령, 판례, 행정규칙 인용을 확인한다.
 
 - `references/research-workflow.md#legal-verification-core`의 citation ledger에 없는 인용을 출력하지 않았는가
+- 적용 tier가 legal-verification-core의 2단 트리거와 맞는가 — `light`면 출력 citation 줄이 ledger 항목을 겸하고, `full`이면 6단계 core를 거쳤는가
 - 복합 결론·외부 송부·기관 제출·소송/분쟁 포지션처럼 법적 효과가 큰 답변에서는 `assets/schemas/legal_verification_packet.yaml`의 최소 블록을 내부적으로 채웠는가
 - 각 ledger 항목에 `citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`, `supports`가 있는가
 - 인용한 조문이 실제 존재하는가

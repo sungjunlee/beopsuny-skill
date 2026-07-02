@@ -1545,8 +1545,16 @@ def check_research_workflow_verification_core() -> None:
         "`conclusion_binding`",
         "`self_verification`",
         "`output_allowed: true`가 아닌 ledger 항목",
+        "| Tier | 트리거 | 적용 |",
+        "애매하면 `full`로 올린다",
+        "출력 citation 줄이 한 줄 ledger 항목",
+        "`light` tier에서는 packet을 만들지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    # 적용 강도는 판정 가능한 2단 트리거(light/full)로만 조절한다. 재량형
+    # 표현("축약형")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
+    assert_not_contains(text, "축약형", label)
 
     for required in [
         "references/research-workflow.md#legal-verification-core",
@@ -1555,6 +1563,7 @@ def check_research_workflow_verification_core() -> None:
         "citation ledger",
         "contradiction scan",
         "conclusion binding",
+        "2단 트리거(light/full)",
     ]:
         assert_contains(skill_text, required, "SKILL.md")
 

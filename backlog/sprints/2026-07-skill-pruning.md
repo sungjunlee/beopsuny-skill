@@ -24,7 +24,7 @@ Batch 2 — 규칙 산재 정리 (Batch 1 이후 통합 위치 확정):
 - [x] #176 과잉 라우팅 금지 규칙 5곳 → 1곳 통합 (~45min)
 
 Batch 3 — 행동 변화 (기준선 확보 후, 전후 시나리오 비교):
-- [ ] #177 Legal Verification Core 2단 트리거(light/full) 도입 (~1.5h)
+- [x] #177 Legal Verification Core 2단 트리거(light/full) 도입 (~1.5h)
 
 Batch 4 — 계측 기반 감사 (마지막):
 - [ ] #178 시나리오 기반 asset 감사 + retire 사이클 (~2h)

@@ -101,7 +101,7 @@ description: |
 ```
 
 상세 소스 접근법은 `references/source-access.md`, 조사 깊이 조절은 `references/research-workflow.md`를 읽는다.
-법률 결론을 내는 답변은 `references/research-workflow.md#legal-verification-core`의 issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding을 내부적으로 거친다.
+법률 결론을 내는 답변은 `references/research-workflow.md#legal-verification-core`의 issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding을 내부적으로 거친다. 적용 강도는 같은 섹션의 2단 트리거(light/full)를 따른다 — 결론 후보 1개짜리 단순 확인은 `light`, 복합 결론·금액·기한·외부 송부는 `full`.
 
 ## Full / Lite 판별
 

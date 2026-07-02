@@ -8,6 +8,9 @@
 - `README.md` — 품질 계약 변경 체크리스트 1번 항목을 의도 라우터(의도 표 또는 gate 표) 기준으로 갱신
 - `skills/beopsuny/SKILL.md` — 과잉 라우팅 금지 규칙을 라우팅 원칙 1(Right-sizing)로 통합해 단일 기준으로 선언 (#176). 기존 원칙 1·3을 병합하고 7개 원칙을 6개로 재정렬
 - `skills/beopsuny/references/self-verification.md`, `references/knowledge-injection.md` — 과잉 라우팅·과잉 gate 적용 중복 문구를 SKILL.md 라우팅 원칙 1 pointer로 교체 (#176)
+- `skills/beopsuny/references/research-workflow.md` — Legal Verification Core의 재량형 "축약형" 적용 조건을 판정 가능한 2단 트리거(light/full)로 교체 (#177). `light`(결론 후보 1개 + 원문 확인 종결)는 별도 map·packet·ledger 문서 없이 출력 citation 줄이 한 줄 ledger 항목을 겸하고, `full`(결론 후보 2개 이상 / 금액·기한·과징금·서식 / 계약 검토 결론 / 외부 송부·기관 제출·소송 포지션)은 6단계 core 전체를 적용. 애매하면 `full`로 승급
+- `skills/beopsuny/SKILL.md`, `references/self-verification.md` — Legal Verification Core 적용 강도 문구를 2단 트리거 기준으로 정렬 (#177)
+- `tests/validate_skill_contracts.py` — 2단 트리거 표 존재와 재량형 "축약형" 표현 부활 방지 회귀 가드 추가 (#177)
 
 ## [0.3.2] - 2026-06-23
 
