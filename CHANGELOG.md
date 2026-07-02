@@ -6,6 +6,8 @@
 - `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
 - `tests/validate_skill_contracts.py` — `check_skill_quality_contract_router_map`을 통합된 gate 표 구조에 맞게 갱신. 삭제된 중복 라우터 섹션(`## 품질 계약 매핑`)과 self-verification 차원 상세 재수록이 되살아나면 실패하는 회귀 가드 추가
 - `README.md` — 품질 계약 변경 체크리스트 1번 항목을 의도 라우터(의도 표 또는 gate 표) 기준으로 갱신
+- `skills/beopsuny/SKILL.md` — 과잉 라우팅 금지 규칙을 라우팅 원칙 1(Right-sizing)로 통합해 단일 기준으로 선언 (#176). 기존 원칙 1·3을 병합하고 7개 원칙을 6개로 재정렬
+- `skills/beopsuny/references/self-verification.md`, `references/knowledge-injection.md` — 과잉 라우팅·과잉 gate 적용 중복 문구를 SKILL.md 라우팅 원칙 1 pointer로 교체 (#176)
 
 ## [0.3.2] - 2026-06-23
 
