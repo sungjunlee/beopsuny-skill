@@ -1977,7 +1977,7 @@ def check_report_deliverable_contract() -> None:
         assert_contains(text, required, label)
 
     skill_text = read_text("skills/beopsuny/SKILL.md")
-    section_match = re.search(r"## 시각화\n(?P<body>.*?)(?=\n## )", skill_text, flags=re.S)
+    section_match = re.search(r"## 시각화\n(?P<body>.*?)(?=\n## |\Z)", skill_text, flags=re.S)
     if not section_match:
         raise AssertionError("SKILL.md: visualization section missing")
     assert_contains(
