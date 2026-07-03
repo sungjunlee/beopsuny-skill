@@ -121,6 +121,44 @@ BULK_GRID_EVIDENCE_MARKERS = [
     "출처 권위",
     *SOURCE_AUTHORITY_LABELS,
 ]
+ARTIFACT_DEPLOYMENT_MARKERS = [
+    "Artifact",
+    "아티팩트",
+]
+ARTIFACT_DEPLOYMENT_CONTEXT_MARKERS = [
+    "URL",
+    "공유 링크",
+    "배포",
+    "호스팅",
+]
+ARTIFACT_EXCLUDED_INTERNAL_BLOCKS = [
+    "내부 검토자 메모",
+    "자가 검증 블록",
+    "미확인 내부 노트",
+]
+ARTIFACT_LEAK_PATTERNS = [
+    r"검토자 메모\s*:",
+    r"자가 검증\s*:",
+    r"미확인 내부 노트\s*[:：]",
+]
+ARTIFACT_EXTERNAL_CONTEXT_MARKERS = [
+    "상대방",
+    "고객",
+    "기관",
+    "법원",
+    "제출",
+    "송부",
+    "회신",
+]
+ARTIFACT_ESCALATION_MARKERS = [
+    "`external_draft`",
+    "external_draft",
+    "`agency_or_court_submission`",
+    "agency_or_court_submission",
+    "외부 공유용 초안",
+    "role/destination gate",
+    "보내기 전 법무 검토",
+]
 BUSINESS_USER_SECTIONS = [
     "한 줄 결론",
     "지금 할 일",
@@ -344,6 +382,33 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                 failures.append(f"{scenario_id}: common rule {rule} missing sources table for grid report")
             if not any(marker in output for marker in BULK_GRID_EVIDENCE_MARKERS):
                 failures.append(f"{scenario_id}: common rule {rule} lacks quote/location or source authority labels")
+        return failures
+
+    if rule == "artifact_deployment_shared_assumption_gate":
+        mentions_artifact = any(marker in output for marker in ARTIFACT_DEPLOYMENT_MARKERS)
+        mentions_deployment = any(marker in output for marker in ARTIFACT_DEPLOYMENT_CONTEXT_MARKERS)
+        if not (mentions_artifact and mentions_deployment):
+            return failures
+
+        if not any(marker in output for marker in ["명시 요청", "요청한 경우에만", "사용자가 요청"]):
+            failures.append(f"{scenario_id}: common rule {rule} lacks explicit-request-only deployment gate")
+        if "법무/변호사 검토 전 대외 사용 금지" not in output:
+            failures.append(f"{scenario_id}: common rule {rule} missing legal-review-before-external-use banner")
+        if not any(marker in output for marker in ["면책 고지", "법률 자문이 아니", "변호사와 상담"]):
+            failures.append(f"{scenario_id}: common rule {rule} missing disclaimer marker")
+        if not all(marker in output for marker in ARTIFACT_EXCLUDED_INTERNAL_BLOCKS):
+            failures.append(f"{scenario_id}: common rule {rule} does not name internal blocks to strip")
+        if not any(marker in output for marker in ["제외", "포함하지", "제거"]):
+            failures.append(f"{scenario_id}: common rule {rule} lacks internal-block stripping action")
+        for pattern in ARTIFACT_LEAK_PATTERNS:
+            if re.search(pattern, output):
+                failures.append(f"{scenario_id}: common rule {rule} leaks internal Artifact block matching {pattern!r}")
+        if "같은 파일 경로" not in output or "같은 URL" not in output:
+            failures.append(f"{scenario_id}: common rule {rule} lacks same-path redeploy URL notice")
+
+        external_context = any(marker in output for marker in ARTIFACT_EXTERNAL_CONTEXT_MARKERS)
+        if external_context and not any(marker in output for marker in ARTIFACT_ESCALATION_MARKERS):
+            failures.append(f"{scenario_id}: common rule {rule} lacks legal-effect destination escalation")
         return failures
 
     if rule == "verification_log_scope_boundary":
