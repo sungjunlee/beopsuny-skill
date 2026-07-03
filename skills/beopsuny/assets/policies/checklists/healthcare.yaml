@@ -13,8 +13,8 @@ last_updated: "2025-12-28"
 
 maintenance:
   review_cycle: "quarterly"
-  next_review: "2026-03"
-  last_verified: "2025-12-28"
+  next_review: "2026-10"
+  last_verified: "2026-07-03"
   source_url: "https://www.mfds.go.kr/"
   freshness_days: 90
   must_reverify: true
@@ -22,8 +22,10 @@ maintenance:
     - "의료기기 등급분류"
     - "디지털치료제 규제"
     - "원격의료 관련 규정"
-  note: "의료 규제는 고시 개정 빈번, 디지털 헬스케어 규제 신설 주의"
+  note: "issue #180에서 의료기기법 제2조·제3조·제6조·제15조·제17조와 의료법 제34조는 legalize-kr 로컬 미러(기준일 2026-07-02)로 확인했지만, MFDS 품목 등급·디지털치료기기 가이드·환자 대상 비대면진료 안내는 별도 확인 필요"
   changelog:
+    - date: "2026-07-03"
+      changes: "의료기기법 조문 제목과 판매업/품목 허가 구분, 의료법 제34조 비대면협진 표현을 부분 재검증 기준으로 정정"
     - date: "2025-12-28"
       changes: "초기 버전 생성"
 
@@ -47,7 +49,7 @@ triage_questions:
       - "디지털 헬스케어 앱 → 의료기기 해당 여부 확인"
       - "의료기관 개설 → 의료법 적용"
   - question: "의료기기 등급은?"
-    if_yes: "1~2등급: 신고/인증, 3~4등급: 허가"
+    if_yes: "품목별 등급과 허가/인증/신고 경로를 현행 MFDS 기준으로 확인"
   - question: "개인건강정보를 처리하는가?"
     if_yes: "개인정보보호법 + 의료법 민감정보 규정 적용"
 
@@ -69,7 +71,7 @@ items:
     task: "의료기기 등급분류 확인"
     laws:
       - name: "의료기기법"
-        articles: ["제3조 (의료기기의 정의)"]
+        articles: ["제2조 (정의)", "제3조 (등급분류와 지정)"]
     notes: |
       - 1등급: 인체 위해성 낮음 (신고)
       - 2등급: 중등도 위해성 (인증)
@@ -87,8 +89,8 @@ items:
       - name: "의료기기법"
         articles: ["제17조"]
     notes: |
-      - 1~2등급: 시/군/구 신고
-      - 3~4등급: 허가 필요
+      - 판매업은 의료기기법 제17조에 따른 신고 대상인지 확인
+      - 품목별 허가/인증/신고는 판매업 신고와 별도 검토
     deadline: "판매 개시 전"
     condition: "의료기기 판매 시"
     risk_level: "high"
@@ -199,10 +201,10 @@ items:
     task: "원격의료 관련 규정 준수"
     laws:
       - name: "의료법"
-        articles: ["제34조 (원격의료)"]
+        articles: ["제34조 (비대면협진)"]
     notes: |
-      - 의료인 간 원격의료: 허용
-      - 환자 대상 원격의료: 제한적 허용 (비대면 진료 한시 허용 등)
+      - 의료법 제34조는 의료인 간 비대면협진 근거로 확인
+      - 환자 대상 비대면진료는 현행 보건복지부 안내/입법 상태를 별도 확인
     condition: "원격의료 서비스 제공 시"
     risk_level: "critical"
     check_points:

@@ -1,0 +1,62 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 개인정보보호 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 개인정보보호법 제28조의8, 제29조, 제34조, 제64조의2 및 시행령 제35조·제39조·제40조 확인."
+  - title: "법망 API PIPC 고시 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 안전성 확보조치 기준 고시와 PIPC guidance는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "1만명/10만명/100만명 처리 규모 thresholds"
+    refreshed_value: "공공기관 영향평가 시행령 제35조 등으로 분기 문구를 전환; 안전조치 고시 threshold는 [UNVERIFIED]"
+    source_ref: "legalize-kr 로컬 미러 개인정보보호 법령"
+    result: "updated"
+  - item: "deadline"
+    previous_value: "유출 통지·신고 기한은 현행 법령/PIPC 안내로 확인"
+    refreshed_value: "시행령 제39조·제40조 72시간 기준 및 1천명 이상 등 신고 사유 확인"
+    source_ref: "legalize-kr 로컬 미러 개인정보보호 법령"
+    result: "updated"
+  - item: "penalty"
+    previous_value: "과징금 상한"
+    refreshed_value: "법 제64조의2 총매출액 3% 및 산정 불가 시 20억원 상한 확인"
+    source_ref: "legalize-kr 로컬 미러 개인정보보호 법령"
+    result: "unchanged"
+  - item: "threshold"
+    previous_value: "안전성 확보조치 기준 고시 세부 threshold"
+    refreshed_value: "[UNVERIFIED] PIPC 고시 확인 실패"
+    source_ref: "법망 API PIPC 고시 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2026-10"
+  summary: "unsupported 규모 threshold를 시행령/고시 확인 프롬프트로 전환하고 유출 72시간 기준을 반영."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "PIPA/PIPA Enforcement Decree 값은 확인됐지만 PIPC safety-measure notice와 current guidance가 남아 registry 유지."
+  remaining_stale_scope: "개인정보의 안전성 확보조치 기준 고시 세부 threshold, PIPC guidance, 처리방침 변경 공지기한, 업종별 안내."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

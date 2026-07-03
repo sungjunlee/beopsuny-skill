@@ -1,0 +1,50 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/investment_due_diligence.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 M&A/외국인투자 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 공정거래법 제9조·제11조/시행령 제18조와 외국인투자촉진법 제5조·제6조/시행령 제2조 확인."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "기업결합 신고 기준"
+    refreshed_value: "시행령 제18조 3천억원/300억원 기준 확인"
+    source_ref: "legalize-kr 로컬 미러 M&A/외국인투자 법령"
+    result: "unchanged"
+  - item: "authority"
+    previous_value: "독점규제법 제12조 (기업결합의 제한)"
+    refreshed_value: "독점규제 및 공정거래에 관한 법률 제9조 (기업결합의 제한)로 정정"
+    source_ref: "legalize-kr 로컬 미러 M&A/외국인투자 법령"
+    result: "updated"
+  - item: "filing_requirement"
+    previous_value: "외국인투자 신고 기준"
+    refreshed_value: "외국인투자촉진법 시행령 제2조 1억원 이상 및 10%/경영참여 요건, 법 제5조 신고 조문 확인"
+    source_ref: "legalize-kr 로컬 미러 M&A/외국인투자 법령"
+    result: "unchanged"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2027-07"
+  summary: "기업결합 제한 조문번호를 정정하고 transaction-threshold references를 local mirror 기준으로 갱신."
+
+retirement_decision:
+  decision: "retire"
+  reason: "registry에 등록된 transaction-threshold references가 local legalize-kr mirror 원문으로 확인됐고 next_review가 미래로 전진함."
+  remaining_stale_scope: ""
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

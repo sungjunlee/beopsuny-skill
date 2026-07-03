@@ -1,0 +1,57 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/food_business.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 식품위생 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 식품위생법 제37조, 제40조, 제41조, 제48조 확인."
+  - title: "법망 API MFDS 고시 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. HACCP 의무 품목·표시기준 고시는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "authority"
+    previous_value: "식품위생법 인허가·건강진단·위생교육·HACCP 조문 앵커"
+    refreshed_value: "식품위생법 제37조, 제40조, 제41조, 제48조 확인"
+    source_ref: "legalize-kr 로컬 미러 식품위생 법령"
+    result: "unchanged"
+  - item: "threshold"
+    previous_value: "HACCP 의무 품목 예시 목록"
+    refreshed_value: "[UNVERIFIED] MFDS 고시 확인 실패로 품목 목록을 live-check-only 문구로 전환"
+    source_ref: "법망 API MFDS 고시 접근 시도"
+    result: "updated"
+  - item: "deadline"
+    previous_value: "위생교육/건강진단/자가품질검사 주기"
+    refreshed_value: "[UNVERIFIED] 기관 안내·고시 확인 필요"
+    source_ref: "법망 API MFDS 고시 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-03"
+  maintenance_next_review_after: "2026-10"
+  summary: "HACCP 품목 예시를 제거하고 MFDS 고시 확인 필요 범위로 좁힘."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "식품위생법 조문은 확인됐지만 MFDS 고시·인증원 안내·품목별 기준이 남아 registry 유지."
+  remaining_stale_scope: "HACCP 의무 품목, 식품 표시기준, 수입검사 기준, 건기식 기능성 기준, 교육/검사 주기."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

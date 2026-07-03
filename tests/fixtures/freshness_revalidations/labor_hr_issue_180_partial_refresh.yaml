@@ -1,0 +1,57 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/labor_hr.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 노동/고용 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 장애인고용촉진법 제28조, 최저임금법 제8조·제10조 및 시행령 제3조 확인."
+  - title: "법망 API MOEL 고시 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 연도별 최저임금액·기관 신고기한 고시는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "30인 이상 → 장애인 고용의무"
+    refreshed_value: "장애인고용촉진법 제28조: 상시 50명 이상으로 정정"
+    source_ref: "legalize-kr 로컬 미러 노동/고용 법령"
+    result: "updated"
+  - item: "rate"
+    previous_value: "수습 기간 중 임금 감액 시 최저임금 90% 이상"
+    refreshed_value: "최저임금법 시행령 제3조의 100분의 10 감액 구조 확인"
+    source_ref: "legalize-kr 로컬 미러 노동/고용 법령"
+    result: "unchanged"
+  - item: "fee"
+    previous_value: "해당 연도 최저임금액"
+    refreshed_value: "[UNVERIFIED] 연도별 고시 금액은 MOEL 고시 확인 실패"
+    source_ref: "법망 API MOEL 고시 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2026-10"
+  summary: "장애인 고용의무 triage 기준을 50인 이상으로 정정하고 annual-rate 항목은 live-check-only로 유지."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "statutory scope는 확인됐지만 연도별 최저임금액, 장애인 의무고용률 schedule, 기관 신고기한이 남아 registry 유지."
+  remaining_stale_scope: "연도별 최저임금액, 장애인 의무고용률 및 고용부담금 관련 고시, HR agency filing deadlines."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

@@ -1,0 +1,62 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/healthcare.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 의료기기/의료 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 의료기기법 제2조·제3조·제6조·제15조·제17조와 의료법 제34조 확인."
+  - title: "법망 API MFDS/MOHW guidance 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 품목등급 고시·디지털치료기기 guidance·비대면진료 안내는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "authority"
+    previous_value: "의료기기법 제3조 (의료기기의 정의)"
+    refreshed_value: "의료기기법 제2조 (정의), 제3조 (등급분류와 지정)로 정정"
+    source_ref: "legalize-kr 로컬 미러 의료기기/의료 법령"
+    result: "updated"
+  - item: "filing_requirement"
+    previous_value: "판매업 1~2등급 신고, 3~4등급 허가"
+    refreshed_value: "판매업 신고와 품목 허가/인증/신고를 분리하도록 정정"
+    source_ref: "legalize-kr 로컬 미러 의료기기/의료 법령"
+    result: "updated"
+  - item: "authority"
+    previous_value: "의료법 제34조 (원격의료)"
+    refreshed_value: "의료법 제34조 (비대면협진); 환자 대상 비대면진료는 guidance 확인 필요"
+    source_ref: "legalize-kr 로컬 미러 의료기기/의료 법령"
+    result: "updated"
+  - item: "authority"
+    previous_value: "환자 대상 원격의료/비대면진료 guidance"
+    refreshed_value: "[UNVERIFIED] MOHW guidance 확인 실패"
+    source_ref: "법망 API MFDS/MOHW guidance 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-03"
+  maintenance_next_review_after: "2026-10"
+  summary: "의료기기법/의료법 조문 drift를 정정하고 guidance-dependent 항목은 live-check-only로 남김."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "statutory article drift는 정정됐지만 MFDS/MOHW guidance와 품목별 등급 기준은 확인하지 못해 registry 유지."
+  remaining_stale_scope: "MFDS 품목별 등급분류, 디지털치료기기 허가·심사 guidance, 환자 대상 비대면진료 안내, 광고 심의 세부."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

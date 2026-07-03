@@ -12,6 +12,8 @@
 - `tests/validate_skill_contracts.py` — report-deliverable 계약과 SKILL.md 시각화 섹션 pointer drift를 잡는 O1 static check 추가 (#185)
 
 ### Changed
+- `skills/beopsuny/assets/policies/freshness_debt.yaml`, `skills/beopsuny/references/freshness-governance.md`, stale registry assets, and `tests/fixtures/freshness_revalidations/*issue_180*.yaml` — issue #180 stale 자산 11개 revalidation-or-retire 패스. legalize-kr 로컬 미러(기준일 2026-07-02)로 확인 가능한 statutory 값은 갱신하고, 법망 API/DNS 실패 및 admrule mirror 부재로 확인 못 한 행정규칙·고시 값은 `[UNVERIFIED]` residual scope로 registry 유지
+- `skills/beopsuny/assets/templates/report_bulk_grid.html`, `skills/beopsuny/assets/templates/report_contract_review.html` — 리포트 템플릿 placeholder에서 구체 조문·숫자 예시를 제거해 freshness registry 등록이 필요 없는 렌더링 자산으로 유지 (#180)
 - `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
 - `tests/validate_skill_contracts.py` — `check_skill_quality_contract_router_map`을 통합된 gate 표 구조에 맞게 갱신. 삭제된 중복 라우터 섹션(`## 품질 계약 매핑`)과 self-verification 차원 상세 재수록이 되살아나면 실패하는 회귀 가드 추가
 - `README.md` — 품질 계약 변경 체크리스트 1번 항목을 의도 라우터(의도 표 또는 gate 표) 기준으로 갱신
@@ -33,6 +35,7 @@
 - `.gitignore` — `backlog/tasks/` 이슈 미러(재생성 가능, GitHub이 source of truth) 추적 제외로 전환 — 후행 공백·미러 drift 문제 해소
 
 ### Removed
+- `skills/beopsuny/assets/policies/freshness_debt.yaml` registry rows for `contract_review.yaml` and `investment_due_diligence.yaml` — volatile registry items were revalidated from the local legalize-kr mirror and next_review was advanced; files remain routed and maintained (#180)
 - `skills/beopsuny/references/external-sites.md` — 참조 그래프 감사 결과 SKILL.md 라우터·reference·시나리오·테스트 어디에서도 로드 경로가 없는 dead reference로 확인되어 retire (#178). 공식 1차 소스 접근은 `references/source-access.md`가 커버
 
 ## [0.3.2] - 2026-06-23

@@ -17,8 +17,8 @@ last_updated: "2025-12-09"
 # 유지보수 정보
 maintenance:
   review_cycle: "quarterly"
-  next_review: "2026-01"
-  last_verified: "2025-12-09"
+  next_review: "2026-10"
+  last_verified: "2026-07-03"
   source_url: "https://www.moel.go.kr/"
   freshness_days: 90
   must_reverify: true
@@ -28,7 +28,10 @@ maintenance:
   watch_keywords:
     - "중대재해처벌법 개정"
     - "중대재해처벌법 시행령"
+  note: "issue #180에서 중대재해처벌법 적용범위·중대산업재해 정의·처벌·손해배상 및 시행령 전담조직 기준은 legalize-kr 로컬 미러(기준일 2026-07-02)로 확인했지만, MOEL guidance와 최근 판례/집행 동향은 별도 확인 필요"
   changelog:
+    - date: "2026-07-03"
+      changes: "전담조직 건설업 기준을 시공능력 상위 200위로 정정하고 statutory coverage/penalty anchors를 부분 재검증"
     - date: "2025-12-09"
       changes: "법인 처벌 규정 description 추가"
 
@@ -58,7 +61,7 @@ triage_questions:
     branches:
       - "5인 미만 → 중대산업재해 의무 적용 제외"
       - "5인 이상 50인 미만 → 기본 의무 적용 (전담조직 의무 없음)"
-      - "50인 이상 → 전체 의무 적용 (전담조직 포함)"
+      - "50인 이상 → 기본 의무 적용, 전담조직은 500인 이상/상위 200위 건설업 등 별도 기준 확인"
   - question: "건설업인가?"
     branches:
       - "공사금액 50억 원 이상 → 전체 의무 적용"
@@ -140,9 +143,9 @@ items:
       - "전담 조직 설치 및 인력 배치"
       - "조직도상 전담 조직 명시"
     risk_level: "high"
-    condition: "상시 500인 이상 또는 시공능력 1000위 이내 건설업 등"
+    condition: "상시 500인 이상 또는 시공능력 상위 200위 이내 건설업 등"
     notes: |
-      - 50인 미만 사업장은 전담조직 의무 없음
+      - 전담조직은 500인 이상 또는 시행령상 건설업 기준 등 일정 규모 사업장 중심으로 확인
       - 안전보건관리담당자 1명 선임으로 대체 가능 (일부 업종)
 
   - id: "sa-03"

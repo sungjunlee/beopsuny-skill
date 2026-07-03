@@ -17,16 +17,18 @@ last_updated: "2025-12-09"
 # 유지보수 정보
 maintenance:
   review_cycle: "annual"
-  next_review: "2026-01"
-  last_verified: "2025-12-09"
+  next_review: "2027-07"
+  last_verified: "2026-07-03"
   source_url: "https://www.law.go.kr/"
   freshness_days: 365
   must_reverify: true
   volatile_items:
     - "기업결합 신고 기준 (공정거래법)"
     - "외국인투자 신고 기준"
-  note: "실사 항목 자체는 안정적이나, 기업결합 신고 기준 등 일부 수치 확인 필요"
+  note: "issue #180에서 공정거래법/시행령상 기업결합 신고 기준과 외국인투자촉진법/시행령상 외국인투자 정의·신고 조문을 legalize-kr 로컬 미러(기준일 2026-07-02)로 확인했다."
   changelog:
+    - date: "2026-07-03"
+      changes: "기업결합 제한 조문번호를 제9조로 정정하고 기업결합/외국인투자 기준을 local legalize-kr mirror로 재검증해 registry에서 retirement"
     - date: "2025-12-09"
       changes: "maintenance 섹션 추가"
 
@@ -398,10 +400,10 @@ due_diligence_areas:
           - "신고 시기 (사전/사후)"
           - "경쟁제한성 이슈"
         laws:
-          - name: "독점규제법"
-            articles: ["제11조 (기업결합의 신고)", "제12조 (기업결합의 제한)"]
+          - name: "독점규제 및 공정거래에 관한 법률"
+            articles: ["제11조 (기업결합의 신고)", "제9조 (기업결합의 제한)"]
         why_it_matters: |
-          일정 규모 이상 M&A는 공정위 신고 필수.
+          일정 규모 이상 M&A는 공정위 신고 필수. 기업결합 신고 기준은 시행령 제18조에서 확인.
           미신고 시 과태료, 경쟁제한적 결합은 금지/시정조치.
 
       - id: "ft-02"

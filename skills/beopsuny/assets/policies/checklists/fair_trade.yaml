@@ -19,8 +19,8 @@ last_updated: "2025-12-09"
 # 유지보수 정보
 maintenance:
   review_cycle: "semi-annual"
-  next_review: "2026-01"
-  last_verified: "2025-12-09"
+  next_review: "2026-10"
+  last_verified: "2026-07-03"
   source_url: "https://www.ftc.go.kr/"
   freshness_days: 180
   must_reverify: true
@@ -31,7 +31,10 @@ maintenance:
   watch_keywords:
     - "공정거래법 시행령 개정"
     - "과징금 부과 세부기준"
+  note: "issue #180에서 기업결합 신고 기준과 하도급대금 60일 지급기한은 legalize-kr 로컬 미러(기준일 2026-07-02)로 재확인했지만, 지연이자율·과징금 세부기준·KFTC guidance는 행정규칙/고시 확인 실패로 registry 유지"
   changelog:
+    - date: "2026-07-03"
+      changes: "기업결합 신고 기준 및 하도급대금 60일 지급기한 부분 재검증; KFTC 고시·가이드라인 값은 live-check-only 유지"
     - date: "2025-12-09"
       changes: "maintenance 섹션 추가"
 
@@ -166,8 +169,8 @@ items:
   - id: "fair-04"
     question: "하도급 대금 지급 조건이 적법한가?"
     why_it_matters: |
-      지급 기한(60일), 지연이자율은 법령/고시로 정해지며 변동됨.
-      현행 기준을 반드시 확인해야 함.
+      지급 기한(60일)은 하도급법 제13조에서 확인됐지만, 지연이자율은 KFTC 고시로 정해져 변동될 수 있음.
+      현행 이자율은 반드시 별도 확인해야 함.
     research_actions:
       - "# 법망 API search: '하도급대금 지연이자' --type admrul"
       - "WebSearch: '하도급대금 지연이자율 현행 고시'"

@@ -52,8 +52,8 @@ taxonomy_ref: "assets/policies/clause_taxonomy.yaml"
 
 maintenance:
   review_cycle: "quarterly"
-  next_review: "2026-04"
-  last_verified: "2026-04-12"
+  next_review: "2026-10"
+  last_verified: "2026-07-03"
   source_url: "https://www.law.go.kr/"
   freshness_days: 45
   must_reverify: true
@@ -61,7 +61,10 @@ maintenance:
     - "법정 이율과 지급 기한"
     - "벌칙 상한과 과징금/과태료 기준"
     - "계약금액 대비 비율, SLA 수치, statutory threshold"
-  note: "계약 조항별 법령 매핑과 숫자·기간 예시는 issue spotting 후보이며, 현행 원문 확인 전 결론 근거가 아니다."
+  note: "issue #180에서 legalize-kr 로컬 미러(기준일 2026-07-02)로 일부 법령 원문을 표본 재검증했지만, 전체 rate/deadline/penalty/SLA/threshold와 행정규칙 고시는 미검증이므로 issue spotting 후보로만 사용한다."
+  changelog:
+    - date: "2026-07-03"
+      changes: "부분 재검증 기록 추가: 법령 원문 일부는 legalize-kr 로컬 미러로 확인, 잔여 금액·기한·비율·행정규칙 값은 freshness registry 유지"
 
 runtime_contract:
   triage_only: true
