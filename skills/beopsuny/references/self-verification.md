@@ -11,6 +11,7 @@
 필수. 응답에 등장한 모든 법령, 판례, 행정규칙 인용을 확인한다.
 
 - `references/research-workflow.md#legal-verification-core`의 citation ledger에 없는 인용을 출력하지 않았는가
+- 적용 tier가 legal-verification-core의 2단 트리거와 맞는가 — `light`면 출력 citation 줄이 ledger 항목을 겸하고, `full`이면 6단계 core를 거쳤는가
 - 복합 결론·외부 송부·기관 제출·소송/분쟁 포지션처럼 법적 효과가 큰 답변에서는 `assets/schemas/legal_verification_packet.yaml`의 최소 블록을 내부적으로 채웠는가
 - 각 ledger 항목에 `citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`, `supports`가 있는가
 - 인용한 조문이 실제 존재하는가
@@ -53,7 +54,7 @@
 
 필수. 실제 질문과 회사 맥락에 맞는지 확인한다.
 
-- 사용자가 묻지 않은 workflow로 과잉 라우팅하지 않았는가
+- SKILL.md 라우팅 원칙 1(Right-sizing)을 지켰는가 — 묻지 않은 workflow나 단순 확인에 대한 과잉 적용 없음
 - 법률 원론만 나열하지 않고 실무적 시사점을 제공했는가
 - `~/.beopsuny/profile.yaml`의 업종, 규모, 갑/을 위치, 개인정보 처리 여부가 관련되면 반영했는가
 - 맥락이 결론을 좌우하는데 빠져 있다면 질문하거나 가정을 표시했는가
@@ -78,7 +79,6 @@
 - 상대방, 고객, 기관, 법원처럼 외부 destination이 있으면 `references/output-formats.md#destination-output-contracts`를 적용했는가
 - 외부 공유용 초안에 내부 검토자 메모, 자가 검증 블록, 내부용 미확인 메모를 그대로 붙이지 않았는가
 - 법무/변호사 검토 전 단계와 실제 외부 행동 단계를 분리했는가
-- 단순 조문·시행일·공식 링크 확인에 gate를 과잉 적용하지 않았는가
 
 ## Dim 4: Counter-drafting Quality
 
@@ -168,4 +168,4 @@
 
 - 자가 검증은 출처 권위 라벨의 `downgrade_triggers`(`assets/policies/source_grades.yaml`)와 연동한다.
 - tag 체계 외 새 타입을 도입하지 않고 기존 6개 상태 태그만 사용한다.
-- 향후 연구 인용이 추가되면 본 문서 하단에 append-only로 쌓아 `SKILL.md`가 길어지지 않도록 한다.
+- 향후 연구 인용은 본 문서 하단에 모아 `SKILL.md`가 길어지지 않도록 한다. 다만 append-only가 아니다 — 대체된 연구는 남기지 말고 삭제한다 (`references/freshness-governance.md#unrouted-asset-rule-retire-first`).

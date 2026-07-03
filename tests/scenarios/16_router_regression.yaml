@@ -34,6 +34,7 @@ scenarios:
     question: "민법 제750조 내용과 공식 링크만 알려줘."
     expected:
       primary_intent: legal_research
+      verification_tier: light  # 트리거 정의: references/research-workflow.md#legal-verification-core
       always_apply_gates:
         - citation_verification
         - self_verification
@@ -152,6 +153,7 @@ scenarios:
     question: "블로그에서 개인정보 과징금이 무조건 10억이라던데 맞아?"
     expected:
       primary_intent: legal_research
+      verification_tier: full  # 트리거 정의: references/research-workflow.md#legal-verification-core
       always_apply_gates:
         - citation_verification
         - self_verification

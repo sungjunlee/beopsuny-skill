@@ -103,6 +103,15 @@ stale 자산을 만질 때는 아래 순서로 판단한다.
 | `skills/beopsuny/assets/policies/checklists/startup.yaml` | 2026-01 | 설립 절차 triage only |
 | `skills/beopsuny/references/international_guide.md` | 2026-05-31 | 해외진출 reference triage only |
 
+## Unrouted Asset Rule (retire-first)
+
+registry는 살아 있는 자산의 신선도 부채를 관리하는 곳이지, 죽은 자산의 보관소가 아니다. 여기의 retire는 **파일 삭제**를 뜻한다 — 아래 Retirement Rule의 "registry 제거"(revalidation record 필요)와 다른 절차다.
+
+- 어떤 자산이 SKILL.md 라우터, reference 문서, checklist routing, 시나리오 어디에서도 로드 경로가 없으면(unrouted), registry에 등록하지 말고 삭제한다. 복구는 git 이력으로 충분하다.
+- 삭제하는 자산이 이미 registry에 등록돼 있으면 해당 registry 항목도 같은 커밋에서 제거한다. 이 경우 revalidation record 대신 unrouted 근거(참조 그래프 감사 결과)를 커밋 메시지나 이슈에 남기면 된다.
+- 로드 경로가 있는데 stale이면 registry에 등록하고 아래 Retirement Rule을 따른다.
+- 정기 감사: 시나리오·라우터 기준 참조 그래프에서 unrouted 자산을 찾고, 발견 즉시 삭제하거나 유지 사유를 이슈에 기록한다.
+
 ## Retirement Rule
 
 registry에서 제거하려면 아래가 모두 필요하다.

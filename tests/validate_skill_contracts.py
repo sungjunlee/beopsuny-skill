@@ -1545,8 +1545,18 @@ def check_research_workflow_verification_core() -> None:
         "`conclusion_binding`",
         "`self_verification`",
         "`output_allowed: true`가 아닌 ledger 항목",
+        "| Tier | 트리거 | 적용 |",
+        "애매하면 `full`로 올린다",
+        "출력 citation 줄이 한 줄 ledger 항목",
+        "`light` tier에서는 packet을 만들지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    # 적용 강도는 판정 가능한 2단 트리거(light/full)로만 조절한다. 재량형
+    # 적용 표현("축약형으로 적용")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
+    # 단어 자체가 아니라 재량 구문만 금지한다 (예: "축약형 표기" 같은 무관한 용례 허용).
+    assert_not_contains(text, "축약형으로 적용", label)
+    assert_not_contains(text, "축약해도 되지만", label)
 
     for required in [
         "references/research-workflow.md#legal-verification-core",
@@ -1555,6 +1565,7 @@ def check_research_workflow_verification_core() -> None:
         "citation ledger",
         "contradiction scan",
         "conclusion binding",
+        "2단 트리거(light/full)",
     ]:
         assert_contains(skill_text, required, "SKILL.md")
 
@@ -1951,14 +1962,12 @@ def check_skill_quality_contract_router_map() -> None:
     label = "SKILL.md"
 
     for required in [
-        "품질 계약 매핑",
         "법률 결론 always-on gate",
         "의도별 workflow reference와 별도로 항상 적용",
         "references/citation-verification-contract.md",
         "references/self-verification.md",
         "references/output-formats.md",
-        "계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다",
-        "해당 실패모드가 보이면 어떤 계약을 우선 확인해야 하는지 정하는 router map",
+        "어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다",
         "references/research-workflow.md#legal-verification-core",
         "assets/schemas/legal_verification_packet.yaml",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
@@ -1979,7 +1988,14 @@ def check_skill_quality_contract_router_map() -> None:
     ]:
         assert_contains(text, required, label)
 
-    router_block_match = re.search(r"## 의도 라우터\n(?P<body>.*?)\n## 품질 계약 매핑", text, flags=re.S)
+    # 게이트 라우팅의 단일 소스는 의도 라우터의 gate 표다. 과거의 중복 라우터
+    # 섹션(품질 계약 매핑) 부활을 막고, 삭제된 self-verification 차원 상세 표는
+    # 그 행 라벨 하나("| Counter-drafting Quality |")를 표지로 고정해 감지한다.
+    assert_not_contains(text, "## 품질 계약 매핑", label)
+    assert_not_contains(text, "해당 실패모드가 보이면", label)
+    assert_not_contains(text, "| Counter-drafting Quality |", label)
+
+    router_block_match = re.search(r"## 의도 라우터\n(?P<body>.*?)\n## 기본 조사 계약", text, flags=re.S)
     if not router_block_match:
         raise AssertionError(f"{label}: intent router block missing")
     router_body = router_block_match.group("body")
@@ -2040,7 +2056,7 @@ def check_readme_quality_contract_map() -> None:
         "triage_only",
         "품질 계약 변경 체크리스트",
         "새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay",
-        "SKILL.md`의 의도 라우터 또는 품질 계약 매핑",
+        "SKILL.md`의 의도 라우터(의도 표 또는 gate 표)",
         "`tests/scenarios/16_router_regression.yaml`",
         "`tests/fixtures/router_guardrail_outputs.yaml`",
         "`tests/evaluate_scenario_outputs.py`",

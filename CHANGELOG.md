@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### Changed
+- `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
+- `tests/validate_skill_contracts.py` — `check_skill_quality_contract_router_map`을 통합된 gate 표 구조에 맞게 갱신. 삭제된 중복 라우터 섹션(`## 품질 계약 매핑`)과 self-verification 차원 상세 재수록이 되살아나면 실패하는 회귀 가드 추가
+- `README.md` — 품질 계약 변경 체크리스트 1번 항목을 의도 라우터(의도 표 또는 gate 표) 기준으로 갱신
+- `skills/beopsuny/SKILL.md` — 과잉 라우팅 금지 규칙을 라우팅 원칙 1(Right-sizing)로 통합해 단일 기준으로 선언 (#176). 기존 원칙 1·3을 병합하고 7개 원칙을 6개로 재정렬
+- `skills/beopsuny/references/self-verification.md`, `references/knowledge-injection.md` — 과잉 라우팅·과잉 gate 적용 중복 문구를 SKILL.md 라우팅 원칙 1 pointer로 교체 (#176)
+- `skills/beopsuny/references/research-workflow.md` — Legal Verification Core의 재량형 "축약형" 적용 조건을 판정 가능한 2단 트리거(light/full)로 교체 (#177). `light`(결론 후보 1개 + 원문 확인 종결)는 별도 map·packet·ledger 문서 없이 출력 citation 줄이 한 줄 ledger 항목을 겸하고, `full`(결론 후보 2개 이상 / 금액·기한·과징금·서식 / 계약 검토 결론 / 외부 송부·기관 제출·소송 포지션)은 6단계 core 전체를 적용. 애매하면 `full`로 승급
+- `skills/beopsuny/SKILL.md`, `references/self-verification.md` — Legal Verification Core 적용 강도 문구를 2단 트리거 기준으로 정렬 (#177)
+- `tests/validate_skill_contracts.py` — 2단 트리거 표 존재와 재량형 "축약형" 표현 부활 방지 회귀 가드 추가 (#177)
+- `skills/beopsuny/references/freshness-governance.md` — Unrouted Asset Rule(retire-first) 추가 (#178). 로드 경로가 없는 자산은 registry에 등록하지 않고 삭제하며, 복구는 git 이력으로 충분하다는 원칙을 명문화
+- `skills/beopsuny/references/self-verification.md` — 설계 메모의 연구 인용 append-only 방침을 폐기하고 대체된 연구는 삭제하도록 변경 (#178)
+- `tests/scenarios/16_router_regression.yaml` — router-01(light), router-05(full)에 `verification_tier` 주석 필드 추가 (#177/#178)
+
+### Fixed (PR #179 리뷰 반영)
+- `references/research-workflow.md` — `light` tier의 한 줄 ledger 필드에 `pinpoint`를 분리 명시하고 `supports`의 귀속 규칙을 추가해 citation-verification-contract Output Binding·self-verification Dim 1과의 필드 불일치 해소
+- `skills/beopsuny/SKILL.md` — Citation gate 셀의 "복합 결론"을 `full` tier 기준으로 명확화(light는 packet 불필요), Output gate 셀에 묻혀 있던 명령형 규칙(검토 gate·내부 블록 제거)을 표 아래 독립 문장으로 분리, 과잉 로딩 문구 잔존 중복 2곳을 라우팅 원칙 1 pointer로 정리
+- `references/freshness-governance.md` — Unrouted Asset Rule의 retire(파일 삭제)와 Retirement Rule의 registry 제거를 명시적으로 구분하고, registry 등록된 unrouted 자산의 동시 제거 절차 추가
+- `CLAUDE.md` — 프로젝트 구조 주석에서 삭제된 external-sites("외부사이트") 참조 제거
+- `tests/validate_skill_contracts.py` — "축약형" 전파일 금지를 재량 구문("축약형으로 적용", "축약해도 되지만")으로 좁히고, 회귀 가드 주석의 과대 서술 수정
+- `.gitignore` — `backlog/tasks/` 이슈 미러(재생성 가능, GitHub이 source of truth) 추적 제외로 전환 — 후행 공백·미러 drift 문제 해소
+
+### Removed
+- `skills/beopsuny/references/external-sites.md` — 참조 그래프 감사 결과 SKILL.md 라우터·reference·시나리오·테스트 어디에서도 로드 경로가 없는 dead reference로 확인되어 retire (#178). 공식 1차 소스 접근은 `references/source-access.md`가 커버
+
 ## [0.3.2] - 2026-06-23
 
 **테마: Router Spine Refactor** — 단일 public skill은 유지하되, `SKILL.md`를 항상 로드되는 실행 라우터로 축소하고 세부 workflow를 on-demand reference로 분리했다. 목표는 multi-skill 자동 발견 불안정성과 Desktop Chat/Lite 호환성 문제를 피하면서도 내부 구조는 virtual skill suite처럼 동작하게 만드는 것.
