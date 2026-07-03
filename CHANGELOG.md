@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+- `skills/beopsuny/references/report-deliverable.md` — HTML 리포트 산출물 계약 추가. 기존 destination 계약을 소비하는 렌더 레이어, self-contained HTML 파일 규격, 하단 고정 블록, 능력 기반 전달 채널, 새 의도 없는 트리거 원칙을 명문화 (#185)
+- `tests/validate_skill_contracts.py` — report-deliverable 계약과 SKILL.md 시각화 섹션 pointer drift를 잡는 O1 static check 추가 (#185)
+
 ### Changed
 - `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
 - `tests/validate_skill_contracts.py` — `check_skill_quality_contract_router_map`을 통합된 gate 표 구조에 맞게 갱신. 삭제된 중복 라우터 섹션(`## 품질 계약 매핑`)과 self-verification 차원 상세 재수록이 되살아나면 실패하는 회귀 가드 추가

@@ -156,6 +156,7 @@ OC 코드 발급: https://open.law.go.kr/LSO/openApi/guideList.do (무료, 1분)
 ## 시각화 가이드
 
 법률 정보를 Artifacts로 시각화한다. 시각화는 텍스트 보완용 — 법적 근거는 반드시 텍스트로도 제공.
+Mermaid 네이티브 렌더는 Chat 탭 Artifacts 전용이다. CLI Artifact는 CSP로 외부 스크립트가 불가하므로 HTML 리포트에서는 표/인라인 CSS/인라인 SVG/data URI 이미지만 사용한다.
 
 | 용도 | Artifact 유형 |
 |------|--------------|

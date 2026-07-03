@@ -1957,6 +1957,36 @@ def check_output_contract_right_sizing() -> None:
     assert_not_contains(text, "답변 마지막에는 항상 면책 고지를 붙인다", label)
 
 
+def check_report_deliverable_contract() -> None:
+    text = read_text("skills/beopsuny/references/report-deliverable.md")
+    label = "report-deliverable.md"
+
+    for required in [
+        "`internal_legal_memo`",
+        "생성일",
+        "읽은 범위",
+        "최신성",
+        "면책",
+        "외부 리소스",
+        "CDN",
+        "폰트",
+        "이미지 URL",
+        "fetch",
+        "금지",
+    ]:
+        assert_contains(text, required, label)
+
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    section_match = re.search(r"## 시각화\n(?P<body>.*?)(?=\n## |\Z)", skill_text, flags=re.S)
+    if not section_match:
+        raise AssertionError("SKILL.md: visualization section missing")
+    assert_contains(
+        section_match.group("body"),
+        "`references/report-deliverable.md`",
+        "SKILL.md visualization section",
+    )
+
+
 def check_skill_quality_contract_router_map() -> None:
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md"
@@ -3083,6 +3113,7 @@ CHECK_GROUPS = (
         "output: right-sizing contract",
         (
             check_output_contract_right_sizing,
+            check_report_deliverable_contract,
         ),
     ),
     CheckGroup(
