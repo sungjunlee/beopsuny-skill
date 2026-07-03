@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- `skills/beopsuny/assets/templates/report_contract_review.html` — 계약 검토 리포트용 self-contained HTML 템플릿 추가. 횡단 이슈 → 조항별 위험 → 권고/다음 단계 구조, `internal_legal_memo`/`business_summary` destination 분기, counter-draft 금지선, 하단 고정 블록을 포함 (#187)
+- `skills/beopsuny/references/contract_review_guide.md`, `skills/beopsuny/references/report-deliverable.md`, `tests/validate_skill_contracts.py`, `tests/evaluate_scenario_outputs.py`, `tests/fixtures/router_guardrail_outputs.yaml` — 계약 검토 리포트 템플릿 pointer, O1 static check, 리포트 counter-draft unsafe fixture와 단일 금지 패턴 소비 보강 추가 (#187)
 - `skills/beopsuny/assets/templates/report_bulk_grid.html` — bulk_tabular_review용 self-contained HTML grid 리포트 템플릿 추가. values/sources table 토글, 클라이언트 정렬, Cell State 라벨, evidence 노출, 하단 고정 블록을 포함 (#186)
 - `tests/validate_skill_contracts.py`, `tests/evaluate_scenario_outputs.py` — bulk grid 리포트 템플릿 외부 리소스 금지 O1 검사와 출처 권위 라벨 없는 grid 결론 O2 unsafe fixture 추가 (#186)
 - `skills/beopsuny/references/report-deliverable.md` — HTML 리포트 산출물 계약 추가. 기존 destination 계약을 소비하는 렌더 레이어, self-contained HTML 파일 규격, 하단 고정 블록, 능력 기반 전달 채널, 새 의도 없는 트리거 원칙을 명문화 (#185)

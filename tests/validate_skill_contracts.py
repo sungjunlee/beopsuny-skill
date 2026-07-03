@@ -304,6 +304,9 @@ def check_contract_review_guide() -> None:
         "Counter-drafting",
         "Proportionality",
         "Destination",
+        "리포트 옵션",
+        "`assets/templates/report_contract_review.html`",
+        "`references/report-deliverable.md`",
         "상대방 송부용",
         "확정 문구가 아니라 검토 힌트",
         "자가 검증",
@@ -2027,6 +2030,45 @@ def check_bulk_grid_report_template_contract() -> None:
     for description, pattern in forbidden_resource_patterns.items():
         if re.search(pattern, template, flags=re.I):
             raise AssertionError(f"{label}: forbidden external resource pattern: {description}")
+
+    contract_template_path = ROOT / "skills/beopsuny/assets/templates/report_contract_review.html"
+    if not contract_template_path.exists():
+        raise AssertionError("report_contract_review.html: missing contract review report template")
+
+    contract_template = contract_template_path.read_text(encoding="utf-8")
+    contract_label = "report_contract_review.html"
+    for required in [
+        "횡단 이슈",
+        "조항별 위험",
+        "권고",
+        "다음 단계",
+        "조항 인용",
+        "why_risky",
+        "negotiation_points",
+        "alt_wording_hint",
+        "`internal_legal_memo`",
+        "`business_summary`",
+        "destination:internal only",
+        "destination:business_summary only",
+        "검토자 메모",
+        "자가 검증",
+        "미확인 내부 노트",
+        "decision",
+        "action",
+        "counter_draft_forbidden_patterns",
+        "아래 문구로 교체",
+        "대체 문구 제공이 아니다",
+        "HTML-escape",
+        "생성일",
+        "읽은 범위",
+        "최신성 한계",
+        "면책 고지",
+    ]:
+        assert_contains(contract_template, required, contract_label)
+
+    for description, pattern in forbidden_resource_patterns.items():
+        if re.search(pattern, contract_template, flags=re.I):
+            raise AssertionError(f"{contract_label}: forbidden external resource pattern: {description}")
 
     bulk_reference = read_text("skills/beopsuny/references/bulk-tabular-review.md")
     assert_contains(
