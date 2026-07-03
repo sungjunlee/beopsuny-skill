@@ -34,7 +34,7 @@ volatile_items_checked:
     result: "updated"
   - item: "authority"
     previous_value: "의료법 제34조 (원격의료)"
-    refreshed_value: "의료법 제34조 (비대면협진); 환자 대상 비대면진료는 guidance 확인 필요"
+    refreshed_value: "의료법 제34조 — 미러 최신본은 시행 전 개정본(공포 2026-06-09, 시행 2026-12-10, 제목 비대면협진)이라 조문 번호만 앵커로 유지하고 현행 제목은 live check로 전환; 환자 대상 비대면진료는 guidance 확인 필요"
     source_ref: "legalize-kr 로컬 미러 의료기기/의료 법령"
     result: "updated"
   - item: "authority"
