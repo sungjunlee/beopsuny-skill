@@ -2056,7 +2056,6 @@ def check_bulk_grid_report_template_contract() -> None:
         "decision",
         "action",
         "counter_draft_forbidden_patterns",
-        "아래 문구로 교체",
         "대체 문구 제공이 아니다",
         "HTML-escape",
         "생성일",
@@ -2065,6 +2064,12 @@ def check_bulk_grid_report_template_contract() -> None:
         "면책 고지",
     ]:
         assert_contains(contract_template, required, contract_label)
+
+    for forbidden_literal in ["아래 문구로 교체", "최종 수정안", "이 문구를 사용"]:
+        if forbidden_literal in contract_template:
+            raise AssertionError(
+                f"{contract_label}: counter-draft forbidden pattern literal must not be embedded: {forbidden_literal}"
+            )
 
     for description, pattern in forbidden_resource_patterns.items():
         if re.search(pattern, contract_template, flags=re.I):

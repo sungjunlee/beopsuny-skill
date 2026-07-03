@@ -8,7 +8,7 @@
   <!-- Render after selecting exactly one destination from report-deliverable.md and output-formats.md. -->
   <!-- Destination rules: `internal_legal_memo` is default and keeps blocks labeled "destination:internal only". -->
   <!-- Destination rules: `business_summary` keeps "destination:business_summary only" blocks and removes internal legal reasoning, reviewer notes, self-check blocks, and 미확인 내부 노트. -->
-  <!-- Counter-draft rule: review_mode.yaml#counter_draft_forbidden_patterns applies to reports too. alt_wording_hint is directional guidance only; 대체 문구 제공이 아니다. Forbidden examples include "아래 문구로 교체", "최종 수정안", and "이 문구를 사용". -->
+  <!-- Counter-draft rule: review_mode.yaml#counter_draft_forbidden_patterns applies to reports too. alt_wording_hint is directional guidance only; 대체 문구 제공이 아니다. Do not embed any forbidden-pattern literal in this file or in generated reports — see the policy file for the pattern list. -->
   <!-- HTML-escape every dynamic insertion before rendering: &, <, >, ", and '. Dynamic HTML fragments must be assembled only from escaped text. -->
   <style>
     :root {
