@@ -1,0 +1,50 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/contract_review.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 계약 법령 원문"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 상가건물 임대차보호법/시행령과 약관규제법 조문 체계 확인."
+
+volatile_items_checked:
+  - item: "period"
+    previous_value: "상가임대차 갱신 가능 기간은 현행 원문 확인 전 후보"
+    refreshed_value: "상가건물 임대차보호법 제10조 제2항 10년 기준 확인"
+    source_ref: "legalize-kr 로컬 미러 계약 법령 원문"
+    result: "updated"
+  - item: "rate"
+    previous_value: "상가임대차 차임 증액 상한은 현행 원문 확인 전 후보"
+    refreshed_value: "상가건물 임대차보호법 시행령 제4조 100분의 5 확인"
+    source_ref: "legalize-kr 로컬 미러 계약 법령 원문"
+    result: "updated"
+  - item: "authority"
+    previous_value: "약관규제법 조문 번호 stale 가능성"
+    refreshed_value: "약관규제법 제6조~제14조 주요 무효조항 체계 확인"
+    source_ref: "legalize-kr 로컬 미러 계약 법령 원문"
+    result: "unchanged"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2027-07"
+  summary: "상가임대차 기간/증액 상한을 확인값으로 갱신하고 maintenance note/changelog를 재검증 상태로 갱신."
+
+retirement_decision:
+  decision: "retire"
+  reason: "registry에 적힌 volatile contract-law references가 모두 local legalize-kr mirror 원문으로 확인됐고 next_review가 미래로 전진함."
+  remaining_stale_scope: ""
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

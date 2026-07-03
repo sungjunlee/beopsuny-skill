@@ -17,16 +17,18 @@ last_updated: "2025-12-09"
 # 유지보수 정보
 maintenance:
   review_cycle: "annual"
-  next_review: "2026-01"
-  last_verified: "2025-12-09"
+  next_review: "2026-10"
+  last_verified: "2026-07-03"
   source_url: "https://www.law.go.kr/"
   freshness_days: 365
   must_reverify: true
   volatile_items:
     - "4대보험 신고 기한"
     - "법인설립 등기 관련 상법 조문"
-  note: "설립 절차는 비교적 안정적. 조문 번호 변경 여부만 연간 확인"
+  note: "issue #180에서 상법 법인설립 조문과 부가가치세법 사업자등록 기한은 legalize-kr 로컬 미러(기준일 2026-07-02)로 확인했지만, 4대보험 신고기한과 업종별 인허가 세부는 기관 안내 확인 필요"
   changelog:
+    - date: "2026-07-03"
+      changes: "사업자등록 20일 기한과 법인설립 조문을 부분 재검증; 4대보험/업종별 인허가 기한은 registry 유지"
     - date: "2025-12-09"
       changes: "type 필드 추가, maintenance 섹션 추가"
 
@@ -99,7 +101,7 @@ items:
     notes: |
       - 관할 세무서에 신청
       - 법인등기부등본, 정관, 임대차계약서 필요
-    deadline: "사업자등록 기한은 현행 국세청/부가가치세법령으로 확인"
+    deadline: "사업 개시일부터 20일 이내(부가가치세법 제8조); 국세청 제출 경로는 현행 안내 확인"
     condition: null
     risk_level: "high"
     check_points:

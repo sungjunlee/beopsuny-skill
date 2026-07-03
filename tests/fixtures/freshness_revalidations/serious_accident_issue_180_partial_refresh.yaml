@@ -1,0 +1,57 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/serious_accident.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 중대재해 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 중대재해처벌법 제2조·제3조·제6조·제7조·제15조 및 시행령 제4조 확인."
+  - title: "법망 API MOEL guidance 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 고용노동부 guidance와 최근 판례/집행동향은 검증하지 않음."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "50인 이상 → 전체 의무 적용 (전담조직 포함)"
+    refreshed_value: "기본 의무와 전담조직 기준을 분리; 시행령 제4조 제2호 전담조직 기준 500인/건설업 상위 200위 확인"
+    source_ref: "legalize-kr 로컬 미러 중대재해 법령"
+    result: "updated"
+  - item: "penalty"
+    previous_value: "처벌 수위"
+    refreshed_value: "법 제6조·제7조·제15조 penalty/damages anchors 확인"
+    source_ref: "legalize-kr 로컬 미러 중대재해 법령"
+    result: "unchanged"
+  - item: "authority"
+    previous_value: "MOEL guidance and recent case law"
+    refreshed_value: "[UNVERIFIED] guidance/case-law source unavailable in this run"
+    source_ref: "법망 API MOEL guidance 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2026-10"
+  summary: "전담조직 threshold drift를 정정하고 MOEL/case-law residual scope를 registry에 유지."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "statutory values are refreshed, but enforcement guidance and recent case law remain required by registry verification_required."
+  remaining_stale_scope: "MOEL guidance, recent case law, sector-specific safety staffing practice, investigation/prosecution trends."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

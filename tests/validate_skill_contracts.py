@@ -1708,7 +1708,6 @@ def check_freshness_debt_registry() -> None:
     if not isinstance(assets, list) or not assets:
         raise AssertionError(f"{label}: assets must be a non-empty list")
 
-    today = date.today()
     seen: set[str] = set()
     for item in assets:
         if not isinstance(item, dict):
@@ -1750,8 +1749,8 @@ def check_freshness_debt_registry() -> None:
         elif not path.startswith("skills/beopsuny/references/") or registered_path.suffix != ".md":
             raise AssertionError(f"{label}: non-YAML entries must be reference markdown files: {path}")
         due = parse_review_due(item["next_review"])
-        if not due or due > today:
-            raise AssertionError(f"{label}: registered asset is not currently stale: {path}")
+        if not due:
+            raise AssertionError(f"{label}: registered asset has invalid next_review: {path}")
 
 
 VOLATILE_REFERENCE_PATTERNS = [

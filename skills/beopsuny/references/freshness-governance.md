@@ -55,6 +55,7 @@ stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live
 새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
 
 각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. `next_review`가 지나거나 `last_verified + freshness_days`가 지난 자산은 현재 날짜 기준 CI에서 보이며, registry에 등록되지 않았으면 실패한다.
+`partial_refresh`로 일부 값을 갱신한 자산은 `next_review`가 미래여도 residual stale scope가 남아 있으면 registry에 유지한다. 이 경우에도 runtime 사용 범위는 계속 `triage_only`다.
 
 ## Revalidation Record
 
@@ -87,21 +88,19 @@ stale 자산을 만질 때는 아래 순서로 판단한다.
 
 ## Registered Stale Assets
 
-현재 등록된 stale 자산은 issue #101/#102에서 갱신한다.
+현재 등록된 stale 자산은 issue #101/#102 registry를 기반으로 issue #180에서 부분 갱신했다.
 
 | 자산 | next_review | stale 상태 사용 |
 | --- | --- | --- |
-| `skills/beopsuny/assets/data/clause_references.yaml` | 2026-04 | 계약 조항 issue-spotting triage only |
-| `skills/beopsuny/assets/policies/checklists/contract_review.yaml` | 2026-01 | 계약 issue-spotting triage only |
-| `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-01 | 공정거래 research question triage only |
-| `skills/beopsuny/assets/policies/checklists/food_business.yaml` | 2026-03 | 식품 사업 triage only |
-| `skills/beopsuny/assets/policies/checklists/healthcare.yaml` | 2026-03 | 의료·헬스케어 triage only |
-| `skills/beopsuny/assets/policies/checklists/investment_due_diligence.yaml` | 2026-01 | 투자·M&A issue-spotting triage only |
-| `skills/beopsuny/assets/policies/checklists/labor_hr.yaml` | 2026-01 | 노동·인사 triage only |
-| `skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml` | 2026-01 | 개인정보 issue triage only |
-| `skills/beopsuny/assets/policies/checklists/serious_accident.yaml` | 2026-01 | 중대재해 issue triage only |
-| `skills/beopsuny/assets/policies/checklists/startup.yaml` | 2026-01 | 설립 절차 triage only |
-| `skills/beopsuny/references/international_guide.md` | 2026-05-31 | 해외진출 reference triage only |
+| `skills/beopsuny/assets/data/clause_references.yaml` | 2026-10 | 계약 조항 issue-spotting triage only |
+| `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-10 | 공정거래 research question triage only |
+| `skills/beopsuny/assets/policies/checklists/food_business.yaml` | 2026-10 | 식품 사업 triage only |
+| `skills/beopsuny/assets/policies/checklists/healthcare.yaml` | 2026-10 | 의료·헬스케어 triage only |
+| `skills/beopsuny/assets/policies/checklists/labor_hr.yaml` | 2026-10 | 노동·인사 triage only |
+| `skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml` | 2026-10 | 개인정보 issue triage only |
+| `skills/beopsuny/assets/policies/checklists/serious_accident.yaml` | 2026-10 | 중대재해 issue triage only |
+| `skills/beopsuny/assets/policies/checklists/startup.yaml` | 2026-10 | 설립 절차 triage only |
+| `skills/beopsuny/references/international_guide.md` | 2026-10-31 | 해외진출 reference triage only |
 
 ## Unrouted Asset Rule (retire-first)
 

@@ -1,0 +1,57 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/startup.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 회사설립/세무 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 상법 제288조·제289조·제543조와 부가가치세법 제8조 확인."
+  - title: "법망 API 4대보험/기관 안내 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; agency guidance source unavailable. 4대보험 신고기한과 sector permit filing windows는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "deadline"
+    previous_value: "사업자등록 기한은 현행 국세청/부가가치세법령으로 확인"
+    refreshed_value: "부가가치세법 제8조: 사업 개시일부터 20일 이내 확인"
+    source_ref: "legalize-kr 로컬 미러 회사설립/세무 법령"
+    result: "updated"
+  - item: "authority"
+    previous_value: "법인설립 상법 조문"
+    refreshed_value: "상법 제288조·제289조·제543조 확인"
+    source_ref: "legalize-kr 로컬 미러 회사설립/세무 법령"
+    result: "unchanged"
+  - item: "deadline"
+    previous_value: "4대보험 신고기한"
+    refreshed_value: "[UNVERIFIED] 기관별 안내 확인 실패"
+    source_ref: "법망 API 4대보험/기관 안내 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2026-10"
+  summary: "사업자등록 statutory deadline을 반영하고 4대보험/업종별 permits residual scope를 registry에 유지."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "법인설립과 사업자등록 statutory anchors는 확인됐지만 4대보험/기관 안내 항목이 남아 registry 유지."
+  remaining_stale_scope: "4대보험 agency filing windows, sector permit submission deadlines, registry/tax agency form details."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

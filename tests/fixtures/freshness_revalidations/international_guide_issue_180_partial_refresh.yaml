@@ -1,0 +1,63 @@
+asset_path: "skills/beopsuny/references/international_guide.md"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 기업결합 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 공정거래법 시행령 제18조 기업결합 threshold 확인."
+  - title: "EUR-Lex Directive (EU) 2025/794 (CSDDD stop-the-clock)"
+    url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202500794"
+    source_authority: "공식 원문"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "EUR-Lex 원문 확인: transposition 2027-07-26 (Art 37(1) 개정), 적용 wave 1 2028-07-26 (직원 3,000+/순매출 €900M+ 및 제3국 €900M+), wave 2 2029-07-26 (그 외). 종전 2024/1760의 2027년 wave는 폐지."
+  - title: "법망 API cross-border 행정규칙 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 외국환거래규정, 전략물자/국가핵심기술 고시, 기관 신고기한은 검증하지 않음."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "기업결합 3,000억원/300억원"
+    refreshed_value: "공정거래법 시행령 제18조 기준 확인"
+    source_ref: "legalize-kr 로컬 미러 기업결합 법령"
+    result: "unchanged"
+  - item: "deadline"
+    previous_value: "EU CSDDD 2027/2028/2029 phase-in dates"
+    refreshed_value: "Directive (EU) 2025/794 기준으로 정정: transposition 2027-07-26, 적용 2028-07-26/2029-07-26 (종전 2027 wave 폐지)"
+    source_ref: "EUR-Lex Directive (EU) 2025/794 (CSDDD stop-the-clock)"
+    result: "updated"
+  - item: "threshold"
+    previous_value: "해외직접투자 10%, 99개 조약국, 국가핵심기술 13개 분야 76개 기술, 해외건설 60일"
+    refreshed_value: "[UNVERIFIED] admin-rule/agency-list values reframed as live-check prompts"
+    source_ref: "법망 API cross-border 행정규칙 접근 시도"
+    result: "updated"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-05-31"
+  maintenance_next_review_after: "2026-10-31"
+  summary: "verified enterprise-combination/CSDDD values retained, unverified cross-border counts and deadlines reframed as live-check prompts; registry next_review advanced."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "일부 official sources were checked, but cross-border administrative rules, treaty counts, strategic technology lists, and agency deadlines remain unverified."
+  remaining_stale_scope: "외국환거래규정 해외직접투자 요건, treaty/source counts, 국가핵심기술 고시 목록, 해외건설/금융 등 sector filing deadlines, agency forms."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

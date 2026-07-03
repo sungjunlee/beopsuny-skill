@@ -1,0 +1,57 @@
+asset_path: "skills/beopsuny/assets/policies/checklists/fair_trade.yaml"
+checked_at: "2026-07-03"
+checked_by: "relay-codex (issue #180)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 공정거래/하도급 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-03"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); mirror 기준일 2026-07-02. 공정거래법 시행령 제18조, 하도급법 제13조 확인."
+  - title: "법망 API KFTC 고시 접근 시도"
+    url: "https://api.beopmang.org/"
+    source_authority: "공식 실무자료: 미확정"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-07-03"
+    notes: "api.beopmang.org DNS resolution failed; admrule-kr mirror absent. 지연이자율·과징금 세부기준 고시는 검증하지 않음."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "기업결합 신고 기준 금액"
+    refreshed_value: "공정거래법 시행령 제18조: 일방 3천억원, 상대방 300억원 기준 확인"
+    source_ref: "legalize-kr 로컬 미러 공정거래/하도급 법령"
+    result: "unchanged"
+  - item: "deadline"
+    previous_value: "하도급대금 지급기한"
+    refreshed_value: "하도급법 제13조의 60일 지급기한 확인"
+    source_ref: "legalize-kr 로컬 미러 공정거래/하도급 법령"
+    result: "unchanged"
+  - item: "rate"
+    previous_value: "하도급대금 지연이자율"
+    refreshed_value: "[UNVERIFIED] KFTC 고시 확인 실패"
+    source_ref: "법망 API KFTC 고시 접근 시도"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-01"
+  maintenance_next_review_after: "2026-10"
+  summary: "기업결합 threshold와 하도급 60일 deadline을 확인하고 KFTC 고시 항목은 live-check-only로 남김."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "statutory values는 확인됐지만 KFTC 고시·심결·가이드라인 항목이 남아 있어 registry 유지."
+  remaining_stale_scope: "KFTC 지연이자율 고시, 과징금 세부기준, current guidance, 심결/판례 기반 판단."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true
