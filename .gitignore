@@ -21,3 +21,6 @@ __pycache__/
 node_modules/
 TODOS.md
 .claude/
+
+# dev-backlog: GitHub issue mirrors are regenerable via sync-pull (GitHub is source of truth)
+backlog/tasks/

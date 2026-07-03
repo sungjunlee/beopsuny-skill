@@ -19,7 +19,7 @@
 
 | Tier | 트리거 | 적용 |
 | --- | --- | --- |
-| `light` | 결론 후보가 1개이고 조문·시행일·공식 링크의 원문 확인으로 종결되는 질문 | 별도 map·packet·ledger 문서를 만들지 않는다. 출력 citation 줄이 한 줄 ledger 항목으로서 `citation`(pinpoint 포함), `source_authority`, `verification_status`, `provenance`, `currency`를 직접 담는다. contradiction scan은 확인한 원문이 사용자 전제와 다를 때만 수행한다. |
+| `light` | 결론 후보가 1개이고 조문·시행일·공식 링크의 원문 확인으로 종결되는 질문 | 별도 map·packet·ledger 문서를 만들지 않는다. 출력 citation 줄이 한 줄 ledger 항목으로서 `citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`를 직접 담고, `supports`는 유일한 결론에 귀속된 것으로 본다. contradiction scan은 확인한 원문이 사용자 전제와 다를 때만 수행한다. |
 | `full` | 결론 후보 2개 이상, 또는 금액·기한·과징금·서식·구비서류, 또는 계약 검토 결론, 또는 외부 송부·기관 제출·소송/분쟁 포지션 | 아래 6단계 core 전체를 적용한다. |
 
 light에서도 인용 없는 결론 금지, 상태 태그 downgrade, 출처 권위 라벨 규칙은 동일하게 적용된다.

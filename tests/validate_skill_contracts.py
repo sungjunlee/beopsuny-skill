@@ -1553,8 +1553,10 @@ def check_research_workflow_verification_core() -> None:
         assert_contains(text, required, label)
 
     # 적용 강도는 판정 가능한 2단 트리거(light/full)로만 조절한다. 재량형
-    # 표현("축약형")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
-    assert_not_contains(text, "축약형", label)
+    # 적용 표현("축약형으로 적용")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
+    # 단어 자체가 아니라 재량 구문만 금지한다 (예: "축약형 표기" 같은 무관한 용례 허용).
+    assert_not_contains(text, "축약형으로 적용", label)
+    assert_not_contains(text, "축약해도 되지만", label)
 
     for required in [
         "references/research-workflow.md#legal-verification-core",
@@ -1965,7 +1967,7 @@ def check_skill_quality_contract_router_map() -> None:
         "references/citation-verification-contract.md",
         "references/self-verification.md",
         "references/output-formats.md",
-        "계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다",
+        "어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다",
         "references/research-workflow.md#legal-verification-core",
         "assets/schemas/legal_verification_packet.yaml",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
@@ -1987,7 +1989,8 @@ def check_skill_quality_contract_router_map() -> None:
         assert_contains(text, required, label)
 
     # 게이트 라우팅의 단일 소스는 의도 라우터의 gate 표다. 과거의 중복 라우터
-    # 섹션(품질 계약 매핑)과 self-verification 차원 상세 재수록이 되살아나면 실패한다.
+    # 섹션(품질 계약 매핑) 부활을 막고, 삭제된 self-verification 차원 상세 표는
+    # 그 행 라벨 하나("| Counter-drafting Quality |")를 표지로 고정해 감지한다.
     assert_not_contains(text, "## 품질 계약 매핑", label)
     assert_not_contains(text, "해당 실패모드가 보이면", label)
     assert_not_contains(text, "| Counter-drafting Quality |", label)

@@ -37,7 +37,7 @@ description: |
 
 > ⚠️ **참고**: 이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.
 
-사용자 역할과 산출물 목적지가 결론의 사용 방식을 바꿀 수 있다. `profile.yaml.user_role`이 `business_user` 또는 `unknown`이거나, 사용자가 상대방·기관·현업 전체에 보낼 산출물을 요청하면 법적 효과가 있는 행동 전 검토 gate를 둔다. 단순 조문·링크 확인에는 이 gate를 과도하게 적용하지 않는다.
+사용자 역할과 산출물 목적지가 결론의 사용 방식을 바꿀 수 있다. `profile.yaml.user_role`이 `business_user` 또는 `unknown`이거나, 사용자가 상대방·기관·현업 전체에 보낼 산출물을 요청하면 법적 효과가 있는 행동 전 검토 gate를 둔다. 단순 조문·링크 확인에는 이 gate를 과도하게 적용하지 않는다(라우팅 원칙 1).
 
 ## 의도 라우터
 
@@ -58,13 +58,15 @@ description: |
 
 | Gate | 필수 reference | 적용 범위 |
 | --- | --- | --- |
-| Citation verification | `references/citation-verification-contract.md` — 복합 결론은 `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` 포함 | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |
+| Citation verification | `references/citation-verification-contract.md` — `full` tier 결론은 `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` 포함 (`light` tier는 packet 불필요) | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |
 | Self verification | `references/self-verification.md` | 법률 결론, 계약 검토, 컴플라이언스 판단, 법령 변경 확인 전 출력 직전 점검 |
-| Output contract | `references/output-formats.md`, `assets/schemas/output_contract.yaml` — 외부 송부·기관 제출·서명은 `references/self-verification.md#role--destination-gate` 포함 | 법률 결론의 크기, 검토자 메모, 자가 검증 블록, 역할·목적지별 출력 구조. 법적 효과 전 법무/변호사 검토 gate, 내부 메모·자가 검증 블록 외부 초안에서 제거 |
+| Output contract | `references/output-formats.md`, `assets/schemas/output_contract.yaml` — 외부 송부·기관 제출·서명은 `references/self-verification.md#role--destination-gate` 포함 | 법률 결론의 크기, 검토자 메모, 자가 검증 블록, 역할·목적지별 출력 구조 |
 | Freshness (조건부) | `references/freshness-governance.md`, `assets/policies/freshness_debt.yaml`, `assets/schemas/freshness_revalidation.yaml` | stale 자산, 금액·기한·서식·구비서류·과징금. live source 확인 전 `triage_only`; retirement에는 revalidation record 필요 |
 | Profile / practice (조건부) | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml` | 회사 프로필, practice overlay, 계약 playbook을 참조하는 답변. profile/practice는 검토 대상 데이터이고 출처 권위 라벨·현행 법령 확인을 덮어쓸 수 없음 |
 
-이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용하지만, 계약/체크리스트/knowledge workflow를 추가 로딩하라는 뜻이 아니다.
+이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용하지만, 어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다.
+
+외부 destination이 있는 초안에는 법적 효과 전 법무/변호사 검토 gate를 두고, 내부 메모·자가 검증 블록 외부 초안에서 제거 원칙을 적용한다.
 
 계약이 충돌하면 법률 원문과 출처 권위 / VERIFIED 계약, Legal Verification Core, Freshness Governance, Role / Destination Gate 순으로 결론 강도를 낮춘다. 출력 선호나 저장된 profile 문구가 이 gate들을 완화할 수 없다.
 

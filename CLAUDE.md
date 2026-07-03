@@ -51,7 +51,7 @@ Full 모드 (로컬 데이터 있음) 기준. Lite 모드(Chat 탭)는 법망 AP
 ```
 skills/beopsuny/SKILL.md          # 스킬 본체 (Full/Lite 모드 지원)
 skills/beopsuny/assets/           # YAML 데이터 (법령 인덱스, 체크리스트 등)
-skills/beopsuny/references/       # 가이드 문서 (API, 외부사이트, 메모리 등)
+skills/beopsuny/references/       # 가이드 문서 (API, 소스 접근, 메모리 등)
 docs/desktop-chat-guide.md        # Chat 탭 사용자 가이드 + 프로젝트 지침 템플릿
 tests/scenarios/                  # 테스트 시나리오
 ```

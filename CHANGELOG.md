@@ -15,6 +15,14 @@
 - `skills/beopsuny/references/self-verification.md` — 설계 메모의 연구 인용 append-only 방침을 폐기하고 대체된 연구는 삭제하도록 변경 (#178)
 - `tests/scenarios/16_router_regression.yaml` — router-01(light), router-05(full)에 `verification_tier` 주석 필드 추가 (#177/#178)
 
+### Fixed (PR #179 리뷰 반영)
+- `references/research-workflow.md` — `light` tier의 한 줄 ledger 필드에 `pinpoint`를 분리 명시하고 `supports`의 귀속 규칙을 추가해 citation-verification-contract Output Binding·self-verification Dim 1과의 필드 불일치 해소
+- `skills/beopsuny/SKILL.md` — Citation gate 셀의 "복합 결론"을 `full` tier 기준으로 명확화(light는 packet 불필요), Output gate 셀에 묻혀 있던 명령형 규칙(검토 gate·내부 블록 제거)을 표 아래 독립 문장으로 분리, 과잉 로딩 문구 잔존 중복 2곳을 라우팅 원칙 1 pointer로 정리
+- `references/freshness-governance.md` — Unrouted Asset Rule의 retire(파일 삭제)와 Retirement Rule의 registry 제거를 명시적으로 구분하고, registry 등록된 unrouted 자산의 동시 제거 절차 추가
+- `CLAUDE.md` — 프로젝트 구조 주석에서 삭제된 external-sites("외부사이트") 참조 제거
+- `tests/validate_skill_contracts.py` — "축약형" 전파일 금지를 재량 구문("축약형으로 적용", "축약해도 되지만")으로 좁히고, 회귀 가드 주석의 과대 서술 수정
+- `.gitignore` — `backlog/tasks/` 이슈 미러(재생성 가능, GitHub이 source of truth) 추적 제외로 전환 — 후행 공백·미러 drift 문제 해소
+
 ### Removed
 - `skills/beopsuny/references/external-sites.md` — 참조 그래프 감사 결과 SKILL.md 라우터·reference·시나리오·테스트 어디에서도 로드 경로가 없는 dead reference로 확인되어 retire (#178). 공식 1차 소스 접근은 `references/source-access.md`가 커버
 
