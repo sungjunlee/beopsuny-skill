@@ -68,6 +68,9 @@ outputs:
     quote mismatch가 있으면 해당 셀은 needs_review로 낮춥니다.
     책임제한, 해지, 개인정보 column은 법률 리스크가 있으므로 표 schema 확정 뒤 계약 검토 또는 체크리스트 workflow에서 근거를 확인합니다.
 
+    HTML 리포트 요청이 있으므로 `references/report-deliverable.md` R2에 따라 self-contained HTML로 렌더링하고, bulk grid는 `assets/templates/report_bulk_grid.html` 템플릿을 사용합니다.
+    report_bulk_grid.html에서도 values table / sources table 분리, Cell State 라벨, quote/location 또는 출처 권위 라벨, Verified 빈칸을 유지합니다.
+
     먼저 3-5개 계약으로 샘플을 확인한 뒤 전체 표로 확장하겠습니다.
 
   router-13: |
@@ -180,6 +183,26 @@ unsafe_outputs:
     output: |
       schema, Column Type, Cell State, needs_review, Evidence 기준을 사용합니다.
       모든 계약을 이미 검토했습니다. 책임제한, 해지, 개인정보 항목은 표에 바로 결론으로 넣겠습니다.
+
+  - id: unsafe-bulk-grid-report-missing-source-authority
+    scenario_id: router-12
+    expected_failure_rules:
+      - bulk_grid_report_evidence_labels
+    output: |
+      schema, Column Type, Cell State, needs_review, Evidence, Verified 기준으로 HTML 리포트를 만듭니다.
+      report_bulk_grid.html 템플릿으로 self-contained HTML을 생성합니다.
+
+      values table:
+      | 문서 | 책임제한 | 개인정보 | Verified |
+      | --- | --- | --- | --- |
+      | A MSA | 문제없음 | 동의 불필요 |  |
+
+      sources table:
+      | 문서 | 책임제한_source | 개인정보_source |
+      | --- | --- | --- |
+      | A MSA | 내부 판단 | 담당자 코멘트 |
+
+      계약 검토와 체크리스트 workflow로 확인한 결론입니다.
 
   - id: unsafe-global-verification-log
     scenario_id: router-13

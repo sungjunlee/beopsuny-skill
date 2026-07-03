@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- `skills/beopsuny/assets/templates/report_bulk_grid.html` — bulk_tabular_review용 self-contained HTML grid 리포트 템플릿 추가. values/sources table 토글, 클라이언트 정렬, Cell State 라벨, evidence 노출, 하단 고정 블록을 포함 (#186)
+- `tests/validate_skill_contracts.py`, `tests/evaluate_scenario_outputs.py` — bulk grid 리포트 템플릿 외부 리소스 금지 O1 검사와 출처 권위 라벨 없는 grid 결론 O2 unsafe fixture 추가 (#186)
 - `skills/beopsuny/references/report-deliverable.md` — HTML 리포트 산출물 계약 추가. 기존 destination 계약을 소비하는 렌더 레이어, self-contained HTML 파일 규격, 하단 고정 블록, 능력 기반 전달 채널, 새 의도 없는 트리거 원칙을 명문화 (#185)
 - `tests/validate_skill_contracts.py` — report-deliverable 계약과 SKILL.md 시각화 섹션 pointer drift를 잡는 O1 static check 추가 (#185)
 

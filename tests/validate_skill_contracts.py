@@ -1987,6 +1987,60 @@ def check_report_deliverable_contract() -> None:
     )
 
 
+def check_bulk_grid_report_template_contract() -> None:
+    template_path = ROOT / "skills/beopsuny/assets/templates/report_bulk_grid.html"
+    if not template_path.exists():
+        raise AssertionError("report_bulk_grid.html: missing bulk grid report template")
+
+    template = template_path.read_text(encoding="utf-8")
+    label = "report_bulk_grid.html"
+
+    for required in [
+        "values table",
+        "sources table",
+        "answered",
+        "not_present",
+        "unclear",
+        "needs_review",
+        "생성일",
+        "읽은 범위",
+        "최신성 한계",
+        "면책 고지",
+        "자가 검증",
+        "HTML-escape",
+        "quote",
+        "location",
+        "source_authority",
+    ]:
+        assert_contains(template, required, label)
+
+    forbidden_resource_patterns = {
+        "script src": r"<script\b[^>]*\bsrc\s*=",
+        "link href": r"<link\b[^>]*\bhref\s*=",
+        "src http": r"\bsrc\s*=\s*['\"][^'\"]*https?://",
+        "href http": r"\bhref\s*=\s*['\"][^'\"]*https?://",
+        "css import": r"@import\b",
+        "css url http": r"url\(\s*['\"]?https?://",
+        "fetch": r"\bfetch\s*\(",
+        "xhr": r"\bXMLHttpRequest\b",
+    }
+    for description, pattern in forbidden_resource_patterns.items():
+        if re.search(pattern, template, flags=re.I):
+            raise AssertionError(f"{label}: forbidden external resource pattern: {description}")
+
+    bulk_reference = read_text("skills/beopsuny/references/bulk-tabular-review.md")
+    assert_contains(
+        bulk_reference,
+        "`assets/templates/report_bulk_grid.html`",
+        "bulk-tabular-review.md",
+    )
+    assert_contains(
+        bulk_reference,
+        "`references/report-deliverable.md`",
+        "bulk-tabular-review.md",
+    )
+
+
 def check_skill_quality_contract_router_map() -> None:
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md"
@@ -3114,6 +3168,7 @@ CHECK_GROUPS = (
         (
             check_output_contract_right_sizing,
             check_report_deliverable_contract,
+            check_bulk_grid_report_template_contract,
         ),
     ),
     CheckGroup(

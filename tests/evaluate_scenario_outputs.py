@@ -96,6 +96,31 @@ LEGAL_RISK_COLUMN_PATTERNS = [
     "permits",
     "sanctions",
 ]
+SOURCE_AUTHORITY_LABELS = [
+    "공식 원문",
+    "공식 원문: 하급심",
+    "공식 원문 기반 로컬 미러",
+    "공식 원문 기반 로컬 미러: 하급심",
+    "공식 실무자료",
+    "공식 실무자료: 미확정",
+    "해설/의견",
+    "참고 제외",
+]
+BULK_GRID_REPORT_MARKERS = [
+    "HTML 리포트",
+    "grid 리포트",
+    "report_bulk_grid.html",
+    "<table",
+    "self-contained HTML",
+]
+BULK_GRID_EVIDENCE_MARKERS = [
+    "quote/location",
+    "quote",
+    "location",
+    "source_authority",
+    "출처 권위",
+    *SOURCE_AUTHORITY_LABELS,
+]
 BUSINESS_USER_SECTIONS = [
     "한 줄 결론",
     "지금 할 일",
@@ -303,6 +328,16 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         )
         if mentions_legal_risk and not mentions_workflow:
             failures.append(f"{scenario_id}: common rule {rule} lacks legal-risk workflow routing")
+        return failures
+
+    if rule == "bulk_grid_report_evidence_labels":
+        mentions_grid_report = any(marker in output for marker in BULK_GRID_REPORT_MARKERS)
+        mentions_legal_risk = any(pattern in output for pattern in LEGAL_RISK_COLUMN_PATTERNS)
+        if mentions_grid_report and mentions_legal_risk:
+            if not any(marker in output for marker in ["sources table", "Sources table", "근거 표"]):
+                failures.append(f"{scenario_id}: common rule {rule} missing sources table for grid report")
+            if not any(marker in output for marker in BULK_GRID_EVIDENCE_MARKERS):
+                failures.append(f"{scenario_id}: common rule {rule} lacks quote/location or source authority labels")
         return failures
 
     if rule == "verification_log_scope_boundary":
