@@ -1,6 +1,6 @@
 ---
 milestone: skill-pruning
-status: active
+status: completed
 started: 2026-07-02
 due: TBD
 objectives: [O1, O2]
@@ -49,3 +49,4 @@ Batch 4 — 계측 기반 감사 (마지막):
   - #177: LVC light/full 2단 트리거 + "축약형" 금지 회귀 가드
   - #178: 참조 그래프 감사 → external-sites.md retire, freshness-governance에 Unrouted Asset Rule(retire-first), append-only 방침 폐기
   - 감사 결과 기록: 체크리스트 YAML은 checklist-routing 경유 로드 경로 있어 유지 (freshness_debt registry에서 관리). 미참조 자산은 external-sites.md 하나.
+- 2026-07-03: PR #179 리뷰 사이클 — 8-앵글 리뷰 findings 8건 수정(b105d06: light tier supports 필드, retire 의미 구분, CLAUDE.md 잔존 참조, gate 셀 정리, 축약형 가드 축소, backlog/tasks gitignore) → 2라운드 LGTM → CI green → **머지 완료**. 에픽 #174 종료, 스프린트 완료.
