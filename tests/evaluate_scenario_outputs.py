@@ -264,6 +264,12 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         patterns = list(expected.get("forbidden_phrases", []))
         if source:
             patterns.extend(load_list_from_source(str(source)))
+        elif expected.get("primary_intent") == "contract_review":
+            patterns.extend(
+                load_list_from_source(
+                    "skills/beopsuny/assets/policies/review_mode.yaml#counter_draft_forbidden_patterns"
+                )
+            )
         for pattern in sorted(set(str(item) for item in patterns)):
             if pattern in output:
                 failures.append(f"{scenario_id}: common rule {rule} contains forbidden pattern {pattern!r}")
