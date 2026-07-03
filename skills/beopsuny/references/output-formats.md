@@ -175,6 +175,8 @@ glaw.scourt.go.kr를 직접 열어 확인한 경우에는 다음처럼 표시한
 
 `assets/schemas/output_contract.yaml`의 `legal_effect_triggers`에 해당하는 요청이면 role mode와 destination contract를 함께 적용한다. `non_overrides`에 있는 Legal Verification Core, 출처 권위 / VERIFIED 계약, Freshness Governance, 변호사/법무 검토 필요 조건은 어떤 output preference로도 덮어쓸 수 없다.
 
+Artifact/URL 배포 요청도 수신자나 사용처가 외부 송부·공유·제출 맥락이면 위 `legal_effect_triggers`를 적용한다. 채널별 배포 gate는 `references/report-deliverable.md#r4-artifact-배포-gate`를 따른다.
+
 `practice_profile.yaml`이 default destination이나 preferred section을 제안할 수는 있다. 그러나 practice profile은 출력 선호일 뿐이므로 `business_user`/`unknown` gate, 외부 송부 전 법무 검토, 출처 권위 라벨과 verification status를 덮어쓰지 못한다. practice profile과 현재 사용자 요청이 충돌하면 현재 사용자 요청과 role/destination gate를 우선한다.
 
 | 목적지 | 출력 방식 | 금지/주의 |

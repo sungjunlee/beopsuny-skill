@@ -115,6 +115,7 @@ destinations:
 legal_effect_triggers:
   - "signing"
   - "external_send"
+  - "external_share"
   - "agency_or_court_submission"
   - "contract_acceptance"
   - "litigation_position"

@@ -58,15 +58,26 @@ destination이 `internal_legal_memo`처럼 내부용이고 내부 block 허용 d
 
 ## R3. 전달 채널
 
-계약 문장: 전달 채널은 모드 이름이 아니라 현재 세션의 능력(capability)으로 고른다. 환경 감지에 실패하면 로컬 파일을 먼저 시도하고, 파일 영속 쓰기가 불가한 환경이면 사용 가능한 Artifacts 채널로 폴백한다.
+계약 문장: 전달 채널은 모드 이름이 아니라 현재 세션의 능력(capability)으로 고른다. 환경 감지에 실패하면 로컬 파일을 먼저 시도한다. 파일 영속 쓰기가 불가한 환경이면 사용 가능한 Chat 탭 Artifacts 채널로 폴백할 수 있고, Claude Code Artifact 배포는 R4의 명시 요청 gate를 따른다.
 
 | 채널 | 사용 조건 | 계약 |
 | --- | --- | --- |
 | 로컬 파일 | 파일시스템 영속 쓰기가 가능할 때 (기본) | 지정 경로에 HTML 파일을 저장하고 텍스트 답변에 경로를 함께 알린다 |
-| Claude Code Artifact | Artifact 도구가 현재 세션에 있을 때 | 같은 self-contained HTML을 Artifact로 제공할 수 있다. 공유 가정 gate는 #188에서 상세화 예정이며, 그 전까지 외부 공유 가능 산출물로 보수 처리한다 |
+| Claude Code Artifact | Artifact 도구가 현재 세션에 있고 사용자가 Artifact/URL 배포를 명시적으로 요청했을 때 | 같은 self-contained HTML을 Artifact로 제공할 수 있다. 배포 시점부터 공유 가능 산출물로 취급하고 R4. Artifact 배포 gate를 적용한다 |
 | Chat 탭 Artifacts | 파일 영속성이 없는 Lite 환경 | 같은 HTML 내용을 Chat 탭 Artifact로 표시한다. 영속 저장이 아님을 텍스트 답변에 표시한다 |
 
 Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하지 않는다. 리포트는 텍스트 답변의 파생물이며, 출처 권위 라벨과 검증 상태를 숨기는 대체 출력이 아니다.
+
+## R4. Artifact 배포 gate
+
+계약 문장: Claude Code Artifact는 호스팅 URL이므로, 생성 시 내부용으로 만들었더라도 배포 시점부터 공유 가능 산출물로 취급한다. 이 gate는 PRD D4의 중간 수위다.
+
+| 항목 | 계약 |
+| --- | --- |
+| 공유 가정 구성 강제 | Artifact로 배포하는 리포트는 기존 destination이 무엇이었든 배포본에서 내부 검토자 메모, 자가 검증 블록, 미확인 내부 노트를 제외한다. 면책 고지를 포함하고, 리포트 상단에 `법무/변호사 검토 전 대외 사용 금지` 배너를 명시한다 |
+| 명시 요청 시에만 배포 | 사용자가 "Artifact", "URL", "공유 링크"처럼 배포를 명시적으로 요청할 때만 Artifact로 배포한다. 자동 배포 금지. 로컬 파일 저장은 기본 경로를 그대로 사용한다 |
+| 재배포 고지 | 같은 파일 경로 재배포는 같은 URL 갱신일 수 있다. 이전 버전을 본 사람이 새 버전을 보게 되고, 배포 이력이 남을 수 있음을 사용자에게 알린다 |
+| 승급 경로 | 배포 요청이 "상대방에게 보여줄", "고객에게 보낼", "기관에 제출할" 같은 외부 송부·공유·제출 맥락이면 단순 Artifact gate로 처리하지 않는다. `assets/schemas/output_contract.yaml#legal_effect_triggers`에 해당하는 요청으로 보아 `references/output-formats.md#destination-output-contracts`의 `external_draft` destination 규칙 + role/destination gate로 승급한다. 기관·법원 제출 맥락이면 같은 destination 표의 `agency_or_court_submission` 계약도 함께 확인한다 |
 
 ## R5. 트리거
 

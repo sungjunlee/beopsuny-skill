@@ -434,8 +434,8 @@ scenarios:
     name: 여러 계약 비교 리포트는 bulk tabular workflow로 schema 먼저 확정
     persona: 법무팀 실무자
     context: |
-      사용자가 계약 20개에서 해지, 책임제한, 개인정보 조항을 표로 비교하고 HTML 리포트도 원한다.
-    question: "계약 20개에서 해지 조항이랑 책임제한, 개인정보 조항을 엑셀처럼 비교표로 뽑아서 HTML 리포트로 만들어줘."
+      사용자가 계약 20개에서 해지, 책임제한, 개인정보 조항을 표로 비교하고 HTML 리포트와 Artifact URL 배포도 원한다.
+    question: "계약 20개에서 해지 조항이랑 책임제한, 개인정보 조항을 엑셀처럼 비교표로 뽑아서 HTML 리포트로 만들고 Artifact URL로도 줘."
     expected:
       primary_intent: bulk_tabular_review
       should_load:
@@ -454,6 +454,7 @@ scenarios:
         - 책임제한·해지·개인정보 같은 법률 리스크 column은 계약 검토 또는 체크리스트 workflow로 확인
         - report 요청 시 assets/templates/report_bulk_grid.html 템플릿으로 self-contained HTML 생성
         - grid 리포트에서도 sources table의 quote/location 또는 출처 권위 라벨 유지
+        - Artifact/URL 배포를 명시 요청한 경우에만 배포하고 공유 가정 구성 gate 적용
       response_contains:
         - schema
         - needs_review
@@ -461,11 +462,13 @@ scenarios:
         - Verified
         - HTML 리포트
         - report_bulk_grid.html
+        - Artifact
       forbidden_behavior:
         - 전체 문서 읽은 것처럼 단정
         - 빈칸으로 미확인 상태 숨김
         - 실제 요청 없이 Excel 파일 생성 약속
         - 출처 권위 라벨 없는 법률 리스크 결론 표
+        - Artifact 배포본에 내부 자가 검증 블록 그대로 포함
     validation:
       - type: bulk_tabular_schema_first
         description: 대량 표 검토가 schema/evidence/status 중심으로 진행되는지
@@ -473,6 +476,7 @@ scenarios:
       common_rules:
         - bulk_overclaim_boundary
         - bulk_grid_report_evidence_labels
+        - artifact_deployment_shared_assumption_gate
       required_substrings:
         - schema
         - Column Type
@@ -485,6 +489,7 @@ scenarios:
         - HTML 리포트
         - report_bulk_grid.html
         - self-contained HTML
+        - Artifact
       forbidden_substrings:
         - 모든 계약을 이미 검토했습니다
         - 빈칸은 문제 없음

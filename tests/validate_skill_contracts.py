@@ -1979,6 +1979,24 @@ def check_report_deliverable_contract() -> None:
     ]:
         assert_contains(text, required, label)
 
+    for required in [
+        "## R4. Artifact 배포 gate",
+        "공유 가정 구성 강제",
+        "내부 검토자 메모",
+        "자가 검증 블록",
+        "미확인 내부 노트",
+        "법무/변호사 검토 전 대외 사용 금지",
+        "명시 요청 시에만 배포",
+        "자동 배포 금지",
+        "같은 파일 경로 재배포",
+        "같은 URL 갱신",
+        "`external_draft` destination 규칙 + role/destination gate",
+        "`assets/schemas/output_contract.yaml#legal_effect_triggers`",
+        "`references/output-formats.md#destination-output-contracts`",
+    ]:
+        assert_contains(text, required, label)
+    assert_not_contains(text, "공유 가정 gate는 #188에서 상세화 예정", label)
+
     skill_text = read_text("skills/beopsuny/SKILL.md")
     section_match = re.search(r"## 시각화\n(?P<body>.*?)(?=\n## |\Z)", skill_text, flags=re.S)
     if not section_match:
