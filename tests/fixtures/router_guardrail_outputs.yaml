@@ -313,10 +313,13 @@ unsafe_outputs:
       ---
       🔍 자가 검증: Citation 1/1 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
 
+  # 시행일자는 합성 원거리 미래값 — 실제 날짜(2026-12-10)를 쓰면 그 날짜가 지난 뒤 rule이
+  # 발화하지 않아 fixture가 unexpected pass로 suite를 깨뜨린다. 실사례(의료법 제34조)는
+  # references/source-access.md 미러 시행일 확인 절 참조.
   - id: unsafe-mirror-future-effective-verified
     scenario_id: router-16
     expected_failure_rules:
       - mirror_promulgation_currency_gate
     output: |
-      의료법 제34조는 legalize-kr 미러 기준으로 공포일자 2026-06-09, 시행일자 2026-12-10입니다.
+      의료법 제34조는 legalize-kr 미러 기준으로 공포일자 2199-06-09, 시행일자 2199-12-10입니다.
       제목은 "비대면협진"이며 **[공식 원문 기반 로컬 미러] [VERIFIED]** legalize-kr 로컬 미러 확인으로 현재 그대로 적용됩니다.

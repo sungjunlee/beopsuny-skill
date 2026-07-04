@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -466,9 +467,11 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         return failures
 
     if rule == "mirror_promulgation_currency_gate":
+        # 과거에 시행된 조문을 공포·시행일자와 함께 정상 인용한 출력까지 잡지 않도록,
+        # 출력이 인용한 시행일자가 실제로 미래인 경우에만 발화한다.
+        quoted_effective_dates = re.findall(r"시행일자\D{0,4}(\d{4}-\d{2}-\d{2})", output)
         mentions_future_effective_mirror = (
-            "시행일자" in output
-            and "공포일자" in output
+            any(effective_date > date.today().isoformat() for effective_date in quoted_effective_dates)
             and any(marker in output for marker in MIRROR_SOURCE_FAMILY_MARKERS)
         )
         if not mentions_future_effective_mirror:
