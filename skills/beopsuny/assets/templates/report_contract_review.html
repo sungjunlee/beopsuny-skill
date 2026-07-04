@@ -10,6 +10,7 @@
   <!-- Destination rules: `business_summary` keeps "destination:business_summary only" blocks and removes internal legal reasoning, reviewer notes, self-check blocks, and 미확인 내부 노트. -->
   <!-- Counter-draft rule: review_mode.yaml#counter_draft_forbidden_patterns applies to reports too. alt_wording_hint is directional guidance only; 대체 문구 제공이 아니다. Do not embed any forbidden-pattern literal in this file or in generated reports — see the policy file for the pattern list. -->
   <!-- HTML-escape every dynamic insertion before rendering: &, <, >, ", and '. Dynamic HTML fragments must be assembled only from escaped text. -->
+  <!-- Citation link rule: every 근거/verification source field must include the official law.go.kr (판례: glaw.scourt.go.kr) link as `<a href>`. A hyperlink is content, not an external resource load, so it does not conflict with the self-contained rule — see report-deliverable.md#r2-파일-규격. Link URL format follows output-formats.md's 링크 생성 규칙. -->
   <style>
     :root {
       color-scheme: light;
@@ -433,12 +434,13 @@
       </div>
       <ul class="issue-list">
         <!-- PLACEHOLDER: cross_cutting_issues_html_escaped.
-             Escape issue/status/reason/source text. Preserve source authority labels and verification status. -->
+             Escape issue/status/reason/source text. Preserve source authority labels and verification status.
+             Include the official law.go.kr (판례: glaw.scourt.go.kr) link as `<a href>` per output-formats.md 링크 생성 규칙. -->
         <li class="issue-item">
           <span class="pill pill-medium">미확인</span>
           <strong>개인정보 처리</strong>
           <p>처리위탁, 국외이전, subprocessor 조건이 본문과 DPA에서 일관되는지 확인 필요.</p>
-          <p class="panel-note">근거: <!-- PLACEHOLDER: cross_cutting_source_escaped -->개인정보보호법 후보 조항 — [UNVERIFIED]<!-- /PLACEHOLDER --></p>
+          <p class="panel-note">근거: <!-- PLACEHOLDER: cross_cutting_source_escaped -->개인정보보호법 후보 조항 — [UNVERIFIED] · <a href="https://www.law.go.kr/법령/개인정보보호법">law.go.kr 원문</a><!-- /PLACEHOLDER --></p>
         </li>
         <li class="issue-item">
           <span class="pill pill-neutral">해당 가능</span>
@@ -456,7 +458,8 @@
       <div class="risk-list">
         <!-- PLACEHOLDER: clause_risks_html_escaped.
              Escape clause name, quotation, why_risky, negotiation_points, alt_wording_hint, source text.
-             alt_wording_hint must stay directional; remove the field if it contains counter_draft_forbidden_patterns. -->
+             alt_wording_hint must stay directional; remove the field if it contains counter_draft_forbidden_patterns.
+             근거 / verification must include the official law.go.kr (판례: glaw.scourt.go.kr) link as `<a href>` per output-formats.md 링크 생성 규칙. -->
         <article class="risk-card">
           <div class="risk-head">
             <div class="risk-title">
@@ -488,7 +491,7 @@
             </section>
             <section class="risk-field">
               <h3>근거 / verification</h3>
-              <p><!-- PLACEHOLDER: clause_source_escaped -->**[공식 원문] [UNVERIFIED]** 관련 법령 후보 조항 — 원문 재확인 필요<!-- /PLACEHOLDER --></p>
+              <p><!-- PLACEHOLDER: clause_source_escaped -->**[공식 원문] [UNVERIFIED]** 관련 법령 후보 조항 — 원문 재확인 필요 · <a href="https://www.law.go.kr/법령/{법령명}/제{N}조">law.go.kr 원문</a><!-- /PLACEHOLDER --></p>
             </section>
             <!-- destination:internal only -->
             <section class="risk-field full">
