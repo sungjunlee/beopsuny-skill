@@ -46,19 +46,21 @@
 
 ## Mode Detection
 
+`BEOPSUNY_DATA_ROOT`는 beopsuny 루트 디렉토리(기본 `~/.beopsuny`)를 가리키며, 미러는 그 아래 `data/`에, 리포트는 `reports/`에 놓인다 (`references/report-deliverable.md` 참고).
+
 공통 데이터 루트:
 
 ```bash
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data
 ```
 
 Source family inventory:
 
 ```bash
-ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/
-test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr
-test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr
-test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr
+ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr/kr/
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/admrule-kr
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/precedent-kr
+test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr
 ```
 
 `legalize-kr/kr/`가 있으면 법령 Full 모드다. 다른 로컬 미러는 family별 capability로 판단한다. 예를 들어 `legalize-kr`만 있으면 법령은 Full, 행정규칙은 법망 API/law.go.kr fallback이다. 데이터가 없다고 자동 clone하지 않는다. 사용자가 Full 모드 설정 또는 데이터 다운로드를 요청할 때만 초기화한다.
@@ -105,7 +107,7 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 
 | Source family | 대표 탐색 |
 | --- | --- |
-| `legalize-kr` | `ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ \| grep 개인정보`; `cat .../legalize-kr/kr/{법령명}/법률.md`; `git -C .../legalize-kr log --oneline -20 -- kr/{법령명}/` |
+| `legalize-kr` | `ls ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr/kr/ \| grep 개인정보`; `cat .../legalize-kr/kr/{법령명}/법률.md`; `git -C .../legalize-kr log --oneline -20 -- kr/{법령명}/` |
 | `admrule-kr` | `rg -l '개인정보|과징금|안전보건' .../admrule-kr -g '본문.md'`; `git -C .../admrule-kr -c core.quotePath=false log --oneline -20 -- '{기관경로}/{행정규칙종류}/{행정규칙명}/본문.md'` |
 | `precedent-kr` | `find .../precedent-kr -name "*2022다12345*"`; 사건번호가 없으면 먼저 법망 API로 discovery |
 | `ordinance-kr` | `{광역}/{기초 또는 _본청 또는 _교육청}/{자치법규종류}/{자치법규명}/본문.md`; 지역을 먼저 좁힌 뒤 탐색 |
@@ -188,23 +190,23 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 `--depth`를 쓰지 않는다. 개정 이력 추적에 전체 히스토리가 필요하다.
 
 ```bash
-mkdir -p ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
-git clone https://github.com/legalize-kr/legalize-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr
-git clone https://github.com/legalize-kr/precedent-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr
-git clone https://github.com/legalize-kr/admrule-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr
+mkdir -p ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data
+git clone https://github.com/legalize-kr/legalize-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr
+git clone https://github.com/legalize-kr/precedent-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/precedent-kr
+git clone https://github.com/legalize-kr/admrule-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/admrule-kr
 ```
 
 자치법규까지 다루는 환경에서만 `ordinance-kr`를 추가한다. 체크아웃 파일 수가 매우 많으므로 기본 초기화에 강제하지 않는다.
 
 ```bash
-git clone https://github.com/legalize-kr/ordinance-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr
+git clone https://github.com/legalize-kr/ordinance-kr.git ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr
 ```
 
 이미 있으면 pull한다. `legalize-kr`, `admrule-kr`, `ordinance-kr` 계열은 upstream 파이프라인 개선으로 force-push될 수 있으므로 `pull --ff-only` 실패가 "데이터 없음"을 뜻하지 않는다. 동기화 정책은 사용자가 요청한 데이터 루트에만 적용한다.
 
 ```bash
 for repo in legalize-kr precedent-kr admrule-kr; do
-  git -C "${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/${repo}" pull --ff-only
+  git -C "${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/${repo}" pull --ff-only
 done
 ```
 

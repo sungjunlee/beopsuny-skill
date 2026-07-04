@@ -44,7 +44,7 @@ Detailed architecture history lives in [`../DESIGN.md`](../DESIGN.md). Product d
 
 - `skills/beopsuny/`: repo-owned skill package distributed through plugin install, skill zip, or full repo zip.
 - `~/.beopsuny/`: user runtime state, including `profile.yaml`, optional practice overlays, project files, review logs, learning logs, verification logs, and cloned legal data.
-- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}`: optional Full-mode source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`.
+- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional Full-mode source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`.
 - `법망 API`: unauthenticated Lite-mode discovery and source lookup path; service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
 - `law.go.kr` and `glaw.scourt.go.kr`: official source screens or responses used only when actually opened or confirmed.
 - `korean-law-mcp`: optional OC-code-backed source for additional Korean legal materials such as constitutional, administrative appeal, ordinance, treaty, appendix, and form surfaces.

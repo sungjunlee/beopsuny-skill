@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- `skills/beopsuny/references/source-access.md`, `skills/beopsuny/references/law-change-detection.md`, `skills/beopsuny/references/beopmang-api.md`, `skills/beopsuny/SKILL.md`, `tests/scenarios/01_basic_law.yaml`, `tests/scenarios/11_domain_specific.yaml`, `tests/scenarios/14_law_change_detection.yaml`, `spec/system-map.md`, `README.md` — `BEOPSUNY_DATA_ROOT` 기본값 의미를 통일. source-access.md는 변수를 data 디렉토리 자체로, report-deliverable.md는 beopsuny 루트(`${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/`)로 소비해 같은 변수를 서로 다른 depth로 해석하던 drift 해소. 변수 = beopsuny 루트로 통일하고 미러 표기를 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/{family}`로 변경 (기본 경로 레이아웃 `~/.beopsuny/data/*`, `~/.beopsuny/reports/*`는 불변, override 시 해석만 정정). source-access.md에 변수 의미를 한 문장으로 명시. 과거 릴리즈 섹션의 옛 표기는 당시 기록 그대로 유지 (#196)
+
 ### Changed
 - `tests/validate_skill_contracts.py` — SKILL.md 의도 라우터 gate 표와 research-workflow.md 2단 트리거(light/full) 표의 exact-string assert를 파싱 기반 구조 검사로 전환 (#182). 새 `parse_markdown_table`/`extract_reference_paths`/`normalize_gate_name` 유틸을 파일 내부에 추가하고, `check_skill_router_gate_table_structure`(행 수 5, gate 이름 ↔ `ALWAYS_ON_LEGAL_GATES` 매칭, 필수 reference 경로 실존 확인)와 `check_research_workflow_tier_table_structure`(행 수 2, light 행 ledger 필드 6개, full 행 6단계 core 언급)를 신규 등록. 두 표 셀의 파일 경로/헤더 exact-string assert는 대체하고 제거했으며, 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위, `light` tier packet 미생성 등)과 표 안이라도 구조 검증 범위 밖인 적용 범위/트리거 프로즈는 그대로 유지
 

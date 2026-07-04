@@ -15,7 +15,7 @@
 공통 prefix:
 
 ```bash
-DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}
+DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data
 ```
 
 시간 범위 discovery:
