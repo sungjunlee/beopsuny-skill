@@ -220,6 +220,23 @@ MIRROR_SOURCE_FAMILY_MARKERS = [
     "admrule-kr",
     "ordinance-kr",
 ]
+# expected.verification_tier -> auto-attached common rule. This is what makes
+# the `verification_tier` scenario field load-bearing instead of a dead
+# annotation (issue #181): light scenarios get a new packet-ceremony ban,
+# full scenarios reuse the existing legal_verification_core_trace rule since
+# that rule already encodes the full-tier's 6-step-core requirement.
+VERIFICATION_TIER_AUTO_RULES = {
+    "light": "light_tier_no_packet_ceremony",
+    "full": "legal_verification_core_trace",
+}
+LIGHT_TIER_PACKET_HEADING_PATTERN = re.compile(
+    r"^\s{0,3}#{1,6}\s*.*\b(issue-to-authority|authority packet|citation ledger)\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+LIGHT_TIER_LEDGER_KEY_PATTERN = re.compile(
+    r"^\s*-\s*(citation|pinpoint|source_authority|verification_status|provenance|currency|supports)\s*:",
+    re.MULTILINE,
+)
 
 
 def load_yaml(path: Path) -> Any:
@@ -286,6 +303,10 @@ def output_common_rules(scenario: dict[str, Any]) -> list[str]:
         rules.append("law_change_push_boundary")
     if expected.get("primary_intent") == "legal_research":
         rules.append("mirror_promulgation_currency_gate")
+
+    tier_rule = VERIFICATION_TIER_AUTO_RULES.get(expected.get("verification_tier"))
+    if tier_rule:
+        rules.append(tier_rule)
 
     return sorted(set(str(rule) for rule in rules))
 
@@ -486,6 +507,24 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
             )
         return failures
 
+    if rule == "light_tier_no_packet_ceremony":
+        # Light tier (single conclusion, cite-and-close) must not surface the
+        # full-tier's issue-to-authority map / authority packet / citation
+        # ledger as document ceremony (markdown headings, multi-key bullet
+        # blocks). A plain one-line citation or a "확인 필요" hedge is fine and
+        # must not trip this rule.
+        if LIGHT_TIER_PACKET_HEADING_PATTERN.search(output):
+            failures.append(
+                f"{scenario_id}: common rule {rule} exposes an authority-packet/citation-ledger "
+                "heading in a light-tier answer"
+            )
+        if len(LIGHT_TIER_LEDGER_KEY_PATTERN.findall(output)) >= 2:
+            failures.append(
+                f"{scenario_id}: common rule {rule} exposes a multi-key citation-ledger block "
+                "in a light-tier answer"
+            )
+        return failures
+
     if rule == "legal_verification_core_trace":
         for term in LEGAL_VERIFICATION_CORE_TERMS:
             if term not in output:
@@ -502,8 +541,15 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
 
 def evaluate_one_output(scenario_id: str, scenario: dict[str, Any], output: str) -> list[str]:
     failures: list[str] = []
-    output_eval = scenario.get("output_eval")
-    if not output_eval:
+    output_eval = scenario.get("output_eval") or {}
+    rules = output_common_rules(scenario)
+
+    # A scenario needs either a real output_eval block (required/forbidden
+    # substrings) or at least one auto-attached common rule (e.g. a
+    # verification_tier rule) to be evaluable. router-01/router-05 have no
+    # output_eval block but do carry a verification_tier, so they still run
+    # through the tier-derived rule below instead of being rejected here.
+    if not scenario.get("output_eval") and not rules:
         failures.append(f"{scenario_id}: scenario has no output_eval block")
         return failures
 
@@ -515,7 +561,7 @@ def evaluate_one_output(scenario_id: str, scenario: dict[str, Any], output: str)
         if needle in output:
             failures.append(f"{scenario_id}: contains forbidden substring {needle!r}")
 
-    for rule in output_common_rules(scenario):
+    for rule in rules:
         failures.extend(evaluate_common_rule(scenario_id, scenario, output, rule))
 
     return failures

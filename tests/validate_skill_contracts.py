@@ -178,6 +178,14 @@ ALWAYS_ON_LEGAL_GATES = {
     "self_verification": "skills/beopsuny/references/self-verification.md",
     "output_contract": "skills/beopsuny/references/output-formats.md",
 }
+# Mirrors tests/evaluate_scenario_outputs.py's VERIFICATION_TIER_AUTO_RULES.
+# Kept as a separate duplicated constant (same pattern as STATUS_TAGS /
+# VERIFICATION_STATUSES) rather than importing the evaluator module, so the
+# two scripts stay independently runnable.
+VERIFICATION_TIER_AUTO_RULES = {
+    "light": "light_tier_no_packet_ceremony",
+    "full": "legal_verification_core_trace",
+}
 LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-01",
     "router-03",
@@ -3014,6 +3022,15 @@ def check_router_fixture_integrity() -> None:
     scenarios = router_scenarios()
     evaluator_rules = evaluator_rule_names()
     expected_output_ids = router_output_eval_ids()
+    # router-01/router-05 have no output_eval block (they carry no required
+    # safe sample output — see completion criterion "safe 10 유지") but do
+    # carry expected.verification_tier, which auto-attaches a common rule
+    # (see VERIFICATION_TIER_AUTO_RULES). unsafe_outputs may target them too.
+    tier_rule_scenario_ids = {
+        scenario_id
+        for scenario_id, scenario in scenarios.items()
+        if scenario.get("expected", {}).get("verification_tier") in VERIFICATION_TIER_AUTO_RULES
+    }
     expected_guardrail_ids = {
         "router-07",
         "router-08",
@@ -3085,7 +3102,7 @@ def check_router_fixture_integrity() -> None:
         seen_unsafe_ids.add(item_id)
 
         scenario_id = str(item.get("scenario_id", ""))
-        if scenario_id not in expected_output_ids:
+        if scenario_id not in expected_output_ids and scenario_id not in tier_rule_scenario_ids:
             raise AssertionError(
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} references "
                 f"non-guardrail scenario {scenario_id!r}"
@@ -3103,6 +3120,11 @@ def check_router_fixture_integrity() -> None:
             str(rule)
             for rule in scenarios[scenario_id].get("output_eval", {}).get("common_rules", [])
         }
+        tier_rule = VERIFICATION_TIER_AUTO_RULES.get(
+            scenarios[scenario_id].get("expected", {}).get("verification_tier")
+        )
+        if tier_rule:
+            scenario_rules.add(tier_rule)
         for rule in expected_failure_rules:
             rule_name = str(rule)
             if rule_name not in evaluator_rules:
