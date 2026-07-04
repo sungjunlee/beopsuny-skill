@@ -1022,6 +1022,52 @@ def check_output_contract_schema() -> None:
         assert_contains(text, required, label)
 
 
+HIGH_RISK_SITUATIONS = {
+    "징계·해고 통보",
+    "수사·고소·고발 대응",
+    "개인정보 유출 신고",
+    "기관 제출",
+    "계약 서명",
+    "고액 과징금 처분 대응",
+}
+
+
+def check_output_contract_high_risk_situations() -> None:
+    data = load_yaml("skills/beopsuny/assets/schemas/output_contract.yaml")
+    label = "output_contract.yaml"
+
+    situations = data.get("high_risk_situations")
+    if not isinstance(situations, list) or not situations:
+        raise AssertionError(f"{label}: high_risk_situations must be a non-empty list")
+
+    situation_names: set[str] = set()
+    for item in situations:
+        if not isinstance(item, dict):
+            raise AssertionError(f"{label}: high_risk_situations entry must be a mapping: {item!r}")
+        for required in ["situation", "required_gate"]:
+            if required not in item:
+                raise AssertionError(f"{label}: high_risk_situations entry missing {required!r}: {item!r}")
+        gate = str(item["required_gate"])
+        for keyword in ["role과 무관", "변호사/legal_ops 검토", "기한"]:
+            if keyword not in gate:
+                raise AssertionError(
+                    f"{label}: high_risk_situations gate for {item['situation']!r} missing {keyword!r}"
+                )
+        situation_names.add(str(item["situation"]))
+
+    if situation_names != HIGH_RISK_SITUATIONS:
+        raise AssertionError(f"{label}: unexpected high_risk_situations set {situation_names!r}")
+
+    # Drift check: output-formats.md points at this schema field by name and
+    # names every situation, so a renamed/added/removed situation here forces
+    # the docs pointer to be updated rather than silently going stale.
+    md_text = read_text("skills/beopsuny/references/output-formats.md")
+    md_label = "output-formats.md (high_risk_situations pointer)"
+    assert_contains(md_text, "high_risk_situations", md_label)
+    for situation in HIGH_RISK_SITUATIONS:
+        assert_contains(md_text, situation, md_label)
+
+
 def first_mapping(value: Any, label: str, field: str) -> dict[str, Any]:
     if not isinstance(value, list) or not value or not isinstance(value[0], dict):
         raise AssertionError(f"{label}: {field} must be a non-empty list of mappings")
@@ -3489,6 +3535,7 @@ CHECK_GROUPS = (
             check_self_verification_guardrails,
             check_output_reviewer_note_lite,
             check_output_contract_schema,
+            check_output_contract_high_risk_situations,
             check_output_role_destination_contracts,
         ),
     ),
