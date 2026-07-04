@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- `tests/evaluate_scenario_outputs.py`, `tests/validate_skill_contracts.py`, `tests/fixtures/router_guardrail_outputs.yaml` — `verification_tier`(router-01 light / router-05 full)가 아무 evaluator도 소비하지 않는 주석 필드였던 문제(#179 리뷰 지적)를 해소. `output_common_rules()`가 `expected.verification_tier`를 읽어 공통 규칙을 자동 부착하도록 연결: `light`는 신규 `light_tier_no_packet_ceremony`(issue-to-authority map/authority packet/citation ledger를 마크다운 헤더나 다중 키 YAML 블록 형태로 노출하면 발화, 한 줄 인용이나 "확인 필요" 문구는 통과), `full`은 기존 `legal_verification_core_trace`를 재사용(이미 6단계 core 흔적을 강제하므로 신규 rule 불필요). router-01/router-05는 여전히 output_eval 블록이 없어 safe sample 의무는 생기지 않고(safe 10 유지), unsafe fixture만 두 개 추가(router-01 packet ceremony 노출, router-05 검증 구조 없는 단정 결론) — PASS 10 outputs, 15 unsafe fixtures. `check_router_fixture_integrity`는 `expected_output_ids`(10개, 불변) 외에 `verification_tier`가 있는 시나리오도 unsafe fixture 대상으로 허용하고, tier 자동 부착 규칙을 `scenario_rules`에 더해 검증하도록 확장 (Refs #181)
+
 ### Fixed
 - `skills/beopsuny/references/source-access.md`, `skills/beopsuny/references/law-change-detection.md`, `skills/beopsuny/references/beopmang-api.md`, `skills/beopsuny/SKILL.md`, `tests/scenarios/01_basic_law.yaml`, `tests/scenarios/11_domain_specific.yaml`, `tests/scenarios/14_law_change_detection.yaml`, `spec/system-map.md`, `README.md` — `BEOPSUNY_DATA_ROOT` 기본값 의미를 통일. source-access.md는 변수를 data 디렉토리 자체로, report-deliverable.md는 beopsuny 루트(`${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/`)로 소비해 같은 변수를 서로 다른 depth로 해석하던 drift 해소. 변수 = beopsuny 루트로 통일하고 미러 표기를 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/{family}`로 변경 (기본 경로 레이아웃 `~/.beopsuny/data/*`, `~/.beopsuny/reports/*`는 불변, override 시 해석만 정정). source-access.md에 변수 의미를 한 문장으로 명시. 과거 릴리즈 섹션의 옛 표기는 당시 기록 그대로 유지 (#196)
 
