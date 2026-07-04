@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- `skills/beopsuny/references/source-access.md` — 미러 시행일 확인(공포본 vs 현행본) 규칙 추가. legalize-kr/admrule-kr/ordinance-kr frontmatter `시행일자`가 미래면 시행 전 공포본으로 표시하고 `[VERIFIED]`는 공포본 기준으로 현행성을 한정하도록 명시. 의료법 제34조(공포 2026-06-09/시행 2026-12-10, "비대면협진"→현행 "원격의료") 사례로 예시 (#194)
+- `skills/beopsuny/references/citation-verification-contract.md` — 미러 시행일 currency 표기가 source-access.md를 단일 기준으로 따르도록 한 줄 상호참조 추가 (#194)
+- `tests/validate_skill_contracts.py` — 미러 시행일 확인 규칙 문구 drift를 잡는 `check_source_access_mirror_promulgation_currency` O1 검사 추가 (#194)
+- `tests/evaluate_scenario_outputs.py`, `tests/fixtures/router_guardrail_outputs.yaml`, `tests/scenarios/16_router_regression.yaml` — 시행 전 공포본을 현행 조문처럼 `[VERIFIED]`로 인용하는 출력을 잡는 `mirror_promulgation_currency_gate` 공통 규칙과 O2 unsafe fixture 추가 (router-16, PASS 10 outputs / 13 unsafe fixtures) (#194)
 - `skills/beopsuny/references/report-deliverable.md`, `skills/beopsuny/references/output-formats.md`, `skills/beopsuny/assets/schemas/output_contract.yaml`, `tests/validate_skill_contracts.py`, `tests/evaluate_scenario_outputs.py`, `tests/fixtures/router_guardrail_outputs.yaml` — Artifact 배포 gate 추가. 공유 가정 구성 강제, 명시 요청 배포, 재배포 고지, 외부 공유 맥락의 legal_effect_triggers 승급, 내부 자가 검증 블록 누출 O2 unsafe fixture를 검증 (#188)
 - `skills/beopsuny/assets/templates/report_contract_review.html` — 계약 검토 리포트용 self-contained HTML 템플릿 추가. 횡단 이슈 → 조항별 위험 → 권고/다음 단계 구조, `internal_legal_memo`/`business_summary` destination 분기, counter-draft 금지선, 하단 고정 블록을 포함 (#187)
 - `skills/beopsuny/references/contract_review_guide.md`, `skills/beopsuny/references/report-deliverable.md`, `tests/validate_skill_contracts.py`, `tests/evaluate_scenario_outputs.py`, `tests/fixtures/router_guardrail_outputs.yaml` — 계약 검토 리포트 템플릿 pointer, O1 static check, 리포트 counter-draft unsafe fixture와 단일 금지 패턴 소비 보강 추가 (#187)

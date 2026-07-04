@@ -668,6 +668,7 @@ scenarios:
         - legal_status_tag
         - no_verified_uncertainty
         - self_verification_metadata
+        - mirror_promulgation_currency_gate
       required_substrings:
         - issue-to-authority
         - authority packet

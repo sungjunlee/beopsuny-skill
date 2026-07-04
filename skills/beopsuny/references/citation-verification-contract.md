@@ -40,6 +40,8 @@
 
 local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 로컬 미러다. 이번 응답에서 로컬 파일만 읽었다면 source_authority는 `공식 원문 기반 로컬 미러` 또는 `공식 원문 기반 로컬 미러: 하급심`이고, provenance는 직접 공식 사이트 확인이 아님을 명시한다. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트나 공식 응답을 실제로 연 경우에만 쓴다.
 
+미러 frontmatter `시행일자`가 미래인 시행 전 공포본의 currency 표기는 `references/source-access.md`의 미러 시행일 확인 규칙을 단일 기준으로 따른다.
+
 `admrule-kr`와 `ordinance-kr` 파일에서 `본문출처: parsing-failed`처럼 본문 원문이 비어 있거나 첨부파일로만 제공되는 경우, frontmatter만으로는 원문 대조 조건을 충족하지 않는다. 이때는 첨부파일 또는 law.go.kr 공식 화면을 추가 확인하거나 `[UNVERIFIED]`/`[INSUFFICIENT]`로 낮춘다.
 
 ## Downgrade Rules

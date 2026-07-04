@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -214,6 +215,11 @@ LEGAL_VERIFICATION_CORE_TERMS = [
     "contradiction scan",
     "conclusion binding",
 ]
+MIRROR_SOURCE_FAMILY_MARKERS = [
+    "legalize-kr",
+    "admrule-kr",
+    "ordinance-kr",
+]
 
 
 def load_yaml(path: Path) -> Any:
@@ -278,6 +284,8 @@ def output_common_rules(scenario: dict[str, Any]) -> list[str]:
         rules.append("contract_counter_draft_boundary")
     if expected.get("primary_intent") == "law_change_detection":
         rules.append("law_change_push_boundary")
+    if expected.get("primary_intent") == "legal_research":
+        rules.append("mirror_promulgation_currency_gate")
 
     return sorted(set(str(rule) for rule in rules))
 
@@ -456,6 +464,26 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                 marker in line for marker in ["재확인 후", "확인 전", "하지 않", "단정"]
             ):
                 failures.append(f"{scenario_id}: common rule {rule} gives action instruction from stale source {line!r}")
+        return failures
+
+    if rule == "mirror_promulgation_currency_gate":
+        # 과거에 시행된 조문을 공포·시행일자와 함께 정상 인용한 출력까지 잡지 않도록,
+        # 출력이 인용한 시행일자가 실제로 미래인 경우에만 발화한다.
+        quoted_effective_dates = re.findall(r"시행일자\D{0,4}(\d{4}-\d{2}-\d{2})", output)
+        mentions_future_effective_mirror = (
+            any(effective_date > date.today().isoformat() for effective_date in quoted_effective_dates)
+            and any(marker in output for marker in MIRROR_SOURCE_FAMILY_MARKERS)
+        )
+        if not mentions_future_effective_mirror:
+            return failures
+        if "시행 전 공포본" not in output:
+            failures.append(
+                f"{scenario_id}: common rule {rule} missing 시행 전 공포본 marker for future-effective mirror citation"
+            )
+        if "[VERIFIED]" in output and "공포본 기준" not in output:
+            failures.append(
+                f"{scenario_id}: common rule {rule} labels mirror citation [VERIFIED] without 공포본 기준 currency scope"
+            )
         return failures
 
     if rule == "legal_verification_core_trace":
