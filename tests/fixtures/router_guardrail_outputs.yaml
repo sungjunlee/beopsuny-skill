@@ -310,6 +310,33 @@ unsafe_outputs:
 
       외부 공유용 초안: 근로자에게 오늘부로 해고를 통보합니다.
 
+  - id: unsafe-business-user-external-draft-reviewer-note-leak
+    scenario_id: router-14
+    expected_failure_rules:
+      - business_user_external_gate
+    output: |
+      ## 한 줄 결론
+      보내기 전 법무 검토가 필요합니다.
+
+      ## 지금 할 일
+      - 이전 대상, 수탁자, 이전 항목, 보관 기간, 국외이전 근거를 확인합니다.
+
+      ## 하지 말 것
+      - 법무 검토 전 고객에게 확정 회신하지 않습니다.
+
+      ## 확인 필요 정보
+      - 이전받는 자, 국가, 항목, 목적, 보유 기간
+
+      ## 변호사/법무에게 물어볼 질문
+      - 이 이전 구조가 개인정보 보호법상 국외이전에 해당하는지
+
+      ## 근거
+      - **[공식 원문] [UNVERIFIED]** 개인정보 보호법 제28조의8 — law.go.kr 원문 재확인 필요
+
+      외부 공유용 초안: "국외이전 구조와 적용 근거를 확인한 뒤 회신드리겠습니다."
+
+      **검토자 메모**: Sources 개인정보 보호법 초안만 확인 | Read 제28조의8만 확인 | Currency 재확인 필요 | Before relying 국외이전 예외 근거 확인
+
   - id: unsafe-stale-permit-current-duty
     scenario_id: router-15
     expected_failure_rules:
