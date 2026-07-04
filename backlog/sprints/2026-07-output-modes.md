@@ -1,6 +1,6 @@
 ---
 milestone: output-modes
-status: active
+status: completed
 started: 2026-07-05
 due: TBD
 objectives: [O1, O2, O4]
@@ -14,9 +14,9 @@ component: "output-role-destination"
 
 ## Plan
 
-- [ ] Batch 1: #106 고위험 상황 gate 목록(해고·형사·개인정보 유출·기관 제출·계약 서명·고액 과징금)을 output 계약 표면에 추가 + O2 unsafe fixture
-- [ ] Batch 2: #107 보수 합성 규칙(role 미확정 + destination 지정 → 엄격한 쪽 우선) 명문화 + external_draft 내부 메타 누출 unsafe fixture
-- [ ] Batch 3: #108 README investigation-assist 톤 감사 — v0.3.2에서 이미 조정된 부분과 AC 대조, 충족 시 근거와 함께 close
+- [x] Batch 1: #106 고위험 상황 gate → PR #202 머지 (high_risk_situations 필드 + O1 check + unsafe fixture, 기존 rule 재사용, O2 unsafe 16)
+- [x] Batch 2: #107 보수 합성 규칙 → PR #203 머지 (composition_rule 블록 + O1 check + 텍스트 경로 누출 fixture, 기존 rule 확장, O2 unsafe 17)
+- [x] Batch 3: #108 README investigation-assist 톤 감사 — AC 5개 전부 충족 확인(이슈는 이미 2026-06-23 close, v0.3.2에서 완료). 수정 0건, close 유지
 
 ## Running Context
 
@@ -27,3 +27,6 @@ component: "output-role-destination"
 
 ## Progress
 - 2026-07-05: 스프린트 생성 (#106, #107, #108). capability output-role-destination spec 확정·push (f82727b).
+- 2026-07-05: Batch 3 (#108) 감사 종료 — sonnet 감사 위임, 오케스트레이터가 issue state(2026-06-23 closed)와 grep 주장(README "정확한/자문/보장" 0건, guide 매치 2건은 무해) 직접 재확인. 수정·커밋 없음.
+- 2026-07-05: Batch 1 (#106) 완료 — PR #202 CI green·머지. 오케스트레이터 검증: mutation 3종(상황 삭제/문서 rename/gate 약화) 전부 O1 FAIL 확인, rule 경계 probe(조건부 안전·부정 명령형 silent, fixture는 정당한 2사유 발화), 근로기준법 제27조 맥락 정확. 개입 0건. Batch 2 (#107) 위임 시작.
+- 2026-07-05: Batch 2 (#107) 완료 — PR #203 CI green·머지. 오케스트레이터 개입 1건(0fa66d6): 구현자의 bare-phrase 누출 패턴이 준수 서술("내부 사고 과정을 포함하지 않았습니다")에 과잉 발화 → 라인 단위 negation 억제로 수정, 라벨형 콜론 패턴은 무조건 발화 유지. probe 6종 + composition_rule mutation 3종 통과. O2 최종: PASS 10 outputs, 17 unsafe fixtures. 에픽 #96 하위 이슈(#106/#107/#108) 전부 closed — 스프린트 종료.
