@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- `tests/validate_skill_contracts.py` — SKILL.md 의도 라우터 gate 표와 research-workflow.md 2단 트리거(light/full) 표의 exact-string assert를 파싱 기반 구조 검사로 전환 (#182). 새 `parse_markdown_table`/`extract_reference_paths`/`normalize_gate_name` 유틸을 파일 내부에 추가하고, `check_skill_router_gate_table_structure`(행 수 5, gate 이름 ↔ `ALWAYS_ON_LEGAL_GATES` 매칭, 필수 reference 경로 실존 확인)와 `check_research_workflow_tier_table_structure`(행 수 2, light 행 ledger 필드 6개, full 행 6단계 core 언급)를 신규 등록. 두 표 셀의 파일 경로/헤더 exact-string assert는 대체하고 제거했으며, 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위, `light` tier packet 미생성 등)과 표 안이라도 구조 검증 범위 밖인 적용 범위/트리거 프로즈는 그대로 유지
+
 ### Added
 - `skills/beopsuny/references/source-access.md` — 미러 시행일 확인(공포본 vs 현행본) 규칙 추가. legalize-kr/admrule-kr/ordinance-kr frontmatter `시행일자`가 미래면 시행 전 공포본으로 표시하고 `[VERIFIED]`는 공포본 기준으로 현행성을 한정하도록 명시. 의료법 제34조(공포 2026-06-09/시행 2026-12-10, "비대면협진"→현행 "원격의료") 사례로 예시 (#194)
 - `skills/beopsuny/references/citation-verification-contract.md` — 미러 시행일 currency 표기가 source-access.md를 단일 기준으로 따르도록 한 줄 상호참조 추가 (#194)

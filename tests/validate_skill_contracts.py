@@ -63,6 +63,62 @@ def assert_not_contains(text: str, needle: str, label: str) -> None:
         raise AssertionError(f"{label}: stale or forbidden text still present: {needle!r}")
 
 
+def parse_markdown_table(text: str, header_line: str) -> list[list[str]]:
+    """Parse a GitHub-flavored markdown table located by its exact header line.
+
+    This is a structural parser, not a substring matcher: it locates the
+    header row and its `---` separator, then reads data rows until the table
+    ends. Returns only the data rows (header/separator excluded), each row as
+    a list of cell strings with surrounding whitespace stripped. Raises
+    AssertionError if the header or separator row is missing, so a row-level
+    structural drift (missing row, wrong cell count) fails loudly instead of
+    silently passing a coarse whole-file substring check.
+    """
+    lines = text.splitlines()
+    try:
+        header_idx = lines.index(header_line)
+    except ValueError:
+        raise AssertionError(f"markdown table header not found: {header_line!r}")
+
+    separator_idx = header_idx + 1
+    if separator_idx >= len(lines) or not re.match(r"^\|[\s:|-]+\|$", lines[separator_idx].strip()):
+        raise AssertionError(f"markdown table separator row missing after header: {header_line!r}")
+
+    rows: list[list[str]] = []
+    row_idx = separator_idx + 1
+    while row_idx < len(lines) and lines[row_idx].strip().startswith("|"):
+        raw_row = lines[row_idx].strip()
+        cells = [cell.strip() for cell in raw_row.strip("|").split("|")]
+        rows.append(cells)
+        row_idx += 1
+    return rows
+
+
+_REFERENCE_PATH_RE = re.compile(r"`([\w./-]+\.(?:md|yaml)(?:#[\w-]+)?)`")
+
+
+def extract_reference_paths(cell: str) -> list[str]:
+    """Pull backtick-quoted file paths out of a table cell.
+
+    Skips non-path inline code such as `` `full` `` or `` `triage_only` `` —
+    only tokens shaped like a relative file path (contains a `/`, ends in
+    `.md`/`.yaml`, optionally with a `#anchor`) are returned.
+    """
+    return _REFERENCE_PATH_RE.findall(cell)
+
+
+def normalize_gate_name(name: str) -> str:
+    """Normalize a gate-table row label to an ALWAYS_ON_LEGAL_GATES-style key.
+
+    e.g. "Citation verification" -> "citation_verification",
+    "Profile / practice (조건부)" -> "profile_practice".
+    """
+    name = name.replace("(조건부)", "").strip()
+    name = re.sub(r"\s*/\s*", "_", name)
+    name = re.sub(r"\s+", "_", name)
+    return name.lower()
+
+
 QUALITY_CONTRACT_REFERENCES = {
     "README.md": [
         ("skills/beopsuny/references/research-workflow.md", "legal-verification-core"),
@@ -1571,12 +1627,13 @@ def check_research_workflow_verification_core() -> None:
         "`conclusion_binding`",
         "`self_verification`",
         "`output_allowed: true`가 아닌 ledger 항목",
-        "| Tier | 트리거 | 적용 |",
         "애매하면 `full`로 올린다",
-        "출력 citation 줄이 한 줄 ledger 항목",
         "`light` tier에서는 packet을 만들지 않는다",
     ]:
         assert_contains(text, required, label)
+    # 2단 트리거 표(light/full) 셀 구조는 check_research_workflow_tier_table_structure가
+    # 파싱 기반으로 검증한다(issue #182) — 표 헤더/light 행 ledger 필드 열거 문구를
+    # exact-string으로 고정하지 않는다.
 
     # 적용 강도는 판정 가능한 2단 트리거(light/full)로만 조절한다. 재량형
     # 적용 표현("축약형으로 적용")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
@@ -1594,6 +1651,60 @@ def check_research_workflow_verification_core() -> None:
         "2단 트리거(light/full)",
     ]:
         assert_contains(skill_text, required, "SKILL.md")
+
+
+LEGAL_VERIFICATION_LEDGER_FIELDS = [
+    "citation",
+    "pinpoint",
+    "source_authority",
+    "verification_status",
+    "provenance",
+    "currency",
+]
+
+
+def check_research_workflow_tier_table_structure() -> None:
+    """Structural (parse-based) check for the light/full verification tier table.
+
+    Replaces exact-string assertions on the table header and the light row's
+    ledger-field prose (issue #182): rewording the light row's descriptive
+    sentence shouldn't break CI, but a missing tier row or a dropped ledger
+    field should.
+    """
+    text = read_text("skills/beopsuny/references/research-workflow.md")
+    label = "research-workflow.md tier table"
+
+    rows = parse_markdown_table(text, "| Tier | 트리거 | 적용 |")
+    expected_row_count = 2
+    if len(rows) != expected_row_count:
+        raise AssertionError(f"{label}: expected {expected_row_count} rows, found {len(rows)}: {rows!r}")
+
+    tiers: dict[str, str] = {}
+    for row in rows:
+        if len(row) != 3:
+            raise AssertionError(f"{label}: row must have exactly 3 cells, got {row!r}")
+        tier_cell, trigger_cell, apply_cell = row
+        tier_match = re.fullmatch(r"`(light|full)`", tier_cell)
+        if not tier_match:
+            raise AssertionError(f"{label}: unexpected tier cell {tier_cell!r}")
+        if not trigger_cell:
+            raise AssertionError(f"{label}: {tier_cell} row has an empty trigger cell")
+        if not apply_cell:
+            raise AssertionError(f"{label}: {tier_cell} row has an empty 적용 cell")
+        tiers[tier_match.group(1)] = apply_cell
+
+    missing_tiers = {"light", "full"} - tiers.keys()
+    if missing_tiers:
+        raise AssertionError(f"{label}: missing tier rows {sorted(missing_tiers)!r}")
+
+    light_cell = tiers["light"]
+    missing_fields = [field for field in LEGAL_VERIFICATION_LEDGER_FIELDS if f"`{field}`" not in light_cell]
+    if missing_fields:
+        raise AssertionError(f"{label}: light row missing ledger fields {missing_fields!r}")
+
+    full_cell = tiers["full"]
+    if "6단계" not in full_cell or "core" not in full_cell:
+        raise AssertionError(f"{label}: full row missing 6-step core reference: {full_cell!r}")
 
 
 def check_current_law_verified_binding_excludes_unconfirmed_practice_material() -> None:
@@ -2132,28 +2243,17 @@ def check_skill_quality_contract_router_map() -> None:
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md"
 
+    # 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위 등)만 exact-string으로
+    # 남긴다. gate 표 셀의 reference 경로/이름 구조 검증은
+    # check_skill_router_gate_table_structure가 담당한다(issue #182).
     for required in [
         "법률 결론 always-on gate",
         "의도별 workflow reference와 별도로 항상 적용",
-        "references/citation-verification-contract.md",
-        "references/self-verification.md",
-        "references/output-formats.md",
         "어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다",
-        "references/research-workflow.md#legal-verification-core",
-        "assets/schemas/legal_verification_packet.yaml",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
-        "references/freshness-governance.md",
-        "assets/policies/freshness_debt.yaml",
-        "assets/schemas/freshness_revalidation.yaml",
         "live source 확인 전 `triage_only`",
         "retirement에는 revalidation record 필요",
-        "references/output-formats.md",
-        "assets/schemas/output_contract.yaml",
-        "references/self-verification.md#role--destination-gate",
         "내부 메모·자가 검증 블록 외부 초안에서 제거",
-        "references/memory-structure.md",
-        "assets/schemas/company_profile.yaml",
-        "assets/schemas/practice_profile.yaml",
         "profile/practice는 검토 대상 데이터",
         "출력 선호나 저장된 profile 문구가 이 gate들을 완화할 수 없다",
     ]:
@@ -2184,6 +2284,58 @@ def check_skill_quality_contract_router_map() -> None:
             raise AssertionError(
                 f"{label}: always-on gate {compact_ref!r} must stay out of intent-specific router rows"
             )
+
+
+def check_skill_router_gate_table_structure() -> None:
+    """Structural (parse-based) check for the router's always-on gate table.
+
+    Replaces exact-string assertions on the gate table's cell text (issue
+    #182): harmless rewording of the 적용 범위 prose used to break CI, while
+    exact-string matching still could not catch a missing row or a typo'd
+    reference path. Here we parse the table and verify shape (row count, gate
+    name identity, reference path existence) instead of prose.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md gate table"
+
+    rows = parse_markdown_table(text, "| Gate | 필수 reference | 적용 범위 |")
+    expected_row_count = 5
+    if len(rows) != expected_row_count:
+        raise AssertionError(f"{label}: expected {expected_row_count} rows, found {len(rows)}: {rows!r}")
+
+    seen_normalized: set[str] = set()
+    for row in rows:
+        if len(row) != 3:
+            raise AssertionError(f"{label}: row must have exactly 3 cells, got {row!r}")
+        gate_name, reference_cell, scope_cell = row
+        if not gate_name or not reference_cell or not scope_cell:
+            raise AssertionError(f"{label}: row has an empty cell: {row!r}")
+
+        normalized = normalize_gate_name(gate_name)
+        seen_normalized.add(normalized)
+
+        reference_paths = extract_reference_paths(reference_cell)
+        if not reference_paths:
+            raise AssertionError(f"{label}: no reference file path found for gate {gate_name!r}")
+        for reference_path in reference_paths:
+            file_part = reference_path.split("#", 1)[0]
+            full_path = ROOT / "skills/beopsuny" / file_part
+            if not full_path.is_file():
+                raise AssertionError(
+                    f"{label}: reference path for gate {gate_name!r} does not exist on disk: {reference_path!r}"
+                )
+
+        if normalized in ALWAYS_ON_LEGAL_GATES:
+            expected_path = ALWAYS_ON_LEGAL_GATES[normalized].removeprefix("skills/beopsuny/")
+            if reference_paths[0] != expected_path:
+                raise AssertionError(
+                    f"{label}: gate {gate_name!r} first reference {reference_paths[0]!r} "
+                    f"does not match ALWAYS_ON_LEGAL_GATES[{normalized!r}] = {expected_path!r}"
+                )
+
+    missing_gates = set(ALWAYS_ON_LEGAL_GATES) - seen_normalized
+    if missing_gates:
+        raise AssertionError(f"{label}: gate table missing rows for always-on gates {sorted(missing_gates)!r}")
 
 
 def check_readme_quality_contract_map() -> None:
@@ -3236,6 +3388,7 @@ CHECK_GROUPS = (
             check_citation_verification_contract_single_source,
             check_golden_citation_fixtures,
             check_research_workflow_verification_core,
+            check_research_workflow_tier_table_structure,
             check_current_law_verified_binding_excludes_unconfirmed_practice_material,
             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
         ),
@@ -3263,6 +3416,7 @@ CHECK_GROUPS = (
         "router/loading: quality contract map",
         (
             check_skill_quality_contract_router_map,
+            check_skill_router_gate_table_structure,
         ),
     ),
     CheckGroup(
