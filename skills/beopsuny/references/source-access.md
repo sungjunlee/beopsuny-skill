@@ -112,6 +112,14 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 
 `admrule-kr`와 `ordinance-kr`의 frontmatter는 citation ledger 후보로 쓴다. 핵심 필드는 식별자, 명칭, 종류, 발령·공포기관, 발령·공포일자, 시행일자, `본문출처`, `출처`, `첨부파일`이다. `본문출처: parsing-failed`이면 metadata와 첨부 링크만으로 결론을 확정하지 말고 law.go.kr 원문 또는 첨부 파일을 다시 확인한다.
 
+## 미러 시행일 확인 (공포본 vs 현행본)
+
+`legalize-kr`·`admrule-kr`·`ordinance-kr` 미러는 최신 공포본을 담으며, 아직 시행되지 않은 개정본일 수 있다. 미러 파일을 읽을 때는 frontmatter `시행일자`를 확인한다. `시행일자`가 오늘보다 미래면 그 본문은 현행이 아니라 시행 전 공포본이다.
+
+이 경우 provenance/currency에 `시행 전 공포본 (시행일 YYYY-MM-DD)`을 표시하고, `[VERIFIED]`는 공포본 기준으로 현행성을 한정한다. 현행 조문 확인은 law.go.kr 현행본으로 별도 확인한다.
+
+예: `kr/의료법/법률.md`는 공포일자 2026-06-09, 시행일자 2026-12-10으로 제34조 제목이 시행 전 개정본 기준 "비대면협진"이다. 2026-07 현재 시행 중인 조문 제목은 "원격의료"다. `assets/policies/checklists/healthcare.yaml`의 health-09 노트가 이 표기의 실전 예시다.
+
 ## 법망 API
 
 무인증 무료 API다. 상세 엔드포인트는 `references/beopmang-api.md`를 읽는다.

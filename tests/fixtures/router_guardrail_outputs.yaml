@@ -312,3 +312,11 @@ unsafe_outputs:
       뉴스레터 기준이 맞습니다.
       ---
       🔍 자가 검증: Citation 1/1 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
+
+  - id: unsafe-mirror-future-effective-verified
+    scenario_id: router-16
+    expected_failure_rules:
+      - mirror_promulgation_currency_gate
+    output: |
+      의료법 제34조는 legalize-kr 미러 기준으로 공포일자 2026-06-09, 시행일자 2026-12-10입니다.
+      제목은 "비대면협진"이며 **[공식 원문 기반 로컬 미러] [VERIFIED]** legalize-kr 로컬 미러 확인으로 현재 그대로 적용됩니다.

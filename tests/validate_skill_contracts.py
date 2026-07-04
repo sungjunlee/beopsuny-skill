@@ -1022,6 +1022,29 @@ def check_source_access_fallbacks() -> None:
         assert_contains(text, required, label)
 
 
+def check_source_access_mirror_promulgation_currency() -> None:
+    text = read_text("skills/beopsuny/references/source-access.md")
+    label = "source-access.md"
+
+    for required in [
+        "미러 시행일 확인 (공포본 vs 현행본)",
+        "`시행일자`가 오늘보다 미래면 그 본문은 현행이 아니라 시행 전 공포본이다",
+        "`시행 전 공포본 (시행일 YYYY-MM-DD)`을 표시하고, `[VERIFIED]`는 공포본 기준으로 현행성을 한정한다",
+        "현행 조문 확인은 law.go.kr 현행본으로 별도 확인한다",
+        "공포일자 2026-06-09, 시행일자 2026-12-10으로 제34조 제목이 시행 전 개정본 기준 \"비대면협진\"이다",
+        "2026-07 현재 시행 중인 조문 제목은 \"원격의료\"다",
+        "assets/policies/checklists/healthcare.yaml`의 health-09 노트가 이 표기의 실전 예시다",
+    ]:
+        assert_contains(text, required, label)
+
+    contract_text = read_text("skills/beopsuny/references/citation-verification-contract.md")
+    assert_contains(
+        contract_text,
+        "미러 frontmatter `시행일자`가 미래인 시행 전 공포본의 currency 표기는 `references/source-access.md`의 미러 시행일 확인 규칙을 단일 기준으로 따른다.",
+        "citation-verification-contract.md",
+    )
+
+
 def check_checklist_routing_freshness() -> None:
     text = read_text("skills/beopsuny/references/checklist-routing.md")
     label = "checklist-routing.md"
@@ -3198,6 +3221,7 @@ CHECK_GROUPS = (
         (
             check_bulk_tabular_review_reference,
             check_source_access_fallbacks,
+            check_source_access_mirror_promulgation_currency,
             check_checklist_routing_freshness,
             check_policy_checklist_runtime_contracts,
             check_volatile_policy_literals_require_live_check,
