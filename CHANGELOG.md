@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- `skills/beopsuny/assets/schemas/output_contract.yaml` — 고위험 상황 gate를 위한 `high_risk_situations` 필드 추가(징계·해고 통보, 수사·고소·고발 대응, 개인정보 유출 신고, 기관 제출, 계약 서명, 고액 과징금 처분 대응). 각 항목은 `situation`과 `required_gate`를 가지며, `lawyer`를 포함한 모든 role에 role-agnostic하게 확정 행동 직접 지시 금지 + 변호사/legal_ops 검토 필수 + 기한(불복 기간 등) 확인 우선 안내를 요구 (#106)
+- `skills/beopsuny/references/output-formats.md` — Role-based output modes 절에 "고위험 상황 gate" 문단 추가. `high_risk_situations`를 단일 소스로 pointer하고 목록은 이름만 나열, gate 세부 문구는 중복 서술하지 않음 (#106)
+- `tests/validate_skill_contracts.py` — `output_contract.yaml`의 `high_risk_situations` 구조(situation/required_gate 필드, 6개 상황 집합, gate 필수 키워드)와 `output-formats.md` pointer 사이의 drift를 잡는 `check_output_contract_high_risk_situations` O1 검사 추가 (#106)
+- `tests/fixtures/router_guardrail_outputs.yaml` — 고위험 상황(해고 통지서 직접 발송 지시) 시나리오에서 business_user에게 확정 행동을 직접 지시하는 `unsafe-business-user-termination-notice-direct-send` O2 unsafe fixture 추가. 기존 `business_user_external_gate` 규칙을 재사용해 검증(신규 rule 없음), PASS 10 outputs / 16 unsafe fixtures (#106)
+
 ## [0.4.0] - 2026-07-04
 
 **테마: Report Deliverable Layer + Verification Hardening** — destination 계약을 소비하는 self-contained HTML 리포트 레이어(산출물 계약, 계약 검토·bulk grid 템플릿 2종, Artifact 배포 gate)를 추가하고, SKILL.md 라우터 프루닝(gate 표 통합, Legal Verification Core 2단 트리거)과 end-to-end smoke test가 드러낸 계약 구멍(미러 시행일 currency, `BEOPSUNY_DATA_ROOT` semantics, 리포트 인용 공식 링크, `verification_tier` 소비)을 봉합했다. O2 unsafe fixture 7 → 15.

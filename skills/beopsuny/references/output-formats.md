@@ -169,6 +169,10 @@ glaw.scourt.go.kr를 직접 열어 확인한 경우에는 다음처럼 표시한
 
 비법무 사용자에게는 출처 권위 라벨을 숨기지 않되, 본문에서는 `확인된 1차 근거`, `추가 확인 필요`, `현행성 재확인 필요`처럼 쉬운 라벨을 함께 쓸 수 있다. 이 라벨은 출처 권위 라벨과 verification status를 대체하지 않는다.
 
+### 고위험 상황 gate
+
+`assets/schemas/output_contract.yaml`의 `high_risk_situations`(`징계·해고 통보`, `수사·고소·고발 대응`, `개인정보 유출 신고`, `기관 제출`, `계약 서명`, `고액 과징금 처분 대응`)에 해당하면, role(`lawyer` 포함)과 무관하게 확정 행동을 직접 지시하지 않고 변호사/legal_ops 검토를 요구하며, 기한(불복 기간 등)이 있으면 기한 확인을 최우선으로 안내한다. 각 상황별 세부 gate 문구는 스키마의 `high_risk_situations`를 단일 소스로 따르고 여기서 다시 나열하지 않는다.
+
 ## Destination output contracts
 
 사용자가 산출물의 수신자나 사용처를 말하면, 같은 결론이라도 아래 destination 계약을 적용한다.
