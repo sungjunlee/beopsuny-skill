@@ -2113,6 +2113,16 @@ def check_report_deliverable_contract() -> None:
         assert_contains(text, required, label)
 
     for required in [
+        "인용 링크",
+        "law.go.kr",
+        "glaw.scourt.go.kr",
+        "`<a href>`",
+        "하이퍼링크는 콘텐츠이며 외부 리소스 로딩이 아니므로",
+        "`references/output-formats.md`의 링크 생성 규칙",
+    ]:
+        assert_contains(text, required, label)
+
+    for required in [
         "## R4. Artifact 배포 gate",
         "공유 가정 구성 강제",
         "내부 검토자 메모",
@@ -2165,14 +2175,24 @@ def check_bulk_grid_report_template_contract() -> None:
         "quote",
         "location",
         "source_authority",
+        "law.go.kr",
+        "glaw.scourt.go.kr",
+        '<a href="https://www.law.go.kr',
     ]:
         assert_contains(template, required, label)
 
+    # href http is allowed only for official law.go.kr / glaw.scourt.go.kr citation links.
+    # Those are `<a href>` content hyperlinks, not external resource loads, so they do not
+    # conflict with the self-contained rule (see report-deliverable.md#r2-파일-규격).
     forbidden_resource_patterns = {
         "script src": r"<script\b[^>]*\bsrc\s*=",
         "link href": r"<link\b[^>]*\bhref\s*=",
         "src http": r"\bsrc\s*=\s*['\"][^'\"]*https?://",
-        "href http": r"\bhref\s*=\s*['\"][^'\"]*https?://",
+        "href http": (
+            r"\bhref\s*=\s*['\"]"
+            r"(?!https?://(?:www\.)?(?:law\.go\.kr|glaw\.scourt\.go\.kr)/)"
+            r"[^'\"]*https?://"
+        ),
         "css import": r"@import\b",
         "css url http": r"url\(\s*['\"]?https?://",
         "fetch": r"\bfetch\s*\(",
@@ -2213,6 +2233,9 @@ def check_bulk_grid_report_template_contract() -> None:
         "읽은 범위",
         "최신성 한계",
         "면책 고지",
+        "law.go.kr",
+        "glaw.scourt.go.kr",
+        '<a href="https://www.law.go.kr',
     ]:
         assert_contains(contract_template, required, contract_label)
 

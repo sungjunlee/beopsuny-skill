@@ -6,6 +6,7 @@
   <title>Bulk Tabular Review Grid Report</title>
   <!-- TEMPLATE CONTRACT: self-contained HTML only. Inline CSS/JS only; no external resources. -->
   <!-- HTML-escape every dynamic insertion before rendering: &, <, >, ", and '. -->
+  <!-- Citation link rule: sources table에서 조문·판례를 인용한 행에만 law.go.kr (판례: glaw.scourt.go.kr) 공식 링크를 `<a href>`로 포함한다. 계약 원문 발췌 등 법령·판례 인용이 아닌 근거 행에는 공식 링크를 만들지 않는다. A hyperlink is content, not an external resource load, so it does not conflict with the self-contained rule — see report-deliverable.md#r2-파일-규격. Link URL format follows output-formats.md's 링크 생성 규칙. -->
   <style>
     :root {
       color-scheme: light;
@@ -526,7 +527,11 @@
             </tr>
           </thead>
           <tbody>
-            <!-- PLACEHOLDER: sources_rows_html_escaped. HTML-escape quote/location/source_authority/status/notes. -->
+            <!-- PLACEHOLDER: sources_rows_html_escaped.
+                 HTML-escape quote/location/source_authority/status/notes.
+                 조문·판례를 인용한 행에만 official law.go.kr (판례: glaw.scourt.go.kr) link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙).
+                 계약 원문 발췌 행(예: source_authority '사용자 제공 계약 원문')에는 공식 링크를 만들지 않는다. 형식 예:
+                 <p class="panel-note">공식 링크: <a href="https://www.law.go.kr/법령/{법령명}/제{N}조">law.go.kr 원문</a></p> -->
             <tr>
               <th scope="row" data-sort-value="A MSA">A MSA</th>
               <td class="state-answered" data-sort-value="A MSA section">
