@@ -200,8 +200,20 @@ BUSINESS_USER_CERTAINTY_NEGATIONS = [
 EXTERNAL_DRAFT_INTERNAL_LEAK_PATTERNS = [
     r"검토자 메모\**\s*[:：]",
     r"자가 검증\**\s*[:：]",
-    r"내부 사고 과정",
-    r"미확인 내부 메모",
+]
+# Bare phrases fire per line with negation suppression: compliance prose that
+# states these blocks were NOT attached ("내부 사고 과정은 포함하지 않았습니다")
+# is exactly the framing output-formats.md instructs, so it must stay silent.
+EXTERNAL_DRAFT_INTERNAL_LEAK_PHRASES = [
+    "내부 사고 과정",
+    "미확인 내부 메모",
+]
+EXTERNAL_DRAFT_LEAK_NEGATIONS = [
+    "않",
+    "제거",
+    "제외",
+    "금지",
+    "분리",
 ]
 STALE_ANSWERED_PATTERNS = [
     "현재 확인된 의무입니다",
@@ -485,6 +497,14 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                     failures.append(
                         f"{scenario_id}: common rule {rule} leaks internal block matching "
                         f"{pattern!r} into external draft"
+                    )
+            for line in output.splitlines():
+                if any(phrase in line for phrase in EXTERNAL_DRAFT_INTERNAL_LEAK_PHRASES) and not any(
+                    marker in line for marker in EXTERNAL_DRAFT_LEAK_NEGATIONS
+                ):
+                    failures.append(
+                        f"{scenario_id}: common rule {rule} leaks internal block phrase "
+                        f"{line.strip()!r} into external draft"
                     )
         return failures
 
