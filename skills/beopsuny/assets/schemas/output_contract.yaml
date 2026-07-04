@@ -149,3 +149,28 @@ non_overrides:
   - "Role / Destination Gate"
   - "lawyer/legal_ops review requirement"
   - "current user request"
+
+# Composition rule: when role is unspecified/unconfirmed but a destination is
+# named (or the request matches legal_effect_triggers above), packaging does
+# not pick one side — it composes the unknown/business_user conservative gate
+# together with the named destination contract. This is spec/capabilities.md's
+# output-role-destination capability, Expected Behavior 2, made structural so
+# agents stop improvising an ad hoc compromise (2026-07-04 smoke test finding).
+composition_rule:
+  when:
+    role_state: "role이 미지정 또는 미확정"
+    destination_state: "destination이 지정되거나 legal_effect_triggers 중 하나에 해당"
+  compose_with:
+    - "unknown"
+    - "business_user"
+  resolution_principles:
+    - name: "stricter_wins"
+      rule: "role 쪽 gate와 destination 계약이 충돌하면 더 엄격한 의무 쪽으로 해소한다"
+    - name: "must_strip_union"
+      rule: "합성된 must_strip은 unknown/business_user gate의 must_strip과 destination의 must_strip 합집합이다"
+    - name: "must_include_both"
+      rule: "합성된 must_include는 unknown/business_user gate의 must_include와 destination의 must_include를 모두 적용한다"
+  forbidden_after_composition:
+    - "서명 직접 지시"
+    - "송부 직접 지시"
+    - "제출 직접 지시"

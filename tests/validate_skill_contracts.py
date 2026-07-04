@@ -1068,6 +1068,58 @@ def check_output_contract_high_risk_situations() -> None:
         assert_contains(md_text, situation, md_label)
 
 
+COMPOSITION_RESOLUTION_PRINCIPLES = {"stricter_wins", "must_strip_union", "must_include_both"}
+
+
+def check_output_contract_composition_rule() -> None:
+    """Role x destination composition (spec/capabilities.md output-role-destination,
+    Expected Behavior 2) must be a structured schema field, not prose an agent
+    has to reconstruct — and output-formats.md must point at it rather than
+    restate the resolution principles inline (drift check below)."""
+    data = load_yaml("skills/beopsuny/assets/schemas/output_contract.yaml")
+    label = "output_contract.yaml"
+
+    rule = data.get("composition_rule")
+    if not isinstance(rule, dict):
+        raise AssertionError(f"{label}: composition_rule must be a mapping")
+
+    when = rule.get("when")
+    if not isinstance(when, dict) or "role_state" not in when or "destination_state" not in when:
+        raise AssertionError(f"{label}: composition_rule.when must define role_state and destination_state")
+
+    compose_with = rule.get("compose_with")
+    if not isinstance(compose_with, list) or set(compose_with) != {"unknown", "business_user"}:
+        raise AssertionError(f"{label}: composition_rule.compose_with must be ['unknown', 'business_user']")
+
+    principles = rule.get("resolution_principles")
+    if not isinstance(principles, list) or len(principles) != 3:
+        raise AssertionError(f"{label}: composition_rule.resolution_principles must have exactly 3 entries")
+    names: set[str] = set()
+    for item in principles:
+        if not isinstance(item, dict) or "name" not in item or "rule" not in item:
+            raise AssertionError(
+                f"{label}: composition_rule.resolution_principles entry missing name/rule: {item!r}"
+            )
+        names.add(str(item["name"]))
+    if names != COMPOSITION_RESOLUTION_PRINCIPLES:
+        raise AssertionError(f"{label}: unexpected composition_rule.resolution_principles set {names!r}")
+
+    forbidden = rule.get("forbidden_after_composition")
+    if not isinstance(forbidden, list) or not forbidden:
+        raise AssertionError(f"{label}: composition_rule.forbidden_after_composition must be a non-empty list")
+    for required in ["서명", "송부", "제출"]:
+        if not any(required in str(item) for item in forbidden):
+            raise AssertionError(f"{label}: composition_rule.forbidden_after_composition missing {required!r}")
+
+    # Drift check: output-formats.md must point at this schema field by name
+    # rather than let the composition rule live only in the schema (silent
+    # docs drift) or duplicate the resolution-principle prose inline.
+    md_text = read_text("skills/beopsuny/references/output-formats.md")
+    md_label = "output-formats.md (composition_rule pointer)"
+    assert_contains(md_text, "composition_rule", md_label)
+    assert_contains(md_text, "합성", md_label)
+
+
 def first_mapping(value: Any, label: str, field: str) -> dict[str, Any]:
     if not isinstance(value, list) or not value or not isinstance(value[0], dict):
         raise AssertionError(f"{label}: {field} must be a non-empty list of mappings")
@@ -3536,6 +3588,7 @@ CHECK_GROUPS = (
             check_output_reviewer_note_lite,
             check_output_contract_schema,
             check_output_contract_high_risk_situations,
+            check_output_contract_composition_rule,
             check_output_role_destination_contracts,
         ),
     ),
