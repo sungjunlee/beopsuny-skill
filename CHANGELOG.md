@@ -1,17 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [0.4.0] - 2026-07-04
+
+**테마: Report Deliverable Layer + Verification Hardening** — destination 계약을 소비하는 self-contained HTML 리포트 레이어(산출물 계약, 계약 검토·bulk grid 템플릿 2종, Artifact 배포 gate)를 추가하고, SKILL.md 라우터 프루닝(gate 표 통합, Legal Verification Core 2단 트리거)과 end-to-end smoke test가 드러낸 계약 구멍(미러 시행일 currency, `BEOPSUNY_DATA_ROOT` semantics, 리포트 인용 공식 링크, `verification_tier` 소비)을 봉합했다. O2 unsafe fixture 7 → 15.
 
 ### Added
 - `tests/evaluate_scenario_outputs.py`, `tests/validate_skill_contracts.py`, `tests/fixtures/router_guardrail_outputs.yaml` — `verification_tier`(router-01 light / router-05 full)가 아무 evaluator도 소비하지 않는 주석 필드였던 문제(#179 리뷰 지적)를 해소. `output_common_rules()`가 `expected.verification_tier`를 읽어 공통 규칙을 자동 부착하도록 연결: `light`는 신규 `light_tier_no_packet_ceremony`(issue-to-authority map/authority packet/citation ledger를 마크다운 헤더나 다중 키 YAML 블록 형태로 노출하면 발화, 한 줄 인용이나 "확인 필요" 문구는 통과), `full`은 기존 `legal_verification_core_trace`를 재사용(이미 6단계 core 흔적을 강제하므로 신규 rule 불필요). router-01/router-05는 여전히 output_eval 블록이 없어 safe sample 의무는 생기지 않고(safe 10 유지), unsafe fixture만 두 개 추가(router-01 packet ceremony 노출, router-05 검증 구조 없는 단정 결론) — PASS 10 outputs, 15 unsafe fixtures. `check_router_fixture_integrity`는 `expected_output_ids`(10개, 불변) 외에 `verification_tier`가 있는 시나리오도 unsafe fixture 대상으로 허용하고, tier 자동 부착 규칙을 `scenario_rules`에 더해 검증하도록 확장 (Refs #181)
-
-### Fixed
-- `skills/beopsuny/references/source-access.md`, `skills/beopsuny/references/law-change-detection.md`, `skills/beopsuny/references/beopmang-api.md`, `skills/beopsuny/SKILL.md`, `tests/scenarios/01_basic_law.yaml`, `tests/scenarios/11_domain_specific.yaml`, `tests/scenarios/14_law_change_detection.yaml`, `spec/system-map.md`, `README.md` — `BEOPSUNY_DATA_ROOT` 기본값 의미를 통일. source-access.md는 변수를 data 디렉토리 자체로, report-deliverable.md는 beopsuny 루트(`${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/`)로 소비해 같은 변수를 서로 다른 depth로 해석하던 drift 해소. 변수 = beopsuny 루트로 통일하고 미러 표기를 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/{family}`로 변경 (기본 경로 레이아웃 `~/.beopsuny/data/*`, `~/.beopsuny/reports/*`는 불변, override 시 해석만 정정). source-access.md에 변수 의미를 한 문장으로 명시. 과거 릴리즈 섹션의 옛 표기는 당시 기록 그대로 유지 (#196)
-
-### Changed
-- `tests/validate_skill_contracts.py` — SKILL.md 의도 라우터 gate 표와 research-workflow.md 2단 트리거(light/full) 표의 exact-string assert를 파싱 기반 구조 검사로 전환 (#182). 새 `parse_markdown_table`/`extract_reference_paths`/`normalize_gate_name` 유틸을 파일 내부에 추가하고, `check_skill_router_gate_table_structure`(행 수 5, gate 이름 ↔ `ALWAYS_ON_LEGAL_GATES` 매칭, 필수 reference 경로 실존 확인)와 `check_research_workflow_tier_table_structure`(행 수 2, light 행 ledger 필드 6개, full 행 6단계 core 언급)를 신규 등록. 두 표 셀의 파일 경로/헤더 exact-string assert는 대체하고 제거했으며, 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위, `light` tier packet 미생성 등)과 표 안이라도 구조 검증 범위 밖인 적용 범위/트리거 프로즈는 그대로 유지
-
-### Added
 - `skills/beopsuny/references/report-deliverable.md` — R2 파일 규격 표에 인용 링크 행 추가. 리포트의 조문·판례 citation은 law.go.kr(판례는 glaw.scourt.go.kr) 공식 링크를 `<a href>`로 포함하고, 하이퍼링크는 콘텐츠이지 외부 리소스 로딩이 아니므로 self-contained 규격과 충돌하지 않음을 명시. 링크 URL 형식은 `references/output-formats.md`의 기존 링크 생성 규칙을 참조만 하고 중복 서술하지 않음 (#195)
 - `skills/beopsuny/assets/templates/report_contract_review.html`, `skills/beopsuny/assets/templates/report_bulk_grid.html` — citation 영역(횡단 이슈 근거, 조항별 위험 근거/verification, sources 토글 뷰 출처 표기)에 law.go.kr(판례: glaw.scourt.go.kr) 공식 링크 `<a href>` 슬롯 추가 (#195)
 - `tests/validate_skill_contracts.py` — report-deliverable.md 인용 링크 행 drift check과 템플릿 2종의 law.go.kr 링크 슬롯 존재 check를 `check_report_deliverable_contract`/`check_bulk_grid_report_template_contract`에 추가. `href http` 금지 패턴 정규식을 law.go.kr/glaw.scourt.go.kr 공식 인용 링크만 예외로 허용하도록 좁혀, 다른 도메인 href는 그대로 forbidden external resource로 잡음 (#195)
@@ -28,6 +22,7 @@
 - `tests/validate_skill_contracts.py` — report-deliverable 계약과 SKILL.md 시각화 섹션 pointer drift를 잡는 O1 static check 추가 (#185)
 
 ### Changed
+- `tests/validate_skill_contracts.py` — SKILL.md 의도 라우터 gate 표와 research-workflow.md 2단 트리거(light/full) 표의 exact-string assert를 파싱 기반 구조 검사로 전환 (#182). 새 `parse_markdown_table`/`extract_reference_paths`/`normalize_gate_name` 유틸을 파일 내부에 추가하고, `check_skill_router_gate_table_structure`(행 수 5, gate 이름 ↔ `ALWAYS_ON_LEGAL_GATES` 매칭, 필수 reference 경로 실존 확인)와 `check_research_workflow_tier_table_structure`(행 수 2, light 행 ledger 필드 6개, full 행 6단계 core 언급)를 신규 등록. 두 표 셀의 파일 경로/헤더 exact-string assert는 대체하고 제거했으며, 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위, `light` tier packet 미생성 등)과 표 안이라도 구조 검증 범위 밖인 적용 범위/트리거 프로즈는 그대로 유지
 - `skills/beopsuny/assets/policies/freshness_debt.yaml`, `skills/beopsuny/references/freshness-governance.md`, stale registry assets, and `tests/fixtures/freshness_revalidations/*issue_180*.yaml` — issue #180 stale 자산 11개 revalidation-or-retire 패스. legalize-kr 로컬 미러(기준일 2026-07-02)로 확인 가능한 statutory 값은 갱신하고, 법망 API/DNS 실패 및 admrule mirror 부재로 확인 못 한 행정규칙·고시 값은 `[UNVERIFIED]` residual scope로 registry 유지
 - `skills/beopsuny/assets/templates/report_bulk_grid.html`, `skills/beopsuny/assets/templates/report_contract_review.html` — 리포트 템플릿 placeholder에서 구체 조문·숫자 예시를 제거해 freshness registry 등록이 필요 없는 렌더링 자산으로 유지 (#180)
 - `skills/beopsuny/SKILL.md` — 게이트 라우팅을 의도 라우터의 단일 gate 표로 통합 (#175). 품질 계약 매핑 섹션을 삭제하고, 고유 정보였던 Freshness·Profile/practice 조건부 gate 행과 계약 충돌 우선순위 문단을 always-on gate 표 쪽으로 흡수. 응답 품질 게이트 섹션은 `references/self-verification.md`를 단일 소스로 가리키는 2줄 요약으로 축약해 4개 차원 상세 재수록 중복을 제거
@@ -41,6 +36,9 @@
 - `skills/beopsuny/references/freshness-governance.md` — Unrouted Asset Rule(retire-first) 추가 (#178). 로드 경로가 없는 자산은 registry에 등록하지 않고 삭제하며, 복구는 git 이력으로 충분하다는 원칙을 명문화
 - `skills/beopsuny/references/self-verification.md` — 설계 메모의 연구 인용 append-only 방침을 폐기하고 대체된 연구는 삭제하도록 변경 (#178)
 - `tests/scenarios/16_router_regression.yaml` — router-01(light), router-05(full)에 `verification_tier` 주석 필드 추가 (#177/#178)
+
+### Fixed
+- `skills/beopsuny/references/source-access.md`, `skills/beopsuny/references/law-change-detection.md`, `skills/beopsuny/references/beopmang-api.md`, `skills/beopsuny/SKILL.md`, `tests/scenarios/01_basic_law.yaml`, `tests/scenarios/11_domain_specific.yaml`, `tests/scenarios/14_law_change_detection.yaml`, `spec/system-map.md`, `README.md` — `BEOPSUNY_DATA_ROOT` 기본값 의미를 통일. source-access.md는 변수를 data 디렉토리 자체로, report-deliverable.md는 beopsuny 루트(`${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/`)로 소비해 같은 변수를 서로 다른 depth로 해석하던 drift 해소. 변수 = beopsuny 루트로 통일하고 미러 표기를 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/{family}`로 변경 (기본 경로 레이아웃 `~/.beopsuny/data/*`, `~/.beopsuny/reports/*`는 불변, override 시 해석만 정정). source-access.md에 변수 의미를 한 문장으로 명시. 과거 릴리즈 섹션의 옛 표기는 당시 기록 그대로 유지 (#196)
 
 ### Fixed (PR #179 리뷰 반영)
 - `references/research-workflow.md` — `light` tier의 한 줄 ledger 필드에 `pinpoint`를 분리 명시하고 `supports`의 귀속 규칙을 추가해 citation-verification-contract Output Binding·self-verification Dim 1과의 필드 불일치 해소
