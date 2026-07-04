@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- `skills/beopsuny/references/source-access.md`, `skills/beopsuny/references/law-change-detection.md`, `skills/beopsuny/references/beopmang-api.md`, `skills/beopsuny/SKILL.md`, `tests/scenarios/01_basic_law.yaml`, `tests/scenarios/11_domain_specific.yaml`, `tests/scenarios/14_law_change_detection.yaml`, `spec/system-map.md`, `README.md` — `BEOPSUNY_DATA_ROOT` 기본값 의미를 통일. source-access.md는 변수를 data 디렉토리 자체로, report-deliverable.md는 beopsuny 루트(`${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/`)로 소비해 같은 변수를 서로 다른 depth로 해석하던 drift 해소. 변수 = beopsuny 루트로 통일하고 미러 표기를 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/{family}`로 변경 (기본 경로 레이아웃 `~/.beopsuny/data/*`, `~/.beopsuny/reports/*`는 불변, override 시 해석만 정정). source-access.md에 변수 의미를 한 문장으로 명시 (#196)
+
 ### Changed
 - `tests/validate_skill_contracts.py` — SKILL.md 의도 라우터 gate 표와 research-workflow.md 2단 트리거(light/full) 표의 exact-string assert를 파싱 기반 구조 검사로 전환 (#182). 새 `parse_markdown_table`/`extract_reference_paths`/`normalize_gate_name` 유틸을 파일 내부에 추가하고, `check_skill_router_gate_table_structure`(행 수 5, gate 이름 ↔ `ALWAYS_ON_LEGAL_GATES` 매칭, 필수 reference 경로 실존 확인)와 `check_research_workflow_tier_table_structure`(행 수 2, light 행 ledger 필드 6개, full 행 6단계 core 언급)를 신규 등록. 두 표 셀의 파일 경로/헤더 exact-string assert는 대체하고 제거했으며, 표 밖 규범 문장(gate 관장 원칙, 계약 충돌 우선순위, `light` tier packet 미생성 등)과 표 안이라도 구조 검증 범위 밖인 적용 범위/트리거 프로즈는 그대로 유지
 
@@ -117,7 +120,7 @@
 - `tests/scenarios/13_contract_review.yaml` `contract-06` — `response_contains` 에서 `제8조` 제거 (P1). Limitation of Liability (`IN NO EVENT SHALL... BE LIABLE`) 는 제7조 범위; 제8조 (손해배상 예정) 는 별도 `liquidated_damages` 영역이라 요구하면 오답 유도
 
 ### Fixed (P2 — 약속 정합 / 테스트 강도)
-- `README.md` + `skills/beopsuny/references/beopmang-api.md` + `tests/scenarios/01_basic_law.yaml` + `tests/scenarios/07_edge_cases.yaml` + `tests/scenarios/11_domain_specific.yaml` — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` (P2). v0.3.0 CHANGELOG 는 "전역 통일" 을 선언했지만 SKILL.md 만 치환됐고 리포 전반은 미반영 — 오버클레임 해소 (v0.3.0 6 파일 잔여 처리)
+- `README.md` + `skills/beopsuny/references/beopmang-api.md` + `tests/scenarios/01_basic_law.yaml` + `tests/scenarios/07_edge_cases.yaml` + `tests/scenarios/11_domain_specific.yaml` — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` (P2). v0.3.0 CHANGELOG 는 "전역 통일" 을 선언했지만 SKILL.md 만 치환됐고 리포 전반은 미반영 — 오버클레임 해소 (v0.3.0 6 파일 잔여 처리)
 - `skills/beopsuny/assets/policies/mandatory_provisions.yaml` `개인정보보호법 제28조의8` — `enforced_at: null` → `"2023-09-15"` (P2). 자기 주석 "시행일 확인 — 시행 전 조문은 '시행 예정' 으로 표시" 위반 해소. 2023-03-14 공포, 2023-09-15 시행
 - `skills/beopsuny/assets/policies/mandatory_provisions.yaml` 상단 주석 — `enforced_at: null` 의미를 "법령 원제정 이후 실질적 변경 없이 상시 시행 중" 으로 명확화. 불확실할 때 null 로 도피 금지 문구 추가
 - `tests/scenarios/14_law_change_detection.yaml` `forbidden_phrases` — bare `정기적으로` / `주기적` / `모니터링` / `알려드릴` / `체크해드리` 는 compliance checklist (`privacy_compliance.yaml` "주기적 점검", `food_business.yaml` "모니터링", `realestate.yaml` "허위매물 모니터링") 와 false-positive 충돌 (P2). Push 행위를 적극 약속하는 복합구로 anchor 강화: `정기적으로 알려` / `주기적으로 알려` / `자동 모니터링` / `모니터링을 설정` / `알려드릴게` / `알려드리겠` / `체크해드리` / `지속적으로 추적`
@@ -151,11 +154,11 @@
 - `tests/scenarios/14_law_change_detection.yaml` 4 시나리오 공통 `forbidden_phrases` 에 자연 발화 6 패턴 추가 — `정기적으로`, `주기적`, `모니터링`, `알려드릴`, `체크해드리`, `지속적으로 추적` (복합구 anchor; `추적` 단독은 SKILL.md "개정 이력 추적" 용법과 충돌하므로 제외). Push 경계 자연 발화까지 확장 (갈래 3 ④)
 
 ### Changed
-- `skills/beopsuny/SKILL.md` 모드 판별·1순위 데이터 소스·데이터 초기화 전 섹션 — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 전역 통일. v0.2.2.1 에서 "법령 변경 감지 섹션 한정" 으로 한정됐던 `$DR` override 가 이제 전역. "경로 override 범위" 단락 삭제, `$DR` 축약은 반복 prefix 축약 용도로 유지 (갈래 2)
+- `skills/beopsuny/SKILL.md` 모드 판별·1순위 데이터 소스·데이터 초기화 전 섹션 — `~/.beopsuny/data` 하드코딩 → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 전역 통일. v0.2.2.1 에서 "법령 변경 감지 섹션 한정" 으로 한정됐던 `$DR` override 가 이제 전역. "경로 override 범위" 단락 삭제, `$DR` 축약은 반복 prefix 축약 용도로 유지 (갈래 2)
 - `skills/beopsuny/SKILL.md` Dim 3 체크리스트 — "갑/을 위치" → "갑/을 위치(`party_position.default`)". Dim 4 서브체크 2 와 필드명 병기 통일 (갈래 2)
 - `skills/beopsuny/SKILL.md` Dim 4 서브체크 1 — 인라인 강행규정 나열 제거, `assets/policies/mandatory_provisions.yaml` 참조로 전환. `clause_types` 매칭 규정 명시 (갈래 3 ①)
 - `skills/beopsuny/assets/data/clause_references.yaml` 상단 주석 gap/eul 축 정의 — v0.2.1 generic phrasing → `profile.yaml.party_position.default: ""` (v0.2.2~) 스키마 필드 구체 참조 (갈래 2)
-- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02, law-change-04 forbidden_phrases prefix) — hardcoded path → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr`. SKILL.md 본문과 drift 해소 (갈래 2)
+- `tests/scenarios/14_law_change_detection.yaml` `data_source` 주석 3곳 (law-change-01/02, law-change-04 forbidden_phrases prefix) — hardcoded path → `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr`. SKILL.md 본문과 drift 해소 (갈래 2)
 - `tests/scenarios/13_contract_review.yaml` `contract-16` / `contract-19` `reference_files` — `assets/policies/mandatory_provisions.yaml` 행 추가 (Dim 4 서브체크 1 판정 근거 증적) (갈래 3 ①)
 - `CHANGELOG.md` `[0.2.2]` 섹션 — "Push 없음"/"크론/알림 없음" 4회 반복 → 테마 헤더 1회 + Notes 1회로 압축. Added 블록 내부 반복 제거 (갈래 2)
 - `.claude-plugin/plugin.json` 버전 `0.2.2.1` → `0.3.0` (최상위 및 `plugins[0]` 동시)
@@ -187,8 +190,8 @@
 - `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **실패 분기** 단락 신설 (P1). `git` non-zero exit, Lite API timeout/error, 법령명 ↔ 디렉토리명 mismatch 는 **"조회 실패" ≠ "개정 없음"** 으로 명시. `💡 "{법령명}" 조회 실패 — 데이터/법령명 확인 필요` 한 줄로 표시. 법률 맥락에서 "최근 개정 없음" 과 "조회 실패" 를 동일시하는 것은 material misrepresentation 이라 명시적으로 분기
 - `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **응답 후단 append 순서** 단락 (P1) — 본문 → `🔍 자가 검증` 블록 → `💡 최근 개정: ...` 또는 `💡 조회 실패: ...` → 면책 고지. v0.2.2 에서는 "면책 고지 직전" 이 법령 변경 감지 append 와 자가 검증 블록 둘 다에 쓰여 상대 순서가 SKILL.md 내부에서 ambiguous 했음 — 이제 명시
 - `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **모드 판별 backref** 한 줄 — 신규 섹션이 서두 "모드 판별 (Full / Lite)" 섹션의 `ls ~/.beopsuny/data/legalize-kr/kr/` 로직을 재사용함을 명시
-- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **경로 override 범위** 단락 (P2) — `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` override 가 이 섹션 한정 실험적 지원임을 명시. v0.2.2 에서 "경로 추상화 허용" 으로 포괄적 표현했으나 실제로는 모드 판별·데이터 초기화는 하드코딩 — drift 양성화. 전역 통일은 v0.3.0 예정
-- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션에 `$DR` 축약 도입 — Full 모드 명령 공통 prefix `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 를 반복 노출 대신 축약
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션 **경로 override 범위** 단락 (P2) — `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` override 가 이 섹션 한정 실험적 지원임을 명시. v0.2.2 에서 "경로 추상화 허용" 으로 포괄적 표현했으나 실제로는 모드 판별·데이터 초기화는 하드코딩 — drift 양성화. 전역 통일은 v0.3.0 예정
+- `skills/beopsuny/SKILL.md` `## 법령 변경 감지` 섹션에 `$DR` 축약 도입 — Full 모드 명령 공통 prefix `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 를 반복 노출 대신 축약
 - `skills/beopsuny/assets/schemas/company_profile.yaml` `interested_laws` 주석에 mismatch 처리 포인터 추가 — "mismatch 시 '개정 없음' 이 아니라 '조회 실패' (SKILL.md 법령 변경 감지 → 실패 분기 참조)"
 - `tests/scenarios/14_law_change_detection.yaml` `law-change-01` 에 `quote_path_flag` validation + `response_contains` 에 `core.quotePath=false` 검증
 
@@ -236,7 +239,7 @@
 ### Notes
 - **Push 설계 없음 — pull 방식 유지**. 크론/알림/스케줄링/notification 코드·문구 일절 없음. `interested_laws` 있으면 응답 후단 한 줄 append 만
 - 외부 의존성 0 — legalize-kr clone 이 이미 되어있다는 전제 (`~/.beopsuny/data/legalize-kr/`). Lite 모드는 기존 법망 API 만 사용
-- 경로 추상화: `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 로 environment variable override 허용
+- 경로 추상화: `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 로 environment variable override 허용
 - #24 A안 포함 처리 — v0.2.1 에서 follow-up 으로 연기됐던 `party_position` 필드가 `interested_laws` 와 같은 스키마 파일 수정이므로 묶어서 처리
 - 새 태그 도입 없음. 기존 6개 태그(`[VERIFIED]` / `[UNVERIFIED]` / `[INSUFFICIENT]` / `[CONTRADICTED]` / `[STALE]` / `[EDITORIAL]`) + Grade A/B/C/D 만 사용
 - SKILL.md 703 → 724줄 (분리 트리거 800 미만, 상한 725 이하)

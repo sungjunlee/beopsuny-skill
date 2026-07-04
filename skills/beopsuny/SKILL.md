@@ -110,13 +110,13 @@ description: |
 스킬 시작 시 로컬 데이터 접근 가능성을 source family별로 확인한다.
 
 ```text
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/legalize-kr/kr/ 있음
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr/kr/ 있음
   -> 법령 Full 모드
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/admrule-kr/ 있음
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/admrule-kr/ 있음
   -> 행정규칙 로컬 미러 사용 가능
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/precedent-kr/ 있음
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/precedent-kr/ 있음
   -> 판례 로컬 미러 사용 가능
-${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}/ordinance-kr/ 있음
+${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr/ 있음
   -> 자치법규 로컬 미러 사용 가능
 없음
   -> Lite 모드: 법망 API + WebSearch + 가능한 MCP/공식 링크

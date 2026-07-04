@@ -170,7 +170,7 @@ Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 
 
 > "Full 모드로 해줘" / "법령·판례·행정규칙 데이터 다운로드해줘"
 
-법순이가 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny/data}` 경로에 필요한 source family를 clone한다. 기본 권장은 법령(`legalize-kr`), 판례(`precedent-kr`), 행정규칙(`admrule-kr`)이고, 자치법규(`ordinance-kr`)는 파일 수가 커서 지역 규제 업무가 많을 때 선택한다. 이미 있으면 `git pull --ff-only`로 최신화를 시도한다. 경로를 바꾸려면 `BEOPSUNY_DATA_ROOT` 환경변수로 override.
+법순이가 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 경로에 필요한 source family를 clone한다. 기본 권장은 법령(`legalize-kr`), 판례(`precedent-kr`), 행정규칙(`admrule-kr`)이고, 자치법규(`ordinance-kr`)는 파일 수가 커서 지역 규제 업무가 많을 때 선택한다. 이미 있으면 `git pull --ff-only`로 최신화를 시도한다. 경로를 바꾸려면 `BEOPSUNY_DATA_ROOT` 환경변수로 override.
 
 ### OC 코드 발급 (무료)
 
