@@ -16,7 +16,7 @@ component: "freshness-governance"
 
 - [x] Batch 1: #204 죽은 자산·끊긴 라우팅 수리 → PR #208 머지 (clause_taxonomy 삭제 + Dim 4 라우팅 복구 + guardrail assert 추가)
 - [x] Batch 2: #205 freshness 테스트 opt-out 반전 + legal_terms maintenance 등록 → PR #209 머지 (allowlist 14파일 명시, legal_terms·mandatory_provisions stale 등록)
-- [ ] Batch 3: #206 출력 예시 단일화 — source_grades.yaml example 블록 → output-formats.md (소형)
+- [x] Batch 3: #206 출력 예시 단일화 → PR #210 머지 (yaml output_format 제거 + source-grading.md 예시 포인터화 + 재발 금지 assert)
 - [ ] Batch 4: #207 clause_references 휘발성 값 live-check-hint 전환 + freshness_debt retire (대형, 실질 작업량의 대부분)
 
 ## Running Context
@@ -30,3 +30,4 @@ component: "freshness-governance"
 - 2026-07-05: 스프린트 생성 (#204, #205, #206, #207). YAML 자산 전수 감사(30개, 9,430줄) 결과 기반.
 - 2026-07-05: Batch 1 (#204) 완료 — codex dispatch → PR #208 → 리뷰 round 2 LGTM → squash 머지, 이슈 close. 오케스트레이터 검증: O1·O2 worktree 재실행 PASS(10 outputs, 17 unsafe), clause_taxonomy 잔존 0건, mutation(새 Dim 4 라우팅 문장 삭제→O1 FAIL) 확인. round 1 지적은 PR 본문 O2 truncation('PAS')뿐 — 본문 수정 + same-head 복구로 처리, 코드 개입 0건. executor가 clause_references.yaml 내부 잔존 포인터 3곳까지 정리(감사 grep 사각지대였음). spec/capabilities.md의 freshness-governance 섹션(이전 세션 초안, uncommitted)을 이 시점에 커밋 — component 라우팅·append-learnings가 의존.
 - 2026-07-05: Batch 2 (#205) 완료 — codex dispatch → PR #209 → round 1 changes_requested 2건 → 오케스트레이터 개입 1건(fe3ef56: non-mapping YAML root bypass 봉합, 리뷰의 정당한 발견) + PR 본문 evidence 보강(O2 truncation 두 PR 연속 재발 — codex CLI 최종 메시지 잘림, 이후 배치는 PR 본문을 오케스트레이터가 작성 권장) → rebrand-evidence → round 2 LGTM → squash 머지. 오케스트레이터 검증: 게이트 PASS, mutation 3종(필드 제거/dict-root 신규/list-root 신규) 전부 적발, last_verified 정직성 git 이력 대조 확인.
+- 2026-07-05: Batch 3 (#206) 완료 — codex dispatch → PR #210 → round 3 LGTM → squash 머지. 코드 개입 0건(라운드 2·3 지적은 전부 PR 본문 evidence — O2 truncation 3연속 + 오케스트레이터 수정 시 남긴 dangling line 1건). 오케스트레이터 검증: 게이트 PASS, mutation 2종(yaml output_format 재도입/md 예시 재삽입→FAIL) 확인, 삭제 사본의 고유 정보(하급심 caveat, 태그 meaning) 단일 소스 존재 대조 완료. 불일치 5건 output-formats.md 기준 통일 기록.
