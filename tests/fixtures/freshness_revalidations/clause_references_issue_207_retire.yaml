@@ -1,0 +1,68 @@
+asset_path: "skills/beopsuny/assets/data/clause_references.yaml"
+checked_at: "2026-07-05"
+checked_by: "relay-codex (issue #207)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/207"
+
+source_families_checked:
+  - "law.go.kr"
+  - "local_legalize_kr"
+  - "beopmang"
+
+official_sources:
+  - title: "law.go.kr 법령·시행령·시행규칙 원문 확인 경로"
+    url: "https://www.law.go.kr/"
+    source_authority: "공식 원문"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-05"
+    notes: "retire 결정은 값을 새로 단정한 것이 아니라, 법정 값 리터럴을 제거하고 law.go.kr 원문 확인 대상으로 전환한 데 근거함."
+  - title: "legalize-kr 로컬 미러 2026-07-02 법령 원문"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-07-05"
+    notes: "issue #180 부분 refresh에서 사용한 공식 원문 기반 로컬 미러. 이번 record에서는 남은 값 제거 여부와 조문 anchor 확인 경로로만 사용."
+
+volatile_items_checked:
+  - item: "deadline"
+    previous_value: "민법 임대차 해지통고 기간, 상법 대리상 해지 예고기간, 하도급대금 지급기한 등 법정 deadline 후보"
+    refreshed_value: "구체 기간 단정값을 제거하고 민법·상법·하도급법 원문 확인 대상 hint로 전환"
+    source_ref: "law.go.kr 법령·시행령·시행규칙 원문 확인 경로"
+    result: "removed"
+  - item: "rate"
+    previous_value: "민법/상법 법정이율, 지연이자율 상한 후보"
+    refreshed_value: "구체 요율 단정값 없이 민법·상법·이자제한법 및 시행령 원문 확인 대상 hint로 전환"
+    source_ref: "law.go.kr 법령·시행령·시행규칙 원문 확인 경로"
+    result: "removed"
+  - item: "penalty"
+    previous_value: "산업기술보호법 형사처벌 상한, 개인정보 과태료·과징금, 위약금/손해배상액 예정 관련 caps"
+    refreshed_value: "상한·과징금·과태료 금액 단정 없이 관련 법령 family와 조문 anchor 확인 대상으로만 유지"
+    source_ref: "law.go.kr 법령·시행령·시행규칙 원문 확인 경로"
+    result: "removed"
+  - item: "threshold"
+    previous_value: "청탁금지법 접대/선물 한도, 공정거래/하도급/개인정보 statutory threshold 후보"
+    refreshed_value: "현행 기준 단정 없이 청탁금지법·시행령, 공정거래법, 하도급법, 개인정보보호법 원문 확인 대상 hint로 전환"
+    source_ref: "law.go.kr 법령·시행령·시행규칙 원문 확인 경로"
+    result: "removed"
+  - item: "amount"
+    previous_value: "계약금액 대비 비율, SLA 수치, 책임 cap 예시가 법정 기준처럼 오독될 수 있는 표현"
+    refreshed_value: "법정 값이 아닌 협상 관행은 실무 후보로 명시하고, SLA·cap·비율은 계약별 조정 또는 live source 확인 대상으로만 유지"
+    source_ref: "legalize-kr 로컬 미러 2026-07-02 법령 원문"
+    result: "removed"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-10"
+  maintenance_next_review_after: "2027-07"
+  summary: "잔여 법정 deadline/rate/penalty/threshold/current amount 단정 표현을 제거하거나 live-check-only hint로 전환. last_verified는 issue #180 부분 재검증일을 유지."
+
+retirement_decision:
+  decision: "retire"
+  reason: "남아 있던 휘발성 법정 값은 공식 source family 확인 대상으로 전환되어 번들 자산이 현행 값 결론을 담지 않게 됐고 maintenance.next_review가 전환 후 성격에 맞게 전진함."
+  remaining_stale_scope: ""
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true

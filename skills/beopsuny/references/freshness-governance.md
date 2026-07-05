@@ -93,7 +93,6 @@ stale 자산을 만질 때는 아래 순서로 판단한다.
 
 | 자산 | next_review | stale 상태 사용 |
 | --- | --- | --- |
-| `skills/beopsuny/assets/data/clause_references.yaml` | 2026-10 | 계약 조항 issue-spotting triage only |
 | `skills/beopsuny/assets/data/legal_terms.yaml` | 2025-12-07 | 법률용어·번역 issue-spotting triage only |
 | `skills/beopsuny/assets/policies/mandatory_provisions.yaml` | 2026-06-24 | 강행규정 후보 issue-spotting triage only |
 | `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-10 | 공정거래 research question triage only |
