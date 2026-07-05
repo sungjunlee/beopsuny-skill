@@ -1866,6 +1866,22 @@ def parse_review_due(value: Any) -> date | None:
 
 
 def check_asset_freshness_metadata_tracked() -> None:
+    freshness_metadata_allowlist = {
+        "skills/beopsuny/assets/policies/freshness_debt.yaml",
+        "skills/beopsuny/assets/policies/knowledge_manifest.yaml",
+        "skills/beopsuny/assets/policies/review_mode.yaml",
+        "skills/beopsuny/assets/policies/source_grades.yaml",
+        "skills/beopsuny/assets/schemas/company_profile.yaml",
+        "skills/beopsuny/assets/schemas/compliance_status.yaml",
+        "skills/beopsuny/assets/schemas/freshness_metadata.yaml",
+        "skills/beopsuny/assets/schemas/freshness_revalidation.yaml",
+        "skills/beopsuny/assets/schemas/internal_rules.yaml",
+        "skills/beopsuny/assets/schemas/legal_verification_packet.yaml",
+        "skills/beopsuny/assets/schemas/output_contract.yaml",
+        "skills/beopsuny/assets/schemas/past_reviews.yaml",
+        "skills/beopsuny/assets/schemas/practice_profile.yaml",
+        "skills/beopsuny/assets/schemas/watched_laws.yaml",
+    }
     registry = freshness_debt_registry()
     registered_assets = {
         str(item.get("path"))
@@ -1877,6 +1893,7 @@ def check_asset_freshness_metadata_tracked() -> None:
         for path in (ROOT / "skills/beopsuny/assets").rglob("*.yaml")
         if path.is_file()
     )
+    missing_metadata: list[str] = []
     stale_untracked: list[str] = []
     today = date.today()
 
@@ -1887,6 +1904,8 @@ def check_asset_freshness_metadata_tracked() -> None:
             continue
         maintenance = data.get("maintenance")
         if not isinstance(maintenance, dict):
+            if relative not in freshness_metadata_allowlist:
+                missing_metadata.append(relative)
             continue
         for required in [
             "review_cycle",
@@ -1912,6 +1931,13 @@ def check_asset_freshness_metadata_tracked() -> None:
         expired = (due and due <= today) or last_verified_due <= today
         if expired and relative not in registered_assets:
             stale_untracked.append(f"{relative}: next_review={maintenance.get('next_review')}")
+
+    if missing_metadata:
+        raise AssertionError(
+            "YAML assets under skills/beopsuny/assets must carry maintenance metadata "
+            "unless explicitly allowlisted by the volatile-fact criterion documented in "
+            f"freshness-governance.md: {missing_metadata}"
+        )
 
     if stale_untracked:
         raise AssertionError(

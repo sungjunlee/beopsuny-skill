@@ -32,6 +32,14 @@
 version: "1.0.0"
 last_updated: "2026-04-12"
 
+maintenance:
+  review_cycle: "monthly"
+  next_review: "2026-06-24"
+  last_verified: "2026-05-24"
+  source_url: "https://www.law.go.kr/"
+  freshness_days: 30
+  must_reverify: true
+
 # ------------------------------------------------------------
 # 1. 약관·계약 일반 (v0.2.1 인라인 → 외화)
 # ------------------------------------------------------------

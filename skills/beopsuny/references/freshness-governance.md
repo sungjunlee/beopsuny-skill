@@ -55,6 +55,7 @@ stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live
 새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
 
 각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. `next_review`가 지나거나 `last_verified + freshness_days`가 지난 자산은 현재 날짜 기준 CI에서 보이며, registry에 등록되지 않았으면 실패한다.
+`skills/beopsuny/assets/` 하위 YAML은 기본적으로 `maintenance` 대상이다. 예외는 시간이 지나면 틀려지는 사실(조문 번호, 금액, 기한, 요율, 기관 실무, 시행일, 법률 효과)이 없는 순수 구조·설정·판정 정책 자산만 허용한다. 현재 opt-out 범위는 `assets/schemas/*.yaml`, registry 자신인 `assets/policies/freshness_debt.yaml`, 설정 자산인 `assets/policies/knowledge_manifest.yaml`, 법령 사실을 담지 않는 순수 판정 정책인 `assets/policies/review_mode.yaml`과 `assets/policies/source_grades.yaml`이며, 테스트 allowlist는 이 기준을 집행하기 위한 목록일 뿐 단일 소스는 이 문서다.
 `partial_refresh`로 일부 값을 갱신한 자산은 `next_review`가 미래여도 residual stale scope가 남아 있으면 registry에 유지한다. 이 경우에도 runtime 사용 범위는 계속 `triage_only`다.
 
 ## Revalidation Record
@@ -93,6 +94,8 @@ stale 자산을 만질 때는 아래 순서로 판단한다.
 | 자산 | next_review | stale 상태 사용 |
 | --- | --- | --- |
 | `skills/beopsuny/assets/data/clause_references.yaml` | 2026-10 | 계약 조항 issue-spotting triage only |
+| `skills/beopsuny/assets/data/legal_terms.yaml` | 2025-12-07 | 법률용어·번역 issue-spotting triage only |
+| `skills/beopsuny/assets/policies/mandatory_provisions.yaml` | 2026-06-24 | 강행규정 후보 issue-spotting triage only |
 | `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-10 | 공정거래 research question triage only |
 | `skills/beopsuny/assets/policies/checklists/food_business.yaml` | 2026-10 | 식품 사업 triage only |
 | `skills/beopsuny/assets/policies/checklists/healthcare.yaml` | 2026-10 | 의료·헬스케어 triage only |
