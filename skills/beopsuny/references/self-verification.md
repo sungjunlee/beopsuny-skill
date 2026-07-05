@@ -88,6 +88,8 @@
 - `negotiation_points`가 `profile.yaml.party_position` 또는 사용자 관점과 일치하는가
 - 출력이 "자동 생성 금지선"을 넘지 않았는가
 
+강행규정 누락 방지에는 `assets/policies/mandatory_provisions.yaml`을 후보 인덱스로 참조할 수 있다. 이 파일은 issue spotting seed일 뿐 결론 근거가 아니며, 각 항목은 답변 전 current primary source로 다시 확인한다.
+
 금지 패턴은 `assets/policies/review_mode.yaml#counter_draft_forbidden_patterns`를 단일 소스로 삼는다. 대표 금지 표현:
 
 - 아래 문구로 교체
