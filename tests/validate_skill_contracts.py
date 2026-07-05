@@ -1901,6 +1901,8 @@ def check_asset_freshness_metadata_tracked() -> None:
         relative = path.relative_to(ROOT).as_posix()
         data = load_yaml(relative)
         if not isinstance(data, dict):
+            if relative not in freshness_metadata_allowlist:
+                missing_metadata.append(relative)
             continue
         maintenance = data.get("maintenance")
         if not isinstance(maintenance, dict):
