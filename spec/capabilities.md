@@ -52,6 +52,45 @@ Mutation discipline:
 
 ---
 
+## Capability: freshness-governance
+
+**Goal:** A user can tell when bundled assets or dated reference claims are only triage seeds, what live source check is still required, and why a stale item was kept, refreshed, or retired.
+
+**In-scope:**
+- Stale asset registry, freshness metadata, revalidation records, and retirement decisions for bundled YAML and dated reference claims.
+- Runtime downgrade behavior for stale or volatile values, including `triage_only`, `[STALE]`, `[INSUFFICIENT]`, reviewer-note `Currency`, and `Before relying` requirements.
+- Freshness gates for checklist routing, source access, bulk review cells, and stale registered references.
+- Static checks, router fixtures, and revalidation fixtures that protect stale assets from becoming current-law conclusions.
+
+**Out-of-scope:**
+- Source family authority labels, citation ledger binding, provenance strings, and `[VERIFIED]` minimum conditions; those belong to `source-citation`.
+- Role, destination, report rendering, and external-facing packaging rules; those belong to `output-role-destination`.
+- Contract-specific issue spotting, review mode, negotiation points, and counter-drafting boundaries; those belong to `contract-review`.
+- Substantive legal correctness after a live source has been checked; this capability only owns freshness and stale-asset handling.
+
+### Expected Behaviors
+- When a registered stale asset, stale reference claim, or volatile checklist value is relevant to an answer, it is used only to narrow triage or identify source families until live legal research supports the conclusion; if the live check fails or is incomplete, the answer marks the item `[STALE]` or `[INSUFFICIENT]` and states the remaining `Currency` or `Before relying` gap.
+- When freshness metadata, the stale registry, freshness routing rules, or stale-output guardrails change, `freshness-governance.md`, `freshness_debt.yaml`, source-access/checklist-routing pointers, revalidation fixtures, and static/router checks are updated together or each non-applicable surface is explicitly justified.
+- Before an asset or reference is retired from the stale registry or its review date is advanced, a revalidation record identifies the official source families checked, volatile items reviewed, asset update, retirement decision, remaining stale scope, and freshness-debt update status.
+
+### Hard Constraints
+- This capability never lets bundled YAML, stale reference text, stored user memory, old newsletters, or stale registered values assert present obligations, fees, forms, deadlines, thresholds, penalties, source counts, treaty counts, or filing requirements without live official or primary-source verification.
+- This capability never removes a loaded asset from `freshness_debt.yaml`, marks a stale item `retire`, or advances `maintenance.next_review` when only partial refresh evidence exists or `remaining_stale_scope` is non-empty.
+
+### Learnings
+<!-- LEARN:BEGIN -->
+<!-- entries appended only after user-approved Learning Actions -->
+<!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
+- 2026-07-05 (run #issue-204-20260705095743002-2309059f): 죽은 자산은 README 인벤토리 테스트가 화석화할 수 있다 — retire 시 자산 파일·README 표·정적 검증 목록·잔존 포인터(assets 내부 포함)를 한 커밋에서 같이 걷어야 하고, 복구한 라우팅은 guardrail assert로 고정해야 mutation에 문다 [PR #208]
+<!-- LEARN:END -->
+
+### Decisions
+| date | decision | rationale | supersedes |
+| --- | --- | --- | --- |
+| 2026-07-05 | Freshness registry maintenance and runtime stale downgrade stay in one capability | the same stale-asset evidence determines both maintainer retirement decisions and whether an answer may state a current-law conclusion | — |
+
+---
+
 ## Capability: output-role-destination
 
 **Goal:** A user receives the same verified or qualified legal conclusion packaged for who they are (role) and where the output is going (destination), with legal-effect gates applied before any signing, sending, or filing — and the packaging never weakens verification duties.

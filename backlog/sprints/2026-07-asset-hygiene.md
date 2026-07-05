@@ -14,7 +14,7 @@ component: "freshness-governance"
 
 ## Plan
 
-- [ ] Batch 1: #204 죽은 자산·끊긴 라우팅 수리 — clause_taxonomy 삭제(retire-first) + mandatory_provisions ↔ self-verification Dim 4 연결 (소형)
+- [x] Batch 1: #204 죽은 자산·끊긴 라우팅 수리 → PR #208 머지 (clause_taxonomy 삭제 + Dim 4 라우팅 복구 + guardrail assert 추가)
 - [ ] Batch 2: #205 freshness 테스트 opt-out 반전 + legal_terms maintenance 등록 (소형, 재발 방지 구조)
 - [ ] Batch 3: #206 출력 예시 단일화 — source_grades.yaml example 블록 → output-formats.md (소형)
 - [ ] Batch 4: #207 clause_references 휘발성 값 live-check-hint 전환 + freshness_debt retire (대형, 실질 작업량의 대부분)
@@ -28,3 +28,4 @@ component: "freshness-governance"
 
 ## Progress
 - 2026-07-05: 스프린트 생성 (#204, #205, #206, #207). YAML 자산 전수 감사(30개, 9,430줄) 결과 기반.
+- 2026-07-05: Batch 1 (#204) 완료 — codex dispatch → PR #208 → 리뷰 round 2 LGTM → squash 머지, 이슈 close. 오케스트레이터 검증: O1·O2 worktree 재실행 PASS(10 outputs, 17 unsafe), clause_taxonomy 잔존 0건, mutation(새 Dim 4 라우팅 문장 삭제→O1 FAIL) 확인. round 1 지적은 PR 본문 O2 truncation('PAS')뿐 — 본문 수정 + same-head 복구로 처리, 코드 개입 0건. executor가 clause_references.yaml 내부 잔존 포인터 3곳까지 정리(감사 grep 사각지대였음). spec/capabilities.md의 freshness-governance 섹션(이전 세션 초안, uncommitted)을 이 시점에 커밋 — component 라우팅·append-learnings가 의존.
