@@ -82,6 +82,7 @@ Mutation discipline:
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
 - 2026-07-05 (run #issue-204-20260705095743002-2309059f): 죽은 자산은 README 인벤토리 테스트가 화석화할 수 있다 — retire 시 자산 파일·README 표·정적 검증 목록·잔존 포인터(assets 내부 포함)를 한 커밋에서 같이 걷어야 하고, 복구한 라우팅은 guardrail assert로 고정해야 mutation에 문다 [PR #208]
+- 2026-07-05 (run #issue-205-20260705102550376-ffa339e0): opt-in 검증은 사각지대를 낳는다 — 자산 전수 규칙은 opt-out(명시 allowlist)로 집행하고, root 타입 같은 파서 경계도 bypass 경로가 된다. last_verified는 git 이력 대조로 정직하게 기록, 재검증 없으면 stale 등록이 정답 [PR #209]
 <!-- LEARN:END -->
 
 ### Decisions
