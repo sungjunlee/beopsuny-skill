@@ -14,12 +14,6 @@
 #   - 법령: 조문 번호 매핑 (API로 최신 내용 조회)
 #   - 판례: 검색 키워드만 제공 (판례는 변경될 수 있음)
 #
-# 분류·위험도 체계는 분리되어 있다:
-#   → `assets/policies/clause_taxonomy.yaml`
-#     - categories (5종 분류)
-#     - risk_levels (low/medium/high 정의 + 판단 기준)
-#     - _template (신규 조항 추가 템플릿)
-#
 # 조항별 counter-drafting 힌트 (현재 정책 — 확장 계획은 Epic/Issue 참조):
 #   - why_risky: 왜 위험한지 — 한국 강행규정·실무 기준 요약 (3줄 이내)
 #   - negotiation_points.gap / .eul: 갑/을 관점 협상 포인트 2–3개씩
@@ -48,7 +42,6 @@
 
 version: "1.2.0"
 last_updated: "2026-04-12"
-taxonomy_ref: "assets/policies/clause_taxonomy.yaml"
 
 maintenance:
   review_cycle: "quarterly"
@@ -96,7 +89,7 @@ disclaimer: |
 # ─────────────────────────────────────────────────────────
 # BOILERPLATE CLAUSES (일반 조항) - 10개
 # ─────────────────────────────────────────────────────────
-# 각 조항의 `category:`와 `risk_level:` 값은 policies/clause_taxonomy.yaml의 정의를 참조한다.
+# 각 조항의 `category:`와 `risk_level:` 값은 조항 식별과 초기 triage를 위한 로컬 힌트다.
 
 clauses:
   governing_law:
@@ -1591,5 +1584,3 @@ clauses:
       - 가격 산정 방법
       - 일정 영향 처리
     risk_level: medium
-
-# 신규 조항 추가 템플릿은 `assets/policies/clause_taxonomy.yaml` 의 `_template` 참조.

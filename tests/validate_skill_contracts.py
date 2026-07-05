@@ -2493,7 +2493,7 @@ def check_readme_quality_contract_map() -> None:
         "pull request",
         ".github/workflows/contract-tests.yml",
         "router guardrail 평가",
-        "assets/policies/` (6 files)",
+        "assets/policies/` (5 files)",
         "assets/schemas/` (10 files",
         "freshness_metadata.yaml",
         "`freshness_debt.yaml`",
@@ -2550,7 +2550,6 @@ def check_readme_asset_inventory_counts() -> None:
 
     for policy_name in [
         "mandatory_provisions.yaml",
-        "clause_taxonomy.yaml",
         "review_mode.yaml",
         "source_grades.yaml",
         "freshness_debt.yaml",
@@ -2974,6 +2973,9 @@ def check_self_verification_guardrails() -> None:
         "외부 공유용 초안에 내부 검토자 메모, 자가 검증 블록",
         "법무/변호사 검토 전 단계와 실제 외부 행동 단계를 분리",
         "데이터 무결성 이슈",
+        "`assets/policies/mandatory_provisions.yaml`",
+        "후보 인덱스",
+        "current primary source",
     ]:
         assert_contains(text, required, label)
 
