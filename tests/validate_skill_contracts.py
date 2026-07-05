@@ -1426,6 +1426,10 @@ def check_source_authority_verified_contract() -> None:
         raise AssertionError("source_grades.yaml: expected mapping")
     if "grades" in policy:
         raise AssertionError("source_grades.yaml: public A/B/C/D grades must not be reintroduced")
+    if "output_format" in policy:
+        raise AssertionError("source_grades.yaml: output_format examples must live in output-formats.md")
+    if policy.get("output_format_reference") != "출력 형식과 예시는 references/output-formats.md를 단일 소스로 따른다.":
+        raise AssertionError("source_grades.yaml: output_format_reference pointer missing")
 
     source_classes = policy.get("source_classes")
     if not isinstance(source_classes, dict):
@@ -1469,6 +1473,30 @@ def check_source_authority_verified_contract() -> None:
                 f"source_grades.yaml: {source_name!r} rationale must distinguish local mirror provenance"
             )
 
+    rules = policy.get("rules")
+    if not isinstance(rules, dict):
+        raise AssertionError("source_grades.yaml: rules missing")
+    assert_contains(
+        str(rules.get("existing_tag_definition_reference", "")),
+        "references/citation-verification-contract.md",
+        "source_grades.yaml",
+    )
+    assert_contains(
+        str(rules.get("existing_tag_definition_reference", "")),
+        "references/source-grading.md",
+        "source_grades.yaml",
+    )
+    existing_tag_mapping = rules.get("existing_tag_mapping")
+    if not isinstance(existing_tag_mapping, dict):
+        raise AssertionError("source_grades.yaml: existing_tag_mapping missing")
+    for tag, mapping in existing_tag_mapping.items():
+        if tag not in VERIFICATION_STATUSES:
+            raise AssertionError(f"source_grades.yaml: unknown existing tag mapping key {tag!r}")
+        if not isinstance(mapping, dict) or "use_with" not in mapping:
+            raise AssertionError(f"source_grades.yaml: existing_tag_mapping[{tag!r}] must keep use_with data")
+        if "meaning" in mapping:
+            raise AssertionError(f"source_grades.yaml: existing_tag_mapping[{tag!r}] meaning prose belongs in md")
+
     docs = {
         "bulk-tabular-review.md": read_text("skills/beopsuny/references/bulk-tabular-review.md"),
         "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
@@ -1501,6 +1529,23 @@ def check_source_authority_verified_contract() -> None:
             assert_contains(doc_text, required, doc_label)
         assert_not_contains(doc_text, "— legalize-kr 로컬\n", doc_label)
         assert_not_contains(doc_text, "— precedent-kr 로컬\n", doc_label)
+
+    assert_contains(text, "출력 형식과 예시는 [`references/output-formats.md`](output-formats.md)를 단일 소스로 따른다.", label)
+    assert_not_contains(text, "### 예시 1", label)
+    assert_not_contains(text, "## 대법원 2023. 1. 12. 선고 2022다12345 판결", label)
+
+    output_formats = docs["output-formats.md"]
+    for required in [
+        "출력 형식과 예시는 이 문서를 단일 소스로 삼고",
+        "소스 인용의 첫 줄 맨 앞",
+        "[출처 권위 라벨] [VERIFIED/UNVERIFIED/INSUFFICIENT/CONTRADICTED/STALE/EDITORIAL]",
+        "로컬 미러 원문 확인",
+        "직접 공식 사이트 확인",
+        "직접 법원 원문 확인",
+        "2차 소스 해설",
+        "원문 확인 불가",
+    ]:
+        assert_contains(output_formats, required, "output-formats.md")
 
 
 def check_citation_verification_contract_single_source() -> None:

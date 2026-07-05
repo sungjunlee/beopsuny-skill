@@ -3,6 +3,20 @@
 모든 법률 정보에는 원소스 링크와 출처 권위 라벨을 제공한다. 링크는 패턴이 확실할 때만 만들고 추정 링크를 만들지 않는다.
 
 `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다. 출력 예시는 이 계약을 통과한 경우의 표시 형식이다.
+출력 형식과 예시는 이 문서를 단일 소스로 삼고, `assets/policies/source_grades.yaml`은 판정 데이터와 이 문서 포인터만 둔다.
+
+## 출처 권위 라벨 표시 원칙
+
+소스 인용의 첫 줄 맨 앞에 출처 권위 라벨을 붙이고, 뒤에 verification status를 병기한다.
+순서는 항상 `[출처 권위 라벨] [VERIFIED/UNVERIFIED/INSUFFICIENT/CONTRADICTED/STALE/EDITORIAL]`이다.
+
+이 문서는 아래 예시 유형을 관리한다.
+
+- 로컬 미러 원문 확인: `[공식 원문 기반 로컬 미러] [VERIFIED]`
+- 직접 공식 사이트 확인: `[공식 원문] [VERIFIED]`
+- 직접 법원 원문 확인: `[공식 원문] [VERIFIED]`
+- 2차 소스 해설: `[해설/의견] [EDITORIAL]`
+- 원문 확인 불가: `[INSUFFICIENT]`
 
 ## 법령 인용
 
