@@ -2761,11 +2761,13 @@ def check_static_privacy_preknowledge_boundaries() -> None:
         "Privacy 사전지식",
         "수집·이용",
         "제공·위탁",
-        "국외이전",
+        # 국외이전·vendor 축은 라벨/부분 문자열이 이 파일 다른 곳에 원래 존재하므로
+        # 이동된 bullet 전문을 assert해야 조용한 삭제가 FAIL한다 (PR #213 리뷰 R1)
+        "국외이전: 저장·접근·백업 경로 분리, DPA, subprocessor 목록",
         "안전성 확보조치",
         "정보주체 권리",
         "침해사고",
-        "server-side tag forwarding",
+        "vendor/company document: 처리방침, DPA, subprocessor 변경일, SDK·태그 이벤트, server-side tag forwarding 경로",
     ]:
         assert_contains(knowledge_text, required, "knowledge-injection.md")
 
