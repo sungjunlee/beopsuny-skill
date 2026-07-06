@@ -2747,13 +2747,18 @@ def check_knowledge_manifest_policy_config() -> None:
 
 
 def check_static_privacy_preknowledge_boundaries() -> None:
-    text = read_text("skills/beopsuny/SKILL.md")
-    label = "SKILL.md"
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    knowledge_text = read_text("skills/beopsuny/references/knowledge-injection.md")
+
+    for required in [
+        "이 축이 결론을 강제하지 않는다",
+        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
+        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
+    ]:
+        assert_contains(skill_text, required, "SKILL.md")
 
     for required in [
         "Privacy 사전지식",
-        "이 축이 결론을 강제하지 않는다",
-        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
         "수집·이용",
         "제공·위탁",
         "국외이전",
@@ -2761,9 +2766,10 @@ def check_static_privacy_preknowledge_boundaries() -> None:
         "정보주체 권리",
         "침해사고",
         "server-side tag forwarding",
-        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
     ]:
-        assert_contains(text, required, label)
+        assert_contains(knowledge_text, required, "knowledge-injection.md")
+
+    assert_not_contains(skill_text, "server-side tag forwarding", "SKILL.md")
 
 
 def check_law_change_automation_promise_drift() -> None:
