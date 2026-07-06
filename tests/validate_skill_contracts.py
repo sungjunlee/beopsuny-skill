@@ -2747,23 +2747,31 @@ def check_knowledge_manifest_policy_config() -> None:
 
 
 def check_static_privacy_preknowledge_boundaries() -> None:
-    text = read_text("skills/beopsuny/SKILL.md")
-    label = "SKILL.md"
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    knowledge_text = read_text("skills/beopsuny/references/knowledge-injection.md")
+
+    for required in [
+        "이 축이 결론을 강제하지 않는다",
+        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
+        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
+    ]:
+        assert_contains(skill_text, required, "SKILL.md")
 
     for required in [
         "Privacy 사전지식",
-        "이 축이 결론을 강제하지 않는다",
-        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
         "수집·이용",
         "제공·위탁",
-        "국외이전",
+        # 국외이전·vendor 축은 라벨/부분 문자열이 이 파일 다른 곳에 원래 존재하므로
+        # 이동된 bullet 전문을 assert해야 조용한 삭제가 FAIL한다 (PR #213 리뷰 R1)
+        "국외이전: 저장·접근·백업 경로 분리, DPA, subprocessor 목록",
         "안전성 확보조치",
         "정보주체 권리",
         "침해사고",
-        "server-side tag forwarding",
-        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
+        "vendor/company document: 처리방침, DPA, subprocessor 변경일, SDK·태그 이벤트, server-side tag forwarding 경로",
     ]:
-        assert_contains(text, required, label)
+        assert_contains(knowledge_text, required, "knowledge-injection.md")
+
+    assert_not_contains(skill_text, "server-side tag forwarding", "SKILL.md")
 
 
 def check_law_change_automation_promise_drift() -> None:

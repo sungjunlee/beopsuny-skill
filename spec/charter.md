@@ -1,6 +1,6 @@
 ---
-last_amended: 2026-06-20
-revision: 1
+last_amended: 2026-07-06
+revision: 2
 ---
 
 # beopsuny-skill Charter
@@ -28,3 +28,5 @@ Keep one public `beopsuny` skill with a small always-loaded router spine, then l
 ## Decisions          <!-- Tier 3 · History (immutable, append-only) -->
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
+| 2026-07-06 | Quality layering is two-fold (router gate table + citation-verification contract) and over-routing judgments use the single Right-sizing criterion | five overlapping gate layers created drift and maintenance cost in the #174 pruning cycle (PR #179); promoted from `_context.md` and the router-loading capability | — |
+| 2026-07-06 | Repo-wide asset verification is enforced opt-out (explicit allowlist) and dead assets are retired by deletion, not registration | opt-in verification created blind spots and dead assets fossilized through inventory tests in the asset-hygiene sprint (PRs #208, #209); promoted from freshness-governance | — |

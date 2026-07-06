@@ -26,6 +26,18 @@ Operational preference:
 - 복합 개인정보 질문, vendor/DPA/국외이전/사고대응/광고태그처럼 누락 위험이 큰 질문에는 knowledge asset으로 recall과 audit을 보강한다.
 - 사용 여부를 답변마다 장황하게 설명하지 않는다. 내부 URL, token, 인증 실패 세부사항은 노출하지 않는다.
 
+Privacy 사전지식 — 기본 점검 축:
+
+이 축은 blind live search 전에 빠뜨리기 쉬운 사실 질문을 떠올리기 위한 보조 프레임이다. 이 축이 결론을 강제하지 않는다. 개인정보 쟁점이 없는 질문에는 적용하지 않는다.
+
+- 수집·이용: 동의 근거, 목적 범위, 최소수집, 보유기간, 2차 활용
+- 제공·위탁: 위탁 vs 제3자 제공 분기, 재위탁 구조, 공개의무
+- 국외이전: 저장·접근·백업 경로 분리, DPA, subprocessor 목록
+- 안전성 확보조치: 접근권한, 암호화, 접속기록, 내부관리계획
+- 정보주체 권리: 열람·정정·삭제·처리정지, opt-out 전파
+- 침해사고: 통지·신고 기준, 증적보전, 초기 차단, effective-date boundary
+- vendor/company document: 처리방침, DPA, subprocessor 변경일, SDK·태그 이벤트, server-side tag forwarding 경로
+
 기존 번들 자산과의 관계:
 
 - `assets/policies/checklists/privacy_compliance.yaml`은 개인정보보호 기본 자가점검 체크리스트다.

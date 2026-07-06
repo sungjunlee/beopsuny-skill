@@ -65,10 +65,10 @@ Detailed architecture history lives in [`../DESIGN.md`](../DESIGN.md). Product d
 
 ## Candidate Capability Boundaries
 
-- `router-loading` - evidence: `SKILL.md` intent router, `tests/scenarios/16_router_regression.yaml`, `check_router_*`; owns intent classification, reference loading, and always-on gate attachment; uncertainty: whether international-guide routing stays under legal research or becomes a named capability.
-- `source-citation` - evidence: `source-access.md`, `citation-verification-contract.md`, `source-grading.md`, `golden_citations.yaml`; owns source family map, authority labels, verification status, provenance, and `[VERIFIED]` minimum conditions; uncertainty: how to separate source access mechanics from legal verification core in capability contracts.
-- `freshness-governance` - evidence: `freshness-governance.md`, `freshness_debt.yaml`, freshness schemas, freshness revalidation fixtures; owns stale asset registration, revalidation evidence, retirement rules, and downgrade behavior; uncertainty: whether checklist freshness and source freshness should remain one contract.
-- `output-role-destination` - evidence: `output-formats.md`, `output_contract.yaml`, `self-verification.md`, `router-14`; owns answer sizing, reviewer notes, self-verification visibility, and external/action-ready output gates; uncertainty: how much formatting belongs here versus each intent workflow.
+Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`.
+
+Remaining candidates:
+
 - `profile-practice-memory` - evidence: `memory-structure.md`, `company_profile.yaml`, `practice_profile.yaml`, router profile scenarios; owns `~/.beopsuny/` memory locations, merge order, trust boundary, and user-confirmed writes; uncertainty: practice overlays are designed but not yet required as runtime files.
 - `contract-review` - evidence: `contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`, contract scenarios; owns contract-specific triage, review mode, clause risk candidates, negotiation points, and counter-drafting boundary; uncertainty: whether this stays an intent workflow or becomes a first-class capability contract.
 
