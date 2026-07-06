@@ -16,7 +16,7 @@ component: "profile-practice-memory"
 
 ## Plan
 
-- [ ] #104 (Batch 1, ~1 session) practice profile cold-start — shared company profile ↔ 분야별 practice profile 구조 설계, quick/full 온보딩 확장, seed document의 stated position vs signed practice 추출 절차 명시. memory-structure.md·스키마·정적 검사 짝 갱신
+- [~] #104 (Batch 1, ~1 session) practice profile cold-start — **PR #214 ready_to_merge** (리뷰 R1 pass, 1라운드), memory-structure.md 승격 + 검사 12 assert, merge 대기
 - [ ] #105 (Batch 2, ~1 session) matter workspace — matter별 source-log/review-log/outputs/history 역할 분리, cross-matter context 기본 off + 예외 절차. capability HC2가 계약 앵커
 
 ## Running Context
@@ -26,4 +26,5 @@ component: "profile-practice-memory"
 - 테스트↔문서 강결합 + 이동 문자열 보호 assert 규칙은 `_context.md` 참조.
 
 ## Progress
+- 2026-07-06: Batch 1 relay 완료 — PR #214 ready_to_merge (리뷰 1라운드 pass). relay-ready 선행(req-…-420, DC 6개)이 주효 — 첫 라운드 통과. 검증: O1/O2 PASS, SKILL.md 무변경 269줄, mutation 3건 FAIL 재현. quick 온보딩 불변이 명문화됨.
 - 2026-07-06: 스프린트 생성. profile-practice-memory capability grill 확정(5번째 capability, 212줄 예산 내), system-map landed 갱신. 에픽 순서는 사용자 확정(profile 먼저).
