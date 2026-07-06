@@ -91,6 +91,7 @@ Mutation discipline:
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
 | 2026-07-05 | Freshness registry maintenance and runtime stale downgrade stay in one capability | the same stale-asset evidence determines both maintainer retirement decisions and whether an answer may state a current-law conclusion | — |
+| 2026-07-06 | Asset-wide verification rules are enforced opt-out with an explicit allowlist, including parser-boundary shapes such as non-mapping YAML roots | opt-in verification created blind spots and a non-mapping root bypassed checks in #205 (PR #209); promoted from the 2026-07-05 Learning | — |
 
 ---
 
@@ -131,3 +132,41 @@ Mutation discipline:
 | --- | --- | --- | --- |
 | 2026-07-05 | Report render layer (report contract, templates, Artifact gate) is in-scope of this capability, not a separate capability | render layer consumes the destination contract with no new intent; splitting now would be premature at 2 capabilities | — |
 | 2026-07-05 | Unconfirmed role + named destination composes conservatively: stricter obligation wins | 2026-07-04 smoke test showed agents improvise when no composition rule exists | — |
+
+---
+
+## Capability: router-loading
+
+**Goal:** A user request is answered through exactly one primary intent with only the workflow references that intent needs, and no routing choice ever detaches the always-on legal-conclusion gates.
+
+**In-scope:**
+- The SKILL.md router spine: primary-intent classification, the intent → workflow-reference table, and routing principles including Right-sizing as the single over-routing criterion.
+- The always-on / conditional gate attachment tables and gate-attachment semantics at the routing layer.
+- Progressive-disclosure loading rules: what stays in the always-loaded spine versus what loads on demand from `references/` and `assets/`.
+- Spine sizing decisions, router regression fixtures, and the router static checks that protect intent-table and gate-table structure.
+
+**Out-of-scope:**
+- The content of the gates themselves — citation, verification status, and provenance belong to `source-citation`; stale-asset handling belongs to `freshness-governance`; packaging belongs to `output-role-destination`.
+- Full/Lite source-family semantics and fallback order; those belong to `source-citation` — the router owns only the placement of the mode block in the spine.
+- Workflow internals of each routed intent (research depth, contract review logic, checklist selection).
+- Substantive correctness of intent-specific answers.
+
+### Expected Behaviors
+- A simple confirmation request (statute text, enforcement date, official link) is answered through `legal_research` alone without loading contract, checklist, bulk-review, or knowledge-layer workflow references, and any over-routing judgment cites Right-sizing (routing principle 1) as the single criterion.
+- Every answer that cites legal authority passes the always-on gates (citation verification, self-verification, output contract) regardless of the chosen primary intent, and conditional gates (freshness, profile/practice) attach whenever their trigger is present — loading economy never changes gate applicability.
+- When the router spine changes (intent row, gate table, routing principle, loading rule, or spine size), the intent table, gate tables, router regression fixtures, and router static checks are updated together or the non-applicable surfaces are explicitly justified.
+
+### Hard Constraints
+- This capability never lets spine-size reduction, reference-loading economy, or routing simplification detach an always-on legal gate from the always-loaded surface; workflow detail may move to `references/`, gate attachment may not.
+- This capability never answers a Korean-law request from memory because routing or reference loading failed or was skipped; a failed or unavailable route degrades to `[INSUFFICIENT]` or a narrower answer, never to memory-based conclusions.
+
+### Learnings
+<!-- LEARN:BEGIN -->
+<!-- entries appended only after user-approved Learning Actions -->
+<!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
+<!-- LEARN:END -->
+
+### Decisions
+| date | decision | rationale | supersedes |
+| --- | --- | --- | --- |
+| 2026-07-06 | Over-routing judgments have a single criterion (Right-sizing, routing principle 1) and the quality layer is two-fold (router gate table + citation-verification contract) | the #174 pruning cycle showed duplicated gate layers create drift and maintenance cost (PR #179) | — |

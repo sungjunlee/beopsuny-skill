@@ -4,7 +4,7 @@ status: active
 started: 2026-07-06
 due: TBD
 objectives: [O1, O2]
-component: ""
+component: "router-loading"
 ---
 
 # skill-diet
@@ -21,9 +21,10 @@ SKILL.md 다이어트 — 2026-07-asset-hygiene 종결 시 합의된 후속. 자
 ## Running Context
 - **Batch 2는 조건부**: go 판정 후보가 있으면 실행 이슈를 생성해 Plan에 `- [ ] #N (Batch 2)`로 추가한다. 전부 no-go면 Batch 1만으로 스프린트 종결(목표치 ~300줄 현실화 포함).
 - **#183 후보 2는 선반영 가능성**: "출력 계약 형식 예시 2개 → output-formats.md pointer 대체"는 asset-hygiene #206(PR #210)에서 출력 예시 3중 표현을 output-formats.md 단일 소스로 이미 정리함 — 평가 시 현재 SKILL.md 상태 기준으로 잔여분만 판정할 것.
-- **component 공란 사유**: 이 스프린트 영역(router spine)은 선언된 capability에 없음. 2026-07-06 reassess가 `spec-grill router-loading`을 착수 전 권고 — grill 확정 시 `component: "router-loading"`으로 채운다.
+- **capability 계약 확정됨**: 2026-07-06 spec-grill로 `router-loading` capability 확정. Hard Constraint 1이 이 스프린트의 앵커 — 스파인 축소를 이유로 always-on gate를 상시 로딩 표면에서 분리하지 않는다(workflow 상세만 references/로 이동 가능).
 - **압축 역효과 경계**: 프루닝 1차(#174, PR #179 finding ⑤⑥)에서 무리한 압축이 gate 표 셀 과밀을 유발함 — 절감 줄 수보다 라우팅 신뢰도 우선.
 - 테스트↔문서 강결합: SKILL.md 문구 수정 전 `tests/validate_skill_contracts.py`의 해당 check 함수를 먼저 grep (자세한 것은 `_context.md`).
 
 ## Progress
-- 2026-07-06: 스프린트 생성 (reassess 리포트와 같은 세션). #183 미러 sync-pull 완료. 착수 전 router-loading grill 권고 상태.
+- 2026-07-06: 스프린트 생성 (reassess 리포트와 같은 세션). #183 미러 sync-pull 완료.
+- 2026-07-06: reassess 후속 4건 적용 — router-loading grill 확정(component 기입), charter Decisions 2행 승격(revision 2), opt-out Learning의 freshness-governance Decisions 승격, system-map landed 후보 강등. 착수 준비 완료.
