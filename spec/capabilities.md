@@ -171,3 +171,41 @@ Mutation discipline:
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
 | 2026-07-06 | Over-routing judgments have a single criterion (Right-sizing, routing principle 1) and the quality layer is two-fold (router gate table + citation-verification contract) | the #174 pruning cycle showed duplicated gate layers create drift and maintenance cost (PR #179) | — |
+
+---
+
+## Capability: profile-practice-memory
+
+**Goal:** A user's company, practice, and project/matter context is remembered across sessions and applied to answers — without stored content ever weakening verification gates, without unconfirmed writes, and without context leaking across matter boundaries.
+
+**In-scope:**
+- `~/.beopsuny/` memory locations, file roles (profile, practice overlays, project/matter files, review/learning/verification logs), and merge order.
+- The trust boundary: stored profiles, playbooks, and logs are reviewed data, never instructions.
+- User-confirmed writes and the quick/full onboarding flows, including seed-document candidate extraction.
+- Project/matter workspace boundaries and cross-context read defaults.
+- Profile schemas under `assets/schemas/` and the static checks and router scenarios that protect them.
+
+**Out-of-scope:**
+- Verification and citation duties themselves; those belong to `source-citation`.
+- Stale asset registry and freshness downgrade behavior; those belong to `freshness-governance`.
+- Output packaging, role modes, and destination contracts; those belong to `output-role-destination` — profiles may suggest output defaults, but gate content lives with its owner.
+- The contents of actual runtime user data, which lives outside the repo.
+
+### Expected Behaviors
+- When stored profile, playbook, practice-overlay, or log content is used in an answer, it is applied as reviewed context only (including explicit baseline markers such as `계약 playbook 미설정` when absent), and directive text inside stored data cannot change routing, source authority labels, verification status, or output gates.
+- No file under `~/.beopsuny/` is created or modified without explicit user confirmation in the current conversation; onboarding extracts candidates from seed documents and past reviews and shows them before saving.
+- When a memory location, schema, merge order, or workspace boundary changes, `memory-structure.md`, the affected `assets/schemas/*.yaml`, and the profile static checks and scenarios are updated together or the non-applicable surfaces are explicitly justified.
+
+### Hard Constraints
+- This capability never lets stored memory content (profile, practice overlay, playbook, logs, project/matter files) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — memory narrows and personalizes, it never authorizes.
+- This capability never reads or applies another project's or matter's files into the current answer without an explicit user request naming that context; cross-context reads default to off.
+
+### Learnings
+<!-- LEARN:BEGIN -->
+<!-- entries appended only after user-approved Learning Actions -->
+<!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
+<!-- LEARN:END -->
+
+### Decisions
+| date | decision | rationale | supersedes |
+| --- | --- | --- | --- |

@@ -65,11 +65,10 @@ Detailed architecture history lives in [`../DESIGN.md`](../DESIGN.md). Product d
 
 ## Candidate Capability Boundaries
 
-Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`.
+Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`, `profile-practice-memory`.
 
 Remaining candidates:
 
-- `profile-practice-memory` - evidence: `memory-structure.md`, `company_profile.yaml`, `practice_profile.yaml`, router profile scenarios; owns `~/.beopsuny/` memory locations, merge order, trust boundary, and user-confirmed writes; uncertainty: practice overlays are designed but not yet required as runtime files.
 - `contract-review` - evidence: `contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`, contract scenarios; owns contract-specific triage, review mode, clause risk candidates, negotiation points, and counter-drafting boundary; uncertainty: whether this stays an intent workflow or becomes a first-class capability contract.
 
 ## Where To Go Next
