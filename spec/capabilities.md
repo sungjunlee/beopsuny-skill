@@ -164,6 +164,7 @@ Mutation discipline:
 <!-- LEARN:BEGIN -->
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
+- 2026-07-06 (run #issue-212-20260706094947677-9370550e): relay-merge of PR #213 [PR #213]
 <!-- LEARN:END -->
 
 ### Decisions
