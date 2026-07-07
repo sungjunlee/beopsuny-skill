@@ -427,8 +427,39 @@ def check_memory_profile_workflow() -> None:
         "project.yaml.confidentiality: \"heightened\"",
         "freshness_days",
         "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
+        "이 문서에서 matter는 프로젝트와 같은 workspace 단위이며, 경로와 slug는 기존 `projects/{slug}/`를 유지한다.",
+        "source-log = 무엇을 조회했나(provenance), verification-log = 사용자/담당자가 1차 소스로 확인한 사실(재확인 힌트)이다. 둘은 다른 역할이다.",
+        "각 matter는 자기 `projects/{slug}/source_log.jsonl`에 독립된 source·provenance 기록을 append-only로 가진다. 스킬은 다른 matter의 `source_log.jsonl`을 자동으로 읽지 않는다.",
+        "cross-matter(=cross-project) context 기본값은 `off`다.",
+        "다른 matter의 `source_log.jsonl`, `reviews.jsonl`, `learnings.jsonl`, `verification_log.jsonl`, `outputs/`는 사용자가 지명한 명시 요청(\"다른 프로젝트와 비교\", \"지난 계약들 기준으로\", \"전체 이력에서\" 등)을 한 경우에만 그 matter를 묻고 읽는다.",
+        "`confidentiality: heightened` matter는 cross-matter 노출에서 기본 제외하며, 지명 요청이 있어도 추가 확인한다.",
+        "`profile-practice-memory` HC2가 이 계약의 앵커다.",
     ]:
         assert_contains(text, required, label)
+
+    role_rows = parse_markdown_table(text, "| 파일 | owns | does-not-own |")
+    expected_role_rows = {
+        "`source_log.jsonl`": (
+            "이 matter에서 참조·pull한 소스의 provenance (무엇을 열었나 / 어떤 API·파일·URL / 언제)",
+            "결론, 사용자 1차 확인, 법령 권위 판단",
+        ),
+        "`reviews.jsonl` (review-log)": (
+            "검토 결론·질문·caveat 이력",
+            "소스 조회 provenance, 산출물 원문",
+        ),
+        "`outputs/`": (
+            "이 matter에서 생성한 산출물 보관 (리포트·메모·redline 힌트)",
+            "소스 권위 - 산출물도 계속 검토 대상 데이터",
+        ),
+        "`history` (`history.jsonl`)": (
+            "시간순 활동 인덱스 (열림·검토·산출물 생성·archive)",
+            "각 전용 로그의 상세 내용 - 복제하지 않고 포인터/요약만",
+        ),
+    }
+    role_map = {row[0]: row[1:] for row in role_rows if len(row) == 3}
+    for file_label, expected_cells in expected_role_rows.items():
+        if role_map.get(file_label) != list(expected_cells):
+            raise AssertionError(f"{label}: workspace role row mismatch for {file_label!r}")
     assert_not_contains(text, "자동 escalation trigger", label)
 
 
