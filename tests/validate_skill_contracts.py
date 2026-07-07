@@ -2576,6 +2576,100 @@ def check_skill_router_gate_table_structure() -> None:
         raise AssertionError(f"{label}: gate table missing rows for always-on gates {sorted(missing_gates)!r}")
 
 
+WORKFLOW_MAP_HEADER = (
+    "| workflow | trigger 예시 | 주 의도(기존 라우터 의도명) | "
+    "required references(기존 파일명) | output mode | verification 요구(Source Grade/freshness) |"
+)
+WORKFLOW_LABELS = {
+    "commercial",
+    "privacy",
+    "labor",
+    "regulatory",
+    "litigation",
+    "startup",
+    "cross-border",
+}
+SKILL_ROUTER_INTENTS = {
+    "legal_research",
+    "contract_review",
+    "bulk_tabular_review",
+    "compliance_checklist",
+    "law_change_detection",
+    "legal_terms",
+    "memory_profile",
+    "privacy_knowledge_layer",
+}
+WORKFLOW_REFERENCE_FILENAME_RE = re.compile(r"`([^`/]+\.md)`")
+
+
+def check_workflow_map_structure() -> None:
+    text = read_text("skills/beopsuny/references/workflow-map.md")
+    label = "workflow-map.md"
+
+    rows = parse_markdown_table(text, WORKFLOW_MAP_HEADER)
+    if len(rows) != len(WORKFLOW_LABELS):
+        raise AssertionError(f"{label}: expected {len(WORKFLOW_LABELS)} rows, found {len(rows)}: {rows!r}")
+
+    reference_dir = ROOT / "skills/beopsuny/references"
+    seen_workflows: set[str] = set()
+    for row in rows:
+        if len(row) != 6:
+            raise AssertionError(f"{label}: row must have exactly 6 cells, got {row!r}")
+        workflow, trigger, primary_intent, reference_cell, output_mode, verification = row
+        workflow_name = workflow.strip("`")
+        seen_workflows.add(workflow_name)
+        for cell_name, cell in [
+            ("trigger 예시", trigger),
+            ("주 의도", primary_intent),
+            ("required references", reference_cell),
+            ("output mode", output_mode),
+            ("verification 요구", verification),
+        ]:
+            if not cell:
+                raise AssertionError(f"{label}: {workflow_name} row has empty {cell_name} cell")
+
+        reference_filenames = WORKFLOW_REFERENCE_FILENAME_RE.findall(reference_cell)
+        if not reference_filenames:
+            raise AssertionError(f"{label}: {workflow_name} row must name at least one reference filename")
+        for filename in reference_filenames:
+            if not (reference_dir / filename).is_file():
+                raise AssertionError(f"{label}: referenced file does not exist in references/: {filename!r}")
+
+        if workflow_name == "cross-border":
+            if "`international_guide.md`" not in reference_cell:
+                raise AssertionError(f"{label}: cross-border row must consume international_guide.md")
+            if "인덱스" not in reference_cell or "새 의도" not in primary_intent:
+                raise AssertionError(f"{label}: cross-border row must describe international_guide.md as an index, not an intent")
+
+    if seen_workflows != WORKFLOW_LABELS:
+        raise AssertionError(f"{label}: unexpected workflow labels {sorted(seen_workflows)!r}")
+
+    for required in [
+        "모든 workflow에 always-on 법률 결론 gate가 그대로 적용되며, map은 어떤 gate도 workflow별로 분리·약화하지 않는다.",
+        "물리적 plugin split 전",
+        "단일 `beopsuny` 안의 virtual workflow",
+        "물리적 plugin split 후",
+        "per-workflow plugin",
+        "DESIGN.md §6 후속 트리거 참조",
+    ]:
+        assert_contains(text, required, label)
+
+    skill_rows = parse_markdown_table(
+        read_text("skills/beopsuny/SKILL.md"),
+        "| 의도 | 트리거 예시 | 의도별 workflow reference |",
+    )
+    skill_intents = {
+        row[0].strip("`")
+        for row in skill_rows
+        if len(row) == 3 and row[0].startswith("`") and row[0].endswith("`")
+    }
+    if skill_intents != SKILL_ROUTER_INTENTS:
+        raise AssertionError(f"SKILL.md: router intent set changed: {sorted(skill_intents)!r}")
+    leaked_workflows = skill_intents & WORKFLOW_LABELS
+    if leaked_workflows:
+        raise AssertionError(f"SKILL.md: workflow labels must not become router intents: {sorted(leaked_workflows)!r}")
+
+
 def check_readme_quality_contract_map() -> None:
     text = read_text("README.md")
     label = "README.md"
@@ -3688,6 +3782,7 @@ CHECK_GROUPS = (
         (
             check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
+            check_workflow_map_structure,
         ),
     ),
     CheckGroup(
