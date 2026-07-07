@@ -16,7 +16,7 @@ component: "source-citation"
 
 ## Plan
 
-- [ ] #110 (Batch 1, ~1 session) court-style element/fact analysis template — 분쟁 판단 템플릿(요건/인정/미확인/증거/잠정결론 분리) + 판례 출력 distinguishing 필드(유사점·차이점·적용 한계) + 구조 검증 추가
+- [~] #110 (Batch 1, ~1 session) court-style element/fact analysis template → PR #217 **ready_to_merge** (리뷰 R1 pass) — 5분리 판단 표(Legal Verification Core 연결) + 판례 distinguishing + workflow-map litigation 행 갱신 + 구조 검증, merge 대기
 
 ## Running Context
 - **계약 앵커**: `source-citation` capability — #110의 최선명 완료 기준("판례 인용이 사건번호 확인에 그치지 않는다")이 인용 깊이 요구다. court-style 요건사실 분리는 더 근거 있는 인용을 만드는 workflow 구조. distinguishing/유사·차이는 판례 인용을 사건번호에서 실질 비교로 심화 — source-citation의 citation-verification 도메인.
@@ -27,4 +27,5 @@ component: "source-citation"
 - 테스트↔문서 강결합 + 이동 문자열 보호 assert + codex PR 본문 truncate 보강 + **redispatch는 --run-id resume**은 `_context.md` 참조.
 
 ## Progress
+- 2026-07-07: Batch 1 relay 완료 — PR #217 ready_to_merge (리뷰 1라운드 pass). 검증(직접): O1/O2 PASS(10/17), SKILL.md 무변경 269줄, mutation 5건 FAIL 재현(요건필드·예측금지문장·distinguishing·litigation의도·SKILL예측금지라인). 5분리 표가 Legal Verification Core에 연결, distinguishing이 source_authority 대체 안 함 명시, workflow-map litigation 자리표시 제거·legal_research 유지. executor가 판례 provenance 라벨을 전문 assert로 선제 보호.
 - 2026-07-07: 스프린트 생성. #110만 스코프(#111-112 후속 예약). component source-citation, objective O1. 착수 전 contract-review grill 완료로 spec 축 정리됨.
