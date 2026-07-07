@@ -17,7 +17,7 @@ component: "profile-practice-memory"
 ## Plan
 
 - [x] #104 (Batch 1, ~1 session) practice profile cold-start → PR #214 (merged) — memory-structure.md 승격 + 검사 12 assert
-- [ ] #105 (Batch 2, ~1 session) matter workspace — matter별 source-log/review-log/outputs/history 역할 분리, cross-matter context 기본 off + 예외 절차. capability HC2가 계약 앵커
+- [~] #105 (Batch 2, ~1 session) matter workspace → PR #215 **ready_to_merge** (리뷰 R1 pass) — 4자 역할 분리 표 + cross-matter gate 명시 계약 + source_log.jsonl, merge 대기
 
 ## Running Context
 - **계약 앵커**: `profile-practice-memory` capability (2026-07-06 확정) — HC1: 저장물은 gate를 약화·우회 불가(좁히고 개인화만). HC2: 다른 matter 파일은 지명된 명시 요청 없이 읽지 않음(cross-context 기본 off). Behavior 2: `~/.beopsuny/` 쓰기는 사용자 확인 필수.
@@ -26,6 +26,7 @@ component: "profile-practice-memory"
 - 테스트↔문서 강결합 + 이동 문자열 보호 assert 규칙은 `_context.md` 참조.
 
 ## Progress
+- 2026-07-07: Batch 2 relay 완료 — PR #215 ready_to_merge (리뷰 1라운드 pass). relay-ready 선행(req-…-215, DC 6개). 검증(오케스트레이터 직접): O1/O2 PASS(10/17), SKILL.md 무변경 269줄, mutation 4건 FAIL 재현(구분문장·heightened제외·role셀·독립provenance). cross-project off 기존 assert는 gate 섹션 둘째 문장으로 보존됨. merge 대기.
 - 2026-07-06: #104 dispatched → PR #214 → reviewed (LGTM, round 1) → merged (squash 629398e). issue #104 close, worktree/브랜치 정리. 머지 후 로컬 2커밋(ca412f8 스프린트, 41d06d1 학습)은 원격 squash 뒤로 rebase 후 push — 충돌 없음.
 - 2026-07-06: Batch 1 relay 완료 — PR #214 ready_to_merge (리뷰 1라운드 pass). relay-ready 선행(req-…-420, DC 6개)이 주효 — 첫 라운드 통과. 검증: O1/O2 PASS, SKILL.md 무변경 269줄, mutation 3건 FAIL 재현. quick 온보딩 불변이 명문화됨.
 - 2026-07-06: 스프린트 생성. profile-practice-memory capability grill 확정(5번째 capability, 212줄 예산 내), system-map landed 갱신. 에픽 순서는 사용자 확정(profile 먼저).
