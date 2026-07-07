@@ -131,6 +131,22 @@ ledger에 없는 인용은 출력하지 않는다. ledger에 있지만 `supports
 
 이 packet은 법률 조언을 자동 확정하는 양식이 아니다. source가 약하거나 모순되면 결론을 강하게 만드는 것이 아니라 `qualified`, `insufficient`, `contradicted`, `triage_only`로 낮추는 구조다. `output_allowed: true`가 아닌 ledger 항목은 사용자 답변의 인용으로 노출하지 않는다.
 
+## 분쟁 판단 구조 (요건·사실·증거 분리)
+
+분쟁 쟁점, 판례, 소송·기관 제출 전 법리 검토처럼 `workflow-map.md`의 `litigation` workflow에 해당하는 질문에서 사용한다. 새 router intent를 만들지 않고 주 의도는 `legal_research`로 유지한다.
+
+이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다.
+
+| 필드 | 의미 | Legal Verification Core 연결 |
+| --- | --- | --- |
+| **요건사실** | 주장이 성립하려면 충족돼야 하는 법률요건. 각 요건은 근거 조문 또는 판례와 연결한다. | issue-to-authority map의 결론 후보와 필요한 authority로 연결 |
+| **인정사실** | 자료와 사용자 전제상 다툼 없이 확인된 사실. | authority packet 또는 citation ledger의 `supports`가 있는 자료로만 결론 근거화 |
+| **미확인 사실** | 자료로 확인되지 않은 사실. 추정하지 않고 확인 필요로 표시한다. | conclusion binding에서 `[INSUFFICIENT]` 또는 결론 유보 사유로 반영 |
+| **증거** | 각 사실을 뒷받침하는 자료·문서·원문. 없으면 공백으로 둔다. | citation ledger의 provenance, source_authority, verification_status와 연결 |
+| **잠정 결론** | 요건사실·인정사실·미확인 사실·증거를 종합한 잠정 판단. 미확인 사실이 있으면 결론 강도를 낮춘다. | conclusion binding과 verification packet의 `conclusion_binding`으로 강도 고정 |
+
+이 표는 Legal Verification Core를 대체하지 않는다. `full` tier가 필요한 분쟁 포지션이면 위 필드를 정리한 뒤 기존 verification packet contract와 citation ledger를 통과한 근거만 출력 결론에 연결한다.
+
 ## Investigation Matrix
 
 | Phase | 무엇을 | Full 모드 | Lite 모드 | 기본 |
