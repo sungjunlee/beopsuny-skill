@@ -175,6 +175,44 @@ Mutation discipline:
 
 ---
 
+## Capability: contract-review
+
+**Goal:** A user reviewing a Korean contract gets clause-level issue spotting, review-mode-scaled risk flags, party-position negotiation points, and directional counter-drafting hints — never final counterparty-ready redline text, and never a legal conclusion asserted without official-source verification.
+
+**In-scope:**
+- Contract intake, proportionality, destination read, and review-mode depth scaling (strict/moderate/loose, default moderate).
+- Clause-level risk candidates and clause→Korean-law mapping (`clause_references.yaml`).
+- Cross-cutting issue spotting, main risk clauses, and negotiation points by party position (gap/eul).
+- The counter-drafting boundary: directional/principled wording hints (`alt_wording_hint`), not finished redline.
+- Company playbook applied within a review as reviewed preference data.
+- `contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`, and the contract scenarios/static checks that protect them.
+
+**Out-of-scope:**
+- Source authority labels, `[VERIFIED]`, and citation verification themselves; those belong to `source-citation` (contract review consumes them).
+- Freshness downgrade of stale duties/fees/thresholds; belongs to `freshness-governance`.
+- Output packaging, role modes, and destination gates; belong to `output-role-destination` (contract review consumes the destination gate to restrict external redline).
+- Storage and merge of playbooks/profiles; belongs to `profile-practice-memory` (playbook is read here as reviewed data).
+- Court-style dispute/element-fact analysis and case-law distinguishing (#110); that is a litigation workflow, not contract review.
+
+### Expected Behaviors
+- A contract review scales flag depth by review mode (default moderate) and surfaces cross-cutting issues, main risk clauses, and party-position negotiation points; a looser mode reduces flag verbosity but does not drop the cross-cutting checks the mode marks as always-checked.
+- A legal conclusion about a clause (e.g., a mandatory-provision violation) carries a source authority label and is verified against official source before assertion; `clause_references.yaml` mappings and playbook text are triage/preference inputs, never the conclusion's authority.
+- When a contract surface changes (`contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`), the contract scenarios and static checks are updated together or the non-applicable surfaces are explicitly justified.
+
+### Hard Constraints
+- This capability never emits final, counterparty-ready redline or a complete revised clause presented as send-ready; counter-drafting stays directional (why-risky + gap/eul negotiation points + alt-wording direction), and external-facing or legal-effect destinations tighten this through the destination gate.
+- This capability never lets review mode, clause mappings, or company playbook downgrade or replace source authority, verification status, or freshness on a legal conclusion — a looser mode narrows flag verbosity, never the evidentiary bar for asserting a present legal obligation.
+
+### Learnings
+<!-- LEARN:BEGIN -->
+<!-- entries appended only after user-approved Learning Actions -->
+<!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
+<!-- LEARN:END -->
+
+### Decisions
+| date | decision | rationale | supersedes |
+| --- | --- | --- | --- |
+
 ## Capability: profile-practice-memory
 
 **Goal:** A user's company, practice, and project/matter context is remembered across sessions and applied to answers — without stored content ever weakening verification gates, without unconfirmed writes, and without context leaking across matter boundaries.

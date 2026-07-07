@@ -65,11 +65,9 @@ Detailed architecture history lives in [`../DESIGN.md`](../DESIGN.md). Product d
 
 ## Candidate Capability Boundaries
 
-Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`, `profile-practice-memory`.
+Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`, `profile-practice-memory`, `contract-review`.
 
-Remaining candidates:
-
-- `contract-review` - evidence: `contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`, contract scenarios; owns contract-specific triage, review mode, clause risk candidates, negotiation points, and counter-drafting boundary; uncertainty: whether this stays an intent workflow or becomes a first-class capability contract.
+No remaining candidates. `contract-review` was grilled into a first-class capability contract on 2026-07-07 (last reassess candidate resolved); new candidates are discovered via `spec-grill map` when future workflow packs (#110-112) demand distinct decision boundaries.
 
 ## Where To Go Next
 
