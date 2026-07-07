@@ -2600,6 +2600,7 @@ SKILL_ROUTER_INTENTS = {
     "privacy_knowledge_layer",
 }
 WORKFLOW_REFERENCE_FILENAME_RE = re.compile(r"`([^`/]+\.md)`")
+WORKFLOW_ROUTER_INTENT_RE = re.compile(r"`([^`]+)`")
 
 
 def check_workflow_map_structure() -> None:
@@ -2627,6 +2628,10 @@ def check_workflow_map_structure() -> None:
         ]:
             if not cell:
                 raise AssertionError(f"{label}: {workflow_name} row has empty {cell_name} cell")
+
+        primary_intents = set(WORKFLOW_ROUTER_INTENT_RE.findall(primary_intent))
+        if not primary_intents & SKILL_ROUTER_INTENTS:
+            raise AssertionError(f"{label}: {workflow_name} row primary-intent cell names no existing router intent")
 
         reference_filenames = WORKFLOW_REFERENCE_FILENAME_RE.findall(reference_cell)
         if not reference_filenames:
