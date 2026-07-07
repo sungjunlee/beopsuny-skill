@@ -1929,6 +1929,60 @@ def check_admin_rule_provenance_examples_split_search_and_original_confirmation(
         assert_contains(text, required, label)
 
 
+def check_litigation_element_fact_template() -> None:
+    research = read_text("skills/beopsuny/references/research-workflow.md")
+    output_formats = read_text("skills/beopsuny/references/output-formats.md")
+    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+
+    research_label = "research-workflow.md litigation template"
+    for required in [
+        "분쟁 판단 구조 (요건·사실·증거 분리)",
+        "**요건사실**",
+        "**인정사실**",
+        "**미확인 사실**",
+        "**증거**",
+        "**잠정 결론**",
+        "미확인 사실이 있으면 결론 강도를 낮춘다",
+        "이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다",
+        "Legal Verification Core",
+        "conclusion binding",
+        "verification packet",
+    ]:
+        assert_contains(research, required, research_label)
+
+    output_label = "output-formats.md precedent distinguishing"
+    for required in [
+        "**유사점**",
+        "**차이점**",
+        "**적용 한계**",
+        "**distinguishing**",
+        "차이로 인해 결론이 달라질 수 있는지",
+        "대법원과 하급심 모두 직접 공식 사이트 원문이면 `공식 원문`이다. precedent-kr 로컬 미러 파일만 확인했다면 `공식 원문 기반 로컬 미러`로 표시한다. 하급심 로컬 미러 인용 시 `공식 원문 기반 로컬 미러: 하급심`으로 표시하고 상급심 변경 가능성을 언급한다.",
+        "**[공식 원문 기반 로컬 미러: 하급심] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)",
+    ]:
+        assert_contains(output_formats, required, output_label)
+
+    rows = parse_markdown_table(workflow_map, WORKFLOW_MAP_HEADER)
+    litigation_rows = [row for row in rows if row and row[0] == "`litigation`"]
+    if len(litigation_rows) != 1:
+        raise AssertionError("workflow-map.md: litigation row must exist exactly once")
+    litigation_row = litigation_rows[0]
+    if len(litigation_row) != 6:
+        raise AssertionError(f"workflow-map.md: litigation row must have 6 cells, got {litigation_row!r}")
+    if litigation_row[2] != "`legal_research`":
+        raise AssertionError("workflow-map.md: litigation primary intent must remain `legal_research`")
+    assert_contains(litigation_row[4], "요건·사실·증거 분리 판단 구조", "workflow-map.md litigation output mode")
+    assert_contains(litigation_row[4], "판례 distinguishing", "workflow-map.md litigation output mode")
+    assert_not_contains(workflow_map, "#110 court-style template은 후속 자리만 둠", "workflow-map.md")
+
+    assert_contains(
+        skill_text,
+        "- 변호사 대체, 확정적 법률 자문, 소송 승패·형량 예측",
+        "SKILL.md prediction boundary",
+    )
+
+
 def parse_review_due(value: Any) -> date | None:
     if isinstance(value, date):
         return value
@@ -3761,6 +3815,7 @@ CHECK_GROUPS = (
             check_research_workflow_tier_table_structure,
             check_current_law_verified_binding_excludes_unconfirmed_practice_material,
             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
+            check_litigation_element_fact_template,
         ),
     ),
     CheckGroup(
