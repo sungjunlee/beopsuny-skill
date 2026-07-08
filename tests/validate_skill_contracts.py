@@ -2807,6 +2807,46 @@ def check_workflow_map_structure() -> None:
         raise AssertionError(f"SKILL.md: workflow labels must not become router intents: {sorted(leaked_workflows)!r}")
 
 
+def check_cross_border_overlay_roadmap() -> None:
+    guide_text = read_text("skills/beopsuny/references/international_guide.md")
+    source_grading = read_text("skills/beopsuny/references/source-grading.md")
+    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
+
+    guide_label = "international_guide.md cross-border overlay"
+    for required in [
+        "- 외국법은 한국회사 실무 질문에서 보조축으로만 쓴다. 결론 근거는 한국법 공식 원문이고, 해외법은 후보 쟁점 인덱스와 현지 전문가 확인 안내로 제한한다.",
+        "- 외국법을 언급할 때는 jurisdiction/currency/source caveat를 기본 출력에 포함한다: 관할권, 기준일·시행일과 변동 가능성, source authority를 함께 적는다.",
+        "| GDPR/SCC/UK IDTA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |",
+        "| APPI | 개인정보 보호법 국외이전, 해외 수탁자 관리, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |",
+        "| CCPA/CPRA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 행태정보·맞춤형 광고 고지 | `legal_research` 또는 `compliance_checklist` |",
+        "| SaaS MSA | 약관규제법, 전자상거래법, 개인정보 보호법 국외이전, 부가가치세·국제조세 | `contract_review` 또는 `legal_research` |",
+        "| NDA | 부정경쟁방지법 영업비밀, 산업기술유출방지법, 하도급법 기술자료 제공 요구 | `contract_review` 또는 `legal_research` |",
+        "| AI Act | 개인정보 보호법, 신용정보법, 산업기술유출방지법, 업종별 인허가·안전 규제 | `legal_research` 또는 `compliance_checklist` |",
+        "| sanctions/export control | 대외무역법 전략물자, 전략물자 수출입고시, 외국환거래법 제재·송금 제한 | `compliance_checklist` 또는 `legal_research` |",
+        "| FCPA/UK Bribery Act | 국제상거래 뇌물방지법, 청탁금지법, 형법 뇌물죄, 공정거래법 입찰·대리점 리스크 | `legal_research` 또는 `compliance_checklist` |",
+        "| contractor classification | 근로기준법 근로자성, 파견법, 하도급법, 4대보험·원천징수 | `legal_research` 또는 `contract_review` |",
+    ]:
+        assert_contains(guide_text, required, guide_label)
+
+    source_label = "source-grading.md foreign-law overlay"
+    for required in [
+        "- 외국법 source에도 같은 출처 권위 라벨과 verification status를 적용한다: EUR-Lex/GDPR 원문은 `공식 원문`, 규제기관 공식 FAQ는 `공식 실무자료`, 로펌 해설은 `해설/의견`, 뉴스·블로그는 `참고 제외`로 시작한다.",
+        "- 외국법을 언급하는 DEFAULT output에는 jurisdiction/currency/source caveat를 반드시 포함한다: 관할권, 기준일·시행일과 변동 가능성, source authority를 한 줄로 표시한다.",
+        "- 외국법 source는 한국법 결론의 결론 근거가 될 수 없다. 한국 회사의 결론은 관련 한국법 공식 원문 또는 공식 응답으로 묶고, 외국법 overlay 결론은 해당 관할 공식 원문이 없으면 현지 전문가 확인으로 유보한다.",
+    ]:
+        assert_contains(source_grading, required, source_label)
+
+    expected_cross_border_row = (
+        "| `cross-border` | 한국회사의 해외진출, 해외직접투자, 전략물자, 국제조세, 국외이전 | "
+        "새 의도 아님: `legal_research`, `compliance_checklist`, 또는 계약 검토이면 `contract_review` | "
+        "`international_guide.md`를 인덱스로 소비하고, 주 의도에 따라 `research-workflow.md`, `checklist-routing.md`, 또는 `contract_review_guide.md` | "
+        "한국법 결론에 foreign-law 보조축을 덧붙이는 overlay 로드맵. 외국법은 후보 쟁점 인덱스와 현지 전문가 확인 안내로만 쓰고 결론 근거는 한국법 공식 원문에 둠 | "
+        "jurisdiction/currency/source caveat 기본 포함. 해외 source는 관할권·기준일·시행일·source authority를 표시하고 한국법 결론 근거로 승격하지 않음 |"
+    )
+    assert_contains(workflow_map, expected_cross_border_row, "workflow-map.md cross-border row")
+    assert_not_contains(workflow_map, "#112 확장 로드맵은 후속 자리만 둠", "workflow-map.md")
+
+
 def check_readme_quality_contract_map() -> None:
     text = read_text("README.md")
     label = "README.md"
@@ -3922,6 +3962,7 @@ CHECK_GROUPS = (
             check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
             check_workflow_map_structure,
+            check_cross_border_overlay_roadmap,
         ),
     ),
     CheckGroup(
