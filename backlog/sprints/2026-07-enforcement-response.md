@@ -1,6 +1,6 @@
 ---
 milestone: enforcement-response
-status: active
+status: completed
 started: 2026-07-08
 due: TBD
 objectives: [O1]
@@ -16,7 +16,7 @@ component: "output-role-destination"
 
 ## Plan
 
-- [~] #111 (Batch 1, ~1 session) enforcement/criminal response workflow → PR #218 **ready_to_merge** (리뷰 R1 pass) — enforcement-response.md(4 gate + 7 시나리오 + 안전경계 3문구) + output_contract high_risk 2건 보강 + 구조 검증, merge 대기
+- [x] #111 (Batch 1, ~1 session) enforcement/criminal response workflow → PR #218 (merged) — enforcement-response.md(4 gate + 7 시나리오 + 안전경계 3문구) + output_contract high_risk 2건 보강 + 구조 검증
 
 ## Running Context
 - **계약 앵커**: `output-role-destination` capability — #111 핵심이 법적 효과 있는 행동(수사 대응)에 role/destination gate를 적용하는 것. 보고라인·변호인·증거보전 gate는 "행동 제약" 출력 계약. `agency_or_court_submission` output mode(output-formats.md)와 정합.
@@ -27,5 +27,7 @@ component: "output-role-destination"
 - 테스트↔문서 강결합 + 이동 문자열 보호 + PR 본문 보강 + redispatch --run-id는 `_context.md` 참조.
 
 ## Progress
+- 2026-07-08: #111 dispatched → PR #218 → reviewed (LGTM, round 1) → merged (squash). issue #111 close, worktree/브랜치 정리. enforcement workflow landed → #112 후속 + litigation/enforcement capability spec-grill map 재검토 예약.
 - 2026-07-08: Batch 1 relay 완료 — PR #218 ready_to_merge (리뷰 1라운드 pass). 검증(직접): O1/O2 PASS(10/17), SKILL.md 무변경 269줄, mutation 5건 FAIL 재현(인멸금지·예측금지·gate·시나리오·새의도). 증거보전은 합법적 보존만(인멸·변조 명시 금지+별도 범죄 경고), 기존 role/destination gate·high_risk_situations 소비(복제 없음). output_contract에 압수수색·내부조사 2건 동일 gate 문구로 추가. merge 대기.
 - 2026-07-08: 스프린트 생성. #111만 스코프(#112 후속). component output-role-destination, objective O1. 착수 전 reassess+amend(Non-Goal 승격) 완료.
+- 2026-07-08: Sprint closed. 1/1 tasks completed.
