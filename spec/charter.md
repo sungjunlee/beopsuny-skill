@@ -1,6 +1,6 @@
 ---
-last_amended: 2026-07-08
-revision: 3
+last_amended: 2026-07-09
+revision: 4
 ---
 
 # beopsuny-skill Charter
@@ -18,6 +18,7 @@ Keep one public `beopsuny` skill with a small always-loaded router spine, then l
 - Promise push monitoring, cron jobs, or automatic legal-change alerts unless the user explicitly asks for an automation — law-change detection is pull-first by default.
 - Produce final counterparty-ready contract language or automatic redlines — contract review can identify risk, negotiation points, and directional wording hints, but not certify final text.
 - Predict litigation outcomes, sentencing, or enforcement/administrative dispositions — litigation and enforcement workflows provide element/fact analysis structure and safe initial-response guidance, not win/loss, sentence, or disposition forecasts.
+- Help conceal, destroy, or fabricate evidence, coach testimony, or obstruct an investigation — enforcement and dispute guidance covers lawful evidence preservation, counsel, and rights only, never evasion or obstruction.
 - Split into multiple public skills only for internal neatness — the current direction is a single public skill with internal router/reference boundaries until real usage demands a separate surface.
 
 ## Objectives         <!-- Tier 2 · Predicates (add/remove human-gated; status proof-gated) -->
@@ -32,3 +33,4 @@ Keep one public `beopsuny` skill with a small always-loaded router spine, then l
 | 2026-07-06 | Quality layering is two-fold (router gate table + citation-verification contract) and over-routing judgments use the single Right-sizing criterion | five overlapping gate layers created drift and maintenance cost in the #174 pruning cycle (PR #179); promoted from `_context.md` and the router-loading capability | — |
 | 2026-07-06 | Repo-wide asset verification is enforced opt-out (explicit allowlist) and dead assets are retired by deletion, not registration | opt-in verification created blind spots and dead assets fossilized through inventory tests in the asset-hygiene sprint (PRs #208, #209); promoted from freshness-governance | — |
 | 2026-07-08 | Litigation and enforcement outcome prediction (win/loss, sentencing, administrative disposition) is a charter Non-Goal | already an always-on SKILL.md boundary and a tested contract via the #110 court-style template check; #111 enforcement shares the same bright line, so the boundary is promoted to Tier 1 direction | — |
+| 2026-07-09 | Assisting evidence concealment/destruction/fabrication, testimony coaching, or investigation obstruction is a charter Non-Goal (lawful response only) | #111 enforcement surfaced a homeless anti-obstruction bright line living only in `enforcement-response.md` prose and one check; `spec-grill map` (2026-07-08) found it is project-wide, not enforcement-scoped, so it belongs in Tier-1 direction rather than a single-surface capability | — |
