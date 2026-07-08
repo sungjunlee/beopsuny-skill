@@ -1061,6 +1061,8 @@ def check_output_contract_schema() -> None:
 HIGH_RISK_SITUATIONS = {
     "징계·해고 통보",
     "수사·고소·고발 대응",
+    "압수수색 대응",
+    "내부조사 개시",
     "개인정보 유출 신고",
     "기관 제출",
     "계약 서명",
@@ -1981,6 +1983,82 @@ def check_litigation_element_fact_template() -> None:
         "- 변호사 대체, 확정적 법률 자문, 소송 승패·형량 예측",
         "SKILL.md prediction boundary",
     )
+
+
+ENFORCEMENT_RESPONSE_SAFETY_BOUNDARIES = [
+    "형량·승패·처분 결과를 예측하지 않는다",
+    "증거 인멸·은닉·수사 방해를 돕지 않으며 합법적 보존·대응만 안내한다",
+    "변호사 자문을 대체하지 않는다",
+]
+
+ENFORCEMENT_RESPONSE_GATES = [
+    "증거보전 gate",
+    "변호인 선임 gate",
+    "임직원 인터뷰 주의 gate",
+    "보고라인 gate",
+]
+
+ENFORCEMENT_RESPONSE_SCENARIOS = [
+    "중대재해",
+    "개인정보 유출",
+    "담합",
+    "영업비밀",
+    "산업기술",
+    "임금체불",
+    "무허가 영업",
+]
+
+
+def check_enforcement_response_workflow() -> None:
+    text = read_text("skills/beopsuny/references/enforcement-response.md")
+    label = "enforcement-response.md"
+
+    for required in [
+        "assets/schemas/output_contract.yaml",
+        "high_risk_situations",
+        "role/destination gate",
+        "한 줄 결론 -> 지금 할 일 -> 하지 말 것 -> 확인 필요 정보 -> 변호사/법무에게 물어볼 질문 -> 근거",
+        "gate 문구는 스키마가 단일 소스",
+        "legal_effect_triggers",
+        "non_overrides",
+        "composition_rule",
+        "references/research-workflow.md",
+        "live source",
+        "assets/policies/checklists/serious_accident.yaml",
+    ]:
+        assert_contains(text, required, label)
+
+    for required in ENFORCEMENT_RESPONSE_GATES:
+        assert_contains(text, required, label)
+
+    for required in ENFORCEMENT_RESPONSE_SCENARIOS:
+        assert_contains(text, f"### {required}", label)
+
+    for required in ENFORCEMENT_RESPONSE_SAFETY_BOUNDARIES:
+        assert_contains(text, required, label)
+
+    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
+    assert_contains(workflow_map, "`enforcement-response.md`", "workflow-map.md enforcement pointer")
+    assert_contains(
+        workflow_map,
+        "새 workflow 라벨이 아니라",
+        "workflow-map.md enforcement pointer",
+    )
+
+    skill_rows = parse_markdown_table(
+        read_text("skills/beopsuny/SKILL.md"),
+        "| 의도 | 트리거 예시 | 의도별 workflow reference |",
+    )
+    skill_intents = {
+        row[0].strip("`")
+        for row in skill_rows
+        if len(row) == 3 and row[0].startswith("`") and row[0].endswith("`")
+    }
+    if skill_intents != SKILL_ROUTER_INTENTS:
+        raise AssertionError(f"SKILL.md: router intent set changed: {sorted(skill_intents)!r}")
+    leaked_scenarios = skill_intents & set(ENFORCEMENT_RESPONSE_SCENARIOS)
+    if leaked_scenarios:
+        raise AssertionError(f"SKILL.md: enforcement scenarios must not become router intents: {sorted(leaked_scenarios)!r}")
 
 
 def parse_review_due(value: Any) -> date | None:
@@ -3816,6 +3894,7 @@ CHECK_GROUPS = (
             check_current_law_verified_binding_excludes_unconfirmed_practice_material,
             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
             check_litigation_element_fact_template,
+            check_enforcement_response_workflow,
         ),
     ),
     CheckGroup(
