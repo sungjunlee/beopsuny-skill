@@ -14,4 +14,6 @@
 
 모든 workflow에 always-on 법률 결론 gate가 그대로 적용되며, map은 어떤 gate도 workflow별로 분리·약화하지 않는다.
 
+수사·조사 개시(enforcement/criminal)는 새 workflow 라벨이 아니라 `regulatory`/`litigation` 인접 처리다. 초기 대응 구조는 `enforcement-response.md`를 참고하되, role/destination gate와 high-risk schema를 그대로 소비한다.
+
 물리적 plugin split 전 = 단일 `beopsuny` 안의 virtual workflow 인덱스이며, 이 문서의 workflow 이름은 라우터 의도명이 아니다. 물리적 plugin split 후 = per-workflow plugin으로 승격될 수 있는 문서 경계지만, split 판단은 [DESIGN.md §6 후속 트리거 참조](../../../DESIGN.md#2026-05-10-단일-스킬-유지--내부-router-spine-전환)에만 정렬하고 추가 trigger를 만들지 않는다.
