@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- `tests/forward_evals/beopsuny_o4_provenance.yaml` — charter O4(Full/Lite 판별 + 4-상태 provenance) 실증용 forward-eval 세트 8개(o4-01~08): family별 모드 판별, 법령/판례 로컬 미러 provenance, 행정규칙 API fallback, Lite 시뮬레이션, 부존재 조문/판례 환각 트랩, 의료법 제34조 공포본 vs 현행본 시행일 함정. `tests/forward_eval_harness.py`에 신규 카테고리 5종 required-any/common-rule 스코어러와 SAMPLE_OUTPUTS, `test_forward_eval_harness.py`에 O4 세트 회귀 테스트 추가
+- `tests/forward_evals/run_claude_live.sh` — harness command 모드용 라이브 러너(`claude -p` + 제한된 allowedTools, o4-05는 `BEOPSUNY_DATA_ROOT` 빈 디렉토리로 Lite 시뮬레이션). variadic `--allowedTools`가 positional 프롬프트 인자를 삼키므로 프롬프트는 stdin으로 전달
+- `tests/forward_evals/evidence/` — charter 인용용 승격 스모크 증거 디렉토리(커밋 대상; 일회성 run은 계속 `runs/` gitignore). 첫 라이브 증거 2건 수록(claude-sonnet-5, 2026-07-09): O4 세트 8/8 PASS, 기존 guardrail 세트 첫 라이브 실행 — 스코어러 기준 3/10이나 출력 정독 판정 결과 실제 가드레일 위반은 fwd-02(자동화 경계, 라이브 스케줄링 도구로 실제 클라우드 루틴 생성) 1건이고 나머지 6건은 부정문/인용 substring 오탐과 Full 모드 라이브 검증을 예상하지 못한 fixture 가정 등 스코어러 한계
+
+### Changed
+- `spec/charter.md` — O4를 `active`에서 `validated`로 승격(src: execution, 라이브 스모크 증거 인용). 알려진 한계로 순수 Lite 시뮬레이션 누수(o4-05, 모델이 빈 `BEOPSUNY_DATA_ROOT` 뒤의 실데이터를 투명하게 감지) 명시
 - `skills/beopsuny/assets/schemas/output_contract.yaml` — role×destination 보수 합성 규칙을 구조화된 `composition_rule` 필드로 추가(`when.role_state`/`when.destination_state`, `compose_with: [unknown, business_user]`, `resolution_principles` 3종: `stricter_wins`/`must_strip_union`/`must_include_both`, `forbidden_after_composition`: 서명·송부·제출 직접 지시). `spec/capabilities.md`의 `output-role-destination` capability Expected Behavior 2를 명문화(role 미지정·미확정 + destination 지정/legal_effect_triggers 해당 시 unknown/business_user gate와 destination 계약을 함께 적용, 충돌은 더 엄격한 쪽으로 해소) — 2026-07-04 smoke test에서 subagent가 임의 절충한 실증 사례를 봉합 (#107)
 - `skills/beopsuny/references/output-formats.md` — Destination output contracts 절에 `composition_rule` 소비 문장 추가. 합성 조건과 해소 원칙은 스키마를 단일 소스로 pointer하고 중복 서술하지 않음 (#107)
 - `tests/validate_skill_contracts.py` — `output_contract.yaml`의 `composition_rule` 구조(when 필드 2개, compose_with 집합, resolution_principles 3종 이름/필드, forbidden_after_composition 키워드)와 `output-formats.md` pointer 사이의 drift를 잡는 `check_output_contract_composition_rule` O1 검사 추가 (#107)
