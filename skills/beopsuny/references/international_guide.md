@@ -5,7 +5,8 @@
 사용 원칙:
 
 - 이 문서는 후보 쟁점과 검색 경로를 좁히는 인덱스다. 결론 근거는 최신 법령, 행정규칙, 판례, 공식 기관 자료로 다시 확인한다.
-- 외국법(FCPA, GDPR, 현지 노동·세법 등)은 범위 밖이다. 필요한 경우 현지 전문가 확인을 안내한다.
+- 외국법은 한국회사 실무 질문에서 보조축으로만 쓴다. 결론 근거는 한국법 공식 원문이고, 해외법은 후보 쟁점 인덱스와 현지 전문가 확인 안내로 제한한다.
+- 외국법을 언급할 때는 jurisdiction/currency/source caveat를 기본 출력에 포함한다: 관할권, 기준일·시행일과 변동 가능성, source authority를 함께 적는다.
 - 구체적 금액, 비율, 신고 대상 기준은 변동 가능성이 높으므로 문서 내 설명만으로 확정하지 않는다.
 
 | 질문 유형 | 주 workflow | 먼저 볼 섹션 |
@@ -15,6 +16,22 @@
 | 해외 SaaS·클라우드·DPA | `contract_review` 또는 `legal_research` | 국제조세, 개인정보 국외이전 |
 | 해외 M&A, JV | `legal_research` | 기업결합 신고, 외국환, 국제조세 |
 | 공급망·ESG 요청 | `compliance_checklist` | 공급망 실사 |
+
+## 0. 우선 외국법 보조축 overlay
+
+아래 foreign-law overlay는 독립 외국법 helper가 아니라 한국법 anchor를 찾기 위한 우선순위 인덱스다. 한국회사 질문에서 외국법 표현이 나오면 먼저 한국법상 어떤 쟁점을 확인할지 좁히고, 결론은 해당 한국법 공식 원문으로 묶는다.
+
+| 외국법 overlay 후보 | 한국법 anchor | 기존 의도 |
+| --- | --- | --- |
+| GDPR/SCC/UK IDTA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |
+| APPI | 개인정보 보호법 국외이전, 해외 수탁자 관리, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |
+| CCPA/CPRA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 행태정보·맞춤형 광고 고지 | `legal_research` 또는 `compliance_checklist` |
+| SaaS MSA | 약관규제법, 전자상거래법, 개인정보 보호법 국외이전, 부가가치세·국제조세 | `contract_review` 또는 `legal_research` |
+| NDA | 부정경쟁방지법 영업비밀, 산업기술유출방지법, 하도급법 기술자료 제공 요구 | `contract_review` 또는 `legal_research` |
+| AI Act | 개인정보 보호법, 신용정보법, 산업기술유출방지법, 업종별 인허가·안전 규제 | `legal_research` 또는 `compliance_checklist` |
+| sanctions/export control | 대외무역법 전략물자, 전략물자 수출입고시, 외국환거래법 제재·송금 제한 | `compliance_checklist` 또는 `legal_research` |
+| FCPA/UK Bribery Act | 국제상거래 뇌물방지법, 청탁금지법, 형법 뇌물죄, 공정거래법 입찰·대리점 리스크 | `legal_research` 또는 `compliance_checklist` |
+| contractor classification | 근로기준법 근로자성, 파견법, 하도급법, 4대보험·원천징수 | `legal_research` 또는 `contract_review` |
 
 ## 1. 해외직접투자 신고
 
@@ -448,13 +465,13 @@ EU 등 해외 시장에 일정 규모 이상 매출이 있는 경우.
 
 ## 주의사항
 
-### 이 가이드가 다루지 않는 것
+### 단독 외국법 자문으로 다루지 않는 것
 
-| 범위 외 | 대안 |
+| 단독 요청/범위 | 처리 |
 |---------|------|
-| 미국법 (FCPA, CCPA 등) | 미국 현지 로펌 상담 |
-| EU법 (GDPR, AI Act 등) | EU 전문가 상담 |
-| 현지 노동법, 세법 | 현지 로펌/회계법인 상담 |
+| 미국법 (FCPA, CCPA 등)의 단독 결론 | 한국법 anchor가 있는 경우에만 보조축으로 연결하고 미국 현지 전문가 확인 안내 |
+| EU법 (GDPR, AI Act 등)의 단독 결론 | 한국법 anchor가 있는 경우에만 보조축으로 연결하고 EU 전문가 확인 안내 |
+| 현지 노동법, 세법의 단독 결론 | 한국법 anchor가 있는 경우에만 보조축으로 연결하고 현지 로펌/회계법인 확인 안내 |
 | 구체적 금액/비율 기준 | 최신 법령에서 직접 확인 |
 
 ### 법령 변동 주의
