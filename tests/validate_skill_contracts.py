@@ -186,6 +186,14 @@ VERIFICATION_TIER_AUTO_RULES = {
     "light": "light_tier_no_packet_ceremony",
     "full": "legal_verification_core_trace",
 }
+# Mirrors tests/evaluate_scenario_outputs.py's output_common_rules() primary_intent
+# branch. Kept as a duplicated constant (same rationale as VERIFICATION_TIER_AUTO_RULES)
+# so both scripts stay independently runnable.
+PRIMARY_INTENT_AUTO_RULES = {
+    "contract_review": "contract_counter_draft_boundary",
+    "law_change_detection": "law_change_push_boundary",
+    "legal_research": "mirror_promulgation_currency_gate",
+}
 LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-01",
     "router-03",
@@ -3118,6 +3126,9 @@ def check_law_change_automation_promise_drift() -> None:
         "법령 변경 감지는 pull 방식이다",
         "사용자가 명시적으로 automation을 요청하지 않으면",
         "이 스킬의 기본 변경 감지와 섞지 않는다",
+        "사용자 확인을 받은 뒤에만 생성한다",
+        "관리·삭제 경로를 반드시 보고한다",
+        "지금 즉시 1회 확인(pull)을 항상 함께 제안한다",
     ]:
         assert_contains(law_change, required, "law-change-detection.md")
 
@@ -3528,6 +3539,14 @@ def check_router_fixture_integrity() -> None:
         for scenario_id, scenario in scenarios.items()
         if scenario.get("expected", {}).get("verification_tier") in VERIFICATION_TIER_AUTO_RULES
     }
+    # Some scenarios (e.g. router-04) carry no output_eval block but auto-attach a
+    # common rule via expected.primary_intent (see output_common_rules). unsafe_outputs
+    # may target them too — same allowance pattern as tier_rule_scenario_ids.
+    intent_rule_scenario_ids = {
+        scenario_id
+        for scenario_id, scenario in scenarios.items()
+        if scenario.get("expected", {}).get("primary_intent") in PRIMARY_INTENT_AUTO_RULES
+    }
     expected_guardrail_ids = {
         "router-07",
         "router-08",
@@ -3599,7 +3618,11 @@ def check_router_fixture_integrity() -> None:
         seen_unsafe_ids.add(item_id)
 
         scenario_id = str(item.get("scenario_id", ""))
-        if scenario_id not in expected_output_ids and scenario_id not in tier_rule_scenario_ids:
+        if (
+            scenario_id not in expected_output_ids
+            and scenario_id not in tier_rule_scenario_ids
+            and scenario_id not in intent_rule_scenario_ids
+        ):
             raise AssertionError(
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} references "
                 f"non-guardrail scenario {scenario_id!r}"
@@ -3622,6 +3645,11 @@ def check_router_fixture_integrity() -> None:
         )
         if tier_rule:
             scenario_rules.add(tier_rule)
+        intent_rule = PRIMARY_INTENT_AUTO_RULES.get(
+            scenarios[scenario_id].get("expected", {}).get("primary_intent")
+        )
+        if intent_rule:
+            scenario_rules.add(intent_rule)
         for rule in expected_failure_rules:
             rule_name = str(rule)
             if rule_name not in evaluator_rules:

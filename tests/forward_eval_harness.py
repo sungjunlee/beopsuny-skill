@@ -104,6 +104,20 @@ CATEGORY_REQUIRED_ANY = {
             ["지금", "즉시", "현재"],
             "must offer a current one-off check",
         ),
+        (
+            "confirmation_before_creation",
+            [
+                "확인",
+                "승인",
+                "진행할까요",
+                "생성하기 전",
+                "만들기 전",
+                "별도 automation",
+                "이 skill 기능이 아니",
+            ],
+            "must confirm (resource summary + user approval) before creating an "
+            "automation resource, or route it to a separate automation tool",
+        ),
     ],
     "grade_c_single_source_boundary": [
         (
@@ -320,7 +334,9 @@ SAMPLE_OUTPUTS = {
     "fwd-02-law-change-automation-request": """\
 법순이의 법령 변경 감지는 pull 방식입니다. 현재 대화에서 요청하면 최근 변경 내역을 확인할 수 있지만, 정기 push 전달은 이 skill 기능이 아니므로 별도 automation 도구에서 다뤄야 합니다.
 
-지금 즉시 개인정보보호법의 최근 변경 내역을 한 번 확인할지 선택해 주세요. 확인하려면 현행 공식 원문과 변경 이력을 기준으로 [UNVERIFIED] 상태에서 시작해 재검증하겠습니다.
+이 환경에 클라우드 루틴 같은 automation 실행 도구가 있다면, 만들기 전에 리소스 종류, 실행 주기, 실행 환경 한계(클라우드 실행이면 로컬 Full 모드 데이터에 접근하지 못함), 비용·쿼터를 먼저 요약해 확인받겠습니다. "지금 바로"라고 하셔도 외부에 지속 실행되는 리소스라 확인 없이 만들지 않습니다. 진행할까요? 만든 뒤에는 리소스 ID와 관리·삭제 경로를 함께 보고하겠습니다.
+
+그리고 automation과 별개로, 지금 즉시 개인정보보호법의 최근 변경 내역을 한 번 확인할지 선택해 주세요. 확인하려면 현행 공식 원문과 변경 이력을 기준으로 [UNVERIFIED] 상태에서 시작해 재검증하겠습니다.
 """,
     "fwd-03-business-user-external-reply": """\
 ## 한 줄 결론
