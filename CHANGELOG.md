@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- `skills/beopsuny/references/international_guide.md`, `tests/validate_skill_contracts.py` — cross-border overlay AI Act 행에 **AI 기본법**(인공지능 발전과 신뢰 기반 조성 등에 관한 기본법, 시행 2026-01-22) anchor를 1순위로 추가(#220). legalize-kr 미러 frontmatter(상태: 시행) + law.go.kr 200 라이브 확인 후 반영, 행 전문 assert 동반 갱신
 - `skills/beopsuny/references/source-access.md`, `tests/check_source_reachability.py` — Full 모드 미러 최신화에 upstream force-push 재생성 복구 분기 계약화(#230): `pull --ff-only` 실패 시 사용자 승인 후 ① 로컬 변경 없음 확인 ② `fetch + reset --hard origin/main` ③ 재생성 사실·새 HEAD 고지. 헬스체크 "upstream 불일치" WARN 메시지가 이 절차를 직접 안내. precedent-kr 실제 diverge 사례(2026-07-10, upstream README 공지 절차로 복구)에서 도출
 
 ## [0.5.0] - 2026-07-10

@@ -28,7 +28,7 @@
 | CCPA/CPRA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 행태정보·맞춤형 광고 고지 | `legal_research` 또는 `compliance_checklist` |
 | SaaS MSA | 약관규제법, 전자상거래법, 개인정보 보호법 국외이전, 부가가치세·국제조세 | `contract_review` 또는 `legal_research` |
 | NDA | 부정경쟁방지법 영업비밀, 산업기술유출방지법, 하도급법 기술자료 제공 요구 | `contract_review` 또는 `legal_research` |
-| AI Act | 개인정보 보호법, 신용정보법, 산업기술유출방지법, 업종별 인허가·안전 규제 | `legal_research` 또는 `compliance_checklist` |
+| AI Act | 인공지능 발전과 신뢰 기반 조성 등에 관한 기본법(시행 2026-01-22), 개인정보 보호법, 신용정보법, 산업기술유출방지법, 업종별 인허가·안전 규제 | `legal_research` 또는 `compliance_checklist` |
 | sanctions/export control | 대외무역법 전략물자, 전략물자 수출입고시, 외국환거래법 제재·송금 제한 | `compliance_checklist` 또는 `legal_research` |
 | FCPA/UK Bribery Act | 국제상거래 뇌물방지법, 청탁금지법, 형법 뇌물죄, 공정거래법 입찰·대리점 리스크 | `legal_research` 또는 `compliance_checklist` |
 | contractor classification | 근로기준법 근로자성, 파견법, 하도급법, 4대보험·원천징수 | `legal_research` 또는 `contract_review` |
