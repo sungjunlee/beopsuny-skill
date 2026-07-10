@@ -22,12 +22,23 @@ PROMPT_FILE="${BEOPSUNY_EVAL_PROMPT_FILE:?BEOPSUNY_EVAL_PROMPT_FILE is required}
 OUTPUT_FILE="${BEOPSUNY_EVAL_OUTPUT_FILE:?BEOPSUNY_EVAL_OUTPUT_FILE is required}"
 PROMPT_ID="${BEOPSUNY_EVAL_PROMPT_ID:-unknown}"
 
+APPEND_SYSTEM="$(cat "$CONTEXT_FILE")"
+
 # o4-05 simulates Lite mode: no local mirror. Point the data root at an empty
 # temp dir so the model's mode-detection commands find nothing.
 case "$PROMPT_ID" in
   *o4-05*)
     BEOPSUNY_DATA_ROOT="$(mktemp -d)"
     export BEOPSUNY_DATA_ROOT
+    # An empty data root alone was not enough: the model discovered the real
+    # ~/.beopsuny outside this run and honestly reported the conflict, so
+    # pure-Lite behavior went unexercised. State the simulation premise
+    # explicitly. Tradeoff: o4-05 now tests Lite *behavior* (answer via
+    # API/law.go.kr, no local-mirror claim), not mode *detection* — detection is
+    # already covered by o4-01, so nothing is lost.
+    APPEND_SYSTEM="${APPEND_SYSTEM}
+
+[평가 환경 전제] 이 환경에는 로컬 미러가 없다(Lite 모드). BEOPSUNY_DATA_ROOT=${BEOPSUNY_DATA_ROOT} 가 유일한 데이터 루트이며 비어 있다. ~/.beopsuny 등 다른 경로에 로컬 전문이 있다고 가정하지 말고, 이 데이터 루트만 기준으로 답하라."
     ;;
 esac
 
@@ -39,7 +50,7 @@ cd "$(dirname "$OUTPUT_FILE")"
 # argument, so the prompt goes in via stdin instead.
 claude -p \
   --model "$MODEL" \
-  --append-system-prompt "$(cat "$CONTEXT_FILE")" \
+  --append-system-prompt "$APPEND_SYSTEM" \
   --allowedTools "Read,Glob,Grep,WebFetch,WebSearch,Bash(ls:*),Bash(find:*),Bash(cat:*),Bash(head:*),Bash(rg:*),Bash(grep:*),Bash(git:*),Bash(curl:*),Bash(test:*)" \
   < "$PROMPT_FILE" \
   > "$OUTPUT_FILE"
