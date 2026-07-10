@@ -38,7 +38,7 @@ Mutation discipline:
 
 ### Hard Constraints
 - This capability never permits `[VERIFIED]` from search snippets, API titles, bundled YAML candidates, stored user memory, or user-provided citation text alone.
-- This capability never lets local official-source mirror confirmation be described as direct `law.go.kr` or `glaw.scourt.go.kr` confirmation unless that direct official source was actually opened or confirmed in the current answer path.
+- This capability never lets local official-source mirror confirmation be described as direct `law.go.kr` confirmation unless that direct official source was actually opened or confirmed in the current answer path.
 
 ### Learnings
 <!-- LEARN:BEGIN -->

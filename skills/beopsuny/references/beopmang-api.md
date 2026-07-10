@@ -18,7 +18,7 @@ API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니
 | `law` | `get` | 법령 조문 조회 | 원문 확인 실패로 표시 |
 | `law` | `diff` | 개정 전후 비교 | `history`, git log, 공식 법령 페이지 |
 | `law` | `history` | 개정 이력 | git log 또는 공식 법령 페이지 |
-| `case` | `search` | 판례 키워드 검색 | glaw.scourt.go.kr, precedent-kr |
+| `case` | `search` | 판례 키워드 검색 | law.go.kr 판례, precedent-kr |
 | `case` | `get` | 판례 상세 조회 | 판례 원문 미확인 표시 |
 | `tools` | `verify` | 인용 검증 | 직접 원문 재조회 |
 | `tools` | `compare` | 법령 간 비교 | 각 법령을 따로 조회해 수동 비교 |

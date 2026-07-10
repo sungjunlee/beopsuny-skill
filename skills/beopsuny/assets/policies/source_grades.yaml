@@ -28,7 +28,7 @@ source_classes:
     can_be_sole_basis: true
     examples:
       - "개인정보 보호법 제15조 (law.go.kr)"
-      - "대법원 2022다12345 판결 (glaw.scourt.go.kr)"
+      - "대법원 2022다12345 판결 (law.go.kr 판례)"
       - "법제처 법령해석례"
       - "규제기관(공정위·금감원·식약처 등) 심결·처분 원문"
       - "행정규칙 원문 (고시·훈령·예규, law.go.kr)"
@@ -49,7 +49,7 @@ source_classes:
     trust_level: "authoritative_mirror"
     use_allowed: "conclusion_basis"
     can_be_sole_basis: true
-    requires_note: "provenance에 로컬 미러 확인과 직접 공식 사이트 확인 아님을 표시한다. 최신 개정·변동성 쟁점은 law.go.kr 원문 확인 또는 glaw.scourt.go.kr 원문 확인으로 교차확인한다."
+    requires_note: "provenance에 로컬 미러 확인과 직접 공식 사이트 확인 아님을 표시한다. 최신 개정·변동성 쟁점은 law.go.kr 원문 확인으로 교차확인한다."
     examples:
       - "legalize-kr 로컬 미러 법령 Markdown"
       - "admrule-kr 로컬 미러 행정규칙 Markdown"
@@ -220,12 +220,7 @@ default_labels:
   "law.go.kr":
     source_class: official_primary
     label: "공식 원문"
-    rationale: "법령/판례 링크 — law.go.kr 원문 확인 또는 공식 원문 URL"
-
-  "glaw.scourt.go.kr":
-    source_class: official_primary
-    label: "공식 원문"
-    rationale: "대법원 종합법률정보 — glaw.scourt.go.kr 원문 확인"
+    rationale: "법령/판례 공식 화면 — law.go.kr 원문 확인 (판례는 precSeq 또는 판례/({사건번호}))"
 
   "WebSearch — 정부·규제기관 공식 도메인":
     source_class: official_practice_material

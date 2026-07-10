@@ -10,7 +10,7 @@
   <!-- Destination rules: `business_summary` keeps "destination:business_summary only" blocks and removes internal legal reasoning, reviewer notes, self-check blocks, and 미확인 내부 노트. -->
   <!-- Counter-draft rule: review_mode.yaml#counter_draft_forbidden_patterns applies to reports too. alt_wording_hint is directional guidance only; 대체 문구 제공이 아니다. Do not embed any forbidden-pattern literal in this file or in generated reports — see the policy file for the pattern list. -->
   <!-- HTML-escape every dynamic insertion before rendering: &, <, >, ", and '. Dynamic HTML fragments must be assembled only from escaped text. -->
-  <!-- Citation link rule: 근거/verification 필드에 조문·판례 인용이 있으면 official law.go.kr (판례: glaw.scourt.go.kr) link를 `<a href>`로 포함한다. 계약 원문 발췌 등 법령·판례 인용이 아닌 근거에는 공식 링크를 만들지 않는다. A hyperlink is content, not an external resource load, so it does not conflict with the self-contained rule — see report-deliverable.md#r2-파일-규격. Link URL format follows output-formats.md's 링크 생성 규칙. -->
+  <!-- Citation link rule: 근거/verification 필드에 조문·판례 인용이 있으면 official law.go.kr link를 `<a href>`로 포함한다. 계약 원문 발췌 등 법령·판례 인용이 아닌 근거에는 공식 링크를 만들지 않는다. A hyperlink is content, not an external resource load, so it does not conflict with the self-contained rule — see report-deliverable.md#r2-파일-규격. Link URL format follows output-formats.md's 링크 생성 규칙. -->
   <style>
     :root {
       color-scheme: light;
@@ -435,7 +435,7 @@
       <ul class="issue-list">
         <!-- PLACEHOLDER: cross_cutting_issues_html_escaped.
              Escape issue/status/reason/source text. Preserve source authority labels and verification status.
-             조문·판례 인용이 있으면 official law.go.kr (판례: glaw.scourt.go.kr) link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙). -->
+             조문·판례 인용이 있으면 official law.go.kr link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙). -->
         <li class="issue-item">
           <span class="pill pill-medium">미확인</span>
           <strong>개인정보 처리</strong>
@@ -459,7 +459,7 @@
         <!-- PLACEHOLDER: clause_risks_html_escaped.
              Escape clause name, quotation, why_risky, negotiation_points, alt_wording_hint, source text.
              alt_wording_hint must stay directional; remove the field if it contains counter_draft_forbidden_patterns.
-             근거/verification의 조문·판례 인용에는 official law.go.kr (판례: glaw.scourt.go.kr) link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙). -->
+             근거/verification의 조문·판례 인용에는 official law.go.kr link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙). -->
         <article class="risk-card">
           <div class="risk-head">
             <div class="risk-title">

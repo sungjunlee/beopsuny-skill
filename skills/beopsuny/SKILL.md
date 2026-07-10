@@ -84,7 +84,7 @@ description: |
 모든 법률 정보 답변은 아래 원칙을 따른다.
 
 1. **정확한 인용** — 법령명 + 조/항/호, 판례 선고일 + 사건번호를 확인한다.
-2. **공식 링크** — 가능한 경우 law.go.kr 또는 glaw.scourt.go.kr 링크를 제공한다.
+2. **공식 링크** — 가능한 경우 law.go.kr 링크를 제공한다.
 3. **하위 규범 확인** — 법률만으로 실무 기준이 부족하면 시행령, 시행규칙, 고시, 훈령, 예규를 확인한다.
 4. **시행일 확인** — 공포일과 시행일을 구분한다. 미시행 법령은 예정 시행일을 표시한다.
 5. **환각 방지** — 확인되지 않은 조문/판례/금액은 만들지 않고 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 유보한다.
@@ -114,7 +114,7 @@ description: |
 
 `Full 모드`는 단일 스위치가 아니라 사용 가능한 source family의 묶음이다. 예를 들어 법령은 `legalize-kr`로 확인하되 행정규칙은 법망 API로 확인할 수 있다. 상세 family map과 초기화 절차는 `references/source-access.md`를 따른다.
 
-기본 원칙은 Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 해당 family가 없거나 keyword discovery·교차확인이 필요한 경우 법망 API, law.go.kr, glaw.scourt.go.kr, korean-law-mcp를 다음 경로로 쓴다는 것이다.
+기본 원칙은 Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 해당 family가 없거나 keyword discovery·교차확인이 필요한 경우 법망 API, law.go.kr, korean-law-mcp를 다음 경로로 쓴다는 것이다.
 
 데이터가 없다고 자동으로 복제하지 않는다. 사용자가 Full 모드 설정이나 데이터 다운로드를 요청할 때만 `references/source-access.md`의 초기화 절차를 따른다.
 

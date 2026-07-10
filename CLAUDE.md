@@ -39,7 +39,7 @@ Full 모드 (로컬 데이터 있음) 기준. Lite 모드(Chat 탭)는 법망 AP
 법순이 → legalize-kr + precedent-kr (로컬)     ← 1순위: 법령 + 판례
        → 법망 API (무인증)                      ← 2순위: 행정규칙, 해석례, 의안
        → korean-law-mcp (OC 코드)               ← 3순위: 헌재, 행심, 자치법규, 조약 등
-       → law.go.kr / glaw.scourt.go.kr          ← 링크 제공용
+       → law.go.kr                               ← 링크 제공용 (법령·판례)
 ```
 
 - **legalize-kr**: [legalize-kr/legalize-kr](https://github.com/legalize-kr/legalize-kr) — 법령 Markdown (6,907 파일)

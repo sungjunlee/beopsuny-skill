@@ -25,7 +25,7 @@ You: "이 계약서 검토해줘"
 ## 기능
 
 - **법령 조사** — 법률→시행령→시행규칙 연쇄 조회, 조문 단위 인용 + [law.go.kr](https://www.law.go.kr/) 링크
-- **판례 조회** — 대법원/하급심 판례 검색 + [종합법률정보](https://glaw.scourt.go.kr/) 원문 링크
+- **판례 조회** — 대법원/하급심 판례 검색 + [law.go.kr 판례](https://www.law.go.kr/) 원문 링크
 - **계약서 검토** — 유형별 체크리스트 + 조항 위험 분석 + 강행규정 충돌 탐지
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
 - **법령 변경 감지** — `watched_laws` 등록 법령의 개정 이력 추적 (`git log` + 법망 API)
@@ -49,7 +49,7 @@ You: "이 계약서 검토해줘"
 | 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 Lite 모드 원문 조회 (무인증) |
 | 3 | [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 헌재·행정심판·자치법규·조약 등 (OC 코드 필요) |
 
-원문 확인 링크는 [law.go.kr](https://www.law.go.kr/) · [대법원 종합법률정보](https://glaw.scourt.go.kr/)로 제공된다.
+원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다.
 
 ## 설치
 
@@ -172,7 +172,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 
 ### Full 모드 로컬 데이터 (권장)
 
-Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **Full 모드를 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr/glaw.scourt.go.kr 직접 확인과 구분한다.
+Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **Full 모드를 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr 직접 확인과 구분한다.
 
 법순이에게 요청하면 된다:
 

@@ -30,12 +30,12 @@ local_mirror_examples:
     authority_type: precedent
     authority_name: "대법원 판례"
     citation: "대법원 {선고일} 선고 {사건번호} 판결"
-    official_url: "https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query={사건번호}"
+    official_url: "https://www.law.go.kr/판례/({사건번호})"
     source_authority: "공식 원문 기반 로컬 미러"
     verification_status: "[UNVERIFIED]"
     provenance: "fixture candidate: precedent-kr 로컬 미러 확인 필요 (직접 공식 사이트 확인 아님)"
     provenance_type: "fixed_provenance"
-    currency: "shape fixture captured 2026-06-01; runtime must report local mirror commit/date or direct glaw.scourt.go.kr status"
+    currency: "shape fixture captured 2026-06-01; runtime must report local mirror commit/date or direct law.go.kr status"
     runtime_recheck_required: true
     pinpoint_required: true
 

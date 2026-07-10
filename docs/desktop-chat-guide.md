@@ -85,7 +85,7 @@ Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(M
 ## Lite Gate Card
 
 - 상태 태그는 `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]`만 쓴다.
-- `[VERIFIED]`는 공식 원문, 법망 API 원문 필드, law.go.kr 본문, glaw.scourt.go.kr 원문처럼 실제 원문 또는 원문 필드를 확인한 경우에만 쓴다.
+- `[VERIFIED]`는 공식 원문, 법망 API 원문 필드, law.go.kr 본문처럼 실제 원문 또는 원문 필드를 확인한 경우에만 쓴다.
 - WebSearch 스니펫, 법망 API 검색 결과, 로컬 미러, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다. 이 경우 source/provenance를 분리하고 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
 - 시행일, 개정, 행정규칙, 고시, 과징금, 인허가처럼 최신성이 핵심이면 stale/live 여부를 표시하고 현재법 결론을 유보한다.
 - 사용자가 비법무 담당자이거나 외부 송부용 초안을 요청하면 role/destination gate를 적용한다. 고객·기관·상대방에게 보낼 문구는 법무 검토 전 확정 결론처럼 쓰지 않는다.
@@ -117,7 +117,7 @@ fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback
 
 법망 API가 안 될 때, 또는 보도자료/제재 동향 등 API에 없는 정보:
 - `"{법령명} site:law.go.kr"` — 법령 원문
-- `"{사건번호} site:glaw.scourt.go.kr"` — 판례 원문
+- `"{사건번호} site:law.go.kr"` — 판례 원문
 - `"{법령명} 과징금 2025 2026"` — 제재 동향
 - `"{법령명} 개정안 국회"` — 계류 의안
 - `"{법령명} 법제처 유권해석"` — 해석례
@@ -147,7 +147,7 @@ OC 코드 발급: https://open.law.go.kr/LSO/openApi/guideList.do (무료, 1분)
 |------|---------|
 | 법령 조문 | https://www.law.go.kr/법령/{법령명}/제{N}조 |
 | 시행령 | https://www.law.go.kr/법령/{법령명}시행령 |
-| 판례 (1순위) | https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query={사건번호} |
+| 판례 (1순위) | https://www.law.go.kr/LSW/precInfoP.do?precSeq={판례일련번호} |
 | 판례 (보조) | https://www.law.go.kr/판례/({사건번호}) |
 | 행정규칙 | https://www.law.go.kr/행정규칙/{고시명} |
 

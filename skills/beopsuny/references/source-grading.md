@@ -19,7 +19,7 @@
 
 | 라벨 | 결론 근거 | 대표 예시 |
 | --- | --- | --- |
-| **공식 원문** | 가능 | law.go.kr 법령·행정규칙·판례 원문, glaw.scourt.go.kr 판례 원문, 법제처 해석례, 처분·의결서 원문 |
+| **공식 원문** | 가능 | law.go.kr 법령·행정규칙·판례 원문, 법제처 해석례, 처분·의결서 원문 |
 | **공식 실무자료** | 보조 가능 | 규제기관 가이드라인·해설서·FAQ·보도자료, 정부 공식 안내 |
 | **공식 실무자료: 미확정** | 현재법 결론 근거 불가 | 계류 의안, 입법예고, 개정안 |
 | **공식 원문 기반 로컬 미러** | 가능 | legalize-kr 법령 Markdown, admrule-kr 행정규칙 Markdown, ordinance-kr 자치법규 Markdown, precedent-kr 대법원 판례 Markdown |
@@ -31,7 +31,7 @@
 
 **가능**: 이번 답변에서 원문 또는 공식 응답을 확인했고, 쟁점에 필요한 pinpoint와 현행성 정보가 있으면 결론 근거로 쓸 수 있다.
 
-**가능하되 로컬 미러 provenance 필요**: legalize-kr/admrule-kr/ordinance-kr/precedent-kr는 공식 원문 기반 로컬 미러다. 결론 근거로 쓸 수 있지만, citation 줄에는 `공식 원문 기반 로컬 미러` 라벨과 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 남긴다. law.go.kr 원문 확인 또는 glaw.scourt.go.kr 원문 확인을 한 경우에만 `공식 원문` 라벨과 직접 공식 사이트 provenance를 쓴다.
+**가능하되 로컬 미러 provenance 필요**: legalize-kr/admrule-kr/ordinance-kr/precedent-kr는 공식 원문 기반 로컬 미러다. 결론 근거로 쓸 수 있지만, citation 줄에는 `공식 원문 기반 로컬 미러` 라벨과 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 남긴다. law.go.kr 원문 확인을 한 경우에만 `공식 원문` 라벨과 직접 공식 사이트 provenance를 쓴다.
 
 **보조 가능**: 실무 적용, 기관 입장, 정책 동향을 설명하는 데 유용하지만, 법률 결론은 가능한 한 공식 원문으로 뒷받침하고 공식 실무자료와 분리해 표시한다.
 
@@ -53,9 +53,9 @@
 `[VERIFIED]`를 붙이려면 `references/citation-verification-contract.md`의 VERIFIED minimum conditions가 모두 충족되어야 한다. 요약하면 아래 네 가지다.
 
 1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 식별자가 충분하다.
-2. **원문 대조**: local legalize-kr/admrule-kr/ordinance-kr/precedent-kr 로컬 미러 원문, law.go.kr/glaw.scourt.go.kr, 법망 API의 원문 필드, 또는 공식 MCP 응답에서 실제 문구나 구조를 확인했다.
+2. **원문 대조**: local legalize-kr/admrule-kr/ordinance-kr/precedent-kr 로컬 미러 원문, law.go.kr, 법망 API의 원문 필드, 또는 공식 MCP 응답에서 실제 문구나 구조를 확인했다.
 3. **최신성 표시**: 현행/미시행/시행 예정/조회 실패 중 어느 상태인지 답변에 드러난다. 시행일·금액·기한·과징금처럼 변동성이 큰 사실은 stale source가 아니어야 한다.
-4. **provenance 표시**: 이번 응답에서 확인한 경로를 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `glaw.scourt.go.kr 원문 확인`, `법망 API 원문 필드 확인`처럼 표시한다.
+4. **provenance 표시**: 이번 응답에서 확인한 경로를 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`처럼 표시한다.
 
 아래 경우에는 `[VERIFIED]`를 붙이지 않는다.
 
@@ -135,7 +135,7 @@
 | 법망 API 행정규칙/해석례 | **공식 원문** |
 | 법망 API 의안 | **공식 실무자료: 미확정** |
 | korean-law-mcp | **공식 원문** |
-| law.go.kr / glaw.scourt.go.kr | **공식 원문** |
+| law.go.kr | **공식 원문** |
 | WebSearch — 정부·규제기관 공식 도메인 | **공식 실무자료** |
 | WebSearch — 로펌/학술/법률신문 | **해설/의견** |
 | WebSearch — 일반 뉴스·블로그·SNS | **참고 제외** |
@@ -146,7 +146,7 @@
 A. 권위와 출처 성격은 별개다. 학술 논문은 개별 의견으로 분류되며, 법적 결론의 단독 근거는 될 수 없다. 그 논문이 인용한 판례·법령이 공식 원문일 수 있고, 그것을 원본에서 직접 확인해야 한다.
 
 **Q. 판례가 대법원이면 공식 원문, 하급심도 공식 원문인가?**
-A. 직접 glaw.scourt.go.kr 또는 law.go.kr 판례 원문을 열어 확인했다면 `공식 원문`이다. precedent-kr 파일만 확인했다면 `공식 원문 기반 로컬 미러`이고, 하급심은 `공식 원문 기반 로컬 미러: 하급심`처럼 caveat를 붙인다.
+A. 직접 law.go.kr 판례 원문을 열어 확인했다면 `공식 원문`이다. precedent-kr 파일만 확인했다면 `공식 원문 기반 로컬 미러`이고, 하급심은 `공식 원문 기반 로컬 미러: 하급심`처럼 caveat를 붙인다.
 
 **Q. legalize-kr 파일을 읽고 `[VERIFIED]`를 붙일 수 있나?**
 A. 가능하다. 다만 citation, pinpoint, 최신성, provenance 조건을 모두 충족해야 하고, provenance는 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`처럼 직접 공식 사이트 확인과 구분한다.

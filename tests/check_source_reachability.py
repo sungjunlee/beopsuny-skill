@@ -6,7 +6,7 @@
    (upstream HEAD 해시 비교; 커밋 날짜는 정보용 — precedent-kr은 판례
    선고일을 커밋 날짜로 쓰는 합성 히스토리라 날짜 기반 판정이 무의미하다)
 2. 법망 API 가용성 — search endpoint 응답
-3. law.go.kr / glaw.scourt.go.kr 링크 rot — 대표 링크 HTTP 상태
+3. law.go.kr 링크 rot — 법령·판례 대표 링크 HTTP 상태
 
 릴리즈 전 또는 필요 시 수동 실행. 네트워크 의존이므로 O1/O2 정적 게이트에
 포함하지 않는다. 실패는 "조회 실패"이며 "개정 없음"이 아니다.
@@ -44,7 +44,10 @@ LINK_CHECKS = (
         "https://www.law.go.kr/"
         + urllib.parse.quote("법령/개인정보보호법", safe="/"),
     ),
-    ("glaw.scourt.go.kr", "https://glaw.scourt.go.kr/"),
+    (
+        "law.go.kr 판례",
+        "https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797",
+    ),
 )
 
 STATUS_WIDTH = 15

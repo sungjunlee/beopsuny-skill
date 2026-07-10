@@ -21,7 +21,7 @@
 
 영속 환경에서는 Git으로 받은 공식 원문 기반 로컬 미러를 우선한다. 즉, 법령은 `legalize-kr`, 행정규칙은 `admrule-kr`, 판례는 `precedent-kr`, 지역이 특정된 자치법규는 `ordinance-kr` 파일을 먼저 탐색한다.
 
-법망 API, law.go.kr, glaw.scourt.go.kr, korean-law-mcp는 다음 경우에 사용한다.
+법망 API, law.go.kr, korean-law-mcp는 다음 경우에 사용한다.
 
 - 해당 source family가 로컬에 없거나 Lite 모드인 경우
 - 키워드 discovery가 로컬 파일 탐색보다 효율적인 경우
@@ -36,13 +36,12 @@
 | `admrule-kr` | 고시, 훈령, 예규, 행정규칙 본문과 첨부 메타데이터 | 공식 원문 기반 로컬 미러 | 행정규칙이 실무 기준이면 Full 모드 기본 1차 경로 |
 | `precedent-kr` | 대법원/하급심 판례 전문 | 공식 원문 기반 로컬 미러 / 하급심 caveat | 사건번호를 알 때 직접 조회. 키워드 discovery는 법망 API가 더 적합 |
 | `ordinance-kr` | 조례, 규칙 등 자치법규 | 공식 원문 기반 로컬 미러 | 지자체·지역이 특정된 질문의 1차 경로. 전역 검색은 비용이 크므로 피한다 |
-| `law.go.kr` | 법령, 행정규칙, 자치법규, 일부 판례 공식 화면 | 공식 원문 | 직접 원문 화면 또는 공식 응답을 연 경우 |
-| `glaw.scourt.go.kr` | 법원 판례 공식 화면 | 공식 원문 | 사건번호와 판결 본문/요지를 직접 확인한 경우 |
+| `law.go.kr` | 법령, 행정규칙, 자치법규, 판례 공식 화면 | 공식 원문 | 직접 원문 화면 또는 공식 응답을 연 경우. 판례는 로컬 미러 frontmatter `출처`(precSeq) 우선, 없으면 `판례/({사건번호})` |
 | `법망 API wrapper` | Lite 모드 검색/원문 조회, 법령·행정규칙·해석례·판례 discovery | 공식 원문 또는 공식 실무자료: 미확정 | 검색 결과만으로는 `[VERIFIED]` 금지. 원문 필드나 verify 결과 필요 |
 | `korean-law-mcp` | 헌재, 행정심판, 조세심판, 자치법규, 조약, 별표/서식 | 공식 원문 | OC 코드 또는 설치된 MCP 도구가 있을 때 사용 |
 | `WebSearch` | 공식 사이트 discovery, 정책·제재 동향, 보도자료·해설 보조 | 공식 실무자료 / 해설·의견 / 참고 제외 | 공식 원문 접근을 돕는 보조. 검색 스니펫 자체는 `[VERIFIED]` 아님 |
 
-로컬 미러를 읽은 경우 provenance는 각 source family를 명시한다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`. `law.go.kr 원문 확인` 또는 `glaw.scourt.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
+로컬 미러를 읽은 경우 provenance는 각 source family를 명시한다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`. `law.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
 
 ## Mode Detection
 
@@ -70,7 +69,7 @@ test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr
 실행 환경마다 사용할 수 있는 소스가 다르다. 없는 도구를 있다고 가정하지 말고, 가능한 경로로 좁히거나 결론을 유보한다.
 
 - 로컬 데이터 없음: Lite 모드로 안내하고 법망 API, WebSearch, 공식 링크를 사용한다. 로컬 전문·git history 전제는 금지한다.
-- 법망 API 접근 불가: 사용 가능한 local data, law.go.kr/glaw.scourt.go.kr, WebSearch 공식 자료로 좁힌다. 그래도 원문을 확인하지 못한 범위는 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 낮춘다.
+- 법망 API 접근 불가: 사용 가능한 local data, law.go.kr, WebSearch 공식 자료로 좁힌다. 그래도 원문을 확인하지 못한 범위는 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 낮춘다.
 - WebSearch 없음: local data, 법망 API, 사용 가능한 MCP/공식 링크만 사용한다. 정책 동향·제재 동향은 생략하거나 확인 필요 표시를 한다.
 - korean-law-mcp 또는 OC 코드 없음: 헌재·행정심판·조세심판·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내로 남긴다.
 - 네트워크 없음: 사용 가능한 local mirror만 사용하고, 최신성·정책 동향·공식 링크 검증 한계를 표시한다.
@@ -178,8 +177,8 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 | 법령 조문 | `https://www.law.go.kr/법령/{법령명}/제{N}조` |
 | 법령 조문 항 | `https://www.law.go.kr/법령/{법령명}/제{N}조제{M}항` |
 | 시행령 | `https://www.law.go.kr/법령/{법령명}시행령` |
-| 대법원 판례 | `https://glaw.scourt.go.kr/wsjo/intesrch/sjo022.do?query={사건번호}` |
-| law.go.kr 판례 | `https://www.law.go.kr/판례/({사건번호})` |
+| 판례 (정밀, 로컬 미러 `출처`) | `https://www.law.go.kr/LSW/precInfoP.do?precSeq={판례일련번호}` |
+| 판례 (사건번호) | `https://www.law.go.kr/판례/({사건번호})` |
 | 행정규칙 검색 | `https://www.law.go.kr/행정규칙/{고시명}` |
 | 의안 | `https://likms.assembly.go.kr/bill/billDetail.do?billId={의안ID}` |
 

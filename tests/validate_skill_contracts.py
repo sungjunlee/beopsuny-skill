@@ -215,7 +215,6 @@ LOCAL_MIRROR_PROVENANCE_MARKERS = [
     "로컬 미러 확인",
     "직접 공식 사이트 확인 아님",
     "law.go.kr 원문 확인",
-    "glaw.scourt.go.kr 원문 확인",
 ]
 SOURCE_AUTHORITY_DOC_VALUES = [
     "공식 원문",
@@ -1604,7 +1603,6 @@ def check_citation_verification_contract_single_source() -> None:
         "출처 권위 라벨과 verification status는 서로 다른 축",
         "법망 API wrapper",
         "law.go.kr",
-        "glaw.scourt.go.kr",
         "local legalize-kr / precedent-kr",
         "WebSearch",
         "요약·스니펫",
@@ -1717,7 +1715,7 @@ def check_golden_citation_fixtures() -> None:
                 raise AssertionError(f"{label}: other authority {item.get('id')!r} missing {required!r}")
         if item["pinpoint_required"] is not True:
             raise AssertionError(f"{label}: other authority {item['id']} must require pinpoint reporting")
-        if not any(host in str(item["official_url"]) for host in ["law.go.kr", "glaw.scourt.go.kr"]):
+        if not any(host in str(item["official_url"]) for host in ["law.go.kr"]):
             raise AssertionError(f"{label}: other authority {item['id']} must point to an official legal source")
 
     for item in local_mirror_examples:
@@ -2470,7 +2468,6 @@ def check_report_deliverable_contract() -> None:
     for required in [
         "인용 링크",
         "law.go.kr",
-        "glaw.scourt.go.kr",
         "`<a href>`",
         "하이퍼링크는 콘텐츠이며 외부 리소스 로딩이 아니므로",
         "`references/output-formats.md`의 링크 생성 규칙",
@@ -2531,12 +2528,11 @@ def check_bulk_grid_report_template_contract() -> None:
         "location",
         "source_authority",
         "law.go.kr",
-        "glaw.scourt.go.kr",
         '<a href="https://www.law.go.kr',
     ]:
         assert_contains(template, required, label)
 
-    # href http is allowed only for official law.go.kr / glaw.scourt.go.kr citation links.
+    # href http is allowed only for official law.go.kr citation links.
     # Those are `<a href>` content hyperlinks, not external resource loads, so they do not
     # conflict with the self-contained rule (see report-deliverable.md#r2-파일-규격).
     forbidden_resource_patterns = {
@@ -2545,7 +2541,7 @@ def check_bulk_grid_report_template_contract() -> None:
         "src http": r"\bsrc\s*=\s*['\"][^'\"]*https?://",
         "href http": (
             r"\bhref\s*=\s*['\"]"
-            r"(?!https?://(?:www\.)?(?:law\.go\.kr|glaw\.scourt\.go\.kr)/)"
+            r"(?!https?://(?:www\.)?law\.go\.kr/)"
             r"[^'\"]*https?://"
         ),
         "css import": r"@import\b",
@@ -2589,7 +2585,6 @@ def check_bulk_grid_report_template_contract() -> None:
         "최신성 한계",
         "면책 고지",
         "law.go.kr",
-        "glaw.scourt.go.kr",
         '<a href="https://www.law.go.kr',
     ]:
         assert_contains(contract_template, required, contract_label)
@@ -3391,7 +3386,6 @@ def check_output_reviewer_note_lite() -> None:
         "직접 공식 사이트 확인 아님",
         "법망 API 확인",
         "law.go.kr 원문 확인",
-        "glaw.scourt.go.kr 원문 확인",
         "web — verify",
         "Before relying",
     ]:

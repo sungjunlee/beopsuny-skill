@@ -525,11 +525,11 @@ test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr  # 없음
 제15조는 정보주체의 동의 등 6개 수집·이용 근거를 정하고 있으며, 세부 문구는 위 로컬 미러 본문과 law.go.kr 원문 기준입니다.
 """,
     "o4-03-precedent-local-mirror": """\
-**검토자 메모**: Sources 법망 API discovery + precedent-kr | Provenance 법망 API 검색 결과 (원문 미확인) | Currency glaw.scourt.go.kr 원문 확인 필요
+**검토자 메모**: Sources 법망 API discovery + precedent-kr | Provenance 법망 API 검색 결과 (원문 미확인) | Currency law.go.kr 원문 확인 필요
 
 - **[공식 원문 기반 로컬 미러] [UNVERIFIED]** 개인정보 유출 관련 대법원 손해배상 판례 후보를 법망 API로 discovery하고 precedent-kr에서 사건번호를 대조하는 경로입니다.
-- 사건번호와 요지는 확인 경로를 거치기 전까지 확정하지 않습니다. 실제 사건번호는 precedent-kr 파일 또는 glaw.scourt.go.kr 원문에서 확인한 뒤 표시합니다.
-- 확인 소스: precedent-kr 로컬 미러 조회 → 없으면 법망 API case 검색 → glaw.scourt.go.kr 공식 원문 요지 확인.
+- 사건번호와 요지는 확인 경로를 거치기 전까지 확정하지 않습니다. 실제 사건번호는 precedent-kr 파일 또는 law.go.kr 판례 원문에서 확인한 뒤 표시합니다.
+- 확인 소스: precedent-kr 로컬 미러 조회 → 없으면 법망 API case 검색 → law.go.kr 판례 원문 요지 확인.
 
 원문을 확인하지 못한 범위는 [UNVERIFIED]로 두고, 사건번호를 지어내지 않습니다.
 """,
