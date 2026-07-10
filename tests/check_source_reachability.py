@@ -120,8 +120,10 @@ def check_mirror(family: str) -> dict[str, Any]:
         "status": "WARN",
         "axis": axis,
         "detail": (
-            f"upstream 불일치 — 재동기화 필요 "
-            f"(local {head[:11]}, upstream {remote_head[:11]}, last_commit={iso})"
+            f"upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 "
+            f"`git fetch origin && git reset --hard origin/main` "
+            f"(force-push 재생성 대응, source-access.md 최신화 절차 참조; "
+            f"local {head[:11]}, upstream {remote_head[:11]}, last_commit={iso})"
         ),
     }
 

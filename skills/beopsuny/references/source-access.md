@@ -210,3 +210,15 @@ done
 ```
 
 `pull --ff-only`가 force-push 때문에 실패하면 자동으로 덮어쓰지 않는다. 사용자가 해당 데이터 루트 재동기화를 요청한 경우에만 해당 repo를 새로 clone하거나 upstream 안내에 따라 재설정한다.
+
+사용자가 재동기화를 승인하면 아래 순서로 복구한다 (upstream README가 안내하는 절차).
+
+1. 로컬 변경이 없는지 확인한다: `git status --porcelain`이 비어 있고, 로컬 전용 커밋이 upstream 재생성 이전 스냅샷의 데이터 커밋뿐인지 본다. 사용자 파일이 섞여 있으면 중단하고 보고한다.
+2. 재생성된 히스토리를 채택한다:
+
+```bash
+git -C "${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/${repo}" fetch origin
+git -C "${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/${repo}" reset --hard origin/main
+```
+
+3. 재생성이 있었다는 사실과 새 HEAD를 사용자에게 고지한다. `tests/check_source_reachability.py`의 "upstream 불일치" WARN도 이 절차로 해소한다.

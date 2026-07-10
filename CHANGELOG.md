@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- `skills/beopsuny/references/source-access.md`, `tests/check_source_reachability.py` — Full 모드 미러 최신화에 upstream force-push 재생성 복구 분기 계약화(#230): `pull --ff-only` 실패 시 사용자 승인 후 ① 로컬 변경 없음 확인 ② `fetch + reset --hard origin/main` ③ 재생성 사실·새 HEAD 고지. 헬스체크 "upstream 불일치" WARN 메시지가 이 절차를 직접 안내. precedent-kr 실제 diverge 사례(2026-07-10, upstream README 공지 절차로 복구)에서 도출
+
 ## [0.5.0] - 2026-07-10
 
 본질 하드닝 릴리즈: charter O4 validated(라이브 실증), 자동화 경계 계약, forward-eval 스코어러 정밀도(오탐 10건 봉합·실위반 탐지 유지), 라이브 eval 인프라(부작용 차단·병렬 드라이버·릴리즈 체크리스트), 소스 도달성 헬스체크 + 주간 CI cron, 판례 공식 링크 law.go.kr 마이그레이션(glaw 도메인 사망 대응). 릴리즈 라이브 스모크: guardrails 10/10 + o4 8/8 (claude-sonnet-5, 정독 판정 일치, `tests/forward_evals/evidence/*-20260710-v050.yaml`).
