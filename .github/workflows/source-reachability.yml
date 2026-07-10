@@ -1,0 +1,78 @@
+name: Source Reachability
+
+on:
+  schedule:
+    # Monday 21:00 UTC = Tuesday 06:00 KST (off-peak)
+    - cron: "0 21 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run source reachability healthcheck
+        id: healthcheck
+        continue-on-error: true
+        run: |
+          # Retry once after 5m on FAIL to damp 법망 maintenance / transient network blips.
+          set +e
+          python tests/check_source_reachability.py > report.txt 2>&1
+          EXIT=$?
+          if [ "$EXIT" -ne 0 ]; then
+            sleep 300
+            python tests/check_source_reachability.py > report.txt 2>&1
+            EXIT=$?
+          fi
+          echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"
+          exit "$EXIT"
+
+      - name: File or update tracking issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXIT="${{ steps.healthcheck.outputs.exit_code }}"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          gh label create source-reachability --force 2>/dev/null || true
+          ISSUE=$(gh issue list --label source-reachability --state open --limit 1 --json number --jq '.[0].number // empty')
+
+          if [ "$EXIT" != "0" ]; then
+            {
+              echo "## 소스 도달성 헬스체크 FAIL"
+              echo ""
+              echo "Workflow run: ${RUN_URL}"
+              echo ""
+              echo '```'
+              cat report.txt
+              echo '```'
+            } > issue_body.md
+            if [ -n "$ISSUE" ]; then
+              gh issue comment "$ISSUE" --body-file issue_body.md
+            else
+              gh issue create \
+                --label source-reachability \
+                --title "소스 도달성 헬스체크 FAIL (자동)" \
+                --body-file issue_body.md
+            fi
+          elif [ -n "$ISSUE" ]; then
+            {
+              echo "복구 확인"
+              echo ""
+              echo "Workflow run: ${RUN_URL}"
+            } > issue_body.md
+            gh issue comment "$ISSUE" --body-file issue_body.md
+            gh issue close "$ISSUE"
+          fi
+
+      - name: Fail job if healthcheck failed
+        if: steps.healthcheck.outputs.exit_code != '0'
+        run: exit 1
