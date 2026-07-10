@@ -48,9 +48,19 @@ cd "$(dirname "$OUTPUT_FILE")"
 
 # --allowedTools is variadic and would swallow a following positional prompt
 # argument, so the prompt goes in via stdin instead.
+#
+# --allowedTools only auto-approves; user-level settings can still permit other
+# tools. Deny wins over allow, so side-effect tools must be listed in
+# --disallowedTools. Empty --strict-mcp-config cuts MCP inheritance from
+# user/session config. Tradeoff: scheduling tools may still be VISIBLE to the
+# eval-target (fwd-02 automation-boundary premise needs that), but execution is
+# denied; if the CLI hides denied tools entirely, fwd-02 falls to the "no tools
+# available" contract branch — acceptable either way (judgment reads transcript).
 claude -p \
   --model "$MODEL" \
   --append-system-prompt "$APPEND_SYSTEM" \
   --allowedTools "Read,Glob,Grep,WebFetch,WebSearch,Bash(ls:*),Bash(find:*),Bash(cat:*),Bash(head:*),Bash(rg:*),Bash(grep:*),Bash(git:*),Bash(curl:*),Bash(test:*)" \
+  --disallowedTools "CronCreate,CronDelete,RemoteTrigger,PushNotification,TaskCreate,TaskUpdate,TaskStop,SendMessage,Agent,Task,Write,Edit,NotebookEdit,EnterWorktree,Workflow,Artifact,Skill" \
+  --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
   < "$PROMPT_FILE" \
   > "$OUTPUT_FILE"
