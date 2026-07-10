@@ -235,6 +235,20 @@ class CorpusRegressionTests(unittest.TestCase):
         }
         self.assertIn("forbidden_failure", guardrails)
 
+    def test_o4_driver_corpus_2026_07_10_all_pass(self) -> None:
+        # First run_live_parallel.sh live run (#224, sandboxed runner from #223).
+        # Anchors the currency-scope behavior synonyms: o4-08 scopes the mirror
+        # [VERIFIED] with "개정 공포본을 담고"/"미래 시점 본문" instead of the
+        # contract literal "공포본 기준".
+        config = self.harness.load_forward_eval(O4_CONFIG_PATH)
+        prompts = {str(prompt["id"]): prompt for prompt in config["prompts"]}
+        corpus = evidence_outputs(ROOT / "tests/forward_evals/evidence/o4-live-driver-sonnet5-20260710.yaml")
+        self.assertEqual(len(corpus), 8)
+        for prompt_id, output in corpus.items():
+            with self.subTest(prompt_id=prompt_id):
+                result = self.harness.score_one_prompt(prompts[prompt_id], output)
+                self.assertEqual(result["failed_guardrails"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -620,7 +620,18 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
             failures.append(
                 f"{scenario_id}: common rule {rule} missing 시행 전 공포본 marker for future-effective mirror citation"
             )
-        if "[VERIFIED]" in output and "공포본 기준" not in output:
+        # Behavior synonyms, not the contract literal alone (#222): scoping the
+        # mirror text as a promulgated-not-yet-effective version counts.
+        currency_scope_markers = [
+            "공포본 기준",
+            "공포본을 담고",
+            "공포본이므로",
+            "현행이 아니",
+            "현행으로 보면 안",
+            "미래 시점 본문",
+            "아직 시행되지",
+        ]
+        if "[VERIFIED]" in output and not any(marker in output for marker in currency_scope_markers):
             failures.append(
                 f"{scenario_id}: common rule {rule} labels mirror citation [VERIFIED] without 공포본 기준 currency scope"
             )

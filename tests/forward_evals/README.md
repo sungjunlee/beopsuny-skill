@@ -71,6 +71,30 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 실패 리포트는 `prompt_id`, `guardrail_category`, `guardrail`, `evidence`를 함께 남긴다.
 
+### 병렬 라이브 드라이버 (`run_live_parallel.sh`)
+
+한 명령으로 template → 병렬 라이브 실행 → capture 조립 → score까지 돌린다. foreground에서 실행하고, 완료된 prompt는 스킵해서 중단 후 재개할 수 있다.
+
+```bash
+# guardrails 세트
+CONFIG=tests/forward_evals/beopsuny_guardrails.yaml MODEL=claude-sonnet-5 \
+  tests/forward_evals/run_live_parallel.sh
+
+# o4 provenance 세트
+CONFIG=tests/forward_evals/beopsuny_o4_provenance.yaml MODEL=claude-sonnet-5 \
+  tests/forward_evals/run_live_parallel.sh
+```
+
+- **증분 재개**: `$RUN_DIR/outputs/<prompt_id>.txt`가 비어 있지 않으면 해당 prompt는 스킵한다. 다시 돌리려면 그 파일을 지운다.
+- **병렬도**: `PAR` (기본 4). 환경·요금 한도에 맞게 조절.
+- **드라이 테스트**: `RUNNER=/path/to/mock.sh`로 라이브 `claude` 호출 없이 배관만 검증할 수 있다. `RUN_DIR`도 `/tmp/...`로 두면 repo `runs/`를 건드리지 않는다.
+- **알려진 함정**:
+  - `claude -p --allowedTools`는 variadic이라 positional prompt를 삼킨다 → prompt는 stdin으로 전달 (`run_claude_live.sh`).
+  - 일부 오케스트레이션 환경은 장시간 백그라운드 태스크를 kill한다 → 이 드라이버는 **foreground**에서 돌린다. 증분 스킵으로 중단 재개 가능.
+  - macOS `xargs -I`는 치환 길이 제한이 있다 → bash for-loop로 병렬 실행.
+  - 부작용 도구 차단은 `run_claude_live.sh`의 `--disallowedTools` + `--strict-mcp-config`에 있다 (#223).
+- **증거 승격**: 판정 후 `$RUN_DIR/evidence.yaml`을 `evidence/<set>-<model>-YYYYMMDD.yaml`로 복사해 커밋한다. `runs/`는 gitignore된다.
+
 ### 원본 수동 절차
 
 1. 새 대화 또는 깨끗한 eval harness에 `skills/beopsuny/SKILL.md`를 system/skill context로 로드한다.

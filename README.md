@@ -162,6 +162,13 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 
 기존 장점인 단일 라우터, 한국법 원문주의, 출처 권위 라벨, 자가 검증을 약화시키는 변경은 기능 추가로 보지 않는다. 새 계약은 기존 gate를 우회하지 말고, 필요한 경우 결론 강도를 낮추는 방식으로 연결한다.
 
+### 릴리즈 체크리스트
+
+1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
+2. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
+3. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
+4. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
+
 ### Full 모드 로컬 데이터 (권장)
 
 Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **Full 모드를 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr/glaw.scourt.go.kr 직접 확인과 구분한다.
