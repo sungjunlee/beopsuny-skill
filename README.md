@@ -165,9 +165,10 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 ### 릴리즈 체크리스트
 
 1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
-2. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
-3. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
-4. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
+2. 소스 도달성: `python3 tests/check_source_reachability.py`로 로컬 미러 staleness / 법망 API / law.go.kr 링크 3축 확인 (네트워크 필요, FAIL 시 원인 해소 후 진행).
+3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
+4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
+5. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
 
 ### Full 모드 로컬 데이터 (권장)
 
