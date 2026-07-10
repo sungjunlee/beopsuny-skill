@@ -10,6 +10,11 @@
 
 릴리즈 전 또는 필요 시 수동 실행. 네트워크 의존이므로 O1/O2 정적 게이트에
 포함하지 않는다. 실패는 "조회 실패"이며 "개정 없음"이 아니다.
+
+`--dns-links`: CI 등 국외 vantage용. 한국 정부 사이트는 국외에서 HTTP가
+timeout/거부될 수 있어(실측: GitHub 러너에서 law.go.kr timeout, 법망 410)
+링크 축은 DNS 해석만 판정하고(glaw류 도메인 사망은 DNS로 전 세계에서 감지됨)
+법망 축 실패는 WARN으로 낮춘다. 사용자 vantage(국내) 판정은 로컬 실행이 기준.
 """
 
 from __future__ import annotations
@@ -17,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import subprocess
 import sys
 import urllib.error
@@ -185,8 +191,19 @@ def summarize_beopmang(payload: Any) -> str:
     return "200 + JSON"
 
 
-def check_link(label: str, url: str) -> dict[str, Any]:
+def check_link(label: str, url: str, dns_only: bool = False) -> dict[str, Any]:
     axis = f"링크/{label}"
+    if dns_only:
+        host = urllib.parse.urlsplit(url).hostname or ""
+        try:
+            socket.getaddrinfo(host, 443, proto=socket.IPPROTO_TCP)
+        except OSError as exc:
+            return {
+                "status": "FAIL",
+                "axis": axis,
+                "detail": f"DNS 미해석 — 도메인 사망 의심: {exc} ({host})",
+            }
+        return {"status": "OK", "axis": axis, "detail": f"DNS resolved ({host})"}
     status, _body, err = http_get(url)
     if status == 200:
         return {"status": "OK", "axis": axis, "detail": f"HTTP 200 ({url})"}
@@ -230,19 +247,32 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="리포트 끝에 machine-readable JSON 출력",
     )
+    parser.add_argument(
+        "--dns-links",
+        action="store_true",
+        help="국외 vantage(CI)용: 링크 축은 DNS 해석만 판정, 법망 축 실패는 WARN",
+    )
     return parser.parse_args(argv)
 
 
-def run_checks() -> list[dict[str, Any]]:
+def run_checks(dns_links: bool = False) -> list[dict[str, Any]]:
     checks = [check_mirror(family) for family in SOURCE_FAMILIES]
-    checks.append(check_beopmang())
-    checks.extend(check_link(label, url) for label, url in LINK_CHECKS)
+    beopmang = check_beopmang()
+    if dns_links and beopmang["status"] == "FAIL":
+        # 국외 vantage에서는 법망의 HTTP 판정이 신뢰 불가(geo 차이) — 보류.
+        beopmang = {
+            "status": "WARN",
+            "axis": beopmang["axis"],
+            "detail": f"{beopmang['detail']} — 국외 vantage, 판정 보류",
+        }
+    checks.append(beopmang)
+    checks.extend(check_link(label, url, dns_only=dns_links) for label, url in LINK_CHECKS)
     return checks
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    checks = run_checks()
+    checks = run_checks(dns_links=args.dns_links)
     for check in checks:
         print(format_line(check))
     summary_line, exit_code = summarize(checks)

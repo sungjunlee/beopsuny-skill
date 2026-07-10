@@ -24,13 +24,18 @@ jobs:
         id: healthcheck
         continue-on-error: true
         run: |
-          # Retry once after 5m on FAIL to damp 법망 maintenance / transient network blips.
+          # --dns-links: Korean gov sites time out / geo-vary from non-KR runners
+          # (measured: law.go.kr timeout, beopmang 410), so CI judges the link axis
+          # by DNS resolution only (still catches glaw-style domain death) and
+          # downgrades beopmang HTTP failures to WARN. Full HTTP semantics run
+          # locally (user vantage) via the release checklist.
+          # Retry once after 5m on FAIL to damp transient network blips.
           set +e
-          python tests/check_source_reachability.py > report.txt 2>&1
+          python tests/check_source_reachability.py --dns-links > report.txt 2>&1
           EXIT=$?
           if [ "$EXIT" -ne 0 ]; then
             sleep 300
-            python tests/check_source_reachability.py > report.txt 2>&1
+            python tests/check_source_reachability.py --dns-links > report.txt 2>&1
             EXIT=$?
           fi
           echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"
