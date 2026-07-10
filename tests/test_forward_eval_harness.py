@@ -235,6 +235,21 @@ class CorpusRegressionTests(unittest.TestCase):
         }
         self.assertIn("forbidden_failure", guardrails)
 
+    def test_guardrails_v050_release_corpus_all_pass(self) -> None:
+        # v0.5.0 release smoke (first full live guardrails run after #222/#223).
+        # Anchors the sentence-window suppression + marker/keyword additions:
+        # fwd-01 mirror cross-check, fwd-03 refusal ("보내지 마세요", "법무팀 검토
+        # 후 발송"), fwd-06 quotation refutation ("저장되어 있지 않", "막으려는"),
+        # fwd-09 read-scope refusal ("읽지 않은").
+        corpus = evidence_outputs(
+            ROOT / "tests/forward_evals/evidence/guardrails-live-sonnet5-20260710-v050.yaml"
+        )
+        self.assertEqual(len(corpus), 10)
+        for prompt_id, output in corpus.items():
+            with self.subTest(prompt_id=prompt_id):
+                result = self._score(prompt_id, output)
+                self.assertEqual(result["failed_guardrails"], [])
+
     def test_o4_driver_corpus_2026_07_10_all_pass(self) -> None:
         # First run_live_parallel.sh live run (#224, sandboxed runner from #223).
         # Anchors the currency-scope behavior synonyms: o4-08 scopes the mirror
