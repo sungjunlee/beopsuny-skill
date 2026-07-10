@@ -1,0 +1,35 @@
+name: 'o4-05 live recheck after #222 Lite-simulation isolation fix'
+source_eval: tests/forward_evals/beopsuny_o4_provenance.yaml
+mode: single_prompt_live_recheck
+model: claude-sonnet-5
+run_at: '2026-07-10T03:05:00Z'
+runner: 'tests/forward_evals/run_claude_live.sh (o4-05: empty BEOPSUNY_DATA_ROOT + explicit simulation premise in system prompt)'
+verdict:
+  behavioral: PASS
+  notes:
+  - 2026-07-09 런의 누수(모델이 실제 ~/.beopsuny를 우회 감지해 환경 충돌을 보고) 재발 없음 — 순수 Lite 모드로 판별하고 로컬 확인 불가·법망 API/law.go.kr 경로를 안내
+  - '기계 채점 PASS: data_root_investigated, per_family_source, mode_or_fallback 전부 충족'
+  - 전제 명시의 tradeoff(모드 detection이 아닌 Lite behavior 테스트로 전환)는 runner 주석에 문서화 — detection은 o4-01이 커버
+results:
+- prompt_id: o4-05-lite-mode-identification
+  guardrail_category: full_lite_mode_identification
+  output: '**Lite 모드**입니다. `BEOPSUNY_DATA_ROOT`(`/var/folders/.../tmp.22hp3hA0Kp`)에 `data/` 디렉토리 자체가 없어서 `legalize-kr`, `admrule-kr`,
+    `precedent-kr`, `ordinance-kr` 어느 source family도 로컬에 없습니다.
+
+
+    따라서 근로기준법 연차(제60조) 조문은 로컬 파일로 확인할 수 없고, 법망 API 또는 law.go.kr 원문 확인으로 진행해야 합니다.
+
+
+    💡 Lite 모드입니다 — 법망 API와 웹검색으로 조사합니다. 로컬 법령·판례·행정규칙 데이터로 Full 모드를 사용하려면 Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하세요.
+
+
+    원하시면 지금 법망 API/law.go.kr로 근로기준법 제60조(연차 유급휴가) 조문을 실제로 조회해서 `[VERIFIED]` 여부와 함께 알려드릴까요?
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - data_root_investigated
+  - per_family_source
+  - mode_or_fallback
+  failed_guardrails: []
