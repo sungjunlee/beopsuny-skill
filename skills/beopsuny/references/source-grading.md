@@ -50,23 +50,7 @@
 
 `[VERIFIED]`는 출처 라벨이 높다는 뜻이 아니라, **이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조했다**는 뜻이다. 출처 권위 라벨과 verification status는 분리한다.
 
-`[VERIFIED]`를 붙이려면 `references/citation-verification-contract.md`의 VERIFIED minimum conditions가 모두 충족되어야 한다. 요약하면 아래 네 가지다.
-
-1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 식별자가 충분하다.
-2. **원문 대조**: local legalize-kr/admrule-kr/ordinance-kr/precedent-kr 로컬 미러 원문, law.go.kr, 법망 API의 원문 필드, 또는 공식 MCP 응답에서 실제 문구나 구조를 확인했다.
-3. **최신성 표시**: 현행/미시행/시행 예정/조회 실패 중 어느 상태인지 답변에 드러난다. 시행일·금액·기한·과징금처럼 변동성이 큰 사실은 stale source가 아니어야 한다.
-4. **provenance 표시**: 이번 응답에서 확인한 경로를 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`처럼 표시한다.
-
-아래 경우에는 `[VERIFIED]`를 붙이지 않는다.
-
-- 법망 API나 WebSearch의 요약·스니펫만 본 경우
-- `assets/data/*.yaml` 또는 체크리스트 후보만 본 경우
-- `mandatory_provisions.yaml`의 후보 조문만 본 경우
-- 사용자가 제공한 조문번호·사건번호·금액을 독립 확인하지 않은 경우
-- 법령 ID, 인허가 요건, 서식, 법정 기한을 공식 소스 확인 없이 번들 후보 데이터나 기억만으로 처리한 경우
-- 원문 링크 패턴을 추정만 했고 실제 원문을 열어보지 않은 경우
-
-이 경우에는 `[UNVERIFIED]`, `[INSUFFICIENT]`, `[STALE]`, `[EDITORIAL]` 중 실제 상태에 맞는 태그로 낮춘다.
+`[VERIFIED]` minimum conditions(대상 특정, 원문 대조, 최신성 표시, provenance 표시)와 downgrade 목록은 [`references/citation-verification-contract.md`](citation-verification-contract.md)를 단일 계약으로 따른다. 이 문서는 그 조건을 재서술하지 않는다.
 
 ## 규칙
 

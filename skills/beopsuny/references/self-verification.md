@@ -136,29 +136,7 @@
 
 ## Metadata Format
 
-전부 통과:
-
-```markdown
----
-🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓
-```
-
-계약 검토 아닌 응답:
-
-```markdown
----
-🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
-```
-
-일부 확인 불가:
-
-```markdown
----
-🔍 **자가 검증**: Citation 2/3 ⚠ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓
-   - 경업금지 판례 원문 확인 불가 -> [UNVERIFIED] 표시됨
-```
-
-인용이 0개인 절차 안내, 용어 설명 등은 `Citation n/a`로 표기한다.
+자가 검증 블록의 출력 표기와 예시(전부 통과, Counter-draft n/a, Citation n/a, 부분 실패)는 [`references/output-formats.md#자가-검증-메타데이터`](output-formats.md#자가-검증-메타데이터)를 단일 소스로 따른다. 이 문서는 표기 예시를 재서술하지 않는다.
 
 ## 법률 AI 할루시네이션 연구
 

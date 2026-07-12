@@ -1,73 +1,10 @@
-# DESIGN.md — 법순이 아키텍처 결정 기록
+# DESIGN.md — 법순이 아키텍처 결정 아카이브
 
-> 법순이(beopsuny)의 구조적 선택과 진화 로드맵. 3개월 후에도 맥락을 잃지 않기 위한 문서.
+> 이 문서는 **구조 결정(단일 스킬 vs multi-skill split)의 결정 아카이브**다. 현재 아키텍처와 시스템 경계는 [`spec/system-map.md`](spec/system-map.md), 제품 방향·Non-Goals·전역 Decisions는 [`spec/charter.md`](spec/charter.md), capability 계약은 [`spec/capabilities.md`](spec/capabilities.md)가 단일 소스다. 과거의 아키텍처 스냅샷·페르소나·버전 로드맵 절(§1–3, §5)은 spec/으로 대체되어 폐기했다 (2026-07-12, git 이력 참조).
 
-## 1. 현재 아키텍처 (v0.0.x ~ v0.1.x)
+## Multi-skill 전환 트리거
 
-**단일 Claude Code 스킬**.
-
-```
-beopsuny-skill/                      # 레포
-├── .claude-plugin/plugin.json        # 플러그인 메타 (plugins[].source = ./skills/beopsuny)
-├── skills/
-│   └── beopsuny/                     # 단일 스킬
-│       ├── SKILL.md                  # 본체 (Full/Lite 모드)
-│       ├── assets/                   # YAML 데이터 + 체크리스트
-│       └── references/               # 가이드 문서 (on-demand read)
-├── docs/desktop-chat-guide.md        # Chat 탭 사용자 가이드
-└── tests/scenarios/                  # 13종 시나리오
-```
-
-### 설치 경로
-
-사용자 머신에서는 아래 중 하나로 설치된다.
-
-| 방식 | 경로 | 비고 |
-|------|------|------|
-| 마켓플레이스 (Claude Code) | `~/.claude/plugins/.../beopsuny-skill/` | `plugin.json`의 `plugins[]` 기반 |
-| 심링크 (로컬 dev) | `~/.claude/skills/beopsuny → .../skills/beopsuny` | README 참조 |
-| zip 배포 | 사용자 지정 경로 | Custom Instructions paste도 지원 |
-| Desktop Chat (Lite) | 설치 없음 — `docs/desktop-chat-guide.md`의 프로젝트 지침 템플릿 paste | 채팅마다 스토리지 초기화 |
-
-### 런타임 데이터
-
-코드와 데이터 분리 원칙 (gstack 패턴):
-
-- **코드**: `skills/beopsuny/` (레포 내, 읽기 전용)
-- **데이터**: `~/.beopsuny/` (사용자 머신, 프로필/데이터/이력)
-
----
-
-## 2. 사용자 페르소나
-
-| 페르소나 | 설명 | 우선순위 |
-|----------|------|----------|
-| **Primary** | 사내변호사 (개발자의 배우자가 첫 사용자) — 법령 조사 → 계약 검토 → 컴플라이언스를 한 흐름에서 처리 | **이 페르소나가 모든 설계 결정의 기준점** |
-| **Secondary** | 사내변호 경계를 넘어선 확장 업무 (M&A 초기 검토, 해외 진출 초기 리서치 등) | 현재 워크플로우 커버 |
-| **Stretch** | 법률 비전문가 (스타트업 창업자, 개인사업자) | v0.2.0 이후 |
-
-Primary 페르소나의 워크플로우가 "통합형"이라는 사실은 **단일 스킬 유지 결정의 핵심 근거**다 (§5 참조).
-
----
-
-## 3. 진화 방향
-
-현재는 **조사·참조형** 스킬. 다음 단계는 **문서 처리형** 기능 추가.
-
-| 단계 | 초점 | 대표 기능 |
-|------|------|-----------|
-| v0.0.x | 조사·참조 | 법령 조문 검색, 판례 조회, 체크리스트, 회사 맥락 메모리 |
-| v0.1.x | **패턴 고도화** (현재) | 출처 권위 라벨 + verification status, YAML Policy 구조, 자가 검증 레이어 |
-| v0.2.0 | **문서 처리형** | DOCX 파싱 / redline 생성, 법정 의무 자동 알림·스케줄링 |
-| v0.3.0+ | 비전문가 확장 | 평이한 설명 모드, 의사결정 도우미 |
-
-v0.2.0 착수가 곧 §4의 **Multi-skill 전환 트리거**와 맞물린다.
-
----
-
-## 4. Multi-skill 전환 트리거
-
-아래 중 **하나라도** 발생하면 v0.2.0에서 플러그인 내 3개 스킬로 분리한다.
+아래 중 **하나라도** 발생하면 물리적 multi-skill 분리를 재평가한다. 트리거 없이는 분리하지 않는다 (charter Non-Goal: "내부 정돈만을 위한 공개 스킬 분리 금지"와 정렬).
 
 | 트리거 | 조건 | 근거 |
 |--------|------|------|
@@ -76,44 +13,25 @@ v0.2.0 착수가 곧 §4의 **Multi-skill 전환 트리거**와 맞물린다.
 | **피드백 트리거** | 사용자가 "X 기능만 쓰고 싶다" 3회 이상 | Primary 페르소나의 워크플로우 분기가 실제로 발생한다는 신호 |
 | **규모 트리거** | `wc -l skills/beopsuny/SKILL.md` > 800 | Claude 권장선(500줄) + 여유. 초과 시 성능·정확도 저하 |
 
-**트리거 발동 시 행동**: `DESIGN.md`에 재평가 결정을 기록하고, v0.2.0 마일스톤을 연다. 트리거 없이는 분리하지 않는다.
+**트리거 발동 시 행동**: 이 문서에 재평가 결정을 기록하고 마일스톤을 연다.
 
----
+참고: 2026-07 프루닝 이후 SKILL.md는 ~270줄 예산으로 관리되며(규모 트리거 대비 충분한 여유), spine 사이징은 `spec/capabilities.md`의 `router-loading` capability가 소유한다.
 
-## 5. 전환 시 구조 (미래, 정보용)
-
-트리거 발동 시 아래 구조로 이동한다.
-
-```
-beopsuny-skill/
-├── .claude-plugin/plugin.json       # plugins[] 3개
-└── skills/
-    ├── research/
-    │   └── SKILL.md                 # 법령/판례/행정규칙 조사
-    ├── contract/
-    │   └── SKILL.md                 # 계약 검토 + DOCX 처리
-    ├── compliance/
-    │   └── SKILL.md                 # 체크리스트 + 연간 의무 + 스케줄링
-    └── ... (공유 자산은 각 SKILL.md에서 ${CLAUDE_PLUGIN_ROOT}/assets/로 참조)
-```
-
-### 공유 자산 참조 규칙 (강제)
+### 전환 시 공유 자산 참조 규칙 (강제)
 
 - **금지**: `../` 상대경로 트래버설. Claude Code `${CLAUDE_SKILL_DIR}`은 per-skill이라 cross-skill 트래버설은 플랫폼이 보장하지 않는다.
 - **필수**: `${CLAUDE_PLUGIN_ROOT}/assets/...` 절대경로. 플러그인 레벨에서 공유 자산은 플러그인 루트 기준으로 접근한다.
 - **금지**: `skills/shared/` 디렉토리 (비관습, 자동 발견 불안정).
 
-### 제거 시점
-
-사용자가 관습적으로 한 스킬만 쓰는 패턴이 확립되면 나머지 스킬을 별도 플러그인으로 옮길 수 있으나, 이는 v0.3.0 이후 결정.
-
 ---
 
 ## 6. 아키텍처 결정 기록
 
+(§ 번호는 기존 외부 참조 유지를 위해 보존한다.)
+
 ### 2026-05-10: 단일 스킬 유지 + 내부 router spine 전환
 
-**컨텍스트**: `SKILL.md`가 762줄까지 커져 §4의 multi-skill 전환 트리거(800줄)에 근접했다. 단순한 분량보다 더 큰 문제는 법률 조사, 계약 검토, 체크리스트, 변경 감지, 메모리, knowledge injection, 출력 예시가 모두 항상 로드되는 spine에 섞인 점이다.
+**컨텍스트**: `SKILL.md`가 762줄까지 커져 multi-skill 전환 트리거(800줄)에 근접했다. 단순한 분량보다 더 큰 문제는 법률 조사, 계약 검토, 체크리스트, 변경 감지, 메모리, knowledge injection, 출력 예시가 모두 항상 로드되는 spine에 섞인 점이다.
 
 **결정**: 외부 artifact는 단일 `beopsuny` skill로 유지하되, 내부 구조는 virtual skill suite처럼 재정렬한다.
 
@@ -161,7 +79,7 @@ User question
    - v0.1.0 PR 반영 후: 548줄 — 여전히 분리 트리거(800줄) 대비 충분한 여유.
    - 분리 동기가 공학적이지 않다.
 
-**결정**: 단일 스킬 유지. §4의 트리거 중 하나라도 발동하면 재평가.
+**결정**: 단일 스킬 유지. 위 전환 트리거 중 하나라도 발동하면 재평가.
 
 **대체 안 (기각됨)**: 3개 스킬 분리 + `skills/shared/` 공유 자산. 기각 사유 = 위 1~4번.
 
@@ -171,5 +89,6 @@ User question
 
 | 날짜 | 변경 | PR |
 |------|------|----|
+| 2026-07-12 | 아키텍처 스냅샷·로드맵 절(§1–3, §5) 폐기 — spec/으로 대체, 결정 아카이브로 축소 | — |
 | 2026-05-10 | 단일 스킬 유지 + 내부 router spine 전환 결정 | TBD |
 | 2026-04-12 | 초안 작성 — 단일 스킬 결정, 분리 트리거 정의, v0.2.0 로드맵 | #2 |

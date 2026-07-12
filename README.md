@@ -149,16 +149,31 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 
 ### 품질 계약 변경 체크리스트
 
-새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay를 추가할 때는 아래 순서로 갱신한다.
+새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay를 추가할 때 적용한다.
 
-1. `skills/beopsuny/SKILL.md`의 의도 라우터(의도 표 또는 gate 표)에 새 트리거와 적용 계약을 연결한다.
-2. 기준 문서(`references/*.md`)에 성공 기준, 금지 행동, 실패 시 downgrade 방식을 적는다.
-3. 구조화가 필요한 계약이면 `assets/schemas/*.yaml` 또는 `assets/policies/*.yaml`에 최소 evidence shape를 추가한다.
-4. `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오를 추가하거나 기존 router 시나리오의 `must_do`/`forbidden_behavior`를 갱신한다.
-5. `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule을 추가해 금지 실패모드를 잡는다.
-6. `tests/validate_skill_contracts.py`에 문서·스키마·README·CHANGELOG drift 검사를 추가한다.
-7. README 품질 계약 지도와 CHANGELOG를 갱신한다.
-8. `PYTHON=${PYTHON:-python3}`, `$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt`, `PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py`, `PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py`, `PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evidence tests/forward_evals/runs/sample.yaml`, `PYTHONPATH=.test-deps $PYTHON -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py`, `$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py skills/beopsuny/assets/tools/knowledge_manifest_ingest.py tests/test_knowledge_manifest_ingest.py`, `git diff --check`를 실행한다.
+**변경 비용 예산**: 행동 하나를 바꾸는 변경이 필수로 건드리는 표면은 기본 4개 이하다 — 기준 문서 하나 + 시나리오·fixture 하나 + 정적 검사 하나 + CHANGELOG. 아래 단계는 조건이 맞을 때만 수행하고, 예산을 넘겨야 하면 PR에 이유를 남긴다. 계약 개념 하나의 집은 1곳이다 — 다른 문서에는 재요약 대신 포인터만 둔다.
+
+| 단계 | 대상 | 조건 |
+| --- | --- | --- |
+| 1 | `skills/beopsuny/SKILL.md`의 의도 라우터(의도 표 또는 gate 표)에 새 트리거와 적용 계약을 연결 | 라우팅·gate 부착이 바뀌는 경우에만. 워크플로우 내부 변경이면 생략 |
+| 2 | 기준 문서(`references/*.md`) 1곳에 성공 기준, 금지 행동, 실패 시 downgrade 방식 기록 | 항상 — 단, 집은 1곳. 다른 문서는 포인터만 |
+| 3 | `assets/schemas/*.yaml` 또는 `assets/policies/*.yaml`에 최소 evidence shape 추가 | 구조화된 evidence·출력 리터럴이 필요한 계약만 |
+| 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `must_do`/`forbidden_behavior` 갱신 | 사용자 노출 행동이 바뀌는 경우 |
+| 5 | `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule 추가 | 새 금지 실패모드가 생기는 경우에만 |
+| 6 | `tests/validate_skill_contracts.py`에 drift 검사 추가 | 새 계약 표면이 생기는 경우에만. 전문 문장 고정 금지 — 토큰·구조·포인터·출력 리터럴만 assert (파일 상단 assertion style policy 참조) |
+| 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 |
+| 8 | 검증 게이트 전체 실행 (아래 명령 블록) | 항상 |
+
+```bash
+PYTHON=${PYTHON:-python3}
+$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
+PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
+PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
+PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evidence tests/forward_evals/runs/sample.yaml
+PYTHONPATH=.test-deps $PYTHON -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py
+$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py skills/beopsuny/assets/tools/knowledge_manifest_ingest.py tests/test_knowledge_manifest_ingest.py
+git diff --check
+```
 
 기존 장점인 단일 라우터, 한국법 원문주의, 출처 권위 라벨, 자가 검증을 약화시키는 변경은 기능 추가로 보지 않는다. 새 계약은 기존 gate를 우회하지 말고, 필요한 경우 결론 강도를 낮추는 방식으로 연결한다.
 

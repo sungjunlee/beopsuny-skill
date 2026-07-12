@@ -19,7 +19,7 @@ maintainer change
   -> GitHub Actions contract tests and release zip
 ```
 
-Detailed architecture history lives in [`../DESIGN.md`](../DESIGN.md). Product direction and objective status live in [`charter.md`](charter.md).
+Structural decisions (single-skill vs split, escalation triggers) are archived in [`../DESIGN.md`](../DESIGN.md); current architecture truth is this file. Product direction and objective status live in [`charter.md`](charter.md).
 
 ## Runtime Boundaries
 
@@ -73,7 +73,7 @@ No remaining candidates. `contract-review` was grilled into a first-class capabi
 
 - Product direction: [`charter.md`](charter.md)
 - Capability contracts: [`capabilities.md`](capabilities.md)
-- Architecture decision history: [`../DESIGN.md`](../DESIGN.md)
+- Structural decision archive (split triggers): [`../DESIGN.md`](../DESIGN.md)
 - Public usage and maintainer checklist: [`../README.md`](../README.md)
 - Runtime source model: [`../skills/beopsuny/references/source-access.md`](../skills/beopsuny/references/source-access.md)
 - Citation contract: [`../skills/beopsuny/references/citation-verification-contract.md`](../skills/beopsuny/references/citation-verification-contract.md)

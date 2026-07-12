@@ -4,6 +4,18 @@
 These checks do not prove legal correctness. They catch structural drift in the
 skill instructions: stale packaging metadata, old contract-review guidance, and
 missing fallback boundaries that previously caused inconsistent agent behavior.
+
+Assertion style policy (2026-07-12, charter Decision):
+- New or migrated checks assert TOKENS (tag names, labels, file paths, field
+  names, table structure, pointers) or exact OUTPUT LITERALS that the skill must
+  emit verbatim (citation lines, metadata blocks) — not full prose sentences.
+- Pinning a full documentation sentence turns meaning-preserving rewording into
+  a regression ("prose-lock") and is the main historical source of change cost.
+  Do not add new full-sentence pins; when touching an old check, migrate its
+  needles to tokens/structure instead of re-pinning the new wording.
+- Single-home guards: when a contract concept has one canonical document, other
+  documents keep a pointer only. Guard with (a) pointer-presence assertions and
+  (b) assert_not_contains on the old restatement marker so copies cannot return.
 """
 
 from __future__ import annotations
@@ -1454,18 +1466,22 @@ def check_source_authority_verified_contract() -> None:
         "A/B/C/D 같은 점수형 등급을 공개 출력에 쓰지 않는다",
         "공식 실무자료: 미확정",
         "공식 원문 없이 단독 법률 결론으로 승격하지 않는다",
+        # condition names stay as tokens; the conditions themselves live in
+        # citation-verification-contract.md (single home)
         "대상 특정",
         "원문 대조",
         "최신성 표시",
         "provenance 표시",
-        "법망 API나 WebSearch의 요약·스니펫만 본 경우",
-        "`assets/data/*.yaml` 또는 체크리스트 후보만 본 경우",
-        "법령 ID, 인허가 요건, 서식, 법정 기한",
         "contradiction scan",
         "conclusion binding",
         "단정 결론으로 쓰지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    # single-home guard: VERIFIED minimum conditions / downgrade list must stay
+    # a pointer here, not a restated copy (2026-07-12 one-home rule)
+    assert_contains(text, "이 문서는 그 조건을 재서술하지 않는다", label)
+    assert_not_contains(text, "요약하면 아래 네 가지다", label)
 
     if not isinstance(policy, dict):
         raise AssertionError("source_grades.yaml: expected mapping")
@@ -1610,6 +1626,8 @@ def check_citation_verification_contract_single_source() -> None:
         "provenance는 이번 응답에서 실제로 확인한 경로",
         "원문 필드 또는 공식 원문 화면",
         "official source 확인 없이",
+        # protection migrated from the retired source-grading.md restatement
+        "법령 ID, 인허가 요건, 공식 서식, 법정 기한",
         "[UNVERIFIED]",
         "[INSUFFICIENT]",
     ]:
@@ -2957,17 +2975,29 @@ def check_readme_investigation_assist_posture() -> None:
     assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
 
 
-def check_design_current_architecture_uses_source_authority_terms() -> None:
+def check_design_decision_archive() -> None:
+    """DESIGN.md stays a structural-decision archive; current truth lives in spec/."""
     text = read_text("DESIGN.md")
     label = "DESIGN.md"
 
     for required in [
-        "출처 권위 라벨 + verification status",
+        # archive banner points at the current-truth surfaces
+        "결정 아카이브",
+        "spec/system-map.md",
+        "spec/charter.md",
+        # split triggers remain the archive's operative content
+        "Multi-skill 전환 트리거",
+        "`wc -l skills/beopsuny/SKILL.md` > 800",
+        # anchor target consumed by workflow-map.md (heading must stay verbatim)
+        "### 2026-05-10: 단일 스킬 유지 + 내부 router spine 전환",
         "source authority labels + verification status + self verification",
     ]:
         assert_contains(text, required, label)
     for stale in [
-        "| v0.1.x | **패턴 고도화** (현재) | Source Grading A/B/C/D",
+        # retired snapshot/roadmap sections must not silently return
+        "## 1. 현재 아키텍처",
+        "## 3. 진화 방향",
+        "Source Grading A/B/C/D",
         "-> Source Grade + self verification",
     ]:
         assert_not_contains(text, stale, label)
@@ -3313,28 +3343,10 @@ def check_desktop_chat_lite_gate_card() -> None:
         assert_contains(text, required, label)
 
 
-def check_todos_current_release_blockers() -> None:
-    text = read_text("TODOS.md")
-    label = "TODOS.md"
-
-    for issue in ["#164", "#165", "#166", "#167", "#168", "#169"]:
-        assert_contains(text, issue, label)
-    for required in [
-        "release-blocking trust-contract hardening",
-        "GitHub Issues가 source of truth",
-        "Retired roadmap",
-        "spec/charter.md",
-        "source authority label",
-        "verification status",
-        "provenance 분리 계약",
-        "python3 -m unittest tests/test_forward_eval_harness.py",
-    ]:
-        assert_contains(text, required, label)
-    for stale in [
-        "법순이 로드맵. `/gstack-plan-eng-review` (2026-04-12) 결과.",
-        "## TODO 2: Source Grading A/B/C/D 적용 (첫 PR)",
-    ]:
-        assert_not_contains(text, stale, label)
+def check_retired_meta_surfaces_stay_retired() -> None:
+    """TODOS.md was retired (2026-07-12): GitHub Issues own live work, CHANGELOG owns history."""
+    if (ROOT / "TODOS.md").exists():
+        raise AssertionError("TODOS.md: retired meta surface must not return (use GitHub Issues + CHANGELOG)")
 
 
 def check_self_verification_guardrails() -> None:
@@ -3372,6 +3384,29 @@ def check_self_verification_guardrails() -> None:
         "current primary source",
     ]:
         assert_contains(text, required, label)
+
+
+def check_self_verification_metadata_single_home() -> None:
+    """자가 검증 block notation has one home (output-formats.md); self-verification.md keeps a pointer."""
+    self_verification = read_text("skills/beopsuny/references/self-verification.md")
+    output_formats = read_text("skills/beopsuny/references/output-formats.md")
+
+    # canonical home keeps the heading and the exact output literal
+    assert_contains(output_formats, "## 자가 검증 메타데이터", "output-formats.md")
+    assert_contains(output_formats, "`Citation n/a`로 표기한다", "output-formats.md")
+    assert_contains(
+        output_formats,
+        "🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓",
+        "output-formats.md",
+    )
+
+    # pointer stays a pointer; the example block must not be restated here
+    assert_contains(
+        self_verification,
+        "output-formats.md#자가-검증-메타데이터",
+        "self-verification.md",
+    )
+    assert_not_contains(self_verification, "🔍 **자가 검증**: Citation 3/3", "self-verification.md")
 
 
 def check_output_reviewer_note_lite() -> None:
@@ -3993,7 +4028,7 @@ CHECK_GROUPS = (
             check_readme_quality_contract_map,
             check_readme_asset_inventory_counts,
             check_readme_investigation_assist_posture,
-            check_design_current_architecture_uses_source_authority_terms,
+            check_design_decision_archive,
             check_knowledge_manifest_policy_config,
             check_static_privacy_preknowledge_boundaries,
             check_law_change_automation_promise_drift,
@@ -4003,13 +4038,14 @@ CHECK_GROUPS = (
             check_contract_tests_workflow,
             check_release_workflow_preflight,
             check_desktop_chat_lite_gate_card,
-            check_todos_current_release_blockers,
+            check_retired_meta_surfaces_stay_retired,
         ),
     ),
     CheckGroup(
         "output: role and destination gates",
         (
             check_self_verification_guardrails,
+            check_self_verification_metadata_single_home,
             check_output_reviewer_note_lite,
             check_output_contract_schema,
             check_output_contract_high_risk_situations,

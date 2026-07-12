@@ -1,6 +1,6 @@
 ---
-last_amended: 2026-07-09
-revision: 4
+last_amended: 2026-07-12
+revision: 5
 ---
 
 # beopsuny-skill Charter
@@ -34,3 +34,5 @@ Keep one public `beopsuny` skill with a small always-loaded router spine, then l
 | 2026-07-06 | Repo-wide asset verification is enforced opt-out (explicit allowlist) and dead assets are retired by deletion, not registration | opt-in verification created blind spots and dead assets fossilized through inventory tests in the asset-hygiene sprint (PRs #208, #209); promoted from freshness-governance | — |
 | 2026-07-08 | Litigation and enforcement outcome prediction (win/loss, sentencing, administrative disposition) is a charter Non-Goal | already an always-on SKILL.md boundary and a tested contract via the #110 court-style template check; #111 enforcement shares the same bright line, so the boundary is promoted to Tier 1 direction | — |
 | 2026-07-09 | Assisting evidence concealment/destruction/fabrication, testimony coaching, or investigation obstruction is a charter Non-Goal (lawful response only) | #111 enforcement surfaced a homeless anti-obstruction bright line living only in `enforcement-response.md` prose and one check; `spec-grill map` (2026-07-08) found it is project-wide, not enforcement-scoped, so it belongs in Tier-1 direction rather than a single-surface capability | — |
+| 2026-07-12 | One home per contract concept; static checks assert tokens/structure/pointers/output literals instead of full prose sentences; a single behavior change touches ≤ 4 mandatory surfaces by default (기준 문서 1 + 시나리오·fixture 1 + 정적 검사 1 + CHANGELOG) | meta-system review found `validate_skill_contracts.py` prose-locks (~1,190 pinned strings) plus multi-home summary copies were the dominant change-cost driver — meaning-preserving concision rewrites were being punished as regressions; assertion style policy lives in the validator header, budget in README 품질 계약 변경 체크리스트 | — |
+| 2026-07-12 | DESIGN.md is demoted to a structural-decision archive (current architecture truth: `spec/system-map.md`); TODOS.md is retired (GitHub Issues own live work, CHANGELOG owns history); CLAUDE.md is a pointer document with no content copies | stale v0.1.x snapshot, an all-done gitignored checklist, and an undrift-checked copy created three competing truth surfaces (#150 scope) | — |

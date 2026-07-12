@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### Changed
+- **메타 시스템 하드닝: 변경 비용 예산 + one-home 규칙 + prose-lock 마이그레이션 정책** — 2026-07-12 메타 점검(테스트↔문서 강결합, 요약 사본 다중 거주, 죽은 메타 표면)에 따른 정비. charter revision 5(Decisions 2건 추가): ① 계약 개념 하나의 집은 1곳, 정적 검사는 전문 문장 고정 대신 토큰·구조·포인터·출력 리터럴 assert, 행동 1건 변경의 필수 접촉 표면 기본 ≤ 4 ② DESIGN.md 결정 아카이브 축소·TODOS.md 폐기·CLAUDE.md 포인터화
+  - `README.md` — 품질 계약 변경 체크리스트를 조건부 표로 재구성(변경 비용 예산 명문화, 8단계 순차 의무 → 조건 매칭 시만), 검증 명령은 코드 블록으로 분리
+  - `tests/validate_skill_contracts.py` — 파일 상단에 assertion style policy 명문화(신규·수정 check는 토큰/구조/포인터/출력 리터럴만). `check_todos_current_release_blockers` → `check_retired_meta_surfaces_stay_retired`(TODOS.md 부활 차단), `check_design_current_architecture_uses_source_authority_terms` → `check_design_decision_archive`(아카이브 배너·split 트리거·앵커 heading·폐기 절 부활 차단), `check_self_verification_metadata_single_home` 신설(자가 검증 표기 단일 홈 가드), source-grading 사본 needle 3건 제거 + 포인터/재발 금지 assert로 대체, cvc check에 보호 needle 이관
+  - `skills/beopsuny/references/source-grading.md` — VERIFIED minimum conditions 4조건 재서술 + downgrade 목록 사본 제거(고유 정보는 citation-verification-contract.md에 기존재 확인 후 삭제), 단일 계약 포인터로 대체
+  - `skills/beopsuny/references/self-verification.md` — Metadata Format 예시 블록 사본 제거, `output-formats.md#자가-검증-메타데이터` 포인터로 대체. `output-formats.md` — 자가 검증 메타데이터 절을 표기 단일 소스로 선언 + `Citation n/a` 규칙 이관
+  - `DESIGN.md` — v0.1.x 스냅샷·페르소나·버전 로드맵 절(§1–3, §5) 폐기, 구조 결정 아카이브(전환 트리거 + §6 결정 기록)로 축소. 규모 트리거 현황 주석(SKILL.md ~270줄 예산, spine 사이징은 router-loading capability 소유). `spec/system-map.md` DESIGN 포인터 문구 동기화
+  - `TODOS.md` 삭제(전 항목 #170으로 완료, gitignored 상태로 추적 중이던 죽은 체크리스트) + `.gitignore` 정리. `CLAUDE.md` — 원칙/리뷰어/메모리/소스 표 사본 제거(하드코딩 수치 6,907/123,469 포함), 단일 소스 지도 + 작업 규칙(문구 수정 전 validator grep, one-home 규칙)으로 재작성
+  - `spec/capabilities.md` — Learnings의 내용 없는 자동 엔트리 7건(단순 relay-merge 기록) 제거, mutation discipline에 "실질 교훈 없는 절차 기록 금지(집은 CHANGELOG)" 규칙 추가
 - `skills/beopsuny/references/international_guide.md`, `tests/validate_skill_contracts.py` — cross-border overlay AI Act 행에 **AI 기본법**(인공지능 발전과 신뢰 기반 조성 등에 관한 기본법, 시행 2026-01-22) anchor를 1순위로 추가(#220). legalize-kr 미러 frontmatter(상태: 시행) + law.go.kr 200 라이브 확인 후 반영, 행 전문 assert 동반 갱신
 - `skills/beopsuny/references/source-access.md`, `tests/check_source_reachability.py` — Full 모드 미러 최신화에 upstream force-push 재생성 복구 분기 계약화(#230): `pull --ff-only` 실패 시 사용자 승인 후 ① 로컬 변경 없음 확인 ② `fetch + reset --hard origin/main` ③ 재생성 사실·새 HEAD 고지. 헬스체크 "upstream 불일치" WARN 메시지가 이 절차를 직접 안내. precedent-kr 실제 diverge 사례(2026-07-10, upstream README 공지 절차로 복구)에서 도출
 

@@ -10,7 +10,7 @@ Mutation discipline:
 | --- | --- | --- | --- |
 | `Goal`, `In-scope`, `Out-of-scope` | human via `spec-grill` | when the contract changes | challenge + confirm + apply |
 | `Expected Behaviors`, `Hard Constraints` | human via `spec-grill` | when behavior or bright-lines change | grill + 3-axis predicate test |
-| `Learnings` | human-approved Learning Action until a bounded writer exists | when a reusable capability lesson is accepted | append only between markers |
+| `Learnings` | human-approved Learning Action until a bounded writer exists | when a reusable capability lesson is accepted | append only between markers; 실질 교훈이 없는 절차 기록(예: 단순 relay-merge 완료)은 기록하지 않는다 — 그 기록의 집은 CHANGELOG다 |
 | `Decisions` | human | when a capability-level decision is made | append-only; promote cross-cutting decisions to `spec/charter.md` |
 
 ---
@@ -44,8 +44,6 @@ Mutation discipline:
 <!-- LEARN:BEGIN -->
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
-- 2026-07-07 (run #issue-110-20260707132648035-90f7a5bd): relay-merge of PR #217 [PR #217]
-- 2026-07-09 (run #issue-112-20260708235135350-0151b32d): relay-merge of PR #219 [PR #219]
 <!-- LEARN:END -->
 
 ### Decisions
@@ -127,7 +125,6 @@ Mutation discipline:
 <!-- LEARN:BEGIN -->
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
-- 2026-07-08 (run #issue-111-20260708132508551-4fa0dac0): relay-merge of PR #218 [PR #218]
 <!-- LEARN:END -->
 
 ### Decisions
@@ -167,8 +164,6 @@ Mutation discipline:
 <!-- LEARN:BEGIN -->
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
-- 2026-07-06 (run #issue-212-20260706094947677-9370550e): relay-merge of PR #213 [PR #213]
-- 2026-07-07 (run #issue-109-20260707123641815-2f7aad8b): relay-merge of PR #216 [PR #216]
 <!-- LEARN:END -->
 
 ### Decisions
@@ -246,8 +241,6 @@ Mutation discipline:
 <!-- LEARN:BEGIN -->
 <!-- entries appended only after user-approved Learning Actions -->
 <!-- format: - YYYY-MM-DD: <one-line> [evidence] -->
-- 2026-07-06 (run #issue-104-20260706132920374-5a508dc3): relay-merge of PR #214 [PR #214]
-- 2026-07-07 (run #issue-105-20260707120238754-f291ebf4): relay-merge of PR #215 [PR #215]
 <!-- LEARN:END -->
 
 ### Decisions
