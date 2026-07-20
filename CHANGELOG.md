@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-07-20
+
+v0.5.0 재단 릴리즈: v0.5.0 태그가 plugin 버전 범프 누락으로 Release 워크플로우 version mismatch 가드에 걸려 GitHub Release가 미발행됐다(marketplace Latest v0.4.0 정체). 이 릴리즈가 v0.5.0 내용 전체 + 이후 변경(#220 AI 기본법 anchor, #230 미러 복구 절차, 메타 시스템 하드닝)을 사용자에게 실제 전달한다.
+
+릴리즈 라이브 스모크(claude-sonnet-5, 2026-07-20): 정독 판정 guardrails 10/10 + o4 8/8 행동 통과. 스코어러 오탐 10건은 #232(정밀도 드리프트 하드닝)로 분리, 건별 판정은 `tests/forward_evals/evidence/*-20260720-v051.yaml`의 human_judgment 블록에 기록. 소스 도달성: 미러 2종(legalize-kr·precedent-kr) upstream force-push 재생성을 #230 절차로 복구 후 일치, law.go.kr 링크 200 OK, 법망 API 503 점검 창은 v0.5.0 선례에 따라 예외 승인.
+
+### Fixed
+- **릴리즈 체크리스트 갭 봉합** — `.claude-plugin/plugin.json`·`marketplace.json` 버전 범프(0.4.0 → 0.5.1) + README 릴리즈 체크리스트에 plugin 버전 범프 단계 추가(태깅 전 로컬 확인, tag↔plugin↔marketplace 일치). v0.5.0 릴리즈 실패 원인이 체크리스트에 이 단계가 없던 것.
+
 ### Changed
 - **메타 시스템 하드닝: 변경 비용 예산 + one-home 규칙 + prose-lock 마이그레이션 정책** — 2026-07-12 메타 점검(테스트↔문서 강결합, 요약 사본 다중 거주, 죽은 메타 표면)에 따른 정비. charter revision 5(Decisions 2건 추가): ① 계약 개념 하나의 집은 1곳, 정적 검사는 전문 문장 고정 대신 토큰·구조·포인터·출력 리터럴 assert, 행동 1건 변경의 필수 접촉 표면 기본 ≤ 4 ② DESIGN.md 결정 아카이브 축소·TODOS.md 폐기·CLAUDE.md 포인터화
   - `README.md` — 품질 계약 변경 체크리스트를 조건부 표로 재구성(변경 비용 예산 명문화, 8단계 순차 의무 → 조건 매칭 시만), 검증 명령은 코드 블록으로 분리
@@ -15,6 +24,8 @@
 - `skills/beopsuny/references/source-access.md`, `tests/check_source_reachability.py` — Full 모드 미러 최신화에 upstream force-push 재생성 복구 분기 계약화(#230): `pull --ff-only` 실패 시 사용자 승인 후 ① 로컬 변경 없음 확인 ② `fetch + reset --hard origin/main` ③ 재생성 사실·새 HEAD 고지. 헬스체크 "upstream 불일치" WARN 메시지가 이 절차를 직접 안내. precedent-kr 실제 diverge 사례(2026-07-10, upstream README 공지 절차로 복구)에서 도출
 
 ## [0.5.0] - 2026-07-10
+
+> **주의**: 태그는 존재하지만 GitHub Release는 미발행 — plugin 버전 범프 누락으로 Release 워크플로우 가드(version mismatch)에서 실패. 전체 내용은 v0.5.1에 포함되어 발행됨.
 
 본질 하드닝 릴리즈: charter O4 validated(라이브 실증), 자동화 경계 계약, forward-eval 스코어러 정밀도(오탐 10건 봉합·실위반 탐지 유지), 라이브 eval 인프라(부작용 차단·병렬 드라이버·릴리즈 체크리스트), 소스 도달성 헬스체크 + 주간 CI cron, 판례 공식 링크 law.go.kr 마이그레이션(glaw 도메인 사망 대응). 릴리즈 라이브 스모크: guardrails 10/10 + o4 8/8 (claude-sonnet-5, 정독 판정 일치, `tests/forward_evals/evidence/*-20260710-v050.yaml`).
 
