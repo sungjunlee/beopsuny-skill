@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **reference 경량화 웨이브: 경계(boundary)/기본형(shape) 분리** — 모델 발전에 맞춰 절차 미세관리를 걷어내고 자유도를 높이는 방향. SKILL.md에 전역 정의 추가("절차·순서·수치 서술은 기본형 — evidence 의무·금지(경계)를 충족하면 조정 가능. gate·계약·금지는 경계로 조정 불가"). 10개 reference 문서에서 net -350줄: ① 절차 재프레임 — research-workflow(verification core 6단계를 evidence 경계 + 기본형 체인으로), bulk-tabular-review(9단계 → 경계 6항목 + 기본형 5단계, spot-check 수치는 조정 가능 기본값), knowledge-injection(201→129줄, "자유도를 줄이지 않는다" 선언과 5-step 강제의 자기모순 해소, manifest 11조건은 ingest tool을 구현 단일 소스로 위임, 후속 방향 roadmap 삭제) ② one-home 회수 — freshness 일반 원칙(집: freshness-governance), 미러 시행일 특수 규칙(집: source-access#freshness-gate), git 명령(집: source-access), role/destination gate 재서술 제거(집: output-formats), review_mode 표(집: review_mode.yaml), merge_order/cannot_override(집: practice_profile.yaml) ③ 온보딩·유지보수 절차 기본형 압축(memory-structure 375→278). 경계(인용 검증, 환각 방지, 예측 금지, 증거인멸 조력 금지, 사용자 확인, push 금지, counter-drafting 단정 금지)와 도메인 지식(API·명령·매핑·라벨)은 전량 유지. 검증: 전체 게이트 그린 + 오케스트레이터 diff 정독 + 독립 mutation probe.
 - **prose-lock 마이그레이션 완주 (테스트 레이어)** — `tests/validate_skill_contracts.py`의 잔존 전문 문장·표-행·화살표 순서 핀 65건(SENTENCE 53·TABLEROW 9·ARROW 3)을 charter 2026-07-12 assertion style policy대로 토큰·구조 검사로 전환. 신규: `assert_ordered_tokens` 순서 검사(role/destination 6단 출력), foreign-instrument overlay 표 구조 검사(행 집합 + KR anchor 토큰 + 의도 enum + #220 AI 기본법 1순위 유지). `assert_not_contains` 재서술 가드 2건과 출력 리터럴 5건은 정책상 유지. mutation 검증: 요지 보존 reword PASS·불변식 삭제 FAIL 확인(에이전트 17건 + 오케스트레이터 독립 3건). 문서 rewrite의 회귀 오탐 비용을 제거해 이후 reference 경량화의 전제를 마련.
 
 ## [0.5.1] - 2026-07-20

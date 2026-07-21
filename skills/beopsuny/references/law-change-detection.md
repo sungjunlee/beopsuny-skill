@@ -12,26 +12,15 @@
 
 ## Full Mode Commands
 
-공통 prefix:
+일반 미러 탐색·clone·동기화 명령은 `references/source-access.md`가 단일 소스다. 여기는 변경 감지 특수 사용법만 둔다. 공통 prefix는 `DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`, 한국어 경로가 깨지지 않도록 `--name-only`에는 `-c core.quotePath=false`를 붙인다.
 
 ```bash
-DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data
-```
-
-시간 범위 discovery:
-
-```bash
+# 시간 범위 discovery
 git -c core.quotePath=false -C "$DR/legalize-kr" log --since="1 month ago" --name-only kr/
-```
-
-특정 법령:
-
-```bash
+# 특정 법령 이력과 diff
 git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md
 git -C "$DR/legalize-kr" show {SHA} -- kr/{법령명}/법률.md
 ```
-
-한국어 경로가 깨지지 않도록 `--name-only`에는 `-c core.quotePath=false`를 사용한다.
 
 ## Lite Mode
 
@@ -41,15 +30,7 @@ Lite 모드에서는 사용자가 특정 법령을 지정했거나 `interested_l
 
 ## Output Fields
 
-법령당 아래를 분리한다.
-
-- 개정일자: git commit date 또는 API 변경일
-- 공포일자: 공포 정보가 있으면 별도 표시
-- 시행일자: YAML frontmatter 또는 공식 API로 확인
-- 변경 조문: diff 요약
-- 출처 링크: legalize-kr commit, law.go.kr 법령 링크
-
-공포일과 시행일은 다를 수 있다. 같은 날짜라고 가정하지 않는다.
+법령당 개정일자(git commit date 또는 API 변경일), 공포일자, 시행일자(YAML frontmatter 또는 공식 API로 확인), 변경 조문(diff 요약), 출처 링크(legalize-kr commit, law.go.kr 법령 링크)를 분리해 표시한다. 공포일과 시행일은 다를 수 있다 — 같은 날짜라고 가정하지 않는다.
 
 ## Interested Laws Append
 
@@ -101,10 +82,8 @@ Lite 모드에서는 사용자가 특정 법령을 지정했거나 `interested_l
 
 ## Automation 요청 처리
 
-사용자가 명시적으로 automation을 요청했고, 현재 환경에 스케줄링/automation 도구(로컬 크론, 클라우드 루틴, scheduled agent 등)가 실제로 존재하는 경우 아래 순서를 따른다.
+사용자가 명시적으로 automation을 요청했고 현재 환경에 스케줄링/automation 도구(로컬 크론, 클라우드 루틴, scheduled agent 등)가 실제로 존재하면 아래 기본형 순서를 따른다. 도구가 없으면 기존 계약대로 별도 automation 도구 안내로 분리한다.
 
-1. **생성 전 확인**: 리소스 종류(로컬 크론 vs 클라우드 루틴 등), 실행 주기, 실행 환경 한계(예: 클라우드 실행이면 로컬 Full 모드 데이터에 접근하지 못한다), 비용·쿼터 함의를 요약하고, 사용자 확인을 받은 뒤에만 생성한다. "지금 바로 설정해줘" 같은 즉시 지시도 이 확인을 생략할 근거가 아니다 — 외부에 지속 실행되는 리소스를 만드는 행위이기 때문이다.
+1. **생성 전 확인**: 리소스 종류, 실행 주기, 실행 환경 한계(예: 클라우드 실행은 로컬 Full 모드 데이터 접근 불가), 비용·쿼터 함의를 요약하고, 사용자 확인을 받은 뒤에만 생성한다. "지금 바로 설정해줘" 같은 즉시 지시도 이 확인을 생략할 근거가 아니다 — 외부에 지속 실행되는 리소스를 만드는 행위이기 때문이다.
 2. **생성 후 보고**: 생성한 리소스의 ID/이름과 관리·삭제 경로를 반드시 보고한다.
 3. **pull 즉시 확인 병행**: automation 논의와 별개로, 지금 즉시 1회 확인(pull)을 항상 함께 제안한다.
-
-스케줄링/automation 도구가 없는 환경이면 기존 계약대로 별도 automation 도구 안내로 분리한다.

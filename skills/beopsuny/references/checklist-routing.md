@@ -22,16 +22,13 @@
 
 ## Flow
 
+기본형 (경계 충족 시 조정 가능):
+
 ```text
-질문 접수
-  -> checklist 후보 선택
-  -> triage 질문 최소화
-  -> branch/threshold/if_yes 조건 적용
-  -> 관련 item만 추출
-  -> item.laws 원문 확인
-  -> 인허가·서식·기한은 공식 기관 사이트에서 실시간 확인
-  -> 회사 맥락으로 적용 범위 조정
-  -> related_checklists 안내
+질문 접수 -> checklist 후보 선택 -> triage 질문 최소화
+  -> branch/threshold/if_yes 조건으로 관련 item만 추출
+  -> item.laws 원문 확인, 인허가·서식·기한은 공식 기관 사이트에서 실시간 확인
+  -> 회사 맥락으로 적용 범위 조정 + related_checklists 안내
 ```
 
 ## Triage Rules
@@ -70,20 +67,7 @@
 
 ## Freshness Routing
 
-체크리스트 파일의 `maintenance.next_review`가 지났거나, 항목에 금액·기한·인원 기준·과징금·서식·구비서류처럼 변동성 높은 값이 있으면 `references/source-access.md#freshness-gate`를 적용한다. stale로 등록된 자산은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`을 함께 확인한다.
-
-처리 원칙:
-
-1. stale 체크리스트는 사용자 상황을 좁히는 후보로만 사용한다.
-2. 결론에 들어가는 법령명, 조문, 시행일, threshold, 금액, 기한, 구비서류는 live legal research로 재확인한다.
-3. live 확인에 실패하면 해당 항목은 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하고, "현재 확인된 의무"처럼 말하지 않는다.
-4. stale 상태는 검토자 메모의 `Currency` 또는 본문에 짧게 표시한다.
-
-예:
-
-```markdown
-**검토자 메모**: Sources food_business.yaml 후보 + 법망 API 확인 | Currency 체크리스트 next_review 지남, 인허가 서류는 gov.kr 원문 재확인 필요
-```
+체크리스트 특수 처리 요지: 파일의 `maintenance.next_review`가 지났거나 금액·기한·인원 기준·과징금·서식·구비서류처럼 변동성 높은 값이 있으면 `references/source-access.md#freshness-gate`를 적용한다 — stale 체크리스트는 상황을 좁히는 후보로만 쓰고, 결론에 들어가는 법령명·조문·시행일·threshold·금액·기한·구비서류는 live legal research로 재확인하며, 실패 시 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하고 stale 상태를 검토자 메모의 `Currency`에 짧게 남긴다. 일반 원칙(triage_only, 승격 금지)과 등록 자산 목록은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`이 단일 소스다.
 
 ## Company Context
 

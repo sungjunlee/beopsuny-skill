@@ -69,34 +69,18 @@ test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr
 실행 환경마다 사용할 수 있는 소스가 다르다. 없는 도구를 있다고 가정하지 말고, 가능한 경로로 좁히거나 결론을 유보한다.
 
 - 로컬 데이터 없음: Lite 모드로 안내하고 법망 API, WebSearch, 공식 링크를 사용한다. 로컬 전문·git history 전제는 금지한다.
-- 법망 API 접근 불가: 사용 가능한 local data, law.go.kr, WebSearch 공식 자료로 좁힌다. 그래도 원문을 확인하지 못한 범위는 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 낮춘다.
+- 법망 API 접근 불가: 사용 가능한 local data, law.go.kr, WebSearch 공식 자료로 좁히고, 원문을 확인하지 못한 범위는 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 낮춘다.
 - WebSearch 없음: local data, 법망 API, 사용 가능한 MCP/공식 링크만 사용한다. 정책 동향·제재 동향은 생략하거나 확인 필요 표시를 한다.
 - korean-law-mcp 또는 OC 코드 없음: 헌재·행정심판·조세심판·조약 등은 가능한 범위만 답하고 필요 시 OC 코드 안내로 남긴다.
-- 네트워크 없음: 사용 가능한 local mirror만 사용하고, 최신성·정책 동향·공식 링크 검증 한계를 표시한다.
-- 로컬 데이터와 네트워크 모두 없음: 번들 YAML은 후보·체크리스트로만 쓰고 법률 결론을 만들지 않는다.
+- 네트워크 없음: 사용 가능한 local mirror만 쓰고 최신성·정책 동향·공식 링크 검증 한계를 표시한다. 로컬 데이터까지 없으면 번들 YAML은 후보·체크리스트로만 쓰고 법률 결론을 만들지 않는다.
 
-Fallback 원칙:
-
-- 조회 실패는 결론이 아니다. 실패 원인과 확인하지 못한 범위를 표시한다.
-- 번들 `assets/data/*.yaml`은 조항·용어 후보이지 현행 법적 결론 근거가 아니다. 법령 ID, 인허가 요건, 공식 서식, 법정 기한은 번들 캐시 없이 실시간 공식 소스로 확인한다.
-- 링크 패턴이 확실하지 않으면 추정 링크를 만들지 않는다.
-- 현재 소스로 확인할 수 없는 조문·판례·시행일·금액은 만들지 않는다.
+Fallback 원칙: 조회 실패는 결론이 아니다 — 실패 원인과 확인하지 못한 범위를 표시한다. 번들 `assets/data/*.yaml`은 조항·용어 후보이지 현행 법적 결론 근거가 아니며, 법령 ID, 인허가 요건, 공식 서식, 법정 기한은 번들 캐시 없이 실시간 공식 소스로 확인한다. 링크 패턴이 확실하지 않으면 추정 링크를 만들지 않고, 현재 소스로 확인할 수 없는 조문·판례·시행일·금액은 만들지 않는다.
 
 ## Freshness Gate
 
-번들 YAML과 과거 검토 이력은 현행 법령을 대신하지 않는다. 특히 아래 항목은 stale 가능성이 높으므로 답변 전에 live source로 재확인한다.
+번들 YAML과 과거 검토 이력은 현행 법령을 대신하지 않는다. stale 자산 처리의 일반 원칙(triage_only, 승격 금지, 금지 사용 목록)과 등록 자산 목록·제거 조건은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`이 단일 소스다.
 
-- 과징금, 과태료, 벌칙, 신고기한, 처리기간, 수수료
-- 직원 수, 매출, 거래금액, 정보주체 수 같은 적용 threshold
-- 최저임금, 보험료율, 세율, 원천징수율
-- 인허가 구비서류, 관할 기관, 서식 번호
-- 행정규칙, 고시, 감독기준, 가이드라인
-
-`maintenance.next_review`가 지난 자산이나 `last_verified`가 오래된 항목은 답변에서 다음 중 하나로 처리한다. 등록된 stale 자산 목록과 제거 조건은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`을 따른다. 자산을 갱신하거나 registry에서 제거하려면 `assets/schemas/freshness_revalidation.yaml` 형식으로 확인한 공식 source family, volatile item 검토 결과, retirement decision을 남긴다.
-
-1. live source로 재확인하고 provenance를 표시한다.
-2. 재확인에 실패하면 `[STALE]` 또는 `[INSUFFICIENT]`로 낮추고 결론을 유보한다.
-3. 단순 후보로만 쓰고, 현행 법적 결론의 근거로 쓰지 않는다.
+이 문서 관점의 게이트: 과징금·과태료·벌칙·신고기한·수수료, 적용 threshold, 요율, 인허가 구비서류·관할 기관·서식, 행정규칙·고시·가이드라인처럼 변동성 높은 값과 `maintenance.next_review`가 지난 자산은 답변 전에 live source로 재확인하고 provenance를 표시한다. 재확인에 실패하면 `[STALE]` 또는 `[INSUFFICIENT]`로 낮추고 결론을 유보하거나 단순 후보로만 쓴다. 자산을 갱신하거나 registry에서 제거하려면 `assets/schemas/freshness_revalidation.yaml` 형식으로 확인한 공식 source family, volatile item 검토 결과, retirement decision을 남긴다.
 
 Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 소스나 공식 원문 기반 로컬 미러라도 이번 응답에서 현행성을 확인하지 못했으면 provenance와 최신성 한계를 표시한다.
 

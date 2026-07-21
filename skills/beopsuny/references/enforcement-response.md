@@ -1,8 +1,8 @@
 # 수사·조사 초기 대응 워크플로
 
-이 문서는 새 gate를 만들지 않고 기존 role/destination gate 위에서 동작한다. 출력 순서는 `references/output-formats.md`의 role/destination gate 순서인 `한 줄 결론 -> 지금 할 일 -> 하지 말 것 -> 확인 필요 정보 -> 변호사/법무에게 물어볼 질문 -> 근거`를 먼저 따른다.
+이 문서는 새 gate를 만들지 않는다. role/destination gate 규칙은 `references/output-formats.md`가 단일 소스이며, 출력 순서는 그 gate의 `한 줄 결론 -> 지금 할 일 -> 하지 말 것 -> 확인 필요 정보 -> 변호사/법무에게 물어볼 질문 -> 근거`를 먼저 따른다.
 
-`assets/schemas/output_contract.yaml`의 `high_risk_situations`, `legal_effect_triggers`, `non_overrides`, `composition_rule`을 소비한다. high-risk gate 문구는 스키마가 단일 소스이며, 이 문서에서 gate 문구는 스키마가 단일 소스라는 포인터만 둔다. 기관 제출, 외부 송부, 공시·신고, 대외 답변은 destination 계약과 role/destination gate를 적용한다.
+`assets/schemas/output_contract.yaml`의 `high_risk_situations`, `legal_effect_triggers`, `non_overrides`, `composition_rule`을 소비한다 — high-risk gate 문구는 스키마가 단일 소스다. 기관 제출, 외부 송부, 공시·신고, 대외 답변은 destination 계약과 role/destination gate를 적용한다.
 
 이 문서는 수사·조사 개시 직후의 안전한 초기 대응 구조만 제공한다. 실체법 결론, 형량, 과징금 기준, 처분 기준, 신고 기한은 하드코딩하지 않고 `references/research-workflow.md`와 live source 확인으로 처리한다.
 
@@ -14,8 +14,7 @@
 
 ## 증거보전 gate
 
-- 관련 자료는 합법적으로 보존한다: 정기 파기 중단, 현상 유지, 접근 권한 보전, 보존 조치 기록을 우선 확인한다.
-- 이메일, 메신저, 업무 시스템, 로그, 출입기록, CCTV, 장비, 계약·발주·검수 문서, 보고라인 기록 등 관련성이 있을 수 있는 자료의 보존 범위를 법무/변호인과 정한다.
+- 관련 자료는 합법적으로 보존한다: 정기 파기 중단, 현상 유지, 접근 권한 보전, 보존 조치 기록을 우선 확인하고, 이메일·메신저·업무 시스템·로그·출입기록·CCTV·장비·계약·발주·검수 문서·보고라인 기록 등 관련성 있는 자료의 보존 범위를 법무/변호인과 정한다.
 - 인멸·은닉·삭제, 포맷, 임의 폐기, 사후 작성·변조, 접근기록 훼손은 금지한다.
 - 자료 파기가 별도 범죄가 될 수 있거나 수사·조사 대응에서 중대한 불이익으로 평가될 수 있음을 먼저 알린다.
 
@@ -42,7 +41,7 @@
 
 ## 시나리오 인덱스
 
-각 시나리오는 진입 신호와 확인 축만 둔다. 실체법 결론·형량·과징금 기준은 live source와 `references/research-workflow.md`로 확인한다.
+각 시나리오는 진입 신호 / 관할·신고 축 / 확인 필요 항목의 3분할 기본형만 둔다 (경계 충족 시 조정 가능). 실체법 확인 경로는 문서 서두의 원칙을 따른다.
 
 ### 중대재해
 
