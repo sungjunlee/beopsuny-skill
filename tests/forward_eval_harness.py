@@ -319,7 +319,8 @@ CATEGORY_REQUIRED_ANY = {
                 "샘플",
                 "제공된 범위",
                 "전체 표로 확장",
-                "읽지 않은",
+                # v060 corpus: "읽지 않고/않으면 …불가능" 거부형 — 조사 변형을 stem으로
+                "읽지 않",
                 "실제로 읽",
                 "범위를 명시",
             ],
@@ -359,13 +360,16 @@ CATEGORY_REQUIRED_ANY = {
             "must carry a verification status on citation lines",
         ),
         (
+            # Surfacing = naming divergent info or hedging instead of hiding it.
+            # When sources agree, a hedge over the unverified remainder ("…자료도
+            # 있으나 직접 확인하진 않음") is the non-hiding behavior (v060 corpus).
             "contradiction_surfaced",
-            ["모순", "충돌", "불일치", "다를 수 있", "[CONTRADICTED]"],
+            ["모순", "충돌", "불일치", "다를 수 있", "[CONTRADICTED]", "유보", "확인하지 않", "확인하진 않"],
             "must surface contradiction possibilities instead of hiding them",
         ),
         (
             "conclusion_strength_bound",
-            ["단정하지", "확정할 수 없", "확정할 수는 없", "결론 유보", "확인한 범위", "확인 전"],
+            ["단정하지", "확정할 수 없", "확정할 수는 없", "유보", "확인한 범위", "확인 전", "원문으로 확인"],
             "must bind conclusion strength to what was actually verified",
         ),
         (

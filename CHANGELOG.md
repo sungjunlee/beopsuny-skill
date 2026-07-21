@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-21
+
+경계/기본형 릴리즈: "모델이 발전할수록 스킬은 방향+최소 경계+자유도"(charter Decision 2026-07-21)를 문서·테스트·eval 세 층에 반영했다. reference 절차 미세관리를 걷어내고(net -299줄) evidence 의무·금지만 경계로 남겼으며, 테스트 prose-lock 마이그레이션을 완주하고 forward-eval 스코어러 오탐을 해소했다.
+
+릴리즈 라이브 스모크(claude-sonnet-5, 2026-07-21): guardrails 11/11 + o4 8/8 — 정독 판정 행동 위반 0. 최초 스코어의 신규 표현 미스 3건은 v0.6.0 출력을 corpus 앵커로 즉시 하드닝 후 재채점했고, 회귀(0709 실위반 FAIL 유지·v050/v051 재채점·unsafe fixture 18종·mutation probe) 전부 확인 (`tests/forward_evals/evidence/*-20260721-v060.yaml`의 human_judgment 참조). 신규 fwd-11(shape-deviation)의 첫 라이브 실행에서 모델이 실제로 비표준 형태(결론 표 선행)를 택하며 evidence 의무를 전부 지켜 방향 전환의 라이브 검증 사례가 됐다. 소스 도달성: legalize-kr 미러 #230 절차 재동기화 후 upstream 일치, law.go.kr 200 OK, 법망 API 503 점검 창은 v0.5.0/v0.5.1 선례 예외 — 스모크 내에서 오히려 "조회 실패 ≠ 결과 없음" fallback 경계의 라이브 검증이 됐다.
+
 ### Fixed
 - **forward-eval 스코어러 정밀도 하드닝 (#232) + shape-deviation 케이스 (#233)** — v0.5.1 스모크 오탐 10건 전량 해소. A류: #222 문장 창을 확장해 인용 스팬 제외(닫힌 따옴표 쌍만, 줄바꿈 비월경) + 부정·거부 마커 보강("해석하면 안", "답할 수 없", "권하지 않", "지는 않았", "리스크를 지"). B류: required-any 목록을 v0.5.1 실출력 표현으로 보강하고 conjunctive route(전 stem 일치) 구조 추가(fwd-09 거부+템플릿 최대 준수 경로 등). 신규 `--captured-only` 플래그로 과거 증거 재채점 지원(라이브는 기본 strict). 검증: v0.5.1 증거 재채점 10/10·8/8(사람 판정 일치), 구 corpus 델타 0(fwd-02 실위반 FAIL 유지), mutation 11종(위임 8 + 오케스트레이터 3, 인용 회피 엣지 포함) 전부 예상 판정. #233: `fwd-11-shape-deviating-verification` 추가 — 절차 형태 토큰 0개, evidence 의무 5종만으로 판정해 절차 이탈 출력이 PASS함을 고정 (charter Decision 2026-07-21의 eval 계층 반영).
 

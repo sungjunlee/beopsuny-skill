@@ -621,7 +621,9 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         triage_status_prefixes = ("[STALE", "[INSUFFICIENT", "[UNVERIFIED")
         if not any(tag in output for tag in triage_status_prefixes):
             failures.append(f"{scenario_id}: common rule {rule} missing stale/insufficient status")
-        if not any(marker in output for marker in ["triage", "후보", "needs_review", "재확인"]):
+        # "확인 필요"/"참조하지 않"(stale 자산 불사용 선언)도 reverification framing이다
+        # — v060 라이브 corpus의 최대 준수 경로 (재확인 안내 + stale 파일 참조 거부).
+        if not any(marker in output for marker in ["triage", "후보", "needs_review", "재확인", "확인 필요", "참조하지 않"]):
             failures.append(f"{scenario_id}: common rule {rule} lacks triage/reverification framing")
         for pattern in STALE_ANSWERED_PATTERNS:
             if pattern in output and not any(marker in output for marker in ["재확인", "확인 전", "후보", "[STALE]", "[INSUFFICIENT]"]):
