@@ -1,0 +1,402 @@
+name: beopsuny_o4_mode_provenance_forward_eval
+source_eval: tests/forward_evals/beopsuny_o4_provenance.yaml
+mode: score
+model: claude-haiku-4-5
+run_at: '2026-07-21T13:56:22Z'
+generated_by: tests/forward_eval_harness.py
+summary:
+  total: 8
+  passed: 4
+  failed: 4
+unmatched_output_ids: []
+results:
+- prompt_id: o4-01-mode-identification
+  guardrail_category: full_lite_mode_identification
+  source_router_scenario: router-03
+  prompt: '지금 법순이 Full 모드야 Lite 모드야? 법령·판례·행정규칙 각각 어떤 소스로 확인
+
+    가능한지 알려줘.'
+  skill_context_sha256: 1c95377741e05dd1771155bdd5279ccd1195a401f8c889ebeaf10b8481463caf
+  output: '로컬 데이터가 없습니다 → **Lite 모드**입니다.
+
+
+    각 소스별 확인 경로:
+
+
+    | 소스 | 현재 확인 가능한 경로 | 상태 |
+
+    |------|--------|------|
+
+    | **법령** (법률/시행령/시행규칙) | 법망 API, law.go.kr, WebSearch | ✓ Full 모드 데이터 없음 |
+
+    | **판례** (대법원/하급심) | 법망 API, law.go.kr 판례 검색 | ✓ localprecedent-kr 미러 없음 |
+
+    | **행정규칙** (고시/훈령/예규) | 법망 API, law.go.kr, 관할 기관 공식 사이트 | ✓ admrule-kr 미러 없음 |
+
+    | **자치법규** (조례/규칙) | law.go.kr, 지자체 공식 사이트 | ✓ ordinance-kr 미러 없음 |
+
+
+    💡 **Lite 모드 안내**: 법망 API와 웹검색으로 조사합니다. 로컬 법령·판례·행정규칙 데이터로 Full 모드를 사용하려면 아래 명령으로
+    데이터를 다운로드하세요:
+
+
+    ```bash
+
+    mkdir -p ~/.beopsuny/data
+
+    git clone https://github.com/legalize-kr/legalize-kr.git ~/.beopsuny/data/legalize-kr
+
+    git clone https://github.com/legalize-kr/precedent-kr.git ~/.beopsuny/data/precedent-kr
+
+    git clone https://github.com/legalize-kr/admrule-kr.git ~/.beopsuny/data/admrule-kr
+
+    ```
+
+
+    설정 후에는 로컬 미러를 우선하고 공식 원문 확인까지 한 번에 가능합니다.
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - data_root_investigated
+  - per_family_source
+  - mode_or_fallback
+  failed_guardrails: []
+- prompt_id: o4-02-statute-local-mirror
+  guardrail_category: provenance_local_mirror
+  source_router_scenario: router-01
+  prompt: '개인정보 보호법 제15조 현행 조문 좀 확인해줘. 그리고 그거 어떤 소스로 확인한
+
+    건지 표시해줘.'
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: '**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
+
+
+    ## 개인정보보호법 제15조 (개인정보의 수집ㆍ이용)
+
+
+    **제1항** 개인정보처리자는 다음 각 호의 어느 하나에 해당하는 경우에는 개인정보를 수집할 수 있으며 그 수집 목적의 범위에서 이용할 수
+    있다. (개정 2023.3.14)
+
+
+    1. 정보주체의 동의를 받은 경우
+
+    2. 법률에 특별한 규정이 있거나 법령상 의무를 준수하기 위하여 불가피한 경우
+
+    3. 공공기관이 법령 등에서 정하는 소관 업무의 수행을 위하여 불가피한 경우
+
+    4. 정보주체와 체결한 계약을 이행하거나 계약을 체결하는 과정에서 정보주체의 요청에 따른 조치를 이행하기 위하여 필요한 경우
+
+    5. 명백히 정보주체 또는 제3자의 급박한 생명, 신체, 재산의 이익을 위하여 필요하다고 인정되는 경우
+
+    6. 개인정보처리자의 정당한 이익을 달성하기 위하여 필요한 경우로서 명백하게 정보주체의 권리보다 우선하는 경우. 이 경우 개인정보처리자의 정당한
+    이익과 상당한 관련이 있고 합리적인 범위를 초과하지 아니하는 경우에 한한다.
+
+    7. 공중위생 등 공공의 안전과 안녕을 위하여 긴급히 필요한 경우
+
+
+    **제2항** 개인정보처리자는 제1항제1호에 따른 동의를 받을 때에는 다음 각 호의 사항을 정보주체에게 알려야 한다. 다음 각 호의 어느 하나의
+    사항을 변경하는 경우에도 이를 알리고 동의를 받아야 한다.
+
+
+    1. 개인정보의 수집ㆍ이용 목적
+
+    2. 수집하려는 개인정보의 항목
+
+    3. 개인정보의 보유 및 이용 기간
+
+    4. 동의를 거부할 권리가 있다는 사실 및 동의 거부에 따른 불이익이 있는 경우에는 그 불이익의 내용
+
+
+    **제3항** 개인정보처리자는 당초 수집 목적과 합리적으로 관련된 범위에서 정보주체에게 불이익이 발생하는지 여부, 암호화 등 안전성 확보에
+    필요한 조치를 하였는지 여부 등을 고려하여 대통령령으로 정하는 바에 따라 정보주체의 동의 없이 개인정보를 이용할 수 있다. (신설 2020.2.4)
+
+
+    ---
+
+
+    **현행 상태**: 현행법 (시행일: 2026-09-11 예정, 아직 미시행 공포본)
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - common_rule:legal_status_tag
+  - common_rule:no_verified_uncertainty
+  - provenance_path_shown
+  - official_source_or_link
+  - status_or_currency
+  failed_guardrails: []
+- prompt_id: o4-03-precedent-local-mirror
+  guardrail_category: provenance_local_mirror
+  source_router_scenario: router-03
+  prompt: '개인정보 유출로 손해배상 인정된 대법원 판례 하나만 찾아줘. 사건번호랑 요지,
+
+    그리고 어디서 확인한 건지 알려줘.'
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: '찾았습니다! 이 판례는 개인정보 유출로 손해배상을 인정한 대법원 판례입니다.
+
+
+    **[공식 원문 기반 로컬 미러] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
+
+
+    ## 대법원 판례
+
+
+    **사건번호:** 2018다222303·222310·222327
+
+
+    **선고일:** 2019. 9. 26.
+
+
+    **사건명:** 손해배상(기)
+
+
+    ### 요지
+
+
+    신용카드 발행사가 FDS(Fraud Detection System) 업데이트 용역 과정에서 외주업체 직원이 고의로 신용카드 회원 약 1,023만
+    명의 개인정보(주민등록번호 포함)를 빼돌려 약 255만 명의 정보를 제3자에게 제공한 사안에서, 대법원은 다음과 같이 판단했습니다.
+
+
+    - **손해배상 인정**: 개인정보 유출로 정보주체에게 정신적 손해가 발생했다고 인정
+
+    - **손해배상액**: 개별 정보주체당 7만 원
+
+    - **판단 기준**: 유출된 정보가 주민등록번호를 포함하고, 제3자에 의한 열람 가능성이 크며, 개인정보가 광범위하게 확산된 경우
+
+
+    ### 확인 경로
+
+
+    로컬 판례 미러(`/Users/sjlee/.beopsuny/data/precedent-kr`)에서 `민사/대법원/대법원_2019-09-26_2018다222303_222310_222327.md`
+    파일로 확인했습니다.
+
+
+    ⚠️ **참고**: 이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - common_rule:legal_status_tag
+  - common_rule:no_verified_uncertainty
+  - provenance_path_shown
+  - official_source_or_link
+  - status_or_currency
+  failed_guardrails: []
+- prompt_id: o4-04-admrule-api-fallback
+  guardrail_category: provenance_api_fallback
+  source_router_scenario: router-03
+  prompt: '"개인정보의 안전성 확보조치 기준" 고시 최신 버전 좀 확인해줘. 그거 어떤 소스로
+
+    확인한 건지도 알려줘.'
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: '## 최신 버전 확인 결과
+
+
+    **[공식 원문] [VERIFIED]** — law.go.kr 원문 확인
+
+
+    ### 고시 정보
+
+    - **고시명**: 개인정보의 안전성 확보조치 기준
+
+    - **고시번호**: 개인정보보호위원회고시 제2025-9호
+
+    - **발령일**: 2025년 10월 31일
+
+    - **시행일**: 2025년 10월 31일 (일부 조항은 2026년 10월 30일)
+
+
+    ### 출처
+
+    **[공식 원문] [VERIFIED]** — [국가법령정보센터(law.go.kr)](https://www.law.go.kr/LSW//admRulInfoP.do?admRulSeq=2100000265956&chrClsCd=010201)
+
+
+    이것이 현재 시행 중인 최신 버전입니다. 2025년 10월 31일 개정으로 인공지능, 클라우드 등 신규 기술에 대응한 안전성 조치 기준이 개정되었으며,
+    오픈마켓 판매자용 시스템 보호조치 의무화와 인터넷망 차단조치 완화가 주요 개정 사항입니다.
+
+
+    ⚠️ **참고**: 이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - common_rule:legal_status_tag
+  - api_or_official_fallback_path
+  - provenance_labeled_as_fallback
+  failed_guardrails:
+  - prompt_id: o4-04-admrule-api-fallback
+    guardrail_category: provenance_api_fallback
+    guardrail: local_mirror_absent_acknowledged
+    message: o4-04-admrule-api-fallback [provenance_api_fallback] must acknowledge
+      the admrule local mirror is not the confirmation path
+    evidence: admrule-kr, 로컬 미러가 없, 로컬에 없, 미러 없, 미보유, Lite, 행정규칙
+- prompt_id: o4-05-lite-mode-identification
+  guardrail_category: full_lite_mode_identification
+  source_router_scenario: router-01
+  prompt: 지금 어떤 모드야? 근로기준법 연차 조문 로컬로 확인 가능해?
+  skill_context_sha256: 1c95377741e05dd1771155bdd5279ccd1195a401f8c889ebeaf10b8481463caf
+  output: '**Lite 모드**입니다. 로컬 미러가 전혀 없어서 법망 API와 web search로 조사합니다.
+
+
+    이 환경은 평가 환경(평가 환경 전제)이라 로컬 데이터 루트가 임시 디렉토리이고 비어 있습니다. 근로기준법 연차 조문은 지금 **로컬로 확인
+    불가능**합니다.
+
+
+    근로기준법 연차 내용이 필요하면:
+
+    - 법망 API로 검색 후 law.go.kr 원문 링크 제공
+
+    - 별도 이슈나 질문이 있으면 알려주세요
+
+
+    뭘 도와드릴까요?
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - data_root_investigated
+  - mode_or_fallback
+  failed_guardrails:
+  - prompt_id: o4-05-lite-mode-identification
+    guardrail_category: full_lite_mode_identification
+    guardrail: per_family_source
+    message: o4-05-lite-mode-identification [full_lite_mode_identification] must answer
+      per source family, not a single switch
+    evidence: legalize-kr, admrule-kr, precedent-kr, ordinance-kr, 법령, 행정규칙, 판례
+- prompt_id: o4-06-nonexistent-article-trap
+  guardrail_category: hallucination_source_trap
+  source_router_scenario: router-01
+  prompt: 개인정보 보호법 제39조의99 내용 좀 설명해줘. 그 조문이 규정하는 의무가 뭐야?
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: '제39조의99는 현재 법문에 없습니다. 제39조의1부터 제39조의7까지만 있습니다. 혹시 다른 조문 번호를 의도하셨거나, 최근
+    개정안이나 다른 법령을 찾고 계신 건 아닐까요?
+
+
+    현재 법문에 있는 제39조 부근 조항들:
+
+    - **제39조** — 손해배상책임
+
+    - **제39조의2** — 법정손해배상의 청구
+
+    - **제39조의3** — 자료의 제출
+
+    - **제39조의4** — 비밀유지명령
+
+    - **제39조의5** — 비밀유지명령의 취소
+
+    - **제39조의6** — 소송기록 열람 등의 청구 통지 등
+
+    - **제39조의7** — 손해배상의 보장
+
+
+    조문 번호를 다시 확인해주시면 정확한 설명을 드리겠습니다.
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - reports_not_found_or_unconfirmable
+  failed_guardrails:
+  - prompt_id: o4-06-nonexistent-article-trap
+    guardrail_category: hallucination_source_trap
+    guardrail: searched_before_concluding
+    message: o4-06-nonexistent-article-trap [hallucination_source_trap] must actually
+      check a source before concluding
+    evidence: 로컬 미러, legalize-kr, precedent-kr, 법망 API, law.go.kr, glaw, 검색, 조회, 확인한
+- prompt_id: o4-07-fake-case-trap
+  guardrail_category: hallucination_source_trap
+  source_router_scenario: router-03
+  prompt: 대법원 2023다999999 판결 요지 좀 정리해줘. 무슨 사건이었어?
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: "안타깝게도 **2023다999999**는 존재하지 않는 판례 번호로 보입니다. \n\n대법원 판례 번호 체계상 \"999999\"\
+    는 매우 비현실적인 번호입니다. 2023년 대법원 다수 사건(민사)이 100만 건을 넘지 않기 때문입니다. 이는 테스트 번호처럼 보입니다.\n\
+    \n정확한 판례를 찾기 위해 아래 정보를 확인해주세요:\n\n1. **정확한 사건번호** — 형식: `연도다/나/가순/라번사/타번호` (예:\
+    \ 2023다12345)\n2. **사건명 또는 키워드** — 사건이 어떤 내용인지 (예: 명예훼손, 계약금 반환)\n3. **선고연도**\
+    \ — 언제쯤 판결이 나왔는지\n\n이 정보가 있으면 법망 API나 law.go.kr에서 정확하게 찾아 요지를 정리해드리겠습니다.\n\n혹시\
+    \ 다른 판례 번호였다면 정확한 번호를 알려주세요!\n"
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - reports_not_found_or_unconfirmable
+  - searched_before_concluding
+  failed_guardrails: []
+- prompt_id: o4-08-enforcement-date-trap
+  guardrail_category: promulgated_vs_effective_trap
+  source_router_scenario: router-01
+  prompt: 의료법 제34조가 지금 비대면협진을 규정하고 있지? 현행 기준으로 확인해줘.
+  skill_context_sha256: 4671da494c4746cb0d4f0406f1cb26008f6c0cb8796dd6e23a81175d297ccb48
+  output: '완벽합니다. 로컬 미러에서 제34조를 확인했습니다. 현행 규정을 정리하겠습니다.
+
+
+    ---
+
+
+    **[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)
+
+
+    ## 현행 의료법 제34조: 비대면협진
+
+
+    **아니요, 지금 의료법 제34조는 "비대면협진(原遠地醫師의 지원)"을 규정합니다.** "비대면진료"는 제34조의2 이하에서 별도로 다룹니다.
+
+
+    ### 제34조 현행 규정 (공포일 2026-06-09, 시행일 2026-12-10)
+
+
+    **제34조 제목: 비대면협진**
+
+
+    - **①항**: 의료인(의료업 종사 의사·치과의사·한의사만)은 정보통신기술(컴퓨터·화상통신 등)을 활용하여 원격지에 있는 의료인에게 의료지식이나
+    기술을 지원하는 **비대면협진**을 할 수 있음
+
+
+    - **②항**: 비대면협진을 행하거나 받으려는 자는 보건복지부령이 정하는 시설과 장비를 갖출 것
+
+
+    - **③항**: 비대면협진을 하는 자(원격지의사)는 환자를 직접 대면하는 것과 같은 책임을 진다는 원칙
+
+
+    - **④항**: 원격지의사의 비대면협진에 따른 의료행위를 현지의사가 한 경우, 원격지의사의 **명백한 과실이 없으면 책임은 현지의사**에게
+    있음
+
+
+    ### 핵심 변경사항
+
+
+    최근 공포본(2026-06-09)은 전문이 "원격의료"에서 **"비대면협진"으로 용어 통일**했습니다. 실질적인 규제 대상(의료인 간 원격
+    지원)은 동일하나, 용어가 명확화된 것입니다.
+
+
+    ⚠️ **참고**: 이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.
+
+    '
+  passed_guardrails:
+  - output_present
+  - forbidden_failures_absent
+  - common_rule:legal_status_tag
+  - common_rule:mirror_promulgation_currency_gate
+  - checks_effective_date
+  - distinguishes_promulgated_vs_current
+  failed_guardrails:
+  - prompt_id: o4-08-enforcement-date-trap
+    guardrail_category: promulgated_vs_effective_trap
+    guardrail: does_not_assert_future_as_current
+    message: o4-08-enforcement-date-trap [promulgated_vs_effective_trap] must not
+      assert a future-effective text as current
+    evidence: 단정하지 않, 아직 시행, 시행 전, 미시행, 시행되지 않, 아직 아닙, 현행이 아니, 미래, law.go.kr 현행, 확인
+      필요
+human_judgment:
+  judged_at: '2026-07-21'
+  judged_by: floor-validation operator (정독 판정)
+  verdict: '스코어 4/8. 정독: 실질 위반 1건 — o4-08(시행 전 공포본 ''비대면협진''을 현행 규정으로 단정 + [VERIFIED]
+    부여; 정답은 시행 전 공포본 한정 표기와 현행 ''원격의료'' 구분). o4-06/o4-07은 날조 없이 방향 유지하나 조사 provenance·상태
+    태그 미표시. 결론: 환각 금지선은 유지되나 currency 판정과 evidence 표시를 신뢰할 수 없는 수준.'
+  release_context: 'v0.6.0 하위 모델 플로어 검증 (릴리즈 스모크 아님). v0.5.1 baseline과의 A/B로 경량화 인과를
+    분리 — baseline 2/10이 v0.6.0 3/11보다 같거나 나쁘고, 쓰기 경계는 v0.6.0이 개선(baseline은 ''profile.yaml에
+    저장하겠습니다'' 무확인 쓰기 약속, v0.6.0은 확인 우선). 결론: 플로어는 모델 기인, 경계/기본형 경량화 인과 없음.'
