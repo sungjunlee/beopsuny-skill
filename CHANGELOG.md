@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **prose-lock 마이그레이션 완주 (테스트 레이어)** — `tests/validate_skill_contracts.py`의 잔존 전문 문장·표-행·화살표 순서 핀 65건(SENTENCE 53·TABLEROW 9·ARROW 3)을 charter 2026-07-12 assertion style policy대로 토큰·구조 검사로 전환. 신규: `assert_ordered_tokens` 순서 검사(role/destination 6단 출력), foreign-instrument overlay 표 구조 검사(행 집합 + KR anchor 토큰 + 의도 enum + #220 AI 기본법 1순위 유지). `assert_not_contains` 재서술 가드 2건과 출력 리터럴 5건은 정책상 유지. mutation 검증: 요지 보존 reword PASS·불변식 삭제 FAIL 확인(에이전트 17건 + 오케스트레이터 독립 3건). 문서 rewrite의 회귀 오탐 비용을 제거해 이후 reference 경량화의 전제를 마련.
+
 ## [0.5.1] - 2026-07-20
 
 v0.5.0 재단 릴리즈: v0.5.0 태그가 plugin 버전 범프 누락으로 Release 워크플로우 version mismatch 가드에 걸려 GitHub Release가 미발행됐다(marketplace Latest v0.4.0 정체). 이 릴리즈가 v0.5.0 내용 전체 + 이후 변경(#220 AI 기본법 anchor, #230 미러 복구 절차, 메타 시스템 하드닝)을 사용자에게 실제 전달한다.

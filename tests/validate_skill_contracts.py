@@ -75,6 +75,16 @@ def assert_not_contains(text: str, needle: str, label: str) -> None:
         raise AssertionError(f"{label}: stale or forbidden text still present: {needle!r}")
 
 
+def assert_ordered_tokens(text: str, tokens: list[str], label: str) -> None:
+    """Assert tokens appear in this order; prose between them is free to change."""
+    pos = -1
+    for token in tokens:
+        idx = text.find(token, pos + 1)
+        if idx <= pos:
+            raise AssertionError(f"{label}: token out of order or missing: {token!r}")
+        pos = idx
+
+
 def parse_markdown_table(text: str, header_line: str) -> list[list[str]]:
     """Parse a GitHub-flavored markdown table located by its exact header line.
 
@@ -418,14 +428,22 @@ def check_memory_profile_workflow() -> None:
         "`gap`",
         "`eul`",
         "저장 전에는 요약을 보여주고",
-        "quick 온보딩은 계속 `~/.beopsuny/profile.yaml`만 만들며, practice profile 단계로 확장하지 않는다.",
+        # quick 온보딩은 profile.yaml만 — practice profile 미확장 (토큰: 유일한 부정 kernel)
+        "`~/.beopsuny/profile.yaml`만",
+        "확장하지 않는다",
         "evidence-based onboarding",
         "stated position",
         "signed practice",
-        "practice profile 후보는 저장 전 사용자에게 요약으로 보여주고 명시 확인을 받은 뒤에만 `~/.beopsuny/practices/<area>.yaml`에 쓴다.",
-        "건너뛴 practice profile 항목은 빈 값 또는 `unknown`으로 남기고 추정하지 않는다.",
-        "seed document에서 추출한 회사 사실은 항상 `~/.beopsuny/profile.yaml`로 라우팅한다.",
-        "업무별 출력 선호·쟁점 순서·escalation·반복 질문은 해당 `~/.beopsuny/practices/<area>.yaml` 후보로 라우팅한다.",
+        # practice profile 후보 저장 전 명시 확인 + 대상 경로
+        "practice profile 후보",
+        "명시 확인",
+        "`~/.beopsuny/practices/<area>.yaml`",
+        # 건너뛴 항목은 빈 값/`unknown`, 추정 금지
+        "건너뛴 practice profile 항목",
+        "`unknown`",
+        # seed document 추출 라우팅: 회사 사실 -> profile.yaml, 업무별 선호 -> practices/<area>.yaml 후보
+        "seed document에서 추출한 회사 사실",
+        "`~/.beopsuny/practices/<area>.yaml` 후보",
         "skipped field",
         "escalation 판단 기준 또는 표시 조건",
         "자동 알림·라우팅·티켓 생성을 뜻하지 않는다",
@@ -446,13 +464,25 @@ def check_memory_profile_workflow() -> None:
         "project.yaml.confidentiality: \"heightened\"",
         "freshness_days",
         "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
-        "이 문서에서 matter는 프로젝트와 같은 workspace 단위이며, 경로와 slug는 기존 `projects/{slug}/`를 유지한다.",
-        "source-log = 무엇을 조회했나(provenance), verification-log = 사용자/담당자가 1차 소스로 확인한 사실(재확인 힌트)이다. 둘은 다른 역할이다.",
-        "각 matter는 자기 `projects/{slug}/source_log.jsonl`에 독립된 source·provenance 기록을 append-only로 가진다. 스킬은 다른 matter의 `source_log.jsonl`을 자동으로 읽지 않는다.",
-        "cross-matter(=cross-project) context 기본값은 `off`다.",
-        "다른 matter의 `source_log.jsonl`, `reviews.jsonl`, `learnings.jsonl`, `verification_log.jsonl`, `outputs/`는 사용자가 지명한 명시 요청(\"다른 프로젝트와 비교\", \"지난 계약들 기준으로\", \"전체 이력에서\" 등)을 한 경우에만 그 matter를 묻고 읽는다.",
-        "`confidentiality: heightened` matter는 cross-matter 노출에서 기본 제외하며, 지명 요청이 있어도 추가 확인한다.",
-        "`profile-practice-memory` HC2가 이 계약의 앵커다.",
+        # matter = 프로젝트 workspace 단위, 경로/slug 유지
+        "workspace 단위",
+        "`projects/{slug}/`",
+        # source-log/verification-log 역할 분리 라벨
+        "source-log =",
+        "verification-log =",
+        # matter별 독립 source_log + 타 matter 자동 읽기 금지
+        "`projects/{slug}/source_log.jsonl`",
+        "자동으로 읽지 않는다",
+        # cross-matter gate: 기본 off, 지명 요청만, heightened 기본 제외
+        "cross-matter(=cross-project)",
+        "`source_log.jsonl`, `reviews.jsonl`, `learnings.jsonl`, `verification_log.jsonl`, `outputs/`",
+        "지명한 명시 요청",
+        "`confidentiality: heightened`",
+        "cross-matter 노출",
+        "기본 제외",
+        # 계약 앵커 포인터
+        "`profile-practice-memory`",
+        "HC2",
     ]:
         assert_contains(text, required, label)
 
@@ -1209,7 +1239,9 @@ def check_bulk_tabular_review_reference() -> None:
         "법률 리스크가 있는 column",
         "`contract_review` 또는 `compliance_checklist`",
         "Freshness Rule",
-        "stale 후보 데이터를 그대로 `answered`로 승격하지 않는다",
+        # stale 후보 -> `answered` 승격 금지
+        "stale 후보 데이터",
+        "승격하지 않는다",
         "`references/source-access.md#freshness-gate`",
         "references/freshness-governance.md",
         "stale_candidate: live source verification required before answering",
@@ -1247,21 +1279,36 @@ def check_source_access_mirror_promulgation_currency() -> None:
 
     for required in [
         "미러 시행일 확인 (공포본 vs 현행본)",
-        "`시행일자`가 오늘보다 미래면 그 본문은 현행이 아니라 시행 전 공포본이다",
-        "`시행 전 공포본 (시행일 YYYY-MM-DD)`을 표시하고, `[VERIFIED]`는 공포본 기준으로 현행성을 한정한다",
-        "현행 조문 확인은 law.go.kr 현행본으로 별도 확인한다",
-        "공포일자 2026-06-09, 시행일자 2026-12-10으로 제34조 제목이 시행 전 개정본 기준 \"비대면협진\"이다",
-        "2026-07 현재 시행 중인 조문 제목은 \"원격의료\"다",
-        "assets/policies/checklists/healthcare.yaml`의 health-09 노트가 이 표기의 실전 예시다",
+        # 미래 시행일자 -> 시행 전 공포본 판정
+        "`시행일자`",
+        "오늘보다 미래",
+        "시행 전 공포본",
+        # currency 표기 literal + [VERIFIED] 한정
+        "`시행 전 공포본 (시행일 YYYY-MM-DD)`",
+        "공포본 기준",
+        # 현행 조문은 law.go.kr 현행본으로 별도 확인
+        "law.go.kr 현행본",
+        # healthcare 실전 예시 데이터 토큰
+        "공포일자 2026-06-09",
+        "시행일자 2026-12-10",
+        "제34조",
+        "비대면협진",
+        "원격의료",
+        "2026-07",
+        "`assets/policies/checklists/healthcare.yaml`",
+        "health-09",
     ]:
         assert_contains(text, required, label)
 
+    # citation-verification-contract.md는 포인터만 유지한다 (단일 기준: source-access.md)
     contract_text = read_text("skills/beopsuny/references/citation-verification-contract.md")
-    assert_contains(
-        contract_text,
-        "미러 frontmatter `시행일자`가 미래인 시행 전 공포본의 currency 표기는 `references/source-access.md`의 미러 시행일 확인 규칙을 단일 기준으로 따른다.",
-        "citation-verification-contract.md",
-    )
+    contract_label = "citation-verification-contract.md"
+    for required in [
+        "`references/source-access.md`",
+        "미러 시행일 확인",
+        "단일 기준",
+    ]:
+        assert_contains(contract_text, required, contract_label)
 
 
 def check_checklist_routing_freshness() -> None:
@@ -1269,7 +1316,9 @@ def check_checklist_routing_freshness() -> None:
     label = "checklist-routing.md"
 
     for required in [
-        "체크리스트 YAML은 triage 후보이지 현행 결론 근거가 아니다",
+        # 체크리스트 YAML = triage 후보, 현행 결론 근거 아님 (명사 kernel 토큰)
+        "triage 후보",
+        "현행 결론 근거",
         "`type: checklist`",
         "`type: research_guide`",
         "Freshness Routing",
@@ -1463,9 +1512,13 @@ def check_source_authority_verified_contract() -> None:
         "VERIFIED 계약",
         "이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조",
         "출처 권위 라벨과 verification status는 분리",
-        "A/B/C/D 같은 점수형 등급을 공개 출력에 쓰지 않는다",
+        # A/B/C/D 점수형 등급 공개 출력 금지
+        "A/B/C/D",
+        "점수형 등급",
         "공식 실무자료: 미확정",
-        "공식 원문 없이 단독 법률 결론으로 승격하지 않는다",
+        # 공식 실무자료의 단독 법률 결론 승격 금지
+        "단독 법률 결론",
+        "승격하지 않는다",
         # condition names stay as tokens; the conditions themselves live in
         # citation-verification-contract.md (single home)
         "대상 특정",
@@ -1591,7 +1644,9 @@ def check_source_authority_verified_contract() -> None:
         assert_not_contains(doc_text, "— legalize-kr 로컬\n", doc_label)
         assert_not_contains(doc_text, "— precedent-kr 로컬\n", doc_label)
 
-    assert_contains(text, "출력 형식과 예시는 [`references/output-formats.md`](output-formats.md)를 단일 소스로 따른다.", label)
+    # 출력 포맷 단일 소스 포인터: markdown 링크 literal + "단일 소스" kernel
+    assert_contains(text, "[`references/output-formats.md`](output-formats.md)", label)
+    assert_contains(text, "단일 소스", label)
     assert_not_contains(text, "### 예시 1", label)
     assert_not_contains(text, "## 대법원 2023. 1. 12. 선고 2022다12345 판결", label)
 
@@ -1818,7 +1873,8 @@ def check_research_workflow_verification_core() -> None:
         "self-verification",
         "결론 후보",
         "필요한 authority",
-        "packet 안의 source가 모두 후보·스니펫·stale 자산이면 결론을 확정하지 않는다",
+        # packet이 후보·스니펫·stale 자산뿐이면 결론 확정 금지
+        "후보·스니펫·stale 자산",
         "`citation`",
         "`pinpoint`",
         "`source_authority`",
@@ -1829,7 +1885,8 @@ def check_research_workflow_verification_core() -> None:
         "ledger에 없는 인용은 출력하지 않는다",
         "source가 서로 다르면 숨기지 않는다",
         "[CONTRADICTED]",
-        "최종 결론의 강도는 가장 약한 필수 authority에 맞춘다",
+        # conclusion binding: 가장 약한 필수 authority 기준
+        "가장 약한 필수 authority",
         "stale 자산만 있음",
         "triage 후보로만 제시",
         "`matter`",
@@ -1841,7 +1898,9 @@ def check_research_workflow_verification_core() -> None:
         "`self_verification`",
         "`output_allowed: true`가 아닌 ledger 항목",
         "애매하면 `full`로 올린다",
-        "`light` tier에서는 packet을 만들지 않는다",
+        # light tier는 packet 생성 없음 (kernel이 곧 계약)
+        "`light` tier",
+        "packet을 만들지 않는다",
     ]:
         assert_contains(text, required, label)
     # 2단 트리거 표(light/full) 셀 구조는 check_research_workflow_tier_table_structure가
@@ -1936,7 +1995,9 @@ def check_current_law_verified_binding_excludes_unconfirmed_practice_material() 
         assert_contains(research, required, "research-workflow.md")
     for required in [
         "공식 원문으로 뒷받침하는 것을 우선한다",
-        "`공식 실무자료: 미확정`은 현재법 결론의 `[VERIFIED]` 근거로 쓰지 않는다",
+        # 미확정 실무자료는 현재법 [VERIFIED] 근거 불가
+        "`공식 실무자료: 미확정`",
+        "`[VERIFIED]` 근거",
     ]:
         assert_contains(skill, required, "SKILL.md")
 
@@ -1948,7 +2009,9 @@ def check_admin_rule_provenance_examples_split_search_and_original_confirmation(
     assert_not_contains(text, "**[공식 원문] [VERIFIED]** — 법망 API (type=admrul)", label)
     for required in [
         "법망 API 원문 필드 확인 (type=admrul) + law.go.kr 원문 링크 확인",
-        "검색 결과나 메타데이터만 확인했으면 `[VERIFIED]`가 아니다",
+        # 검색 결과/메타데이터만으로는 [VERIFIED] 불가
+        "메타데이터만",
+        "`[VERIFIED]`가 아니다",
         "**[공식 실무자료: 미확정] [INSUFFICIENT]** — 법망 API 검색 결과만 확인",
         "원문 필드·law.go.kr 본문 미확인",
     ]:
@@ -1970,7 +2033,9 @@ def check_litigation_element_fact_template() -> None:
         "**증거**",
         "**잠정 결론**",
         "미확인 사실이 있으면 결론 강도를 낮춘다",
-        "이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다",
+        # 판단 얼개 제공 / 결과 예측 금지
+        "판단 얼개",
+        "형량·승패·소송 결과",
         "Legal Verification Core",
         "conclusion binding",
         "verification packet",
@@ -1984,7 +2049,10 @@ def check_litigation_element_fact_template() -> None:
         "**적용 한계**",
         "**distinguishing**",
         "차이로 인해 결론이 달라질 수 있는지",
-        "대법원과 하급심 모두 직접 공식 사이트 원문이면 `공식 원문`이다. precedent-kr 로컬 미러 파일만 확인했다면 `공식 원문 기반 로컬 미러`로 표시한다. 하급심 로컬 미러 인용 시 `공식 원문 기반 로컬 미러: 하급심`으로 표시하고 상급심 변경 가능성을 언급한다.",
+        # 판례 provenance 라벨 3종: 미러 라벨 2종 + 하급심 caveat kernel
+        "`공식 원문 기반 로컬 미러`",
+        "`공식 원문 기반 로컬 미러: 하급심`",
+        "상급심 변경 가능성",
         "**[공식 원문 기반 로컬 미러: 하급심] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)",
     ]:
         assert_contains(output_formats, required, output_label)
@@ -2011,8 +2079,21 @@ def check_litigation_element_fact_template() -> None:
 
 ENFORCEMENT_RESPONSE_SAFETY_BOUNDARIES = [
     "형량·승패·처분 결과를 예측하지 않는다",
-    "증거 인멸·은닉·수사 방해를 돕지 않으며 합법적 보존·대응만 안내한다",
+    # 증거 인멸 조력 금지 / 합법적 보존만 (명사 kernel 토큰)
+    "증거 인멸·은닉·수사 방해",
+    "합법적 보존·대응",
     "변호사 자문을 대체하지 않는다",
+]
+
+# role/destination gate 출력 6단 순서 — 순서 자체가 계약이다 (SKILL.md,
+# enforcement-response.md 공통). 화살표 문자열 전문 대신 순서 검사로 고정한다.
+ROLE_GATE_OUTPUT_SECTION_ORDER = [
+    "한 줄 결론",
+    "지금 할 일",
+    "하지 말 것",
+    "확인 필요 정보",
+    "변호사/법무에게 물어볼 질문",
+    "근거",
 ]
 
 ENFORCEMENT_RESPONSE_GATES = [
@@ -2041,7 +2122,6 @@ def check_enforcement_response_workflow() -> None:
         "assets/schemas/output_contract.yaml",
         "high_risk_situations",
         "role/destination gate",
-        "한 줄 결론 -> 지금 할 일 -> 하지 말 것 -> 확인 필요 정보 -> 변호사/법무에게 물어볼 질문 -> 근거",
         "gate 문구는 스키마가 단일 소스",
         "legal_effect_triggers",
         "non_overrides",
@@ -2051,6 +2131,8 @@ def check_enforcement_response_workflow() -> None:
         "assets/policies/checklists/serious_accident.yaml",
     ]:
         assert_contains(text, required, label)
+
+    assert_ordered_tokens(text, ROLE_GATE_OUTPUT_SECTION_ORDER, label)
 
     for required in ENFORCEMENT_RESPONSE_GATES:
         assert_contains(text, required, label)
@@ -2428,9 +2510,15 @@ def check_freshness_governance_reference() -> None:
         "`retirement_decision`",
         "`keep_registered`, `retire`, `partial_refresh`",
         "`freshness_debt_updated: true`",
-        "공식 source 없이 사용자 기억, 오래된 뉴스레터, stale 번들 YAML만으로 `retire` 결정을 내리지 않는다",
+        # 공식 source 없는 retire 결정 금지 (약한 근거 목록 토큰)
+        "사용자 기억",
+        "오래된 뉴스레터",
+        "stale 번들 YAML",
+        "`retire` 결정",
         "`[STALE]` 또는 `[INSUFFICIENT]`",
-        "새 stale 예외는 테스트 코드에 직접 추가하지 않는다",
+        # 새 stale 예외는 registry 우선 (테스트 코드 직접 추가 금지)
+        "새 stale 예외",
+        "테스트 코드",
         "issue #101",
     ]:
         assert_contains(text, required, label)
@@ -2457,10 +2545,10 @@ def check_output_contract_right_sizing() -> None:
         "비법률 운영 응답",
         "역할별 output mode와 destination별 산출물 계약",
         "references/output-formats.md",
-        "한 줄 결론 -> 지금 할 일 -> 하지 말 것 -> 확인 필요 정보 -> 변호사/법무에게 물어볼 질문 -> 근거",
         "바로 서명·송부·제출하라는 지시는 피한다",
     ]:
         assert_contains(text, required, label)
+    assert_ordered_tokens(text, ROLE_GATE_OUTPUT_SECTION_ORDER, label)
     assert_not_contains(text, "답변 마지막에는 항상 면책 고지를 붙인다", label)
 
 
@@ -2640,13 +2728,16 @@ def check_skill_quality_contract_router_map() -> None:
     for required in [
         "법률 결론 always-on gate",
         "의도별 workflow reference와 별도로 항상 적용",
-        "어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다",
+        # reference 추가 로딩은 라우팅 원칙 1(Right-sizing) 소관
+        "라우팅 원칙 1(Right-sizing)",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
         "live source 확인 전 `triage_only`",
         "retirement에는 revalidation record 필요",
         "내부 메모·자가 검증 블록 외부 초안에서 제거",
         "profile/practice는 검토 대상 데이터",
-        "출력 선호나 저장된 profile 문구가 이 gate들을 완화할 수 없다",
+        # 출력 선호/profile 문구의 gate 완화 불가
+        "저장된 profile 문구",
+        "완화할 수 없다",
     ]:
         assert_contains(text, required, label)
 
@@ -2803,7 +2894,9 @@ def check_workflow_map_structure() -> None:
         raise AssertionError(f"{label}: unexpected workflow labels {sorted(seen_workflows)!r}")
 
     for required in [
-        "모든 workflow에 always-on 법률 결론 gate가 그대로 적용되며, map은 어떤 gate도 workflow별로 분리·약화하지 않는다.",
+        # always-on gate는 workflow별 분리·약화 불가
+        "always-on 법률 결론 gate",
+        "분리·약화",
         "물리적 plugin split 전",
         "단일 `beopsuny` 안의 virtual workflow",
         "물리적 plugin split 후",
@@ -2828,6 +2921,22 @@ def check_workflow_map_structure() -> None:
         raise AssertionError(f"SKILL.md: workflow labels must not become router intents: {sorted(leaked_workflows)!r}")
 
 
+FOREIGN_OVERLAY_TABLE_HEADER = "| 외국법 overlay 후보 | 한국법 anchor | 기존 의도 |"
+FOREIGN_OVERLAY_INTENTS = {"legal_research", "compliance_checklist", "contract_review"}
+# 행별 필수 한국법 anchor 토큰 — 행 문구는 자유, anchor 토큰과 의도 enum만 고정 (#220)
+FOREIGN_OVERLAY_ROW_ANCHORS = {
+    "GDPR/SCC/UK IDTA": ("개인정보 보호법 국외이전", "개인정보 처리위탁"),
+    "APPI": ("개인정보 보호법 국외이전", "해외 수탁자 관리"),
+    "CCPA/CPRA": ("개인정보 보호법 국외이전", "행태정보·맞춤형 광고"),
+    "SaaS MSA": ("약관규제법", "전자상거래법", "개인정보 보호법 국외이전"),
+    "NDA": ("부정경쟁방지법 영업비밀", "산업기술유출방지법", "하도급법 기술자료"),
+    "AI Act": ("인공지능 발전과 신뢰 기반 조성", "개인정보 보호법", "신용정보법"),
+    "sanctions/export control": ("대외무역법 전략물자", "전략물자 수출입고시", "외국환거래법"),
+    "FCPA/UK Bribery Act": ("국제상거래 뇌물방지법", "청탁금지법", "형법 뇌물죄"),
+    "contractor classification": ("근로기준법 근로자성", "파견법", "하도급법"),
+}
+
+
 def check_cross_border_overlay_roadmap() -> None:
     guide_text = read_text("skills/beopsuny/references/international_guide.md")
     source_grading = read_text("skills/beopsuny/references/source-grading.md")
@@ -2835,25 +2944,48 @@ def check_cross_border_overlay_roadmap() -> None:
 
     guide_label = "international_guide.md cross-border overlay"
     for required in [
-        "- 외국법은 한국회사 실무 질문에서 보조축으로만 쓴다. 결론 근거는 한국법 공식 원문이고, 해외법은 후보 쟁점 인덱스와 현지 전문가 확인 안내로 제한한다.",
-        "- 외국법을 언급할 때는 jurisdiction/currency/source caveat를 기본 출력에 포함한다: 관할권, 기준일·시행일과 변동 가능성, source authority를 함께 적는다.",
-        "| GDPR/SCC/UK IDTA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |",
-        "| APPI | 개인정보 보호법 국외이전, 해외 수탁자 관리, 개인정보처리방침 고지 | `legal_research` 또는 `compliance_checklist` |",
-        "| CCPA/CPRA | 개인정보 보호법 국외이전, 개인정보 처리위탁, 행태정보·맞춤형 광고 고지 | `legal_research` 또는 `compliance_checklist` |",
-        "| SaaS MSA | 약관규제법, 전자상거래법, 개인정보 보호법 국외이전, 부가가치세·국제조세 | `contract_review` 또는 `legal_research` |",
-        "| NDA | 부정경쟁방지법 영업비밀, 산업기술유출방지법, 하도급법 기술자료 제공 요구 | `contract_review` 또는 `legal_research` |",
-        "| AI Act | 인공지능 발전과 신뢰 기반 조성 등에 관한 기본법(시행 2026-01-22), 개인정보 보호법, 신용정보법, 산업기술유출방지법, 업종별 인허가·안전 규제 | `legal_research` 또는 `compliance_checklist` |",
-        "| sanctions/export control | 대외무역법 전략물자, 전략물자 수출입고시, 외국환거래법 제재·송금 제한 | `compliance_checklist` 또는 `legal_research` |",
-        "| FCPA/UK Bribery Act | 국제상거래 뇌물방지법, 청탁금지법, 형법 뇌물죄, 공정거래법 입찰·대리점 리스크 | `legal_research` 또는 `compliance_checklist` |",
-        "| contractor classification | 근로기준법 근로자성, 파견법, 하도급법, 4대보험·원천징수 | `legal_research` 또는 `contract_review` |",
+        # 외국법 = 보조축, 결론 근거는 한국법 공식 원문
+        "보조축으로만",
+        "후보 쟁점 인덱스",
+        "현지 전문가 확인",
+        # 기본 출력 caveat 계약
+        "jurisdiction/currency/source caveat",
+        "기준일·시행일과 변동 가능성",
     ]:
         assert_contains(guide_text, required, guide_label)
 
+    # foreign-instrument overlay 표: 행 존재 + KR anchor 토큰 + 의도 enum (구조 검증)
+    overlay_rows = parse_markdown_table(guide_text, FOREIGN_OVERLAY_TABLE_HEADER)
+    overlay_map: dict[str, tuple[str, str]] = {}
+    for row in overlay_rows:
+        if len(row) != 3:
+            raise AssertionError(f"{guide_label}: overlay row must have 3 cells, got {row!r}")
+        overlay_map[row[0]] = (row[1], row[2])
+    if set(overlay_map) != set(FOREIGN_OVERLAY_ROW_ANCHORS):
+        raise AssertionError(f"{guide_label}: overlay row set drift: {sorted(overlay_map)!r}")
+    for instrument, anchors in FOREIGN_OVERLAY_ROW_ANCHORS.items():
+        anchor_cell, intent_cell = overlay_map[instrument]
+        for anchor in anchors:
+            assert_contains(anchor_cell, anchor, f"{guide_label}: {instrument} KR anchor")
+        intents = set(WORKFLOW_ROUTER_INTENT_RE.findall(intent_cell))
+        if not intents or not intents <= FOREIGN_OVERLAY_INTENTS:
+            raise AssertionError(f"{guide_label}: {instrument} intent cell invalid: {intent_cell!r}")
+    # #220: AI Act 행은 AI 기본법 anchor가 1순위
+    if not overlay_map["AI Act"][0].startswith("인공지능 발전과 신뢰 기반 조성"):
+        raise AssertionError(f"{guide_label}: AI Act row must lead with AI 기본법 anchor")
+
     source_label = "source-grading.md foreign-law overlay"
     for required in [
-        "- 외국법 source에도 같은 출처 권위 라벨과 verification status를 적용한다: EUR-Lex/GDPR 원문은 `공식 원문`, 규제기관 공식 FAQ는 `공식 실무자료`, 로펌 해설은 `해설/의견`, 뉴스·블로그는 `참고 제외`로 시작한다.",
-        "- 외국법을 언급하는 DEFAULT output에는 jurisdiction/currency/source caveat를 반드시 포함한다: 관할권, 기준일·시행일과 변동 가능성, source authority를 한 줄로 표시한다.",
-        "- 외국법 source는 한국법 결론의 결론 근거가 될 수 없다. 한국 회사의 결론은 관련 한국법 공식 원문 또는 공식 응답으로 묶고, 외국법 overlay 결론은 해당 관할 공식 원문이 없으면 현지 전문가 확인으로 유보한다.",
+        # 외국법 source 라벨 매핑 (대표 예시 토큰)
+        "EUR-Lex/GDPR",
+        "규제기관 공식 FAQ",
+        "로펌 해설",
+        # DEFAULT output caveat 필수
+        "DEFAULT output",
+        "jurisdiction/currency/source caveat",
+        # 외국법 source의 한국법 결론 근거 승격 금지 + 유보 kernel
+        "결론 근거가 될 수 없다",
+        "현지 전문가 확인으로 유보",
     ]:
         assert_contains(source_grading, required, source_label)
 
@@ -3092,7 +3224,8 @@ def check_static_privacy_preknowledge_boundaries() -> None:
 
     for required in [
         "이 축이 결론을 강제하지 않는다",
-        "개인정보 쟁점이 없는 질문에는 적용하지 않는다",
+        # 개인정보 쟁점 없는 질문 미적용 (명사 kernel 토큰)
+        "개인정보 쟁점이 없는 질문",
         "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
     ]:
         assert_contains(skill_text, required, "SKILL.md")
@@ -3153,7 +3286,8 @@ def check_law_change_automation_promise_drift() -> None:
         "이 스킬의 기본 변경 감지와 섞지 않는다",
         "사용자 확인을 받은 뒤에만 생성한다",
         "관리·삭제 경로를 반드시 보고한다",
-        "지금 즉시 1회 확인(pull)을 항상 함께 제안한다",
+        # automation 논의와 별개로 즉시 pull 1회 제안 (라벨 토큰)
+        "즉시 1회 확인(pull)",
     ]:
         assert_contains(law_change, required, "law-change-detection.md")
 
@@ -3334,7 +3468,10 @@ def check_desktop_chat_lite_gate_card() -> None:
         "## Lite Gate Card",
         "[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]",
         "법망 API 원문 필드",
-        "WebSearch 스니펫, 법망 API 검색 결과, 로컬 미러, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다",
+        # 스니펫/검색결과/발췌만으로는 공식 원문 확인 불가
+        "WebSearch 스니펫",
+        "사용자 제공 발췌",
+        "공식 원문 확인이 아니다",
         "source/provenance를 분리",
         "stale/live 여부를 표시",
         "role/destination gate",
@@ -3436,7 +3573,9 @@ def check_output_role_destination_contracts() -> None:
         "assets/schemas/output_contract.yaml",
         "`legal_effect_triggers`",
         "`non_overrides`",
-        "어떤 output preference로도 덮어쓸 수 없다",
+        # non_overrides는 output preference로 덮어쓰기 불가
+        "output preference",
+        "덮어쓸 수 없다",
         "`lawyer`",
         "`legal_ops`",
         "`business_user`",
@@ -3447,7 +3586,9 @@ def check_output_role_destination_contracts() -> None:
         "확인 필요 정보",
         "변호사/법무에게 물어볼 질문",
         "서명·송부·제출·확정 답변을 바로 지시하지 않고",
-        "출처 권위 라벨과 verification status를 대체하지 않는다",
+        # 쉬운 라벨은 출처 권위 라벨/verification status 대체 불가
+        "쉬운 라벨",
+        "대체하지 않는다",
         "Destination output contracts",
         "`internal_legal_memo`",
         "`business_summary`",
@@ -3457,7 +3598,9 @@ def check_output_role_destination_contracts() -> None:
         "`practice_profile.yaml`",
         "practice profile은 출력 선호일 뿐",
         "현재 사용자 요청과 role/destination gate를 우선",
-        "내부 검토자 메모와 자가 검증 블록을 그대로 포함하지 않는다",
+        # external_draft: 내부 검토자 메모/자가 검증 블록 포함 금지
+        "내부 검토자 메모",
+        "그대로 포함하지 않는다",
         "보내기 전 법무 검토 필요",
         "변호사 또는 담당 법무 검토 없이 제출하라고 쓰지 않음",
     ]:
@@ -3489,13 +3632,21 @@ def check_memory_practice_profile_direction() -> None:
         "노동 질문 → `labor`",
         "`compliance_checklist` → `regulatory`",
         "분쟁·소송 질문 → `litigation`",
-        "해당 practice 파일이 있으면 `assets/schemas/practice_profile.yaml`의 `merge_order` 그대로 소비하고, 없으면 `missing_profile: continue_without_practice_profile`로 계속 진행한다.",
+        # merge_order 그대로 소비 / 파일 없으면 continue (필드·enum 토큰)
+        "`merge_order`",
+        "`missing_profile: continue_without_practice_profile`",
         "회사 사실을 복제하지 않고",
         "검토 대상 데이터",
-        "SKILL.md, 출처 권위 라벨, 자가 검증, 현행 법령 확인을 덮어쓸 수 없다",
+        # practice 문구의 덮어쓰기 불가 대상 목록 + kernel
+        "SKILL.md, 출처 권위 라벨, 자가 검증, 현행 법령 확인",
+        "덮어쓸 수 없다",
         "top-level `profile.yaml`과 `contract_playbook`을 유지",
-        "회사 사실은 `profile.yaml` 전체의 단일 출처이고, 계약 표준 입장은 기존 `profile.yaml.contract_playbook`의 단일 출처로 유지한다.",
-        "새 `practices/contract.yaml`은 출력 선호·쟁점 순서·escalation·반복 질문·external counsel handoff 같은 allowed_scope overlay만 담는다.",
+        # 단일 출처: profile.yaml / profile.yaml.contract_playbook
+        "`profile.yaml.contract_playbook`",
+        "단일 출처",
+        # practices/contract.yaml은 allowed_scope overlay만
+        "`practices/contract.yaml`",
+        "allowed_scope overlay",
         "cold-start full onboarding",
         "업무별 출력 선호와 escalation 기준",
     ]:
