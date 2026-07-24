@@ -29,8 +29,8 @@
 
 | Source family | 역할 | `[VERIFIED]` 가능 조건 |
 | --- | --- | --- |
-| local legalize-kr / precedent-kr / admrule-kr / ordinance-kr | Full 모드의 법령·판례·행정규칙·자치법규 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일, 발령기관, 지자체 식별자 중 결론에 필요한 부분을 직접 읽고 provenance를 `{source_family} 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
-| 법망 API wrapper | Lite 모드 원문 조회, 행정규칙·해석례·판례 discovery | 검색 결과나 요약이 아니라 `law?action=get`, `case?action=get`, `tools?action=verify` 등에서 원문 필드 또는 공식 식별자 검증 결과를 확인한 경우 |
+| local legalize-kr / precedent-kr / admrule-kr / ordinance-kr | 법령·판례·행정규칙·자치법규 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일, 발령기관, 지자체 식별자 중 결론에 필요한 부분을 직접 읽고 provenance를 `{source_family} 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
+| 법망 API wrapper | 로컬 미러 없을 때 원문 조회, 행정규칙·해석례·판례 discovery | 검색 결과나 요약이 아니라 `law?action=get`, `case?action=get`, `tools?action=verify` 등에서 원문 필드 또는 공식 식별자 검증 결과를 확인한 경우 |
 | law.go.kr | 법령, 행정규칙, 판례 공식 원문 화면 | 실제 원문 화면 또는 공식 원문 응답을 열어 citation과 pinpoint를 확인한 경우. 판례는 frontmatter `출처`(precSeq) 또는 `판례/({사건번호})` |
 | WebSearch | 공식 API와 로컬 데이터로 닿지 않는 정책·집행 동향 보조 | WebSearch 자체만으로는 원칙적으로 `[VERIFIED]`가 아니다. 검색 결과에서 공식 원문으로 들어가 확인했을 때 그 공식 원문 provenance로 기록한다. |
 | 번들 YAML 후보 | issue spotting, 체크리스트, 용어·조항 후보 | official source 확인 없이 `[VERIFIED]`로 승격하지 않는다. 후보로만 쓰거나 live source 확인 뒤 별도 provenance를 남긴다. |

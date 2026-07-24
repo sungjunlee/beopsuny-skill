@@ -1,5 +1,7 @@
 # Claude Desktop Chat 탭에서 법순이 사용하기
 
+> ⚠️ **Deprecated (2026-07-24, #238)** — 법순이는 Full-first(로컬 영속 앱)로 전환했습니다. Chat 환경은 영속 파일시스템이 없어 graceful degradation으로만 동작하며 1급 경로가 아닙니다. 로컬 앱(Claude Code / Codex 데스크톱·CLI) 설치를 권장합니다. 아래 내용은 historical 참고용이며, `## Lite Gate Card`의 evidence 경계(출처 권위 라벨·verification status·provenance 분리)는 degradation 환경에서도 그대로 유효합니다.
+
 Claude Desktop의 **Chat 탭**(또는 claude.ai)에서 법순이를 사용하는 가이드.
 Chat 탭은 채팅마다 스토리지가 초기화되므로 **Lite 모드**로 동작한다 (법망 API + 웹검색).
 

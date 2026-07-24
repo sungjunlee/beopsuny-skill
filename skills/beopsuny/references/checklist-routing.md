@@ -80,7 +80,7 @@
 - `party_position.default`
 - `interested_laws`
 
-Lite 모드에서 파일 접근이 없으면 필요한 맥락만 사용자에게 묻는다.
+영속 파일시스템이 없어 파일 접근이 안 되면 필요한 맥락만 사용자에게 묻는다.
 
 ## Related Checklists
 

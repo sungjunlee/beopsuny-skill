@@ -65,7 +65,7 @@ destination이 `internal_legal_memo`처럼 내부용이고 내부 block 허용 d
 | --- | --- | --- |
 | 로컬 파일 | 파일시스템 영속 쓰기가 가능할 때 (기본) | 지정 경로에 HTML 파일을 저장하고 텍스트 답변에 경로를 함께 알린다 |
 | Claude Code Artifact | Artifact 도구가 현재 세션에 있고 사용자가 Artifact/URL 배포를 명시적으로 요청했을 때 | 같은 self-contained HTML을 Artifact로 제공할 수 있다. 배포 시점부터 공유 가능 산출물로 취급하고 R4. Artifact 배포 gate를 적용한다 |
-| Chat 탭 Artifacts | 파일 영속성이 없는 Lite 환경 | 같은 HTML 내용을 Chat 탭 Artifact로 표시한다. 영속 저장이 아님을 텍스트 답변에 표시한다 |
+| Chat 탭 Artifacts | 파일 영속성이 없는 환경 | 같은 HTML 내용을 Chat 탭 Artifact로 표시한다. 영속 저장이 아님을 텍스트 답변에 표시한다 |
 
 Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하지 않는다. 리포트는 텍스트 답변의 파생물이며, 출처 권위 라벨과 검증 상태를 숨기는 대체 출력이 아니다.
 
