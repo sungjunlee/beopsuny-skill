@@ -463,7 +463,7 @@ def check_memory_profile_workflow() -> None:
         "출처 권위 라벨은 현재 세션에서",
         "project.yaml.confidentiality: \"heightened\"",
         "freshness_days",
-        "Lite 모드에서는 파일에 쓰지 않고 대화 내 확인",
+        "파일에 쓰지 않고 대화 내 확인",  # no-persistent-FS → no-write boundary (mode-agnostic token, #236)
         # matter = 프로젝트 workspace 단위, 경로/slug 유지
         "workspace 단위",
         "`projects/{slug}/`",

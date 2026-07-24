@@ -1,5 +1,7 @@
 # Desktop Chat(Lite) 수동 dogfood 프로토콜
 
+> ⚠️ **Deprecated (2026-07-24, #238)** — chat-Lite 경로는 1급 대상이 아닙니다(Full-first 전환). 이 수동 프로토콜은 historical 참고용입니다.
+
 Chat 탭은 자동 harness(`claude -p`)가 닿지 않는 환경이라 이 검증은 수동이다.
 charter O4의 라이브 실증은 지금까지 Claude Code 환경 기준이므로(o4-05는 Lite
 시뮬레이션), Chat 탭 실사용 검증은 이 프로토콜로 한다. 동료 시연 전이나 릴리즈

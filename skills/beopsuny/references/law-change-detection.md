@@ -4,7 +4,7 @@
 
 ## Supported Queries
 
-| 질의 | Full 모드 | Lite 모드 |
+| 질의 | 로컬 미러 있음 | 로컬 미러 없음 (degradation) |
 |------|-----------|-----------|
 | 최근 한 달 개정된 법령 | `git log --since`로 discovery 후 법령별 재조회 | 직접 discovery 미지원, 지정 법령 또는 관심 법령만 조회 |
 | 특정 법령 변경 | `git log` -> SHA -> `git show` | 법망 API `law?action=history&law_id=...` 또는 `law?action=diff&law_id=...` |
@@ -22,9 +22,9 @@ git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md
 git -C "$DR/legalize-kr" show {SHA} -- kr/{법령명}/법률.md
 ```
 
-## Lite Mode
+## 로컬 미러 없을 때 (degradation)
 
-Lite 모드에서는 사용자가 특정 법령을 지정했거나 `interested_laws`가 있을 때 법망 API history/diff를 사용한다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다.
+로컬 미러가 없으면 사용자가 특정 법령을 지정했거나 `interested_laws`가 있을 때 법망 API history/diff를 사용한다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다.
 
 법령명만 있으면 먼저 `law?action=search&q={법령명}`으로 `law_id`를 확인한 뒤 `law?action=history&law_id={law_id}` 또는 `law?action=diff&law_id={law_id}&from={이전기준}`을 호출한다. `service_maintenance`, timeout, 5xx, 빈 응답은 조회 실패이며 개정 없음이 아니다.
 
@@ -53,7 +53,7 @@ Lite 모드에서는 사용자가 특정 법령을 지정했거나 `interested_l
 아래는 모두 실패로 표시한다.
 
 - `git` non-zero exit
-- Lite API timeout/error
+- 법망 API timeout/error
 - 법령명과 legalize-kr 디렉토리명 mismatch
 - diff/history endpoint가 빈 값이지만 원인 불명
 
@@ -84,6 +84,6 @@ Lite 모드에서는 사용자가 특정 법령을 지정했거나 `interested_l
 
 사용자가 명시적으로 automation을 요청했고 현재 환경에 스케줄링/automation 도구(로컬 크론, 클라우드 루틴, scheduled agent 등)가 실제로 존재하면 아래 기본형 순서를 따른다. 도구가 없으면 기존 계약대로 별도 automation 도구 안내로 분리한다.
 
-1. **생성 전 확인**: 리소스 종류, 실행 주기, 실행 환경 한계(예: 클라우드 실행은 로컬 Full 모드 데이터 접근 불가), 비용·쿼터 함의를 요약하고, 사용자 확인을 받은 뒤에만 생성한다. "지금 바로 설정해줘" 같은 즉시 지시도 이 확인을 생략할 근거가 아니다 — 외부에 지속 실행되는 리소스를 만드는 행위이기 때문이다.
+1. **생성 전 확인**: 리소스 종류, 실행 주기, 실행 환경 한계(예: 클라우드 실행은 로컬 미러 데이터 접근 불가), 비용·쿼터 함의를 요약하고, 사용자 확인을 받은 뒤에만 생성한다. "지금 바로 설정해줘" 같은 즉시 지시도 이 확인을 생략할 근거가 아니다 — 외부에 지속 실행되는 리소스를 만드는 행위이기 때문이다.
 2. **생성 후 보고**: 생성한 리소스의 ID/이름과 관리·삭제 경로를 반드시 보고한다.
 3. **pull 즉시 확인 병행**: automation 논의와 별개로, 지금 즉시 1회 확인(pull)을 항상 함께 제안한다.

@@ -83,20 +83,15 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 
 특정 에이전트만 지정하려면 `-a codex` / `-a cursor`. 제거는 `npx skills remove beopsuny -g -y`.
 
-### 방법 3: Claude Desktop (Chat 탭) / claude.ai 웹
+### 방법 3: Claude Desktop (Chat 탭) / claude.ai 웹 — 제한적·비권장
 
-채팅 UI에서는 **Skill zip 파일을 그대로 업로드**한다. 압축 해제나 Custom Instructions 붙여넣기는 필요 없다.
+> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 회사 프로필·검토 이력 등 메모리는 대화 단위입니다. Full 모드(로컬 미러·영속 메모리·git 변경감지)를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
 
-**전제조건** — Settings → Capabilities에서 **Code execution and file creation** 활성화 (Free / Pro / Max / Team / Enterprise 모두 지원).
-
-1. [Releases 페이지](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 (압축 해제 X)
-2. Claude Desktop 또는 claude.ai → **Customize → Skills** → `+` → `+ Create skill` → **Upload a skill**
-3. zip 선택 → 업로드 완료 후 Skills 목록에서 **beopsuny** 토글 ON
-4. 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`)을 하면 자동 활성화
+Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전제조건** Settings → Capabilities에서 **Code execution and file creation** 활성화 → [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 → **Customize → Skills → + Create skill → Upload a skill** → **beopsuny** 토글 ON → 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`).
 
 > UI 경로는 Anthropic이 자주 바꾼다. 다르면 공식 가이드 참고: [KO](https://support.claude.com/ko/articles/12512180-claude에서-스킬-사용하기) · [EN](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
 >
-> **Chat 환경의 한계** — 로컬 파일시스템 접근 불가 → Lite 모드만 동작. 회사 프로필·검토 이력 등 영속 메모리도 대화 단위. Skills 기능을 못 쓰는 환경이면 [Chat 탭 가이드](docs/desktop-chat-guide.md)의 Projects + Custom Instructions fallback을 참조.
+> Skills 기능을 못 쓰는 환경의 Projects + Custom Instructions fallback은 [Chat 탭 가이드](docs/desktop-chat-guide.md)(deprecated, historical) 참조.
 
 ## 고급 설정 (선택)
 
