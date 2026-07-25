@@ -2284,6 +2284,7 @@ def check_asset_freshness_metadata_tracked() -> None:
 def check_freshness_debt_registry() -> None:
     data = freshness_debt_registry()
     label = "freshness_debt.yaml"
+    today = date.today()
 
     for required in ["tracked_issue", "policy", "assets"]:
         if required not in data:
@@ -2352,6 +2353,30 @@ def check_freshness_debt_registry() -> None:
         due = parse_review_due(item["next_review"])
         if not due:
             raise AssertionError(f"{label}: registered asset has invalid next_review: {path}")
+
+        # #243: registry 등록이 무기한 면제 통로가 되지 않게 한다. 등록 이전에는
+        # next_review 경과를 아무도 검사하지 않아 부채가 조용히 누적됐다
+        # (legal_terms.yaml이 231일 경과한 채 그린). 경과분은 날짜가 박힌
+        # 자기만료 예외로만 통과하며, resolve_by가 지나면 스스로 FAIL한다.
+        if due <= today:
+            resolve_by = item.get("overdue_resolve_by")
+            if not resolve_by:
+                raise AssertionError(
+                    f"{label}: {path} next_review {item['next_review']} 경과 — 재검증 후 "
+                    "next_review를 전진시키거나(revalidation record 필요) "
+                    "overdue_resolve_by/overdue_reason/overdue_tracked_issue를 등록하라"
+                )
+            for required in ["overdue_reason", "overdue_tracked_issue"]:
+                if not item.get(required):
+                    raise AssertionError(f"{label}: {path} overdue entry missing {required!r}")
+            resolve_due = parse_review_due(resolve_by)
+            if not resolve_due:
+                raise AssertionError(f"{label}: {path} invalid overdue_resolve_by: {resolve_by!r}")
+            if resolve_due <= today:
+                raise AssertionError(
+                    f"{label}: {path} overdue_resolve_by {resolve_by} 도과 — "
+                    "예외를 연장하지 말고 재검증 또는 은퇴로 해소하라"
+                )
 
 
 VOLATILE_REFERENCE_PATTERNS = [
