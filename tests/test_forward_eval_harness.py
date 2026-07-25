@@ -39,6 +39,40 @@ def load_harness():
     return module
 
 
+class GuardrailCategoryRegistryTests(unittest.TestCase):
+    """스코어링은 CATEGORY_*.get(category, [])로 룰을 찾으므로 미등록 카테고리는
+    룰 0개, 즉 무조건 통과다. #240 rename 중 mutation으로 발견: config에서만
+    옛 카테고리로 되돌려도 8/8 PASS가 나왔다. 등록 여부를 하드 실패로 만든다."""
+
+    def test_unregistered_category_fails_config_load(self) -> None:
+        harness = load_harness()
+        config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
+        config["prompts"][0]["guardrail_category"] = "no_such_category"
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "config.yaml"
+            path.write_text(yaml.safe_dump(config, allow_unicode=True), encoding="utf-8")
+            with self.assertRaises(AssertionError) as ctx:
+                harness.load_forward_eval(path)
+        self.assertIn("unregistered guardrail_category", str(ctx.exception))
+
+    def test_registered_category_with_no_rules_is_accepted(self) -> None:
+        """룰 목록이 비어 있는 것과 미등록은 다른 상태다 — procedure_shape_freedom은
+        의도적으로 룰이 없고(경계가 아니라 기본형), 통과해야 한다."""
+        harness = load_harness()
+        self.assertEqual(harness.CATEGORY_COMMON_RULES["procedure_shape_freedom"], [])
+        self.assertIn("procedure_shape_freedom", harness.KNOWN_GUARDRAIL_CATEGORIES)
+
+    def test_every_shipped_config_category_is_registered(self) -> None:
+        harness = load_harness()
+        for path in (CONFIG_PATH, O4_CONFIG_PATH):
+            for prompt in harness.load_forward_eval(path)["prompts"]:
+                self.assertIn(
+                    prompt["guardrail_category"],
+                    harness.KNOWN_GUARDRAIL_CATEGORIES,
+                    f"{path.name}: {prompt['id']}",
+                )
+
+
 class ForwardEvalHarnessTests(unittest.TestCase):
     def test_sample_outputs_score_and_write_deterministic_evidence(self) -> None:
         harness = load_harness()

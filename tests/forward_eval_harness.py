@@ -783,6 +783,11 @@ test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/legalize-kr  # 없음
 }
 
 
+# 스코어링에 등록된 guardrail_category 집합. 룰 목록이 비어 있어도 등록은
+# 등록이다 — 미등록과 구별해야 오타·rename 누락이 조용한 통과가 되지 않는다.
+KNOWN_GUARDRAIL_CATEGORIES = frozenset(CATEGORY_COMMON_RULES) | frozenset(CATEGORY_REQUIRED_ANY)
+
+
 def load_yaml(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return yaml.safe_load(handle)
@@ -814,6 +819,17 @@ def load_forward_eval(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if prompt_id in seen_ids:
             raise AssertionError(f"{path}: duplicate prompt id {prompt_id!r}")
         seen_ids.add(prompt_id)
+        # 스코어링은 CATEGORY_*.get(category, [])로 룰을 찾는다. 등록되지 않은
+        # 카테고리는 룰 0개 = 무조건 통과이므로, 오타나 이름 변경 누락이
+        # "가드레일 전부 통과"로 보인다. 등록 여부를 여기서 하드 실패시킨다.
+        # 룰 목록이 의도적으로 비어 있는 카테고리(procedure_shape_freedom 등)와
+        # 등록되지 않은 카테고리는 다른 상태다.
+        category = str(prompt["guardrail_category"])
+        if category not in KNOWN_GUARDRAIL_CATEGORIES:
+            raise AssertionError(
+                f"{path}: {prompt_id} has unregistered guardrail_category {category!r} — "
+                f"등록된 카테고리: {sorted(KNOWN_GUARDRAIL_CATEGORIES)}"
+            )
     return data
 
 
