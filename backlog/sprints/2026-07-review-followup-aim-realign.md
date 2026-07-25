@@ -19,12 +19,12 @@ component: "router-loading"
 
 ### Batch 1 — P0 조준점 (검사가 잘못된 대상을 보는 문제)
 
-- [ ] #242 [safety] 증거인멸 금지선을 SKILL.md always-on 경계로 승격 + 검사 이동, enforcement-response 도달성, workflow-map 존치 결정
-- [ ] #243 [tests] freshness `next_review` 경과 검사 추가 + 포맷 통일 + 경과 2건 처리
+- [x] #242 [safety] 증거인멸 금지선을 SKILL.md always-on 경계로 승격 + 검사 이동, enforcement-response 도달성, workflow-map 존치 결정 → 3dd473d (closed)
+- [x] #243 [tests] freshness `next_review` 경과 검사 추가 + 포맷 결정 + 경과 2건 처리 → bf892a6 (closed)
 
 ### Batch 2 — P1 폐기 개념 잔여 청소
 
-- [ ] #240 [docs+tests] Full/Lite 잔재 — README:36,51 우선 → spec 3종 → 하네스 명명 → Gate Card
+- [~] #240 [docs+tests] Full/Lite 잔재 → 117be45 — 문서·spec 층 완료(README·charter·system-map·capabilities·CLAUDE·SKILL·source-access). 잔여: 하네스 id/category + `forward_eval_harness.py` + deprecated Gate Card
 
 ### Batch 3 — P2 경량화
 
@@ -40,4 +40,9 @@ component: "router-loading"
 
 ## Progress
 
+- **2026-07-25 (2)** — Batch 1 완료 + Batch 2 문서층 완료. 커밋 3건.
+  - `3dd473d` #242 — 증거인멸 경계를 SKILL.md로 승격, 라우팅 원칙 7로 도달성 확보, 검사 조준점 이동 + one-home 회수. mutation 5종(M1–M4 FAIL 탐지 / M5 reword PASS).
+  - `bf892a6` #243 — registry 등록이 무기한 면제가 되던 구멍 차단. 경과 시 재검증 또는 **자기만료 예외** 선언 강제. 경과 2건 기한 등록(2026-08-31 / 2026-09-30). mutation 6종. `next_review` 포맷은 **통일하지 않기로** — 14개 중 12개가 월 granularity라 가짜 일자를 만드는 대신 `YYYY-MM` 의미를 policy에 고정.
+  - `117be45` #240 — 사용자 결정으로 `Full`도 은퇴. 모드 어휘 완전 제거 + spec 3종 정합. 부수 사실오류(schemas는 미러가 아니라 **영속 파일시스템** 의존) 정정.
+  - 결정 기록: **workflow-map.md 존치** — 4개 check(#110/#112 계약 포함)와 결합돼 삭제가 P0의 꼬리가 될 수 없다. 원칙 7로 유일한 runtime 소비가 사라져 이제 명백히 maintainer 문서이므로, 삭제/이동은 재앵커링과 함께 #244에서 한 단위로 처리.
 - **2026-07-25** — 전면 리뷰 수행. 에픽 #241 + task #242~#246 등록, #240 스코프 확장(내부 명명 정리 → 개념 잔여 청소, priority:low→medium). `backlog/tasks/` 스테일 미러 15건 삭제 후 sync-pull. `2026-07-concept-alignment-full-first.md` status draft→completed 정정(에픽 #234 실제 완료 반영).
