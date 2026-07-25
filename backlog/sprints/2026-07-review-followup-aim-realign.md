@@ -26,9 +26,21 @@ component: "router-loading"
 
 - [~] #240 [docs+tests] Full/Lite 잔재 — 문서·spec 층 완료(117be45: README·charter·system-map·capabilities·CLAUDE·SKILL·source-access), 잔여는 하네스 id/category + `forward_eval_harness.py` + deprecated Gate Card → PR #247 (open)
 
+### Batch 2c — PR #247 리뷰 대응 (P0 계열)
+
+- [x] codex P2 3건 — 만료 정의 단일화(C1) + 재검증 근거 강제(C2) + README schemas 범위 정정(C3) → 35b9914
+
 ### Batch 3 — P2 경량화
 
-- [ ] #244 [tests] scenarios 01–15 삭제/강등/승격 결정 + `forbidden_behavior`/`must_do` 처리 + dead 룰 제거
+- [x] #244 [tests] scenarios 01–15 삭제(123,228 bytes) + `must_do`/`forbidden_behavior` 은퇴 + dead 룰 재조준 → fe77507
+
+### Batch 4 — P1 잔여 (Batch 3의 어휘 기준 확정 후)
+
+- [~] #240 [tests] o4 id/`guardrail_category` + `forward_eval_harness.py` 문자열 + deprecated Gate Card — subagent 위임 실행 중
+
+### Batch 5 — 분리된 후속 (별도 PR)
+
+- [ ] #248 [tests] workflow-map.md 은퇴 판단 + 4-check 재앵커링 — #244에서 분리. 순수 제거가 아니라 재앵커링이라 난이도가 다르다
 
 ## Running Context
 
@@ -40,6 +52,11 @@ component: "router-loading"
 
 ## Progress
 
+- **2026-07-25 (3)** — PR #247 리뷰 대응 + Batch 3 완료. 커밋 3건.
+  - `35b9914` codex P2 3건 — **#243이 막은 구멍이 축 하나에만 적용돼 있었다**. 만료 축은 둘(`next_review`, `last_verified + freshness_days`)인데 registry 검사는 앞 축만 봤고, 등록 자산은 다른 검사에서 면제되므로 뒤 축이 무검사였다. 실측상 잠복이 아니라 2026-10-01에 4건이 동시에 빠지는 31일 사각지대. `asset_expiry_reasons()`로 정의를 단일화해 **갈라질 수 있는 구조 자체를 제거**. 함께 `revalidation_record_required`가 문서로만 존재하던 것(날짜만 밀면 근거 없이 부채 소멸)을 계약으로 고정. mutation 6종.
+  - `fe77507` #244 — scenarios 01–15 삭제(123,228 bytes) + `must_do`/`forbidden_behavior` 109줄 은퇴 + dead 룰 재조준(unsafe fixture 18→19).
+  - #248 신설 — workflow-map 은퇴는 재앵커링 작업이라 #244(순수 제거)와 난이도가 달라 분리.
+  - **위임 검증 방식**: #240 subagent가 `tests/forward_eval_harness.py`를 동시 편집 중이라 unittest 8건이 빨간 상태였다. worktree에 HEAD + 내 변경만 격리해 4게이트 그린(28 OK, fwd 11/11)을 확인하고 인과를 분리했다 — 병렬 작업 중에는 `git stash`/`git checkout`을 쓰지 않는다.
 - **2026-07-25 (2)** — Batch 1 완료 + Batch 2 문서층 완료. 커밋 3건.
   - `3dd473d` #242 — 증거인멸 경계를 SKILL.md로 승격, 라우팅 원칙 7로 도달성 확보, 검사 조준점 이동 + one-home 회수. mutation 5종(M1–M4 FAIL 탐지 / M5 reword PASS).
   - `bf892a6` #243 — registry 등록이 무기한 면제가 되던 구멍 차단. 경과 시 재검증 또는 **자기만료 예외** 선언 강제. 경과 2건 기한 등록(2026-08-31 / 2026-09-30). mutation 6종. `next_review` 포맷은 **통일하지 않기로** — 14개 중 12개가 월 granularity라 가짜 일자를 만드는 대신 `YYYY-MM` 의미를 policy에 고정.
