@@ -2817,6 +2817,11 @@ def check_skill_gate_attachment_and_draft_first() -> None:
         "인용만 있고 결론·초벌이 없는 답변",
         "부착 시점이 정해지는 것",
         "출처 권위 라벨과 verification status는 그대로",
+        # 부착 tier가 조건부 gate까지 끄지 않는지. "Citation verification만"으로
+        # 적으면 번들 자산에서 나온 시행일·수수료를 인용만 하는 답변이
+        # Freshness gate의 triage_only를 우회한다 (PR #250 리뷰 P1).
+        "조건부 gate는 트리거가 보이면 그대로 붙는다",
+        "Freshness gate의 `triage_only`",
         # (2) 기본 산출물 kernel
         "편집 가능한 초벌",
         "draft-first",

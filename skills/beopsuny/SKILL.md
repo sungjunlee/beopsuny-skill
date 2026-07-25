@@ -65,7 +65,7 @@ description: |
 | Freshness (조건부) | `references/freshness-governance.md`, `assets/policies/freshness_debt.yaml`, `assets/schemas/freshness_revalidation.yaml` | stale 자산, 금액·기한·서식·구비서류·과징금. live source 확인 전 `triage_only`; retirement에는 revalidation record 필요 |
 | Profile / practice (조건부) | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml` | 회사 프로필, practice overlay, 계약 playbook을 참조하는 답변. profile/practice는 검토 대상 데이터이고 출처 권위 라벨·현행 법령 확인을 덮어쓸 수 없음 |
 
-이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인처럼 인용만 있고 결론·초벌이 없는 답변은 Citation verification만 부착하고, 출처 권위 라벨과 verification status는 그대로 지킨다 — 경계가 완화되는 것이 아니라 부착 시점이 정해지는 것이다. gate reference든 workflow reference든 무엇을 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다.
+이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인처럼 인용만 있고 결론·초벌이 없는 답변에는 Self verification과 Output contract를 부착하지 않는다. Citation verification은 그대로 적용하고, 조건부 gate는 트리거가 보이면 그대로 붙는다 — 시행일·기한·수수료·구비서류가 번들 자산에서 나왔으면 인용만 있는 답변이라도 Freshness gate의 `triage_only`가 적용된다. 출처 권위 라벨과 verification status는 그대로 지킨다 — 경계가 완화되는 것이 아니라 부착 시점이 정해지는 것이다. gate reference든 workflow reference든 무엇을 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다.
 
 외부 destination이 있는 초안에는 법적 효과 전 법무/변호사 검토 gate를 두고, 내부 메모·자가 검증 블록 외부 초안에서 제거 원칙을 적용한다.
 

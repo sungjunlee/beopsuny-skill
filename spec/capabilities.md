@@ -153,7 +153,7 @@ Mutation discipline:
 
 ### Expected Behaviors
 - A simple confirmation request (statute text, enforcement date, official link) is answered through `legal_research` alone without loading contract, checklist, bulk-review, or knowledge-layer workflow references, and any over-routing judgment cites Right-sizing (routing principle 1) as the single criterion.
-- Every answer that cites legal authority passes citation verification regardless of the chosen primary intent. Self-verification and the output contract attach whenever the answer carries a legal conclusion or an editable draft, and conditional gates (freshness, profile/practice) attach whenever their trigger is present. Attachment follows what the answer actually produces, stated in each gate's 적용 범위 row; loading economy decides when a gate attaches, never whether its boundary can be relaxed — a citation-only confirmation still carries source-authority labels and verification status.
+- Gate attachment follows what the answer actually produces rather than the chosen primary intent, and the 적용 범위 column of the gate table in the always-loaded `skills/beopsuny/SKILL.md` is the single source for each gate's condition. Loading economy decides when a gate attaches, never whether its boundary can be relaxed: a citation-only confirmation still carries source-authority labels and verification status, and a conditional gate whose trigger is present still attaches.
 - When the router spine changes (intent row, gate table, routing principle, loading rule, or spine size), the intent table, gate tables, router regression fixtures, and router static checks are updated together or the non-applicable surfaces are explicitly justified.
 
 ### Hard Constraints
