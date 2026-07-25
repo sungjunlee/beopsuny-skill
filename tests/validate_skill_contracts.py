@@ -2198,6 +2198,25 @@ def parse_review_due(value: Any) -> date | None:
     raise AssertionError(f"unsupported next_review date format: {text!r}")
 
 
+def asset_expiry_reasons(next_review: Any, maintenance: Any, today: date) -> list[str]:
+    """만료 판정의 단일 정의. 만료 축은 둘(`next_review`, `last_verified + freshness_days`)이고,
+    등록 자산 검사와 미등록 자산 검사가 서로 다른 축만 보면 registry 등록이 나머지 축의
+    면제 통로가 된다 — #243이 막은 구멍이 축 하나에만 적용돼 있던 문제(PR #247 리뷰).
+    두 검사 모두 이 함수를 통해서만 만료를 판정한다."""
+    reasons: list[str] = []
+    due = parse_review_due(next_review)
+    if due and due <= today:
+        reasons.append(f"next_review {next_review} 경과")
+    if isinstance(maintenance, dict):
+        last_verified = maintenance.get("last_verified")
+        freshness_days = maintenance.get("freshness_days")
+        if last_verified is not None and isinstance(freshness_days, int):
+            window_due = date.fromisoformat(str(last_verified)) + timedelta(days=freshness_days)
+            if window_due <= today:
+                reasons.append(f"last_verified {last_verified} + freshness_days {freshness_days}일 경과")
+    return reasons
+
+
 def check_asset_freshness_metadata_tracked() -> None:
     freshness_metadata_allowlist = {
         "skills/beopsuny/assets/policies/freshness_debt.yaml",
@@ -2259,11 +2278,7 @@ def check_asset_freshness_metadata_tracked() -> None:
         if not isinstance(maintenance["freshness_days"], int) or maintenance["freshness_days"] <= 0:
             raise AssertionError(f"{relative}: maintenance.freshness_days must be a positive integer")
 
-        due = parse_review_due(maintenance.get("next_review"))
-        last_verified_due = date.fromisoformat(str(maintenance["last_verified"])) + timedelta(
-            days=maintenance["freshness_days"]
-        )
-        expired = (due and due <= today) or last_verified_due <= today
+        expired = bool(asset_expiry_reasons(maintenance.get("next_review"), maintenance, today))
         if expired and relative not in registered_assets:
             stale_untracked.append(f"{relative}: next_review={maintenance.get('next_review')}")
 
@@ -2281,10 +2296,23 @@ def check_asset_freshness_metadata_tracked() -> None:
         )
 
 
+def revalidated_asset_paths() -> set[str]:
+    """재검증 기록이 존재하는 asset_path 집합. 기록의 스키마 검증은
+    check_freshness_revalidation_records가 담당하고, 여기서는 존재 여부만 본다."""
+    fixtures_dir = ROOT / "tests/fixtures/freshness_revalidations"
+    paths: set[str] = set()
+    for path in sorted(fixtures_dir.glob("*.yaml")) if fixtures_dir.exists() else []:
+        record = load_yaml(path.relative_to(ROOT).as_posix())
+        if isinstance(record, dict) and record.get("asset_path"):
+            paths.add(str(record["asset_path"]))
+    return paths
+
+
 def check_freshness_debt_registry() -> None:
     data = freshness_debt_registry()
     label = "freshness_debt.yaml"
     today = date.today()
+    revalidated = revalidated_asset_paths()
 
     for required in ["tracked_issue", "policy", "assets"]:
         if required not in data:
@@ -2338,6 +2366,7 @@ def check_freshness_debt_registry() -> None:
         registered_path = ROOT / path
         if not registered_path.exists():
             raise AssertionError(f"{label}: registered asset does not exist: {path}")
+        maintenance: Any = None
         if registered_path.suffix == ".yaml":
             asset_data = load_yaml(path)
             maintenance = asset_data.get("maintenance") if isinstance(asset_data, dict) else None
@@ -2354,15 +2383,17 @@ def check_freshness_debt_registry() -> None:
         if not due:
             raise AssertionError(f"{label}: registered asset has invalid next_review: {path}")
 
+        expiry_reasons = asset_expiry_reasons(item["next_review"], maintenance, today)
+
         # #243: registry 등록이 무기한 면제 통로가 되지 않게 한다. 등록 이전에는
         # next_review 경과를 아무도 검사하지 않아 부채가 조용히 누적됐다
         # (legal_terms.yaml이 231일 경과한 채 그린). 경과분은 날짜가 박힌
         # 자기만료 예외로만 통과하며, resolve_by가 지나면 스스로 FAIL한다.
-        if due <= today:
+        if expiry_reasons:
             resolve_by = item.get("overdue_resolve_by")
             if not resolve_by:
                 raise AssertionError(
-                    f"{label}: {path} next_review {item['next_review']} 경과 — 재검증 후 "
+                    f"{label}: {path} 만료({', '.join(expiry_reasons)}) — 재검증 후 "
                     "next_review를 전진시키거나(revalidation record 필요) "
                     "overdue_resolve_by/overdue_reason/overdue_tracked_issue를 등록하라"
                 )
@@ -2377,6 +2408,15 @@ def check_freshness_debt_registry() -> None:
                     f"{label}: {path} overdue_resolve_by {resolve_by} 도과 — "
                     "예외를 연장하지 말고 재검증 또는 은퇴로 해소하라"
                 )
+        elif path not in revalidated:
+            # 경과 상태를 벗어난 등록 자산은 근거를 제시해야 한다. 이 분기가 없으면
+            # overdue 항목의 next_review를 미래로 밀기만 해도 CI가 통과해,
+            # policy.revalidation_record_required가 문서로만 존재하게 된다.
+            raise AssertionError(
+                f"{label}: {path} 미경과 등록 자산에 revalidation record가 없다 — "
+                "tests/fixtures/freshness_revalidations/에 asset_path가 일치하는 기록을 남기거나, "
+                "경과 상태면 overdue 3필드를 선언하라"
+            )
 
 
 VOLATILE_REFERENCE_PATTERNS = [

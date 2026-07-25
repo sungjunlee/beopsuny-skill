@@ -265,18 +265,25 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `freshness_debt.yaml` | stale 번들 자산 registry. 등록 자산은 live source 확인 전 `triage_only` |
 | `knowledge_manifest.yaml` | `beopsuny-knowledge` privacy manifest channel, asset key, checksum, usage-mode 소비 경계 |
 
-### ④ 메모리/검증 스키마 — `assets/schemas/` (10 files, 영속 파일시스템 전용)
+### ④ 메모리/검증 스키마 — `assets/schemas/` (10 files)
 
-회사 프로필·과거 검토 이력을 기억해서 맥락 있는 답을 돌려준다. 로컬 미러 다운로드 여부와는 무관하고 **영속 파일시스템이 있는 환경(Claude Code / Codex 데스크톱·CLI)**이면 동작한다. Chat 탭·zip 환경은 대화 단위로만 유지된다.
+두 갈래가 한 디렉터리에 있고 **환경 의존성이 서로 다르다**. 어느 쪽도 로컬 미러 다운로드 여부와는 무관하다.
+
+**검증·출력 구조 (4) — 환경 무관.** 결론의 근거 요건과 출력 형식을 규정하므로 Chat 탭·zip 환경에서도 그대로 적용된다.
+
+| 파일 | 용도 |
+|------|------|
+| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
+| `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
+| `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
+| `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
+
+**저장 상태 (6) — 영속 파일시스템 필요.** 회사 프로필·과거 검토 이력을 기억해서 맥락 있는 답을 돌려준다. **영속 파일시스템이 있는 환경(Claude Code / Codex 데스크톱·CLI)**이면 동작하고, Chat 탭·zip 환경은 대화 단위로만 유지된다.
 
 | 파일 | 용도 |
 |------|------|
 | `company_profile.yaml` | 회사 프로필 (업종, 규모, `interested_laws`, `party_position`) |
 | `practice_profile.yaml` | 업무별 profile overlay (`contract`, `privacy`, `labor`, `regulatory`, `litigation`) |
-| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
-| `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
-| `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
-| `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `internal_rules.yaml` | 사내 규정·결재 기준 |
 | `past_reviews.yaml` | 과거 검토 이력 |
 | `watched_laws.yaml` | 변경 감지 대상 법령 |
