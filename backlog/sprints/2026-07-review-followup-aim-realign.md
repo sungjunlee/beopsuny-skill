@@ -24,7 +24,7 @@ component: "router-loading"
 
 ### Batch 2 — P1 폐기 개념 잔여 청소
 
-- [~] #240 [docs+tests] Full/Lite 잔재 → 117be45 — 문서·spec 층 완료(README·charter·system-map·capabilities·CLAUDE·SKILL·source-access). 잔여: 하네스 id/category + `forward_eval_harness.py` + deprecated Gate Card
+- [~] #240 [docs+tests] Full/Lite 잔재 → PR #247 / 117be45 — 문서·spec 층 완료(README·charter·system-map·capabilities·CLAUDE·SKILL·source-access). 잔여: 하네스 id/category + `forward_eval_harness.py` + deprecated Gate Card
 
 ### Batch 3 — P2 경량화
 
