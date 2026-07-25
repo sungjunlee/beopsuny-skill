@@ -6,7 +6,7 @@
 
 | 무엇 | 단일 소스 |
 |------|-----------|
-| 스킬 본체 — 의도 라우터, always-on gate, Full/Lite, 법률 원칙(정확 인용·공식 링크·시행일·환각 방지) | `skills/beopsuny/SKILL.md` |
+| 스킬 본체 — 의도 라우터, always-on gate, 안전 경계, 소스 가용성·degradation, 법률 원칙(정확 인용·공식 링크·시행일·환각 방지) | `skills/beopsuny/SKILL.md` |
 | 워크플로우·계약 상세 (소스 접근, 조사, 계약 검토, 출력, 메모리 등) | `skills/beopsuny/references/*.md` (SKILL.md 라우터가 로딩 지점) |
 | 데이터 소스 우선순위, source family, 초기화 절차 | `skills/beopsuny/references/source-access.md` |
 | 사용자 안내, 설치, 자산 인벤토리, 품질 계약 지도, 변경·릴리즈 체크리스트 | `README.md` |

@@ -20,7 +20,7 @@ Mutation discipline:
 **Goal:** A user can tell what legal authority each conclusion rests on, how that authority was checked, and when the conclusion must be downgraded instead of treated as verified.
 
 **In-scope:**
-- Source family map, Full/Lite source-access boundaries, and fallback semantics.
+- Source family map, per-family local-mirror availability, and graceful-degradation fallback semantics.
 - Source authority labels, verification status tags, provenance strings, and `[VERIFIED]` minimum conditions.
 - Citation ledger binding for legal conclusions, including pinpoint, currency, supports, contradiction, and downgrade behavior.
 - Golden citation fixtures and static/router checks that protect source-label and provenance drift.
@@ -147,7 +147,7 @@ Mutation discipline:
 
 **Out-of-scope:**
 - The content of the gates themselves — citation, verification status, and provenance belong to `source-citation`; stale-asset handling belongs to `freshness-governance`; packaging belongs to `output-role-destination`.
-- Full/Lite source-family semantics and fallback order; those belong to `source-citation` — the router owns only the placement of the mode block in the spine.
+- Source-family availability semantics and fallback order; those belong to `source-citation` — the router owns only the placement of the source-availability block in the spine.
 - Workflow internals of each routed intent (research depth, contract review logic, checklist selection).
 - Substantive correctness of intent-specific answers.
 

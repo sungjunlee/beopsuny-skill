@@ -5,7 +5,7 @@
 #   BEOPSUNY_EVAL_CONTEXT_FILE  clean skill context (SKILL.md + source_references)
 #   BEOPSUNY_EVAL_PROMPT_FILE   the user prompt
 #   BEOPSUNY_EVAL_OUTPUT_FILE   where to write the model answer
-#   BEOPSUNY_EVAL_PROMPT_ID     e.g. o4-05-lite-mode-identification
+#   BEOPSUNY_EVAL_PROMPT_ID     e.g. o4-05-no-mirror-degradation-path
 #   BEOPSUNY_EVAL_MODEL         model label (default below)
 #
 # Usage (from repo root):
@@ -24,21 +24,24 @@ PROMPT_ID="${BEOPSUNY_EVAL_PROMPT_ID:-unknown}"
 
 APPEND_SYSTEM="$(cat "$CONTEXT_FILE")"
 
-# o4-05 simulates Lite mode: no local mirror. Point the data root at an empty
-# temp dir so the model's mode-detection commands find nothing.
+# o4-05 simulates a data root with no local mirror at all (the degradation
+# path). Point the data root at an empty temp dir so the model's availability
+# probes find nothing. The glob stays `*o4-05*` so the #240 id rename
+# (o4-05-lite-mode-identification -> o4-05-no-mirror-degradation-path) and any
+# future o4-05-* rename keep matching.
 case "$PROMPT_ID" in
   *o4-05*)
     BEOPSUNY_DATA_ROOT="$(mktemp -d)"
     export BEOPSUNY_DATA_ROOT
     # An empty data root alone was not enough: the model discovered the real
-    # ~/.beopsuny outside this run and honestly reported the conflict, so
-    # pure-Lite behavior went unexercised. State the simulation premise
-    # explicitly. Tradeoff: o4-05 now tests Lite *behavior* (answer via
-    # API/law.go.kr, no local-mirror claim), not mode *detection* — detection is
-    # already covered by o4-01, so nothing is lost.
+    # ~/.beopsuny outside this run and honestly reported the conflict, so the
+    # pure no-mirror behavior went unexercised. State the simulation premise
+    # explicitly. Tradeoff: o4-05 now tests degradation *behavior* (answer via
+    # API/law.go.kr, no local-mirror claim), not availability *detection* —
+    # detection is already covered by o4-01, so nothing is lost.
     APPEND_SYSTEM="${APPEND_SYSTEM}
 
-[평가 환경 전제] 이 환경에는 로컬 미러가 없다(Lite 모드). BEOPSUNY_DATA_ROOT=${BEOPSUNY_DATA_ROOT} 가 유일한 데이터 루트이며 비어 있다. ~/.beopsuny 등 다른 경로에 로컬 전문이 있다고 가정하지 말고, 이 데이터 루트만 기준으로 답하라."
+[평가 환경 전제] 이 환경에는 로컬 미러가 없다(법망 API·law.go.kr degradation 경로). BEOPSUNY_DATA_ROOT=${BEOPSUNY_DATA_ROOT} 가 유일한 데이터 루트이며 비어 있다. ~/.beopsuny 등 다른 경로에 로컬 전문이 있다고 가정하지 말고, 이 데이터 루트만 기준으로 답하라."
     ;;
 esac
 

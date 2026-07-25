@@ -174,9 +174,10 @@ tag_policy:
 # 5. Counter-drafting 자동 생성 금지 패턴 (단일 소스)
 # ─────────────────────────────────────────────────────────
 #
-# SKILL.md Dim 4 서브체크 3 (자동 생성 금지선) + tests/scenarios/13_contract_review.yaml
-# contract-16 `forbidden_phrases` 가 **이 목록을 단일 소스로 참조** 한다.
-# 여기만 고치면 양쪽이 동일하게 갱신된다.
+# SKILL.md Dim 4 서브체크 3 (자동 생성 금지선)의 집행 목록.
+# tests/evaluate_scenario_outputs.py 의 contract_counter_draft_boundary 룰이
+# 이 목록을 **통째로 로드해서** primary_intent == contract_review 인 모든
+# 시나리오 출력에 적용한다. 여기만 고치면 집행 범위가 함께 갱신된다.
 #
 # 축: "완성된 수정 문구를 확정 제시하는" 뉘앙스. 방향·원칙(~ 방향, ~ 고려) 은 허용.
 # 확장 시 명령형/확정명사/전환동사 세 축을 고루 커버.

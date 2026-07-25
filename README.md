@@ -33,7 +33,7 @@ You: "이 계약서 검토해줘"
 - **Legal verification core** — 결론 후보별 authority mapping, citation ledger, contradiction scan, conclusion binding
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
 - **Role / destination output gate** — 비법무 사용자·외부 송부·기관 제출 문안은 법무 검토 전 단계와 실제 외부 행동을 분리
-- **Full / Lite 모드** — 로컬 데이터가 있으면 Full(조문·판례 전문 직접 조회), 없으면 법망 API 기반 Lite로 자동 fallback
+- **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
 - **회사 맥락 메모리** — 회사 프로필·과거 검토 이력 기반 맥락 답변
@@ -48,7 +48,7 @@ You: "이 계약서 검토해줘"
 |------|------|------|
 | 1 | [legalize-kr](https://github.com/legalize-kr/legalize-kr) + [admrule-kr](https://github.com/legalize-kr/admrule-kr) + [precedent-kr](https://github.com/legalize-kr/precedent-kr) | 법령·행정규칙·판례 공식 원문 기반 로컬 미러 Markdown (직접 공식 사이트 확인과 provenance 분리; 최신 개수는 upstream repo 확인) |
 | 선택 | [ordinance-kr](https://github.com/legalize-kr/ordinance-kr) | 자치법규 로컬 미러. 파일 수가 커서 지역·지자체 질문이 많은 환경에서 선택 설치 |
-| 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 Lite 모드 원문 조회 (무인증) |
+| 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 로컬 미러가 없는 family의 원문 조회 (무인증) |
 | 3 | [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 헌재·행정심판·자치법규·조약 등 (OC 코드 필요) |
 
 원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다.
@@ -85,7 +85,7 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 
 ### 방법 3: Claude Desktop (Chat 탭) / claude.ai 웹 — 제한적·비권장
 
-> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 회사 프로필·검토 이력 등 메모리는 대화 단위입니다. Full 모드(로컬 미러·영속 메모리·git 변경감지)를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
+> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 회사 프로필·검토 이력 등 메모리는 대화 단위입니다. 로컬 미러·영속 메모리·git 변경감지를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
 
 Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전제조건** Settings → Capabilities에서 **Code execution and file creation** 활성화 → [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 → **Customize → Skills → + Create skill → Upload a skill** → **beopsuny** 토글 ON → 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`).
 
@@ -155,7 +155,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 | 1 | `skills/beopsuny/SKILL.md`의 의도 라우터(의도 표 또는 gate 표)에 새 트리거와 적용 계약을 연결 | 라우팅·gate 부착이 바뀌는 경우에만. 워크플로우 내부 변경이면 생략 |
 | 2 | 기준 문서(`references/*.md`) 1곳에 성공 기준, 금지 행동, 실패 시 downgrade 방식 기록 | 항상 — 단, 집은 1곳. 다른 문서는 포인터만 |
 | 3 | `assets/schemas/*.yaml` 또는 `assets/policies/*.yaml`에 최소 evidence shape 추가 | 구조화된 evidence·출력 리터럴이 필요한 계약만 |
-| 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `must_do`/`forbidden_behavior` 갱신 | 사용자 노출 행동이 바뀌는 경우 |
+| 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `output_eval`(`common_rules`/`required_substrings`/`forbidden_substrings`) 갱신 | 사용자 노출 행동이 바뀌는 경우. `output_eval`은 5단계 fixture와 짝이 있어야 실행된다 — 짝 없는 서술 필드는 검증되지 않으므로 추가하지 않는다 |
 | 5 | `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule 추가 | 새 금지 실패모드가 생기는 경우에만 |
 | 6 | `tests/validate_skill_contracts.py`에 drift 검사 추가 | 새 계약 표면이 생기는 경우에만. 전문 문장 고정 금지 — 토큰·구조·포인터·출력 리터럴만 assert (파일 상단 assertion style policy 참조) |
 | 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 |
@@ -183,13 +183,15 @@ git diff --check
 5. plugin 버전 범프: `.claude-plugin/plugin.json`과 `.claude-plugin/marketplace.json`의 version을 태그 버전과 일치시킨다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
 6. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
 
-### Full 모드 로컬 데이터 (권장)
+### 로컬 미러 셋업 (권장)
 
-Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **Full 모드를 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr 직접 확인과 구분한다.
+Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **로컬 미러 셋업을 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr 직접 확인과 구분한다.
+
+미러는 별도 모드가 아니라 source family별 가용성이다 — 받아둔 family는 로컬에서 열고, 없는 family는 법망 API·law.go.kr로 degradation한다.
 
 법순이에게 요청하면 된다:
 
-> "Full 모드로 해줘" / "법령·판례·행정규칙 데이터 다운로드해줘"
+> "법령·판례·행정규칙 데이터 받아줘"
 
 법순이가 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 경로에 필요한 source family를 clone한다. 기본 권장은 법령(`legalize-kr`), 판례(`precedent-kr`), 행정규칙(`admrule-kr`)이고, 자치법규(`ordinance-kr`)는 파일 수가 커서 지역 규제 업무가 많을 때 선택한다. 이미 있으면 `git pull --ff-only`로 최신화를 시도한다. 경로를 바꾸려면 `BEOPSUNY_DATA_ROOT` 환경변수로 override.
 
@@ -221,7 +223,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
                           │
  ② 데이터 (후보·용어) ───┼──► ③ 정책 (판정 로직) ──► 공식 소스 확인 ──► 검토 출력
                           │
- ④ 메모리 (사용자 상태) ─┘       (Full 모드 한정)
+ ④ 메모리 (사용자 상태) ─┘       (영속 파일시스템 한정)
 ```
 
 ### ① 체크리스트 — `assets/policies/checklists/` (11종)
@@ -263,18 +265,25 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `freshness_debt.yaml` | stale 번들 자산 registry. 등록 자산은 live source 확인 전 `triage_only` |
 | `knowledge_manifest.yaml` | `beopsuny-knowledge` privacy manifest channel, asset key, checksum, usage-mode 소비 경계 |
 
-### ④ 메모리/검증 스키마 — `assets/schemas/` (10 files, Full 모드 전용)
+### ④ 메모리/검증 스키마 — `assets/schemas/` (10 files)
 
-회사 프로필·과거 검토 이력을 기억해서 맥락 있는 답을 돌려준다. Chat 탭·zip 환경에서는 대화 단위로만 유지되므로 실질적으로 **Full 모드(Claude Code / Codex CLI)에서만 발휘**된다.
+두 갈래가 한 디렉터리에 있고 **환경 의존성이 서로 다르다**. 어느 쪽도 로컬 미러 다운로드 여부와는 무관하다.
+
+**검증·출력 구조 (4) — 환경 무관.** 결론의 근거 요건과 출력 형식을 규정하므로 Chat 탭·zip 환경에서도 그대로 적용된다.
+
+| 파일 | 용도 |
+|------|------|
+| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
+| `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
+| `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
+| `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
+
+**저장 상태 (6) — 영속 파일시스템 필요.** 회사 프로필·과거 검토 이력을 기억해서 맥락 있는 답을 돌려준다. **영속 파일시스템이 있는 환경(Claude Code / Codex 데스크톱·CLI)**이면 동작하고, Chat 탭·zip 환경은 대화 단위로만 유지된다.
 
 | 파일 | 용도 |
 |------|------|
 | `company_profile.yaml` | 회사 프로필 (업종, 규모, `interested_laws`, `party_position`) |
 | `practice_profile.yaml` | 업무별 profile overlay (`contract`, `privacy`, `labor`, `regulatory`, `litigation`) |
-| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
-| `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
-| `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
-| `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `internal_rules.yaml` | 사내 규정·결재 기준 |
 | `past_reviews.yaml` | 과거 검토 이력 |
 | `watched_laws.yaml` | 변경 감지 대상 법령 |

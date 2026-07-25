@@ -40,10 +40,13 @@ stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live
 | `allowed_use` | stale 상태에서 허용되는 사용 범위 |
 | `verification_required` | 결론 전 확인해야 할 공식 소스 계열 |
 | `retire_when` | registry에서 제거할 수 있는 조건 |
+| `overdue_reason` / `overdue_resolve_by` / `overdue_tracked_issue` | `next_review`가 이미 지난 항목에만 필수. 정확한 규칙과 포맷 의미는 registry의 `policy.overdue_rule`·`policy.next_review_format`이 단일 소스 |
 
 새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
 
-각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. `next_review`가 지났거나 `last_verified + freshness_days`가 지난 자산은 CI에서 보이며, registry에 등록되지 않았으면 실패한다.
+**등록은 무기한 면제가 아니다.** 만료된 항목은 재검증으로 날짜를 전진시키거나(revalidation record 필요) 위 overdue 3필드로 해소 기한을 선언해야 하며, 선언한 기한이 지나면 스스로 실패한다. 기한 연장으로 넘기지 않는다. 그리고 **미경과 등록 자산에는 `tests/fixtures/freshness_revalidations/`에 `asset_path`가 일치하는 재검증 기록이 있어야 한다** — 이 조건이 없으면 overdue 항목의 날짜를 미래로 미는 것만으로 근거 없이 부채가 사라진다.
+
+각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. **만료 판정은 축이 둘이다** — `next_review` 또는 `last_verified + freshness_days` 중 하나라도 지나면 만료이며, 등록·미등록 자산에 같은 정의가 적용된다(registry의 `policy.expiry_definition`이 단일 소스). 만료 자산은 CI에서 실패한다 — 등록되지 않았으면 미등록으로, 등록됐으면 위 overdue 선언이 없거나 그 기한이 지났을 때.
 `skills/beopsuny/assets/` 하위 YAML은 기본적으로 `maintenance` 대상이다. opt-out은 시간이 지나면 틀려지는 사실(조문 번호, 금액, 기한, 요율, 기관 실무, 시행일, 법률 효과)이 없는 순수 구조·설정·판정 정책 자산만 허용한다: `assets/schemas/*.yaml`, registry 자신인 `assets/policies/freshness_debt.yaml`, `assets/policies/knowledge_manifest.yaml`, `assets/policies/review_mode.yaml`, `assets/policies/source_grades.yaml`. 테스트 allowlist는 집행 목록일 뿐 단일 소스는 이 문서다.
 `partial_refresh`로 일부 값을 갱신한 자산은 `next_review`가 미래여도 residual stale scope가 남아 있으면 registry에 유지하며, runtime 사용 범위는 계속 `triage_only`다.
 

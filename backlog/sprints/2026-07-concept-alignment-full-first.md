@@ -1,7 +1,8 @@
 # Sprint Spec — 컨셉 정렬: Full-first 전환 + 초벌 북극성
 
-- **status**: draft (GitHub 이슈 등록 전)
+- **status**: completed (2026-07-25) — 에픽 #234 + T1~T4(#235 #236 #237 #238) 전량 머지, PR #239
 - **created**: 2026-07-24
+- **후속**: 잔존 Lite 명명 #240, 리뷰 후속 에픽 #241
 - **decision origin**: 2026-07-24 리뷰 세션 (사용자 방향 확정)
 - **theme**: chat-Lite ceremony 폐기, Full-first 재정렬, "편집 가능한 초벌"을 1급 목표로
 
