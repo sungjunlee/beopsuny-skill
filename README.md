@@ -155,7 +155,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 | 1 | `skills/beopsuny/SKILL.md`의 의도 라우터(의도 표 또는 gate 표)에 새 트리거와 적용 계약을 연결 | 라우팅·gate 부착이 바뀌는 경우에만. 워크플로우 내부 변경이면 생략 |
 | 2 | 기준 문서(`references/*.md`) 1곳에 성공 기준, 금지 행동, 실패 시 downgrade 방식 기록 | 항상 — 단, 집은 1곳. 다른 문서는 포인터만 |
 | 3 | `assets/schemas/*.yaml` 또는 `assets/policies/*.yaml`에 최소 evidence shape 추가 | 구조화된 evidence·출력 리터럴이 필요한 계약만 |
-| 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `must_do`/`forbidden_behavior` 갱신 | 사용자 노출 행동이 바뀌는 경우 |
+| 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `output_eval`(`common_rules`/`required_substrings`/`forbidden_substrings`) 갱신 | 사용자 노출 행동이 바뀌는 경우. `output_eval`은 5단계 fixture와 짝이 있어야 실행된다 — 짝 없는 서술 필드는 검증되지 않으므로 추가하지 않는다 |
 | 5 | `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule 추가 | 새 금지 실패모드가 생기는 경우에만 |
 | 6 | `tests/validate_skill_contracts.py`에 drift 검사 추가 | 새 계약 표면이 생기는 경우에만. 전문 문장 고정 금지 — 토큰·구조·포인터·출력 리터럴만 assert (파일 상단 assertion style policy 참조) |
 | 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 |
