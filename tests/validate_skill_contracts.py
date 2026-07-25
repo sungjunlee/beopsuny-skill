@@ -2021,12 +2021,14 @@ def check_admin_rule_provenance_examples_split_search_and_original_confirmation(
 def check_litigation_element_fact_template() -> None:
     research = read_text("skills/beopsuny/references/research-workflow.md")
     output_formats = read_text("skills/beopsuny/references/output-formats.md")
-    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
     skill_text = read_text("skills/beopsuny/SKILL.md")
 
     research_label = "research-workflow.md litigation template"
     for required in [
         "분쟁 판단 구조 (요건·사실·증거 분리)",
+        # #110: 분쟁은 새 라우터 의도가 아니다 — 결정의 집은 이 섹션이다 (workflow-map.md 은퇴, #248)
+        "새 router intent",
+        "`legal_research`",
         "**요건사실**",
         "**인정사실**",
         "**미확인 사실**",
@@ -2057,18 +2059,8 @@ def check_litigation_element_fact_template() -> None:
     ]:
         assert_contains(output_formats, required, output_label)
 
-    rows = parse_markdown_table(workflow_map, WORKFLOW_MAP_HEADER)
-    litigation_rows = [row for row in rows if row and row[0] == "`litigation`"]
-    if len(litigation_rows) != 1:
-        raise AssertionError("workflow-map.md: litigation row must exist exactly once")
-    litigation_row = litigation_rows[0]
-    if len(litigation_row) != 6:
-        raise AssertionError(f"workflow-map.md: litigation row must have 6 cells, got {litigation_row!r}")
-    if litigation_row[2] != "`legal_research`":
-        raise AssertionError("workflow-map.md: litigation primary intent must remain `legal_research`")
-    assert_contains(litigation_row[4], "요건·사실·증거 분리 판단 구조", "workflow-map.md litigation output mode")
-    assert_contains(litigation_row[4], "판례 distinguishing", "workflow-map.md litigation output mode")
-    assert_not_contains(workflow_map, "#110 court-style template은 후속 자리만 둠", "workflow-map.md")
+    # #110 계약의 구조 앵커: litigation은 도메인 라벨이지 라우터 의도가 아니다.
+    assert_not_router_intent(skill_text, "litigation", "#110")
 
     assert_contains(
         skill_text,
@@ -2157,23 +2149,7 @@ def check_enforcement_response_workflow() -> None:
     assert_not_contains(text, "- 형량·승패·처분 결과를 예측하지 않는다.", label)
     assert_contains(text, "`SKILL.md`의 안전 경계가 단일 소스", label)
 
-    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
-    assert_contains(workflow_map, "`enforcement-response.md`", "workflow-map.md enforcement pointer")
-    assert_contains(
-        workflow_map,
-        "새 workflow 라벨이 아니라",
-        "workflow-map.md enforcement pointer",
-    )
-
-    skill_rows = parse_markdown_table(
-        skill_text,
-        "| 의도 | 트리거 예시 | 의도별 workflow reference |",
-    )
-    skill_intents = {
-        row[0].strip("`")
-        for row in skill_rows
-        if len(row) == 3 and row[0].startswith("`") and row[0].endswith("`")
-    }
+    skill_intents = parse_skill_router_intents(skill_text)
     if skill_intents != SKILL_ROUTER_INTENTS:
         raise AssertionError(f"SKILL.md: router intent set changed: {sorted(skill_intents)!r}")
     leaked_scenarios = skill_intents & set(ENFORCEMENT_RESPONSE_SCENARIOS)
@@ -2950,19 +2926,10 @@ def check_skill_router_gate_table_structure() -> None:
         raise AssertionError(f"{label}: gate table missing rows for always-on gates {sorted(missing_gates)!r}")
 
 
-WORKFLOW_MAP_HEADER = (
-    "| workflow | trigger 예시 | 주 의도(기존 라우터 의도명) | "
-    "required references(기존 파일명) | output mode | verification 요구(Source Grade/freshness) |"
-)
-WORKFLOW_LABELS = {
-    "commercial",
-    "privacy",
-    "labor",
-    "regulatory",
-    "litigation",
-    "startup",
-    "cross-border",
-}
+SKILL_ROUTER_INTENT_TABLE_HEADER = "| 의도 | 트리거 예시 | 의도별 workflow reference |"
+# 도메인 라벨(litigation, cross-border, 수사·조사 …)은 라우터 의도가 아니다. 의도 집합은
+# 아래 고정 집합이 유일한 계약이며, workflow-map.md 은퇴(#248) 후 이 집합이 #110/#112
+# ("새 의도로 분리하지 않는다") 결정의 구조 앵커다.
 SKILL_ROUTER_INTENTS = {
     "legal_research",
     "contract_review",
@@ -2973,82 +2940,33 @@ SKILL_ROUTER_INTENTS = {
     "memory_profile",
     "privacy_knowledge_layer",
 }
-WORKFLOW_REFERENCE_FILENAME_RE = re.compile(r"`([^`/]+\.md)`")
 WORKFLOW_ROUTER_INTENT_RE = re.compile(r"`([^`]+)`")
 
 
-def check_workflow_map_structure() -> None:
-    text = read_text("skills/beopsuny/references/workflow-map.md")
-    label = "workflow-map.md"
-
-    rows = parse_markdown_table(text, WORKFLOW_MAP_HEADER)
-    if len(rows) != len(WORKFLOW_LABELS):
-        raise AssertionError(f"{label}: expected {len(WORKFLOW_LABELS)} rows, found {len(rows)}: {rows!r}")
-
-    reference_dir = ROOT / "skills/beopsuny/references"
-    seen_workflows: set[str] = set()
-    for row in rows:
-        if len(row) != 6:
-            raise AssertionError(f"{label}: row must have exactly 6 cells, got {row!r}")
-        workflow, trigger, primary_intent, reference_cell, output_mode, verification = row
-        workflow_name = workflow.strip("`")
-        seen_workflows.add(workflow_name)
-        for cell_name, cell in [
-            ("trigger 예시", trigger),
-            ("주 의도", primary_intent),
-            ("required references", reference_cell),
-            ("output mode", output_mode),
-            ("verification 요구", verification),
-        ]:
-            if not cell:
-                raise AssertionError(f"{label}: {workflow_name} row has empty {cell_name} cell")
-
-        primary_intents = set(WORKFLOW_ROUTER_INTENT_RE.findall(primary_intent))
-        if not primary_intents & SKILL_ROUTER_INTENTS:
-            raise AssertionError(f"{label}: {workflow_name} row primary-intent cell names no existing router intent")
-
-        reference_filenames = WORKFLOW_REFERENCE_FILENAME_RE.findall(reference_cell)
-        if not reference_filenames:
-            raise AssertionError(f"{label}: {workflow_name} row must name at least one reference filename")
-        for filename in reference_filenames:
-            if not (reference_dir / filename).is_file():
-                raise AssertionError(f"{label}: referenced file does not exist in references/: {filename!r}")
-
-        if workflow_name == "cross-border":
-            if "`international_guide.md`" not in reference_cell:
-                raise AssertionError(f"{label}: cross-border row must consume international_guide.md")
-            if "인덱스" not in reference_cell or "새 의도" not in primary_intent:
-                raise AssertionError(f"{label}: cross-border row must describe international_guide.md as an index, not an intent")
-
-    if seen_workflows != WORKFLOW_LABELS:
-        raise AssertionError(f"{label}: unexpected workflow labels {sorted(seen_workflows)!r}")
-
-    for required in [
-        # always-on gate는 workflow별 분리·약화 불가
-        "always-on 법률 결론 gate",
-        "분리·약화",
-        "물리적 plugin split 전",
-        "단일 `beopsuny` 안의 virtual workflow",
-        "물리적 plugin split 후",
-        "per-workflow plugin",
-        "DESIGN.md §6 후속 트리거 참조",
-    ]:
-        assert_contains(text, required, label)
-
-    skill_rows = parse_markdown_table(
-        read_text("skills/beopsuny/SKILL.md"),
-        "| 의도 | 트리거 예시 | 의도별 workflow reference |",
-    )
-    skill_intents = {
+def parse_skill_router_intents(skill_text: str) -> set[str]:
+    """SKILL.md 의도 표에 실제로 선언된 라우터 의도 집합."""
+    rows = parse_markdown_table(skill_text, SKILL_ROUTER_INTENT_TABLE_HEADER)
+    return {
         row[0].strip("`")
-        for row in skill_rows
+        for row in rows
         if len(row) == 3 and row[0].startswith("`") and row[0].endswith("`")
     }
-    if skill_intents != SKILL_ROUTER_INTENTS:
-        raise AssertionError(f"SKILL.md: router intent set changed: {sorted(skill_intents)!r}")
-    leaked_workflows = skill_intents & WORKFLOW_LABELS
-    if leaked_workflows:
-        raise AssertionError(f"SKILL.md: workflow labels must not become router intents: {sorted(leaked_workflows)!r}")
+
+
+def assert_not_router_intent(skill_text: str, domain_label: str, issue: str) -> None:
+    """도메인 라벨이 새 라우터 의도로 승격되지 않았음을 구조로 확인한다.
+
+    은퇴한 workflow-map.md(#248)의 표 행이 산문으로 주장하던 "새 의도 아님"(#110
+    litigation, #112 cross-border) 결정을, 실제 런타임 표면인 SKILL.md 의도 표에
+    재앵커링한 것이다. 문장 대신 의도 집합 동등성 + 라벨 부재로 고정한다.
+    """
+    intents = parse_skill_router_intents(skill_text)
+    if intents != SKILL_ROUTER_INTENTS:
+        raise AssertionError(f"SKILL.md: router intent set changed: {sorted(intents)!r}")
+    if domain_label in intents:
+        raise AssertionError(
+            f"SKILL.md: {domain_label!r} must stay a domain label, not a router intent ({issue})"
+        )
 
 
 FOREIGN_OVERLAY_TABLE_HEADER = "| 외국법 overlay 후보 | 한국법 anchor | 기존 의도 |"
@@ -3070,7 +2988,7 @@ FOREIGN_OVERLAY_ROW_ANCHORS = {
 def check_cross_border_overlay_roadmap() -> None:
     guide_text = read_text("skills/beopsuny/references/international_guide.md")
     source_grading = read_text("skills/beopsuny/references/source-grading.md")
-    workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
+    skill_text = read_text("skills/beopsuny/SKILL.md")
 
     guide_label = "international_guide.md cross-border overlay"
     for required in [
@@ -3119,15 +3037,26 @@ def check_cross_border_overlay_roadmap() -> None:
     ]:
         assert_contains(source_grading, required, source_label)
 
-    expected_cross_border_row = (
-        "| `cross-border` | 한국회사의 해외진출, 해외직접투자, 전략물자, 국제조세, 국외이전 | "
-        "새 의도 아님: `legal_research`, `compliance_checklist`, 또는 계약 검토이면 `contract_review` | "
-        "`international_guide.md`를 인덱스로 소비하고, 주 의도에 따라 `research-workflow.md`, `checklist-routing.md`, 또는 `contract_review_guide.md` | "
-        "한국법 결론에 foreign-law 보조축을 덧붙이는 overlay 로드맵. 외국법은 후보 쟁점 인덱스와 현지 전문가 확인 안내로만 쓰고 결론 근거는 한국법 공식 원문에 둠 | "
-        "jurisdiction/currency/source caveat 기본 포함. 해외 source는 관할권·기준일·시행일·source authority를 표시하고 한국법 결론 근거로 승격하지 않음 |"
-    )
-    assert_contains(workflow_map, expected_cross_border_row, "workflow-map.md cross-border row")
-    assert_not_contains(workflow_map, "#112 확장 로드맵은 후속 자리만 둠", "workflow-map.md")
+    # #112 "cross-border는 새 라우터 의도가 아니다"의 집은 은퇴한 workflow-map.md 행이
+    # 아니라 always-loaded SKILL.md 라우팅 원칙이다 (#248). 전문 1줄 assert_contains 대신
+    # 원칙 줄의 토큰 구성 + 부정형 shape + 의도 표 구조로 고정한다 (charter 2026-07-12).
+    principle_label = "SKILL.md cross-border routing principle"
+    principle_lines = [line for line in skill_text.splitlines() if "해외진출" in line]
+    if len(principle_lines) != 1:
+        raise AssertionError(
+            f"{principle_label}: expected exactly one 해외진출 routing-principle line, found {len(principle_lines)}"
+        )
+    principle = principle_lines[0]
+    for token in [
+        "`legal_research`",
+        "`compliance_checklist`",
+        "`references/international_guide.md`",
+        "인덱스",
+    ]:
+        assert_contains(principle, token, principle_label)
+    if not re.search(r"새 의도[^.]{0,24}(않는다|아니)", principle):
+        raise AssertionError(f"{principle_label}: must state cross-border is not a new router intent: {principle!r}")
+    assert_not_router_intent(skill_text, "cross-border", "#112")
 
 
 def check_readme_quality_contract_map() -> None:
@@ -3250,7 +3179,7 @@ def check_design_decision_archive() -> None:
         # split triggers remain the archive's operative content
         "Multi-skill 전환 트리거",
         "`wc -l skills/beopsuny/SKILL.md` > 800",
-        # anchor target consumed by workflow-map.md (heading must stay verbatim)
+        # split 결정 자체의 아카이브 헤딩 (workflow-map.md 링크 소비자는 #248에서 은퇴)
         "### 2026-05-10: 단일 스킬 유지 + 내부 router spine 전환",
         "source authority labels + verification status + self verification",
     ]:
@@ -3616,10 +3545,23 @@ def check_desktop_chat_degradation_gate_card() -> None:
         assert_contains(text, required, label)
 
 
+# 은퇴한 표면 → 그 개념의 현재 집. 재퇴적(파일 복귀)을 하드 실패로 막는다.
+RETIRED_SURFACES = {
+    # 2026-07-12: GitHub Issues own live work, CHANGELOG owns history.
+    "TODOS.md": "use GitHub Issues + CHANGELOG",
+    # #248: 런타임 소비자 0. 의도→reference 매핑은 SKILL.md 의도 표가, workflow별
+    # "새 의도 아님" 결정은 SKILL.md 라우팅 원칙 4/7과 research-workflow.md가 소유한다.
+    "skills/beopsuny/references/workflow-map.md": (
+        "use SKILL.md 의도 표 + 라우팅 원칙 (workflow별 재서술 금지)"
+    ),
+}
+
+
 def check_retired_meta_surfaces_stay_retired() -> None:
-    """TODOS.md was retired (2026-07-12): GitHub Issues own live work, CHANGELOG owns history."""
-    if (ROOT / "TODOS.md").exists():
-        raise AssertionError("TODOS.md: retired meta surface must not return (use GitHub Issues + CHANGELOG)")
+    """Retired surfaces must not silently return; each concept has a live home instead."""
+    for relative, replacement in RETIRED_SURFACES.items():
+        if (ROOT / relative).exists():
+            raise AssertionError(f"{relative}: retired surface must not return ({replacement})")
 
 
 def check_self_verification_guardrails() -> None:
@@ -4306,7 +4248,6 @@ CHECK_GROUPS = (
             check_skill_gate_attachment_and_draft_first,
     check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
-            check_workflow_map_structure,
             check_cross_border_overlay_roadmap,
         ),
     ),
