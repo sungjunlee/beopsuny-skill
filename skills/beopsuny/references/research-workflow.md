@@ -123,7 +123,7 @@ ledger에 없는 인용은 출력하지 않는다. `supports`가 없는 source�
 
 ## 분쟁 판단 구조 (요건·사실·증거 분리)
 
-분쟁 쟁점, 판례, 소송·기관 제출 전 법리 검토처럼 `workflow-map.md`의 `litigation` workflow에 해당하는 질문에서 사용한다. 새 router intent를 만들지 않고 주 의도는 `legal_research`로 유지한다. 이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다.
+분쟁 쟁점, 판례, 소송·기관 제출 전 법리 검토처럼 요건과 사실을 나눠 볼 필요가 있는 질문에서 사용한다. 새 router intent를 만들지 않고 주 의도는 `legal_research`로 유지한다. 이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다.
 
 | 필드 | 의미 | Legal Verification Core 연결 |
 | --- | --- | --- |
