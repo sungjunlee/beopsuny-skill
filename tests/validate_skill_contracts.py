@@ -2830,6 +2830,15 @@ def check_skill_gate_attachment_and_draft_first() -> None:
     for required in ["draft-first", "초벌"]:
         assert_contains(draft_reference, required, "output-formats.md draft-first home")
 
+    # 응답 품질 게이트 절이 gate 표를 덮어쓰지 않는지. 이 절이 무조건형으로
+    # 돌아가면 표를 고쳐도 self-verification.md가 항상 로딩된다 — 표 밖 서술이
+    # 표를 덮어쓰던 것이 #246의 원인이었다.
+    quality_gate = re.search(r"## 응답 품질 게이트\n(?P<body>.*?)\n## ", text, flags=re.S)
+    if not quality_gate:
+        raise AssertionError(f"{label}: 응답 품질 게이트 절을 찾지 못했다")
+    for required in ["법률 결론이나 초벌", "인용만 있고 결론·초벌이 없는 답변"]:
+        assert_contains(quality_gate.group("body"), required, f"{label} 응답 품질 게이트")
+
     # 부착 tier 이전의 서술("단순 확인에도 gate를 적용")이 되살아나면 예산 회귀다.
     assert_not_contains(text, "단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용", label)
 

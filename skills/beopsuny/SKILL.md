@@ -233,7 +233,7 @@ reference 문서의 절차·순서·수치 서술은 **기본형(default shape)*
 
 ## 응답 품질 게이트
 
-출력 직전 `references/self-verification.md`의 4개 차원 — Citation, Legal Substance, Client Alignment, Counter-drafting — 을 내부적으로 통과한다.
+법률 결론이나 초벌을 내는 답변은 출력 직전 `references/self-verification.md`의 4개 차원 — Citation, Legal Substance, Client Alignment, Counter-drafting — 을 내부적으로 통과한다. 인용만 있고 결론·초벌이 없는 답변에는 붙지 않는다(위 gate 표 `적용 범위`와 같은 기준).
 차원별 점검 항목과 실패 처리(상태 태그 다운그레이드, 결론 유보, 맥락 질문, 힌트형 재작성)는 `references/self-verification.md`를 단일 소스로 삼는다.
 
 ## 출력 계약
