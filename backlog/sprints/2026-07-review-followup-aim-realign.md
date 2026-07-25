@@ -41,7 +41,7 @@ component: "router-loading"
 ### Batch 5 — 방향 (사용자 결정 반영)
 
 - [x] #246 [direction] gate 부착 tier(784 → 339줄) + `초벌` spine 승격 + spec/charter 정합 → 5c0b5ee
-- [ ] #248 [tests] workflow-map.md 은퇴 판단 + 4-check 재앵커링 — #244에서 분리. 순수 제거가 아니라 재앵커링이라 난이도가 다르다
+- [x] #248 [tests] workflow-map.md **삭제** + 4-check 재앵커링 → 1f59ad0
 - [ ] #249 [research] 모델 하한 런타임 가드 실현 가능성 — #246에서 분리. 스킬이 자기 모델을 신뢰성 있게 식별할 수 없다
 
 ## Running Context
@@ -58,7 +58,7 @@ component: "router-loading"
   - 근거: (a) 런타임 소비자 0 — `SKILL.md`·gate 표·의도 표·다른 reference 어디에도 로딩 포인터가 없고 forward-eval `source_references`에도 없다. (b) `spec/`·`docs/` 이동은 **두 번째 집을 만든다** — 의도→reference 매핑은 이미 `SKILL.md` 의도 표가, workflow별 verification 요구는 gate 표·`source-grading.md`가 소유하므로 map은 수동 동기화가 필요한 사본이었다. (c) 유지 비용은 CI check 4개 + 전문 1줄 prose-lock.
   - 4-check 처리: `check_workflow_map_structure` **함수 삭제**(SKILL 의도 집합 동등성은 `check_enforcement_response_workflow`에 이미 중복 존재 → 실질 승계, 라벨 비승격 guard는 `assert_not_router_intent()`로 이전) / `check_litigation_element_fact_template` **블록 제거 + #110 재앵커링**(`research-workflow.md` 분쟁 판단 구조 토큰 + 의도 표 구조) / `check_enforcement_response_workflow` **블록만 제거**(#242가 이미 `SKILL.md` 도달성 assert) / `check_cross_border_overlay_roadmap` **전문 1줄 assert 제거 + #112 재앵커링**(`SKILL.md` 라우팅 원칙 4 토큰 + 부정형 shape + 의도 표 구조).
   - 재퇴적 방지: `check_retired_meta_surfaces_stay_retired`를 `RETIRED_SURFACES` 표로 일반화(TODOS.md + workflow-map.md).
-  - mutation 8종(W1~W6 FAIL 탐지 / W7·W8 의미보존 reword PASS). SKILL.md 268줄 무변경.
+  - mutation 위임분 10종 + **오케스트레이터 독립 7종**(Y1 #110 토큰만 제거 / Y2 원칙 4 경로 교체 / Y3 줄 중복 / Y4 빈 파일 재생성 / Y5 #242 경계 회귀 / Y6 토큰 유지 reword PASS / Y7 두 표면 동시 편집 시 라벨 branch 도달 확인). SKILL.md 268줄 무변경.
 - **2026-07-25 (5)** — PR #247 squash 머지(`fbe0b06`) 후 #246 착수. 커밋 1건 + 후속.
   - `5c0b5ee` #246 — gate 부착이 라우팅이 아니라 **답변이 실제로 만드는 것**을 따르도록. 단순 조문 확인 784 → 339줄.
   - **원인은 gate 표가 아니라 표 밖 서술이었다.** 각 gate의 `적용 범위`는 이미 좁혀져 있었는데 표 위 문장("단순 조문·링크 확인도 … gate를 적용")과 `## 응답 품질 게이트` 절이 **두 곳에서 표를 덮어쓰고** 있었다. 라우팅 원칙 1은 workflow reference만 관장한다고 명시돼 gate에 닿지 않았다.
