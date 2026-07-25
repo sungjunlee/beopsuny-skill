@@ -3539,12 +3539,18 @@ def check_release_workflow_preflight() -> None:
         raise AssertionError(f"{label}: preflight checks must run before release zip creation")
 
 
-def check_desktop_chat_lite_gate_card() -> None:
+def check_desktop_chat_degradation_gate_card() -> None:
+    """The guide is deprecated (#238) but ships a STANDALONE Custom Instructions
+    template for the no-Skills path README still links. In that environment
+    skills/beopsuny/** is never loaded, so citation-verification-contract.md and
+    output-formats.md do not reach the user — this template is the only carrier
+    of the evidence boundary there. Hence the check stays; only the Full/Lite
+    vocabulary is retired (#240)."""
     text = read_text("docs/desktop-chat-guide.md")
     label = "desktop-chat-guide.md"
 
     for required in [
-        "## Lite Gate Card",
+        "## Degradation Gate Card",
         "[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]",
         "법망 API 원문 필드",
         # 스니펫/검색결과/발췌만으로는 공식 원문 확인 불가
@@ -4267,7 +4273,7 @@ CHECK_GROUPS = (
             check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
             check_release_workflow_preflight,
-            check_desktop_chat_lite_gate_card,
+            check_desktop_chat_degradation_gate_card,
             check_retired_meta_surfaces_stay_retired,
         ),
     ),

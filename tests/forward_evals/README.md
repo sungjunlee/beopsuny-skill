@@ -7,7 +7,7 @@
 | 파일 | 목적 | prompt 수 |
 | --- | --- | --- |
 | `beopsuny_guardrails.yaml` | 고위험 router guardrail (자동화 약속, role/destination, stale asset 등) | 10 |
-| `beopsuny_o4_provenance.yaml` | charter O4: Full/Lite 모드 판별 + 4가지 provenance 상태(로컬 미러 / 직접 공식소스 / API fallback / insufficient) | 8 |
+| `beopsuny_o4_provenance.yaml` | charter O4: source family별 로컬 미러 가용성·degradation 판별 + 4가지 provenance 상태(로컬 미러 / 직접 공식소스 / API fallback / insufficient) | 8 |
 
 `--config`로 어느 세트든 같은 harness/scorer에 넣는다. 세트마다 `guardrail_category`가 있고, scorer의 `CATEGORY_COMMON_RULES`/`CATEGORY_REQUIRED_ANY`가 카테고리별 가드레일을 건다.
 

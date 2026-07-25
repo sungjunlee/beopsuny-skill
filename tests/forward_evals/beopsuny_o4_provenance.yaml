@@ -26,8 +26,8 @@ runbook:
     - passed_guardrails
     - failed_guardrails
 prompts:
-  - id: o4-01-mode-identification
-    guardrail_category: full_lite_mode_identification
+  - id: o4-01-per-family-availability-survey
+    guardrail_category: source_availability_degradation
     source_router_scenario: router-03
     source_references:
       - skills/beopsuny/references/source-access.md
@@ -93,8 +93,8 @@ prompts:
       - "admrule-kr 로컬 미러에서 확인했습니다"
       - "로컬 미러 기준으로 최신 고시를 확정합니다"
 
-  - id: o4-05-lite-mode-identification
-    guardrail_category: full_lite_mode_identification
+  - id: o4-05-no-mirror-degradation-path
+    guardrail_category: source_availability_degradation
     source_router_scenario: router-01
     source_references:
       - skills/beopsuny/references/source-access.md

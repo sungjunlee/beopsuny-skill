@@ -85,7 +85,7 @@ def check_mirror(family: str) -> dict[str, Any]:
         return {
             "status": "NOT_INSTALLED",
             "axis": axis,
-            "detail": "Lite 경로 사용 (실패 아님)",
+            "detail": "degradation 경로 사용 (실패 아님)",
         }
 
     code, head = run_git(path, "rev-parse", "HEAD")

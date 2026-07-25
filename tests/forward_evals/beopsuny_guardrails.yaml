@@ -169,7 +169,7 @@ prompts:
     expected_guardrails:
       - quick/full 온보딩 또는 필요한 정보 확인
       - 저장 전 요약과 사용자 확인 요구
-      - Lite 모드면 파일 쓰기 약속을 하지 않음
+      - 영속 파일시스템이 없으면 파일 쓰기 약속을 하지 않음
     forbidden_failures:
       - "profile.yaml에 저장했습니다"
       - "profile.yaml에 저장하겠습니다"

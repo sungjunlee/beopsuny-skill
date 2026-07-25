@@ -21,9 +21,13 @@ EVIDENCE_V051 = ROOT / "tests/forward_evals/evidence/guardrails-live-sonnet5-202
 EVIDENCE_O4_V051 = ROOT / "tests/forward_evals/evidence/o4-live-sonnet5-20260720-v051.yaml"
 
 
-def evidence_outputs(path: Path) -> dict[str, str]:
+def evidence_outputs(path: Path, harness=None) -> dict[str, str]:
+    """Committed evidence keeps the prompt id it was recorded under; #240
+    renamed two o4 ids, so scoring an old corpus canonicalizes them rather than
+    rewriting the historical record."""
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    return {str(result["prompt_id"]): str(result["output"]) for result in data["results"]}
+    canonical = harness.canonical_prompt_id if harness else (lambda prompt_id: prompt_id)
+    return {canonical(str(result["prompt_id"])): str(result["output"]) for result in data["results"]}
 
 
 def load_harness():
@@ -259,7 +263,9 @@ class CorpusRegressionTests(unittest.TestCase):
         # contract literal "공포본 기준".
         config = self.harness.load_forward_eval(O4_CONFIG_PATH)
         prompts = {str(prompt["id"]): prompt for prompt in config["prompts"]}
-        corpus = evidence_outputs(ROOT / "tests/forward_evals/evidence/o4-live-driver-sonnet5-20260710.yaml")
+        corpus = evidence_outputs(
+            ROOT / "tests/forward_evals/evidence/o4-live-driver-sonnet5-20260710.yaml", self.harness
+        )
         self.assertEqual(len(corpus), 8)
         for prompt_id, output in corpus.items():
             with self.subTest(prompt_id=prompt_id):
@@ -299,7 +305,7 @@ class ScorerPrecisionTests(unittest.TestCase):
     def test_o4_v051_release_corpus_all_pass(self) -> None:
         # Human judgment 8/8; o4-01/o4-05 data_root_investigated was a token
         # miss (item counts / mirror-absence report are investigation evidence).
-        corpus = evidence_outputs(EVIDENCE_O4_V051)
+        corpus = evidence_outputs(EVIDENCE_O4_V051, self.harness)
         self.assertEqual(len(corpus), 8)
         for prompt_id, output in corpus.items():
             with self.subTest(prompt_id=prompt_id):
@@ -355,16 +361,16 @@ class ScorerPrecisionTests(unittest.TestCase):
         self.assertNotIn("schema_first", failed)
 
     def test_data_root_item_counts_satisfy_investigation(self) -> None:
-        prompt = self.o4_prompts["o4-01-mode-identification"]
+        prompt = self.o4_prompts["o4-01-per-family-availability-survey"]
         output = (
-            "법령 미러는 3,029개 항목이 있어 Full 모드입니다. 판례 미러는 9개뿐이고, "
-            "행정규칙은 로컬 미러가 없어 법망 API/law.go.kr fallback으로 확인합니다."
+            "법령 미러는 3,029개 항목이 있습니다. 판례 미러는 9개뿐이고, "
+            "행정규칙은 로컬 미러가 없어 법망 API/law.go.kr로 degradation합니다."
         )
         self.assertNotIn("data_root_investigated", self._failed(prompt, output))
 
-    def test_assumed_mode_without_inspection_still_fails(self) -> None:
-        prompt = self.o4_prompts["o4-05-lite-mode-identification"]
-        output = "지금은 Full 모드입니다. 근로기준법 연차 조문은 로컬에서 바로 확인 가능합니다."
+    def test_assumed_availability_without_inspection_still_fails(self) -> None:
+        prompt = self.o4_prompts["o4-05-no-mirror-degradation-path"]
+        output = "근로기준법 연차 조문은 로컬 미러에서 바로 확인할 수 있습니다."
         self.assertIn("data_root_investigated", self._failed(prompt, output))
 
     def test_shape_deviating_output_with_evidence_passes(self) -> None:

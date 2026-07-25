@@ -1,9 +1,9 @@
 # Claude Desktop Chat 탭에서 법순이 사용하기
 
-> ⚠️ **Deprecated (2026-07-24, #238)** — 법순이는 Full-first(로컬 영속 앱)로 전환했습니다. Chat 환경은 영속 파일시스템이 없어 graceful degradation으로만 동작하며 1급 경로가 아닙니다. 로컬 앱(Claude Code / Codex 데스크톱·CLI) 설치를 권장합니다. 아래 내용은 historical 참고용이며, `## Lite Gate Card`의 evidence 경계(출처 권위 라벨·verification status·provenance 분리)는 degradation 환경에서도 그대로 유효합니다.
+> ⚠️ **Deprecated (2026-07-24, #238)** — 법순이는 Full-first(로컬 영속 앱)로 전환했습니다. Chat 환경은 영속 파일시스템이 없어 graceful degradation으로만 동작하며 1급 경로가 아닙니다. 로컬 앱(Claude Code / Codex 데스크톱·CLI) 설치를 권장합니다. 아래 내용은 historical 참고용이며, `## Degradation Gate Card`의 evidence 경계(출처 권위 라벨·verification status·provenance 분리)는 degradation 환경에서도 그대로 유효합니다.
 
 Claude Desktop의 **Chat 탭**(또는 claude.ai)에서 법순이를 사용하는 가이드.
-Chat 탭은 채팅마다 스토리지가 초기화되므로 **Lite 모드**로 동작한다 (법망 API + 웹검색).
+Chat 탭은 채팅마다 스토리지가 초기화되고 영속 파일시스템이 없으므로, 로컬 미러 없이 법망 API와 웹검색으로 graceful degradation한다.
 
 > 전체 기능(로컬 법령 데이터, 판례 원문 직접 읽기, 개정 이력 추적, 검토 이력 저장)은
 > Claude Code, Codex CLI 등 영속 환경에서 데이터를 다운로드하면 사용할 수 있습니다.
@@ -61,7 +61,7 @@ Chat 탭은 채팅마다 스토리지가 초기화되므로 **Lite 모드**로 �
 - "이 계약서 봐줘" (파일 첨부)
 - "중대재해법 적용 대상이야?"
 
-Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(Mermaid 다이어그램, HTML 표)로 시각화한다.
+로컬 미러가 없으므로 법망 API와 웹검색으로 조사하고, **Artifacts**(Mermaid 다이어그램, HTML 표)로 시각화한다.
 
 ---
 
@@ -72,7 +72,7 @@ Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(M
 ---
 
 ```
-# 법순이 (Beopsuny) — Lite 모드
+# 법순이 (Beopsuny) — 로컬 미러 없는 환경
 
 한국 법무 실무 AI 어시스턴트. 법령/판례 조사, 계약서 검토, 컴플라이언스 체크.
 
@@ -84,11 +84,13 @@ Lite 모드에서는 법망 API와 웹검색으로 조사하고, **Artifacts**(M
 4. **시행일 확인** — 미시행 법령은 "⚠️ 미시행" 표시
 5. **환각 방지** — 모르면 "확인 필요"라고 쓴다. 없는 조문을 만들지 않는다
 
-## Lite Gate Card
+## Degradation Gate Card
+
+이 환경에는 로컬 미러가 없어 법망 API·웹검색으로만 확인한다. 확인 경로가 얕아지는 만큼 아래 evidence 경계를 그대로 지킨다.
 
 - 상태 태그는 `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]`만 쓴다.
 - `[VERIFIED]`는 공식 원문, 법망 API 원문 필드, law.go.kr 본문처럼 실제 원문 또는 원문 필드를 확인한 경우에만 쓴다.
-- WebSearch 스니펫, 법망 API 검색 결과, 로컬 미러, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다. 이 경우 source/provenance를 분리하고 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
+- WebSearch 스니펫, 법망 API 검색 결과, 사용자 제공 발췌만으로는 공식 원문 확인이 아니다. 이 경우 source/provenance를 분리하고 `[UNVERIFIED]` 또는 `[INSUFFICIENT]`로 낮춘다.
 - 시행일, 개정, 행정규칙, 고시, 과징금, 인허가처럼 최신성이 핵심이면 stale/live 여부를 표시하고 현재법 결론을 유보한다.
 - 사용자가 비법무 담당자이거나 외부 송부용 초안을 요청하면 role/destination gate를 적용한다. 고객·기관·상대방에게 보낼 문구는 법무 검토 전 확정 결론처럼 쓰지 않는다.
 
