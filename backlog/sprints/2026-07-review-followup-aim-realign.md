@@ -24,7 +24,7 @@ component: "router-loading"
 
 ### Batch 2 — P1 폐기 개념 잔여 청소
 
-- [~] #240 [docs+tests] Full/Lite 잔재 — 문서·spec 층 완료(117be45: README·charter·system-map·capabilities·CLAUDE·SKILL·source-access), 잔여는 하네스 id/category + `forward_eval_harness.py` + deprecated Gate Card → PR #247 (open)
+- [x] #240 [docs+tests] Full/Lite 잔재 — 문서·spec 층(117be45) + 코드·하네스 층(Batch 4) 전량 완료 → PR #247 (open)
 
 ### Batch 2c — PR #247 리뷰 대응 (P0 계열)
 
@@ -36,7 +36,7 @@ component: "router-loading"
 
 ### Batch 4 — P1 잔여 (Batch 3의 어휘 기준 확정 후)
 
-- [~] #240 [tests] o4 id/`guardrail_category` + `forward_eval_harness.py` 문자열 + deprecated Gate Card — subagent 위임 실행 중
+- [x] #240 [tests] o4 id/`guardrail_category` rename(히스토리 무손상 alias) + 스코어링 토큰 이동 + Gate Card rename + dogfood 문서 삭제 → 4219470, a786b20
 
 ### Batch 5 — 분리된 후속 (별도 PR)
 
@@ -52,6 +52,12 @@ component: "router-loading"
 
 ## Progress
 
+- **2026-07-25 (4)** — Batch 4(#240 잔여) 완료. 커밋 3건.
+  - `4219470` #240 위임분 — o4 id/category rename + 스코어링 토큰 이동 + Gate Card rename. **히스토리 무손상**: evidence corpus 5건이 옛 id로 기록돼 있어 재작성 대신 `RENAMED_PROMPT_IDS` 정규화를 넣고 5건 전량 재채점 8/8 확인.
+  - `a786b20` — **위임 검증 중 신규 결함 발견**. 다른 변형으로 mutation을 재현하다(X4: config에서만 옛 카테고리로 되돌리기) `PASS 8/8`이 나오는 것을 봤다. 스코어링이 `CATEGORY_*.get(category, [])`라 미등록 카테고리는 룰 0개 = 무조건 통과였다. 등록 여부를 하드 실패로 전환 + 회귀 테스트 3종. **이번 에픽의 "검사 조준점" 패턴이 하네스 층에서 재발한 사례.**
+  - `docs/desktop-chat-dogfood.md` 삭제 — deprecated인데 PASS 기준이 폐기 어휘("Lite 모드라고 밝히고")라 정상 스킬이 FAIL 판정을 받는 상태였고, 참조처 0건이라 고쳐 유지할 근거가 없었다.
+  - mutation 독립 재현 4종(X2 정반대 행동 미크레딧 / X3 alias 무력화 시 히스토리 재채점 붕괴 / X4 미등록 카테고리 / X4b 오타). 최초 X3 변형은 `{} or {...}`가 파이썬에서 no-op이라 잘못 통과했고, 항등함수 치환으로 다시 확인했다.
+  - **#246 사용자 결정**: 로딩 예산은 light tier gate 부분집합, 모델 하한은 별도 이슈로 실현 가능성부터.
 - **2026-07-25 (3)** — PR #247 리뷰 대응 + Batch 3 완료. 커밋 3건.
   - `35b9914` codex P2 3건 — **#243이 막은 구멍이 축 하나에만 적용돼 있었다**. 만료 축은 둘(`next_review`, `last_verified + freshness_days`)인데 registry 검사는 앞 축만 봤고, 등록 자산은 다른 검사에서 면제되므로 뒤 축이 무검사였다. 실측상 잠복이 아니라 2026-10-01에 4건이 동시에 빠지는 31일 사각지대. `asset_expiry_reasons()`로 정의를 단일화해 **갈라질 수 있는 구조 자체를 제거**. 함께 `revalidation_record_required`가 문서로만 존재하던 것(날짜만 밀면 근거 없이 부채 소멸)을 계약으로 고정. mutation 6종.
   - `fe77507` #244 — scenarios 01–15 삭제(123,228 bytes) + `must_do`/`forbidden_behavior` 109줄 은퇴 + dead 룰 재조준(unsafe fixture 18→19).
