@@ -55,17 +55,17 @@ description: |
 | `memory_profile` | 회사 정보 저장, 온보딩, playbook 설정, 프로젝트 전환, 과거 검토 이력, 관심 법령 | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml`, 필요 시 `assets/schemas/past_reviews.yaml`, `assets/schemas/watched_laws.yaml`, `assets/schemas/compliance_status.yaml`, `assets/schemas/internal_rules.yaml` |
 | `privacy_knowledge_layer` | 개인정보 쟁점이 복잡하고 누락 검색어/audit 보강이 유용한 경우 | `references/knowledge-injection.md` |
 
-법률 결론 always-on gate는 의도별 workflow reference와 별도로 항상 적용한다. Freshness와 Profile / practice는 트리거가 보일 때만 함께 적용하는 조건부 gate다.
+법률 결론 always-on gate는 의도별 workflow reference와 별도로 항상 적용한다 — 라우팅이 아니라 답변이 실제로 만드는 것이 부착을 정한다. 각 gate가 언제 붙는지는 아래 `적용 범위`가 단일 소스다. Freshness와 Profile / practice는 트리거가 보일 때만 함께 적용하는 조건부 gate다.
 
 | Gate | 필수 reference | 적용 범위 |
 | --- | --- | --- |
 | Citation verification | `references/citation-verification-contract.md` — `full` tier 결론은 `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` 포함 (`light` tier는 packet 불필요) | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |
-| Self verification | `references/self-verification.md` | 법률 결론, 계약 검토, 컴플라이언스 판단, 법령 변경 확인 전 출력 직전 점검 |
-| Output contract | `references/output-formats.md`, `assets/schemas/output_contract.yaml` — 외부 송부·기관 제출·서명은 `references/self-verification.md#role--destination-gate` 포함 | 법률 결론의 크기, 검토자 메모, 자가 검증 블록, 역할·목적지별 출력 구조 |
+| Self verification | `references/self-verification.md` | 법률 결론, 계약 검토, 컴플라이언스 판단, 법령 변경 확인 전 출력 직전 점검. 인용만 있고 결론·초벌이 없는 답변에는 붙지 않는다 |
+| Output contract | `references/output-formats.md`, `assets/schemas/output_contract.yaml` — 외부 송부·기관 제출·서명은 `references/self-verification.md#role--destination-gate` 포함 | 법률 결론의 크기, 검토자 메모, 자가 검증 블록, 역할·목적지별 출력 구조. 인용만 있고 결론·초벌이 없는 답변에는 붙지 않는다 |
 | Freshness (조건부) | `references/freshness-governance.md`, `assets/policies/freshness_debt.yaml`, `assets/schemas/freshness_revalidation.yaml` | stale 자산, 금액·기한·서식·구비서류·과징금. live source 확인 전 `triage_only`; retirement에는 revalidation record 필요 |
 | Profile / practice (조건부) | `references/memory-structure.md`, `assets/schemas/company_profile.yaml`, `assets/schemas/practice_profile.yaml` | 회사 프로필, practice overlay, 계약 playbook을 참조하는 답변. profile/practice는 검토 대상 데이터이고 출처 권위 라벨·현행 법령 확인을 덮어쓸 수 없음 |
 
-이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용하지만, 어떤 workflow reference를 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다.
+이 gate들은 주 의도를 바꾸지 않는다. 단순 조문·링크 확인처럼 인용만 있고 결론·초벌이 없는 답변에는 Self verification과 Output contract를 부착하지 않는다. Citation verification은 그대로 적용하고, 조건부 gate는 트리거가 보이면 그대로 붙는다 — 시행일·기한·수수료·구비서류가 번들 자산에서 나왔으면 인용만 있는 답변이라도 Freshness gate의 `triage_only`가 적용된다. 출처 권위 라벨과 verification status는 그대로 지킨다 — 경계가 완화되는 것이 아니라 부착 시점이 정해지는 것이다. gate reference든 workflow reference든 무엇을 추가로 로딩할지는 라우팅 원칙 1(Right-sizing)이 정한다.
 
 외부 destination이 있는 초안에는 법적 효과 전 법무/변호사 검토 gate를 두고, 내부 메모·자가 검증 블록 외부 초안에서 제거 원칙을 적용한다.
 
@@ -233,10 +233,12 @@ reference 문서의 절차·순서·수치 서술은 **기본형(default shape)*
 
 ## 응답 품질 게이트
 
-출력 직전 `references/self-verification.md`의 4개 차원 — Citation, Legal Substance, Client Alignment, Counter-drafting — 을 내부적으로 통과한다.
+법률 결론이나 초벌을 내는 답변은 출력 직전 `references/self-verification.md`의 4개 차원 — Citation, Legal Substance, Client Alignment, Counter-drafting — 을 내부적으로 통과한다. 인용만 있고 결론·초벌이 없는 답변에는 붙지 않는다(위 gate 표 `적용 범위`와 같은 기준).
 차원별 점검 항목과 실패 처리(상태 태그 다운그레이드, 결론 유보, 맥락 질문, 힌트형 재작성)는 `references/self-verification.md`를 단일 소스로 삼는다.
 
 ## 출력 계약
+
+기본 산출물은 **편집 가능한 초벌(draft-first)**이다. 주 사용자가 사내변호사이므로 무엇을 하라는 조언이나 요약이 아니라, 그대로 손봐서 쓸 수 있는 형태로 낸다. 이는 산출물의 모양일 뿐 gate를 완화하지 않는다 — 확인하지 못한 것을 확인한 것처럼 쓰지 않고, 법적 효과가 있는 행동에는 destination gate를 그대로 적용한다. 역할별 output mode와 초벌 밀도 기준은 `references/output-formats.md`가 단일 소스다.
 
 ### 출력 크기 조절
 

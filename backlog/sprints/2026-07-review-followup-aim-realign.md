@@ -38,13 +38,15 @@ component: "router-loading"
 
 - [x] #240 [tests] o4 id/`guardrail_category` rename(히스토리 무손상 alias) + 스코어링 토큰 이동 + Gate Card rename + dogfood 문서 삭제 → 4219470, a786b20
 
-### Batch 5 — 분리된 후속 (별도 PR)
+### Batch 5 — 방향 (사용자 결정 반영)
 
+- [x] #246 [direction] gate 부착 tier(784 → 339줄) + `초벌` spine 승격 + spec/charter 정합 → 5c0b5ee
 - [ ] #248 [tests] workflow-map.md 은퇴 판단 + 4-check 재앵커링 — #244에서 분리. 순수 제거가 아니라 재앵커링이라 난이도가 다르다
+- [ ] #249 [research] 모델 하한 런타임 가드 실현 가능성 — #246에서 분리. 스킬이 자기 모델을 신뢰성 있게 식별할 수 없다
 
 ## Running Context
 
-- **이 스프린트 밖(판단 선행)**: #245 히스토리 표면 8→3, #246 always-on 로딩 예산 + 초벌 spine + 모델 하한 가드. 둘 다 사용자 결정이 선행돼야 실행 가능하므로 Plan에 넣지 않았다.
+- **#245는 이 스프린트 밖**: CHANGELOG 비대화 해소가 핵심인데 이 에픽이 계속 CHANGELOG를 쓰고 있어 동시 진행하면 churn이다. epic 마감 후.
 - **이번 사이클의 주제는 계약 추가가 아니라 기존 검사의 조준점 재검토다.** 리뷰에서 나온 P0 2건이 모두 "검사는 그린인데 경계는 부재/방치" 형태였다. 새 계약을 붙이기 전에 기존 검사가 무엇을 보고 있는지 먼저 확인한다.
 - 사용자 방향(2026-07-25): 경량화·핵심 가이드가 북극성. **필요 없어진 것은 삭제로 처리 가능** — 강등·보존을 기본값으로 삼지 않는다.
 - 변경 비용 예산(README 품질 계약 체크리스트): 행동 1개 변경 = 필수 표면 4개 이하. #240은 cross-cutting이라 초과 예상 — #236 선례대로 PR에 이유를 남긴다.
@@ -52,6 +54,12 @@ component: "router-loading"
 
 ## Progress
 
+- **2026-07-25 (5)** — PR #247 squash 머지(`fbe0b06`) 후 #246 착수. 커밋 1건 + 후속.
+  - `5c0b5ee` #246 — gate 부착이 라우팅이 아니라 **답변이 실제로 만드는 것**을 따르도록. 단순 조문 확인 784 → 339줄.
+  - **원인은 gate 표가 아니라 표 밖 서술이었다.** 각 gate의 `적용 범위`는 이미 좁혀져 있었는데 표 위 문장("단순 조문·링크 확인도 … gate를 적용")과 `## 응답 품질 게이트` 절이 **두 곳에서 표를 덮어쓰고** 있었다. 라우팅 원칙 1은 workflow reference만 관장한다고 명시돼 gate에 닿지 않았다.
+  - `초벌`은 결정이 아니라 결함이었다 — charter Decision 2026-07-24의 기본 산출물이 `SKILL.md`에 **0건**. #242와 같은 형태로 spine 승격.
+  - spec 정합 필수: `capabilities.md` router-loading Expected Behavior가 옛 semantics를 규정하고 있어 안 고치면 **truth 문서가 시스템을 틀리게 기술**한다(#240의 `system-map.md`와 같은 형태). Hard Constraint를 "부착 조건 명시 가능, 경계 완화 불가"로 조이고 charter Decisions 2026-07-25 행 추가.
+  - mutation 7종(G1~G5·G7 FAIL / G6 의미보존 PASS).
 - **2026-07-25 (4)** — Batch 4(#240 잔여) 완료. 커밋 3건.
   - `4219470` #240 위임분 — o4 id/category rename + 스코어링 토큰 이동 + Gate Card rename. **히스토리 무손상**: evidence corpus 5건이 옛 id로 기록돼 있어 재작성 대신 `RENAMED_PROMPT_IDS` 정규화를 넣고 5건 전량 재채점 8/8 확인.
   - `a786b20` — **위임 검증 중 신규 결함 발견**. 다른 변형으로 mutation을 재현하다(X4: config에서만 옛 카테고리로 되돌리기) `PASS 8/8`이 나오는 것을 봤다. 스코어링이 `CATEGORY_*.get(category, [])`라 미등록 카테고리는 룰 0개 = 무조건 통과였다. 등록 여부를 하드 실패로 전환 + 회귀 테스트 3종. **이번 에픽의 "검사 조준점" 패턴이 하네스 층에서 재발한 사례.**
