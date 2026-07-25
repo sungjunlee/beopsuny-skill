@@ -2077,12 +2077,15 @@ def check_litigation_element_fact_template() -> None:
     )
 
 
-ENFORCEMENT_RESPONSE_SAFETY_BOUNDARIES = [
-    "형량·승패·처분 결과를 예측하지 않는다",
+# 수사·조사 안전 경계의 집은 always-loaded SKILL.md다 (#242). reference 안에서만
+# 살면 라우팅상 도달하지 않는 문서를 검사하게 되어, 그린인 채로 경계가 부재한다.
+# charter Tier-1 Non-Goal(2026-07-09 증거인멸 조력 금지)의 런타임 앵커.
+SKILL_ENFORCEMENT_SAFETY_BOUNDARIES = [
+    "소송 승패·형량 예측",
     # 증거 인멸 조력 금지 / 합법적 보존만 (명사 kernel 토큰)
     "증거 인멸·은닉·수사 방해",
     "합법적 보존·대응",
-    "변호사 자문을 대체하지 않는다",
+    "변호사 대체",
 ]
 
 # role/destination gate 출력 6단 순서 — 순서 자체가 계약이다 (SKILL.md,
@@ -2140,8 +2143,19 @@ def check_enforcement_response_workflow() -> None:
     for required in ENFORCEMENT_RESPONSE_SCENARIOS:
         assert_contains(text, f"### {required}", label)
 
-    for required in ENFORCEMENT_RESPONSE_SAFETY_BOUNDARIES:
-        assert_contains(text, required, label)
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    skill_label = "SKILL.md enforcement safety boundary"
+    for required in SKILL_ENFORCEMENT_SAFETY_BOUNDARIES:
+        assert_contains(skill_text, required, skill_label)
+
+    # 도달성: 수사·조사 요청이 새 의도 없이 enforcement-response.md에 닿는 경로가
+    # always-loaded 스파인에 있어야 한다. 없으면 이 문서는 라우팅상 orphan이다.
+    for required in ["수사·조사 개시", "references/enforcement-response.md"]:
+        assert_contains(skill_text, required, "SKILL.md enforcement routing principle")
+
+    # single-home guard: 경계 재서술이 reference로 되돌아오지 못하게 한다.
+    assert_not_contains(text, "- 형량·승패·처분 결과를 예측하지 않는다.", label)
+    assert_contains(text, "`SKILL.md`의 안전 경계가 단일 소스", label)
 
     workflow_map = read_text("skills/beopsuny/references/workflow-map.md")
     assert_contains(workflow_map, "`enforcement-response.md`", "workflow-map.md enforcement pointer")
@@ -2152,7 +2166,7 @@ def check_enforcement_response_workflow() -> None:
     )
 
     skill_rows = parse_markdown_table(
-        read_text("skills/beopsuny/SKILL.md"),
+        skill_text,
         "| 의도 | 트리거 예시 | 의도별 workflow reference |",
     )
     skill_intents = {

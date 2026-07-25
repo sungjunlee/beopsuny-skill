@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- **수사·조사 안전 경계 런타임 도달성 (#242)** — charter Tier-1 Non-Goal(2026-07-09 증거인멸·수사방해 조력 금지)이 `references/enforcement-response.md` 산문에만 살아 있었고, SKILL.md에는 해당 문자열이 0건이었다. 라우터에 수사·조사 진입점이 없어 실제 트리거("공정위 현장조사")는 `legal_research`/`compliance_checklist`로 가고 그 경로에 포인터가 없어 **3-hop litigation 경로로만 도달 가능**했다. 정적 검사(`check_enforcement_response_workflow`)는 그 문서 *안에서* 경계를 assert하고 있어 **아무도 읽지 않는 문서가 옳은 말을 하는지 검증**하는 상태 — 게이트는 영원히 그린이면서 경계는 런타임에 부재. 수정: ① 증거인멸 조력 금지를 SKILL.md `하지 않는 것`(always-loaded)으로 승격 ② 라우팅 원칙 7 추가 — 수사·조사 개시는 새 의도로 분리하지 않고 주 의도 유지 + `enforcement-response.md`를 초기 대응 구조로 로딩(원칙 4 해외진출과 동형, `SKILL_ROUTER_INTENTS` 고정 집합 불변) ③ 검사 조준점을 SKILL.md로 이동하고 reference 재서술은 포인터로 회수(one-home) + `assert_not_contains` 복귀 가드. mutation 5종 검증: 경계 삭제·원칙 삭제·재서술 복귀·커널 소실 전부 FAIL 탐지, 의미보존 재작성은 PASS(prose-lock 아님).
+
 ### Added
 - **하위 모델 플로어 실측 + 권장 모델 하한 명시** — v0.6.0 스킬 × claude-haiku-4-5 라이브: guardrails 3/11·o4 4/8. 정독 판정: 핵심 금지선(판례 날조 거부·무확인 쓰기 거부·직접 송부 회피)은 유지되나 evidence 계약층(라벨·상태 태그·자가 검증)이 탈락하고 내용 오류가 누출(과징금 산정 구조 환각 의심, 100분의 40→4% 자기모순, 시행 전 공포본을 현행+VERIFIED로 단정). v0.5.1 baseline A/B(동일 모델·현행 스코어러 2/10, 무확인 쓰기 약속 forbidden phrase 발화)로 **경계/기본형 경량화 인과 없음 — 쓰기 경계는 오히려 개선** 확인. README에 권장 모델(sonnet급 이상) 명시, evidence 3종 커밋(`*haiku45-20260721*.yaml`).
 
