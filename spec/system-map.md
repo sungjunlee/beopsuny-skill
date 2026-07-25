@@ -23,7 +23,7 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 
 ## Runtime Boundaries
 
-- `skills/beopsuny/SKILL.md` owns public skill identity, intent routing, Full/Lite mode summary, always-on legal gates, and project-wide safety boundaries.
+- `skills/beopsuny/SKILL.md` owns public skill identity, intent routing, the source-availability and graceful-degradation summary, always-on legal gates, and project-wide safety boundaries.
 - `skills/beopsuny/SKILL.md` does not own detailed workflow manuals; those live in `skills/beopsuny/references/` and are loaded on demand.
 - `skills/beopsuny/assets/data/` owns candidate data such as clause references and legal terms; it does not own current-law authority.
 - `skills/beopsuny/assets/policies/` owns policy tables such as source grades, review mode, freshness debt, and checklist routing inputs; these are contract inputs, not final legal conclusions.
@@ -44,8 +44,8 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 
 - `skills/beopsuny/`: repo-owned skill package distributed through plugin install, skill zip, or full repo zip.
 - `~/.beopsuny/`: user runtime state, including `profile.yaml`, optional practice overlays, project files, review logs, learning logs, verification logs, and cloned legal data.
-- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional Full-mode source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`.
-- `법망 API`: unauthenticated Lite-mode discovery and source lookup path; service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
+- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional local-mirror source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`. Availability is per source family, not a global mode switch.
+- `법망 API`: unauthenticated discovery and source lookup path used when a family has no local mirror; service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
 - `law.go.kr`: official source screens or responses (statutes and precedents) used only when actually opened or confirmed.
 - `korean-law-mcp`: optional OC-code-backed source for additional Korean legal materials such as constitutional, administrative appeal, ordinance, treaty, appendix, and form surfaces.
 - `WebSearch`: official-source discovery and policy/enforcement trend support; snippets are not `[VERIFIED]` evidence.

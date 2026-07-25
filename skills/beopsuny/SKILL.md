@@ -109,13 +109,13 @@ description: |
 
 ## 소스 가용성과 graceful degradation
 
-법순이는 단일 운영 모드로 동작한다. 별도의 "Full 모드 vs Lite 모드"는 없다. source family별로 로컬 미러가 있으면 그것을 1차 경로로 쓰고, 없으면 법망 API·law.go.kr·web으로 graceful degradation한다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
+법순이는 단일 운영 모드로 동작한다. Full/Lite 같은 모드 구분은 없다. source family별로 로컬 미러가 있으면 그것을 1차 경로로 쓰고, 없으면 법망 API·law.go.kr·web으로 graceful degradation한다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
 
 스킬 시작 시 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/` 하위 source family 디렉토리(`legalize-kr/kr/`, `admrule-kr/`, `precedent-kr/`, `ordinance-kr/`) 존재 여부로 각 family의 로컬 미러 가용성을 확인한다. 로컬 미러 가용성은 단일 스위치가 아니라 family별 묶음이다 — 예를 들어 법령은 `legalize-kr`로 확인하되 행정규칙 미러가 없으면 행정규칙은 법망 API로 degradation한다. 정확한 확인 명령과 family map은 `references/source-access.md`를 따른다.
 
 기본 원칙은 Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 해당 family가 없거나 keyword discovery·교차확인이 필요한 경우 법망 API, law.go.kr, korean-law-mcp를 다음 경로로 쓴다는 것이다.
 
-로컬 미러가 없어 법망 API·web으로 degradation하는 경우 provenance와 verification status에 그 사실을 정직하게 표시하고, 로컬 미러로 확인했다고 주장하지 않는다. 데이터가 없다고 자동으로 복제하지 않는다. 영속 파일시스템이 있는 환경에서 사용자가 데이터 다운로드(Full 모드 설정)를 요청할 때만 `references/source-access.md`의 초기화 절차를 따른다.
+로컬 미러가 없어 법망 API·web으로 degradation하는 경우 provenance와 verification status에 그 사실을 정직하게 표시하고, 로컬 미러로 확인했다고 주장하지 않는다. 데이터가 없다고 자동으로 복제하지 않는다. 영속 파일시스템이 있는 환경에서 사용자가 로컬 미러 셋업(데이터 다운로드)을 요청할 때만 `references/source-access.md`의 초기화 절차를 따른다.
 
 ## 출처 권위 라벨 계약
 

@@ -62,7 +62,7 @@ test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/precedent-kr
 test -d ${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/ordinance-kr
 ```
 
-`legalize-kr/kr/`가 있으면 법령은 로컬 미러가 1차 경로다. 다른 로컬 미러는 family별 capability로 판단한다. 예를 들어 `legalize-kr`만 있으면 법령은 로컬 미러, 행정규칙은 법망 API/law.go.kr로 degradation한다. 데이터가 없다고 자동 clone하지 않는다. 영속 파일시스템에서 사용자가 데이터 다운로드(Full 모드 설정)를 요청할 때만 초기화한다.
+`legalize-kr/kr/`가 있으면 법령은 로컬 미러가 1차 경로다. 다른 로컬 미러는 family별 capability로 판단한다. 예를 들어 `legalize-kr`만 있으면 법령은 로컬 미러, 행정규칙은 법망 API/law.go.kr로 degradation한다. 데이터가 없다고 자동 clone하지 않는다. 영속 파일시스템에서 사용자가 로컬 미러 셋업(데이터 다운로드)을 요청할 때만 초기화한다.
 
 ## Capability Matrix
 
@@ -168,7 +168,7 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 
 ## 데이터 초기화
 
-영속 파일시스템이 있는 환경에서 사용자가 Full 모드 설정을 요청할 때만 실행한다. Desktop Chat처럼 채팅마다 스토리지가 초기화되는 환경에서는 권장하지 않는다.
+영속 파일시스템이 있는 환경에서 사용자가 로컬 미러 셋업(데이터 다운로드)을 요청할 때만 실행한다. Desktop Chat처럼 채팅마다 스토리지가 초기화되는 환경에서는 권장하지 않는다.
 
 `--depth`를 쓰지 않는다. 개정 이력 추적에 전체 히스토리가 필요하다.
 
