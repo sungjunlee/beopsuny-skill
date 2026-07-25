@@ -153,11 +153,11 @@ Mutation discipline:
 
 ### Expected Behaviors
 - A simple confirmation request (statute text, enforcement date, official link) is answered through `legal_research` alone without loading contract, checklist, bulk-review, or knowledge-layer workflow references, and any over-routing judgment cites Right-sizing (routing principle 1) as the single criterion.
-- Every answer that cites legal authority passes the always-on gates (citation verification, self-verification, output contract) regardless of the chosen primary intent, and conditional gates (freshness, profile/practice) attach whenever their trigger is present — loading economy never changes gate applicability.
+- Every answer that cites legal authority passes citation verification regardless of the chosen primary intent. Self-verification and the output contract attach whenever the answer carries a legal conclusion or an editable draft, and conditional gates (freshness, profile/practice) attach whenever their trigger is present. Attachment follows what the answer actually produces, stated in each gate's 적용 범위 row; loading economy decides when a gate attaches, never whether its boundary can be relaxed — a citation-only confirmation still carries source-authority labels and verification status.
 - When the router spine changes (intent row, gate table, routing principle, loading rule, or spine size), the intent table, gate tables, router regression fixtures, and router static checks are updated together or the non-applicable surfaces are explicitly justified.
 
 ### Hard Constraints
-- This capability never lets spine-size reduction, reference-loading economy, or routing simplification detach an always-on legal gate from the always-loaded surface; workflow detail may move to `references/`, gate attachment may not.
+- This capability never lets spine-size reduction, reference-loading economy, or routing simplification relax a gate boundary or skip a gate on an answer that meets its 적용 범위; workflow detail may move to `references/`, and a gate's attachment condition may be stated but never weakened. The gate table itself stays in the always-loaded spine.
 - This capability never answers a Korean-law request from memory because routing or reference loading failed or was skipped; a failed or unavailable route degrades to `[INSUFFICIENT]` or a narrower answer, never to memory-based conclusions.
 
 ### Learnings

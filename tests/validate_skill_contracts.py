@@ -2797,6 +2797,43 @@ def check_bulk_grid_report_template_contract() -> None:
     )
 
 
+def check_skill_gate_attachment_and_draft_first() -> None:
+    """#246. 두 계약 모두 always-loaded spine에 집이 있어야 한다.
+
+    (1) gate 부착 tier — 인용만 있는 답변에 Self verification·Output contract
+        reference까지 로딩하면 단순 조문 확인 한 건에 gate reference 518줄이
+        붙는다. 부착 시점을 정하는 것이지 경계를 완화하는 것이 아니므로,
+        '경계 아님' 문구가 함께 살아 있어야 완화 해석을 막는다.
+    (2) draft-first 초벌 — charter Decision 2026-07-24가 기본 산출물로 규정했는데
+        집이 references/output-formats.md(on-demand)에만 있었고 SKILL.md에는
+        0건이었다. #242와 같은 형태(Tier-1 결정이 런타임 표면 밖)라 spine으로
+        승격했다. 여기서는 kernel 토큰과 one-home 포인터만 본다.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md gate attachment / draft-first"
+
+    for required in [
+        # (1) 부착은 라우팅이 아니라 답변 내용이 정한다 + 완화 아님 단서
+        "인용만 있고 결론·초벌이 없는 답변",
+        "부착 시점이 정해지는 것",
+        "출처 권위 라벨과 verification status는 그대로",
+        # (2) 기본 산출물 kernel
+        "편집 가능한 초벌",
+        "draft-first",
+        "gate를 완화하지 않는다",
+    ]:
+        assert_contains(text, required, label)
+
+    # one-home: 역할별 output mode와 초벌 밀도 기준의 집은 reference다.
+    assert_contains(text, "`references/output-formats.md`가 단일 소스", label)
+    draft_reference = read_text("skills/beopsuny/references/output-formats.md")
+    for required in ["draft-first", "초벌"]:
+        assert_contains(draft_reference, required, "output-formats.md draft-first home")
+
+    # 부착 tier 이전의 서술("단순 확인에도 gate를 적용")이 되살아나면 예산 회귀다.
+    assert_not_contains(text, "단순 조문·링크 확인도 법률 인용이 있으면 gate를 적용", label)
+
+
 def check_skill_quality_contract_router_map() -> None:
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md"
@@ -4252,7 +4289,8 @@ CHECK_GROUPS = (
     CheckGroup(
         "router/loading: quality contract map",
         (
-            check_skill_quality_contract_router_map,
+            check_skill_gate_attachment_and_draft_first,
+    check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
             check_workflow_map_structure,
             check_cross_border_overlay_roadmap,
