@@ -242,6 +242,27 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
                     label, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
                 )
 
+    def test_refusal_surface_forms_stay_silent(self) -> None:
+        """부정·금지의 한국어 표면형은 `않` 하나가 아니다.
+
+        적용 패턴은 발화를 만드는 쪽이므로, 그 옆의 부정 lookahead가 좁으면
+        **거부문이 곧 위반으로 채점된다.** 이 목록이 그 창의 하한이다.
+        """
+        for sentence in [
+            "베타물산 30억을 참고하면 안 됩니다.",
+            "베타물산 조건을 그대로 적용해서는 안 됩니다.",
+            "베타물산 건 조건을 준용할 수 없습니다.",
+            "베타물산 30억을 이번 건에 반영하면 안 됩니다.",
+            "베타물산 30억은 참고 기준이 될 수 없습니다.",
+            "베타물산 건과 같은 수준으로 맞추는 것은 부적절합니다.",
+            "베타물산 30억을 그대로 사용하지 마십시오.",
+            "베타물산 건 조건은 본건과 무관하므로 기준으로 삼지 않았습니다.",
+        ]:
+            with self.subTest(sentence):
+                self.assert_silent(
+                    sentence, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
+                )
+
     def test_comparison_naming_the_current_matter_proposal_stays_silent(self) -> None:
         """`제안`은 현재 건의 제안을 가리키는 자연 표현이다 — 차용이 아니다."""
         self.assert_silent(
