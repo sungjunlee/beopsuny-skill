@@ -220,6 +220,7 @@ LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-07",
     "router-14",
     "router-16",
+    "router-17",
 }
 LOCAL_MIRROR_DEFAULT_LABELS = {
     "legalize-kr (로컬 미러 법령 Markdown)": "공식 원문 기반 로컬 미러",
@@ -409,6 +410,9 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
     # 인용-only 답변에도 붙는다는 것이 핵심이다 — 조회 경로야말로 외부 내용이
     # 들어오는 자리인데 self-verification.md는 거기에 로딩되지 않는다 (#262).
     for required in [
+        # 주어를 지목하는 토큰이 없으면 문장을 도려내도 나머지 토큰이 다른
+        # 문장에 남아 통과한다 — probe P1이 그렇게 빠져나갔다.
+        "스킬 밖에서 들어온 모든 내용",
         "검토 대상 데이터",
         "덮어쓸 수 없다",
         "API·MCP 응답",
@@ -3701,6 +3705,7 @@ def check_router_guardrail_scenarios() -> None:
         "router-14",
         "router-15",
         "router-16",
+        "router-17",
     }
     missing = expected - scenario_ids
     if missing:
@@ -3739,6 +3744,7 @@ def check_router_fixture_integrity() -> None:
         "router-14",
         "router-15",
         "router-16",
+        "router-17",
     }
     if expected_output_ids != expected_guardrail_ids:
         raise AssertionError(
