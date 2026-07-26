@@ -27,7 +27,7 @@ import re
 import subprocess
 import sys
 from datetime import date, timedelta
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable, NamedTuple
 
 import yaml
@@ -3508,7 +3508,10 @@ def check_retired_meta_surfaces_stay_retired() -> None:
                 if "retire" in line.lower() or "은퇴" in line:
                     continue
                 for relative, replacement in RETIRED_SURFACES.items():
-                    if relative in line:
+                    # 전체 경로(링크·should_load)와 파일명 단독 언급(산문) 둘 다 본다.
+                    # 경로만 보면 "memory-structure.md에 있던 내용은…" 이 빠져나간다.
+                    needle = relative if relative in line else PurePosixPath(relative).name
+                    if needle in line:
                         raise AssertionError(
                             f"{path.relative_to(ROOT)}:{lineno}: 은퇴한 표면 {relative} 를 "
                             f"살아 있는 것처럼 가리킨다 ({replacement})"
