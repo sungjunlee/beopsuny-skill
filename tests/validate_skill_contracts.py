@@ -27,7 +27,7 @@ import re
 import subprocess
 import sys
 from datetime import date, timedelta
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable, NamedTuple
 
 import yaml
@@ -422,6 +422,43 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         "gate를 그대로 적용한다",
     ]:
         assert_contains(text, required, label)
+
+
+def check_skill_resource_map_matches_tree() -> None:
+    """보조 리소스 지도가 실제 디렉터리 구조와 어긋나지 않게 고정한다.
+
+    이 표에는 검사가 하나도 걸려 있지 않았고, 그래서 #259로 저장 계층이 사라진
+    뒤에도 `assets/schemas/`를 "사용자 상태 템플릿 — 회사 프로필, 관심 법령,
+    과거 검토"로 서술한 채 남아 있었다. 지도가 존재하지 않는 영토를 가리키면
+    처음 읽는 사람이 없는 기능을 있다고 믿는다. 산문이 아니라 위치 집합·디렉터리
+    존재·은퇴 어휘 부재로 고정한다.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md 보조 리소스 지도"
+
+    # 셀 수가 어긋난 행을 건너뛰면 그 행의 은퇴 어휘도 함께 건너뛰게 된다 —
+    # 나머지 행이 정상이면 검사가 통과하는 조용한 구멍이다 (PR #261 리뷰).
+    rows = parse_markdown_table(text, "| 위치 | 역할 | 예시 |")
+    if not rows:
+        raise AssertionError(f"{label}: 보조 리소스 지도 표가 없다")
+    for row in rows:
+        if len(row) != 3:
+            raise AssertionError(f"{label}: 행은 셀 3개여야 한다 — {row!r}")
+
+    listed = {row[0].strip("`").rstrip("/") for row in rows}
+    expected = {"assets/policies", "assets/data", "assets/schemas", "references"}
+    if listed != expected:
+        raise AssertionError(f"{label}: 위치 집합 drift: {sorted(listed)!r}")
+
+    for location in sorted(listed):
+        if not (ROOT / "skills/beopsuny" / location).is_dir():
+            raise AssertionError(f"{label}: {location} 디렉터리가 실제로 없다")
+
+    # 은퇴한 저장 계층을 지도가 계속 광고하지 않게 한다 (#259).
+    for row in rows:
+        for retired in ["사용자 상태", "회사 프로필", "과거 검토", "메모리"]:
+            if retired in row[1] or retired in row[2]:
+                raise AssertionError(f"{label}: 은퇴한 저장 계층 어휘 {retired!r} — {row!r}")
 
 
 def check_contract_review_guide() -> None:
@@ -2024,16 +2061,10 @@ def check_asset_freshness_metadata_tracked() -> None:
         "skills/beopsuny/assets/policies/knowledge_manifest.yaml",
         "skills/beopsuny/assets/policies/review_mode.yaml",
         "skills/beopsuny/assets/policies/source_grades.yaml",
-        "skills/beopsuny/assets/schemas/company_profile.yaml",
-        "skills/beopsuny/assets/schemas/compliance_status.yaml",
         "skills/beopsuny/assets/schemas/freshness_metadata.yaml",
         "skills/beopsuny/assets/schemas/freshness_revalidation.yaml",
-        "skills/beopsuny/assets/schemas/internal_rules.yaml",
         "skills/beopsuny/assets/schemas/legal_verification_packet.yaml",
         "skills/beopsuny/assets/schemas/output_contract.yaml",
-        "skills/beopsuny/assets/schemas/past_reviews.yaml",
-        "skills/beopsuny/assets/schemas/practice_profile.yaml",
-        "skills/beopsuny/assets/schemas/watched_laws.yaml",
     }
     registry = freshness_debt_registry()
     registered_assets = {
@@ -2985,7 +3016,7 @@ def check_readme_quality_contract_map() -> None:
         "conclusion binding",
         "triage_only",
         "품질 계약 변경 체크리스트",
-        "새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay",
+        "새 법률 기능, 업무 영역, 출력 모드, stale 자산",
         "SKILL.md`의 의도 라우터(의도 표 또는 gate 표)",
         "`tests/scenarios/16_router_regression.yaml`",
         "`tests/fixtures/router_guardrail_outputs.yaml`",
@@ -3444,11 +3475,47 @@ RETIRED_SURFACES = {
 }
 
 
+# 어떤 live 문서가 은퇴한 경로를 계속 가리키는지 보는 범위. CHANGELOG,
+# backlog/, forward_evals/runs·evidence, docs/ 는 과거 기록이라 제외한다 —
+# 그 표면들은 당시 사실을 서술하는 것이 일이다.
+RETIRED_SURFACE_LIVE_GLOBS = (
+    "skills/**/*.md",
+    "skills/**/*.yaml",
+    "spec/*.md",
+    "README.md",
+    "CLAUDE.md",
+    "DESIGN.md",
+    "tests/scenarios/*.yaml",
+    "tests/forward_evals/*.yaml",
+)
+
+
 def check_retired_meta_surfaces_stay_retired() -> None:
     """Retired surfaces must not silently return; each concept has a live home instead."""
     for relative, replacement in RETIRED_SURFACES.items():
         if (ROOT / relative).exists():
             raise AssertionError(f"{relative}: retired surface must not return ({replacement})")
+
+    # 파일 부재만 보면 실제로 일어난 실패를 놓친다: #259로 memory-structure.md를
+    # 지운 뒤에도 spec/system-map.md가 그 파일을 링크한 채 게이트는 그린이었다
+    # (PR #261 리뷰). 등록부를 그대로 재사용해 live 표면의 문자열 언급까지 본다 —
+    # 은퇴마다 검사를 새로 쓰지 않아도 되고, 링크와 산문을 함께 잡는다.
+    # 은퇴 사실 자체를 기록하는 줄(charter Decision 등)은 면제한다 — 그 줄의 일은
+    # 은퇴를 서술하는 것이지 살아 있는 것처럼 가리키는 것이 아니다.
+    for pattern in RETIRED_SURFACE_LIVE_GLOBS:
+        for path in sorted(ROOT.glob(pattern)):
+            for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if "retire" in line.lower() or "은퇴" in line:
+                    continue
+                for relative, replacement in RETIRED_SURFACES.items():
+                    # 전체 경로(링크·should_load)와 파일명 단독 언급(산문) 둘 다 본다.
+                    # 경로만 보면 "memory-structure.md에 있던 내용은…" 이 빠져나간다.
+                    needle = relative if relative in line else PurePosixPath(relative).name
+                    if needle in line:
+                        raise AssertionError(
+                            f"{path.relative_to(ROOT)}:{lineno}: 은퇴한 표면 {relative} 를 "
+                            f"살아 있는 것처럼 가리킨다 ({replacement})"
+                        )
 
 
 def check_self_verification_guardrails() -> None:
@@ -4014,6 +4081,7 @@ CHECK_GROUPS = (
             check_skill_frontmatter_minimal,
             check_skill_router_schema_references_precise,
             check_skill_company_context_read_only_and_trust_boundary,
+            check_skill_resource_map_matches_tree,
         ),
     ),
     CheckGroup(

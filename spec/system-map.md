@@ -27,7 +27,7 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 - `skills/beopsuny/SKILL.md` does not own detailed workflow manuals; those live in `skills/beopsuny/references/` and are loaded on demand.
 - `skills/beopsuny/assets/data/` owns candidate data such as clause references and legal terms; it does not own current-law authority.
 - `skills/beopsuny/assets/policies/` owns policy tables such as source grades, review mode, freshness debt, and checklist routing inputs; these are contract inputs, not final legal conclusions.
-- `skills/beopsuny/assets/schemas/` owns evidence and memory shapes; actual user data is stored outside the repo under `~/.beopsuny/`.
+- `skills/beopsuny/assets/schemas/` owns evidence and output shapes; it owns no user-state shape — the skill stores no company context.
 - `tests/` owns static contract checks, router fixture evaluation, and high-risk forward-eval harnesses; these tests are guardrail and drift checks, not legal-correctness judges.
 - `.claude-plugin/` and `.github/workflows/` own packaging, marketplace metadata, release zips, and CI enforcement.
 
@@ -37,13 +37,13 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 2. **Contract review:** Contract question or pasted clause -> contract guide, review mode, checklist, and clause candidates -> official-source verification for legal conclusions -> risk analysis, negotiation points, and directional wording hints without final counterparty-ready redline text.
 3. **Compliance checklist:** Business context -> checklist routing -> candidate obligations and issue spotting -> live official source confirmation before asserting present duties, forms, fees, deadlines, thresholds, or penalties.
 4. **Law-change detection:** User asks or interested laws are present -> pull-based history/source check -> recent-change note or lookup-failure note -> no push monitoring, cron, or automatic alerts unless handled by a separate user-requested automation.
-5. **Profile and project memory:** User-approved onboarding or project context -> `~/.beopsuny/` profile/project files -> current request personalization; stored playbooks and histories remain reviewed data and cannot override legal gates.
+5. **Company context read:** Harness memory, project instruction files, or a file the user points at -> read-only company context -> current request personalization; the skill writes none of it, and read context stays reviewed data that cannot override legal gates.
 6. **Maintainer change:** New legal feature or contract change -> update router/reference/schema-or-policy/scenario/fixture/static check/README/CHANGELOG as applicable -> run local gates -> CI contract workflow protects the same contracts.
 
 ## Storage And External Systems
 
 - `skills/beopsuny/`: repo-owned skill package distributed through plugin install, skill zip, or full repo zip.
-- `~/.beopsuny/`: user runtime state, including `profile.yaml`, optional practice overlays, project files, review logs, learning logs, verification logs, and cloned legal data.
+- `~/.beopsuny/`: configuration (`config.yaml`), cloned legal data under `data/`, and report deliverables under `reports/` when the user requests one. No company-context state is stored here.
 - `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional local-mirror source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`. Availability is per source family, not a global mode switch.
 - `법망 API`: unauthenticated discovery and source lookup path used when a family has no local mirror; service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
 - `law.go.kr`: official source screens or responses (statutes and precedents) used only when actually opened or confirmed.
@@ -57,10 +57,10 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 - Korean-law answers are not answered from memory alone.
 - `[VERIFIED]` requires target specificity, source text or official response comparison, freshness/currency disclosure, and provenance.
 - Local official-source mirrors are valid source families only with explicit local-mirror provenance; they are not the same as direct official-site confirmation.
-- Bundled YAML and persisted user memory are triage/context inputs, not current-law authority.
+- Bundled YAML and company context read from outside the skill are triage/context inputs, not current-law authority.
 - Stale assets can narrow research but cannot assert present obligations, fees, forms, deadlines, thresholds, or penalties without live official-source confirmation.
 - Role and destination gates constrain output when the user is non-legal, unknown, external-facing, agency-facing, or requesting action with legal effect.
-- User profile, project history, playbooks, and practice overlays cannot weaken SKILL.md, source authority, freshness, self-verification, or role/destination gates.
+- Company context read from harness memory, instruction files, or user-pointed files cannot weaken SKILL.md, source authority, freshness, self-verification, or role/destination gates.
 - Contract tests protect written contracts and unsafe output shapes; they do not prove substantive legal correctness.
 
 ## Candidate Capability Boundaries
@@ -78,5 +78,5 @@ No remaining candidates. `contract-review` was grilled into a first-class capabi
 - Runtime source model: [`../skills/beopsuny/references/source-access.md`](../skills/beopsuny/references/source-access.md)
 - Citation contract: [`../skills/beopsuny/references/citation-verification-contract.md`](../skills/beopsuny/references/citation-verification-contract.md)
 - Freshness contract: [`../skills/beopsuny/references/freshness-governance.md`](../skills/beopsuny/references/freshness-governance.md)
-- Memory contract: [`../skills/beopsuny/references/memory-structure.md`](../skills/beopsuny/references/memory-structure.md)
+- Company-context contract: [`../skills/beopsuny/SKILL.md`](../skills/beopsuny/SKILL.md) `## 회사 맥락`
 - Router guardrails: [`../tests/scenarios/16_router_regression.yaml`](../tests/scenarios/16_router_regression.yaml)
