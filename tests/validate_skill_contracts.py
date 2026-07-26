@@ -2773,6 +2773,34 @@ def check_bulk_grid_report_template_contract() -> None:
     )
 
 
+def check_skill_model_floor_disclosure() -> None:
+    """#253. 하위 모델에서 먼저 무너지는 것은 핵심 금지선이 아니라 evidence
+    계약층이다(2026-07-21 플로어 실측: haiku가 판례 날조·무확인 쓰기·직접 송부는
+    거부하나 라벨·상태 태그·공포본 currency는 신뢰 못 할 수준). 사용자는 답을
+    받지만 그 답이 계약을 지켰는지 알 수 없다 — 막을 일이 아니라 밝힐 일이라
+    차단이 아니라 고지로 넣었다(#249 실현 가능성 조사: 모델 자기보고 10/10).
+
+    문안은 모델 세대에 종속되면 안 된다 — 특정 모델 ID를 박으면 #240에서 겪은
+    어휘 잔재가 반복된다. tier 어휘 + fail-open 단서만 토큰으로 고정한다.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md model floor disclosure"
+
+    for required in [
+        "경량 tier",
+        # 무엇이 저하되는지 — 핵심 금지선이 아니라 evidence 계약층이다
+        "evidence 계약층",
+        "출처 권위 라벨·verification status·공포/시행일 판정",
+        # fail-open: 불확실하면 고지하지 않는다 (정상 모델 오경고 방지)
+        "확실히 알 수 없으면 고지하지 않는다",
+    ]:
+        assert_contains(text, required, label)
+
+    # 세대 종속 금지: 특정 모델 ID/제품명을 spine에 박으면 모델이 바뀔 때 썩는다.
+    for forbidden in ["haiku", "Haiku", "sonnet", "Sonnet", "opus", "Opus"]:
+        assert_not_contains(text, forbidden, f"{label} (모델명은 spine에 두지 않는다)")
+
+
 def check_skill_gate_attachment_and_draft_first() -> None:
     """#246. 두 계약 모두 always-loaded spine에 집이 있어야 한다.
 
@@ -4245,7 +4273,8 @@ CHECK_GROUPS = (
     CheckGroup(
         "router/loading: quality contract map",
         (
-            check_skill_gate_attachment_and_draft_first,
+            check_skill_model_floor_disclosure,
+    check_skill_gate_attachment_and_draft_first,
     check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
             check_cross_border_overlay_roadmap,
