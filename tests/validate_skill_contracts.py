@@ -483,10 +483,32 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
         )
         if row is None:
             raise AssertionError(f"output-formats.md: destination 표에 {destination} 행이 없다")
-        if "다른 건" not in row:
+        # `다른 건`만 걸면 다른 문구로 바꿔도 통과한다. strip 정본(yaml)과 같은
+        # 구를 걸어 산문 표와 스키마가 갈라지지 않게 한다.
+        if "다른 건·상대방·협상 조건을 식별하는 사실" not in row:
             raise AssertionError(
-                f"output-formats.md: {destination} 금지 열에 다른 건 사실 제외가 없다: {row!r}"
+                f"output-formats.md: {destination} 금지 열이 strip 정본 구문을 담지 않는다: {row!r}"
             )
+
+    # PR이 "집"이라고 적은 spec 표면이 게이트에 안 묶여 있으면, 그 문장을 지워도
+    # 그린이다 — 실제로 capability HC와 charter Decision 행이 그 상태였다
+    # (PR #267 리뷰). 주어를 지목하는 토큰으로 고정한다.
+    capabilities = read_text("spec/capabilities.md")
+    for required in [
+        "per-working-directory, not per-matter",
+        "never applies a fact scoped to another matter",
+        "without an explicit request naming that matter",
+        "carried by the skill rather than by the user's directory layout",
+    ]:
+        assert_contains(capabilities, required, "capabilities.md company-context-trust")
+
+    charter = read_text("spec/charter.md")
+    for required in [
+        "Multi-matter safety is the skill's job",
+        "per-matter directory separation is optional hardening",
+        "restores HC2 (cross-matter isolation) as a read-axis property",
+    ]:
+        assert_contains(charter, required, "charter.md Decisions")
 
     # 유출 검사는 대외 구간 안에서만 발화한다. 구간 마커가 출력에 없으면 구간이
     # 빈 문자열이 되어 검사가 통째로 침묵하므로, 이 룰을 쓰는 시나리오는 그
@@ -514,12 +536,15 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
 
     # 리포트는 건별이 아니라 전역 디렉터리에 쌓인다. 그 사실과 보존·삭제 책임이
     # 어디에도 적혀 있지 않으면 matter 식별 산출물이 조용히 누적된다.
+    # `BEOPSUNY_DATA_ROOT`는 변경 전에도 경로 표에 있었으므로 단독으로는 새
+    # 문단의 삭제를 못 잡는다 (#262 토큰 함정형). 새 문단에만 있는 주어 묶음으로
+    # 고정한다.
     report = read_text("skills/beopsuny/references/report-deliverable.md")
     for required in [
         "보관 범위",
-        "전역",
+        "건을 식별하는 산출물이 전역에 쌓이는 자리",
         "자동으로 지우지 않는다",
-        "BEOPSUNY_DATA_ROOT",
+        "보존과 삭제는 사용자 책임",
     ]:
         assert_contains(report, required, "report-deliverable.md 보관 범위")
 

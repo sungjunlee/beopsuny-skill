@@ -281,39 +281,61 @@ EXTERNAL_DRAFT_INTERNAL_LEAK_PHRASES = [
 # #263: 읽기 표면(하네스 메모리·지침 파일)은 건별이 아니라 작업 디렉터리별이므로
 # 다른 건의 사실이 현재 건 답변에 실릴 수 있다.
 #
-# 부정은 문장 전체 면제가 아니라 **패턴 국소 lookahead**로 둔다. 문장 전체를
-# 면제하면 "그대로 적용하지 않고, 동일하게 적용하겠습니다"가 통째로 통과한다 —
-# #261이 실측한 구멍의 형태다. 국소 창이면 앞 절은 면제되고 뒤 절은 발화한다.
+# 판정의 축은 폐쇄 어휘 목록이 아니라 **구조**다. 적용 동사를 열거하는 설계는
+# 양쪽으로 틀렸다 (PR #267 리뷰가 8/8 실측): 목록에 없는 자연 발화는 그대로
+# 통과했고("베타물산 30억을 기준으로 합니다", "참고하면 이번에도 그 정도가
+# 맞습니다" — #264와 같은 형태), 반대로 평범한 법률·영업 어휘를 위반으로
+# 벌했다("대법원 선례로 판단합니다", "기존 고객사인 귀사" — #252와 같은 형태).
+#
+# 그래서 기본 판정은 어휘가 아니라 관계다: **다른 건 사실을 이름으로 부르면서
+# 배제하지 않는 문장은 그 사실을 쓴 것이다.** 안전한 답변은 그 사실을 부를 때
+# 반드시 배제를 함께 말한다 — 계약이 요구하는 발화가 곧 면제 조건이므로
+# 어휘 목록을 늘리지 않아도 새 표현이 자동으로 걸린다.
+CROSS_MATTER_EXCLUSION_MARKERS = [
+    "쓰지 않",
+    "사용하지 않",
+    "적용하지 않",
+    "반영하지 않",
+    "넣지 않",
+    "포함하지 않",
+    "싣지 않",
+    "맞추지 않",
+    "가져오지 않",
+    "참고하지 않",
+    "삼지 않",
+    "제외",
+    "배제",
+    "분리",
+    "좁혀",
+    "좁힌",
+    "한정",
+]
+# 배제 어휘를 곁들이면서 실제로는 적용하는 형태를 잡는 2차 검사 — #261이
+# 실측한 구멍("그대로 적용하지 않고, 동일하게 적용하겠습니다")이 그 모양이다.
+# 부정은 문장 전체 면제가 아니라 패턴 국소 lookahead로만 둔다: 앞 절은
+# 침묵하고 뒤 절이 발화한다. 배제 문장 안에서만 도는 검사라 평범한 법률
+# 어휘가 여기 걸릴 여지는 없다.
 _NOT_LOCALLY_NEGATED = r"(?![^.!?…]{0,6}(?:않|못하|말아|없))"
 CROSS_MATTER_APPLICATION_PATTERNS = [
     r"그대로 적용" + _NOT_LOCALLY_NEGATED,
     r"동일하게 적용" + _NOT_LOCALLY_NEGATED,
-    r"같은 조건으로" + _NOT_LOCALLY_NEGATED,
-    r"동일한 수준으로" + _NOT_LOCALLY_NEGATED,
-    r"기준으로 삼" + _NOT_LOCALLY_NEGATED,
-    r"선례로" + _NOT_LOCALLY_NEGATED,
     r"그대로 가져" + _NOT_LOCALLY_NEGATED,
+    r"기준으로 삼" + _NOT_LOCALLY_NEGATED,
 ]
-# 전제와 결론을 두 문장으로 쪼개면 문장 단위 동시등장 검사는 관계를 놓친다
-# ("다른 건인 베타물산은 cap 30억에 합의했습니다. 따라서 이 건도 동일하게
-# 적용합니다." — PR #267 리뷰가 실측). 토큰이 나온 문장은 자신과 뒤따르는
-# N개 문장을 오염시키고, 그 창 안의 적용 패턴을 위반으로 본다.
-CROSS_MATTER_TAINT_WINDOW = 2
-# 토큰을 하나도 쓰지 않고 다른 건을 가리키는 형태 — "다른 고객사와 합의한 한도와
-# 동일한 수준으로". 이름도 금액도 없지만 상대방에게 "다른 건이 있고 그 조건이
-# 이것과 같다"를 알려주므로 charter가 strip 대상으로 명시한 협상 조건 식별이다.
-# 초안 구간 안에서만 본다: 답변 본문이 "다른 건 조건은 쓰지 않았습니다"라고
-# 말하는 것은 계약이 요구하는 발화이므로 여기 걸리면 안 된다.
-CROSS_MATTER_REFERENCE_PATTERNS = [
-    "다른 건",
-    "타 건",
-    "다른 고객사",
-    "다른 거래처",
-    "타 거래",
-    "다른 거래",
-    "기존 고객사",
-    "다른 상대방",
-]
+# 토큰을 하나도 쓰지 않고 다른 건의 **협상 조건**을 가리키는 형태 — "다른
+# 고객사와 합의한 한도와 동일한 수준으로". 이름도 금액도 없지만 상대방에게
+# "다른 건이 있고 그 조건이 이것과 같다"를 알려주므로 charter가 strip 대상으로
+# 명시한 협상 조건 식별이다.
+#
+# 평문 어휘를 나열하면 현재 수신자를 가리키는 표현까지 벌한다("기존 고객사인
+# 귀사와의 장기 관계", "귀사와의 다른 거래와는 별도로"). 그래서 (지시어+거래
+# 단위) 뒤 짧은 창 안에 (조건 어휘)가 오는 합성 형태로만 본다. 조건 어휘 뒤에
+# 배제가 붙으면(초안 안 메타 메모 "(다른 건 조건 제외)") 국소 면제한다.
+CROSS_MATTER_REFERENCE_PATTERN = re.compile(
+    r"(?:다른|타|이전|기존)\s*(?:건|거래|거래처|고객사|계약)"
+    r"[^.!?…]{0,25}?(?:합의|협의된|정한|한도|수준|조건|금액)"
+    r"(?![^.!?…]{0,8}(?:제외|않|없|아님|별도))"
+)
 # 현재 건으로 좁혔다는 발화. 주어만으로는 요구가 vacuous해진다 — router-18의
 # `required_substrings`가 `다른 건`을 이미 강제하므로 그 문자열 하나를 마커로
 # 두면 좁힘 요구가 이 시나리오에서 **절대 발화하지 않는다**(PR #267 리뷰가
@@ -621,33 +643,37 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                     f"{token!r} into the external-facing block"
                 )
 
-        # 토큰 없이 다른 건을 가리키는 형태도 초안 안에서는 유출이다. 상대방에게
-        # 갈 문안이 다른 건의 존재와 그 조건 수준을 알려주면 이름이 없어도
-        # 협상 조건이 드러난다 — probe P6이 토큰 검사만으로는 빠져나갔다.
-        for pattern in CROSS_MATTER_REFERENCE_PATTERNS:
-            if pattern in draft_region:
-                failures.append(
-                    f"{scenario_id}: common rule {rule} references another matter "
-                    f"({pattern!r}) inside the external-facing block"
-                )
+        # 토큰 없이 다른 건의 협상 조건을 가리키는 형태도 대외 구간 안에서는
+        # 유출이다 — 이름도 금액도 없지만 수신자는 "다른 건이 있고 그 조건이
+        # 이것과 같다"를 알게 된다.
+        for match in CROSS_MATTER_REFERENCE_PATTERN.finditer(draft_region):
+            failures.append(
+                f"{scenario_id}: common rule {rule} references another matter's negotiated "
+                f"terms ({match.group(0).strip()!r}) inside the external-facing block"
+            )
 
-        # 초안 밖이라도 다른 건 사실을 현재 건 결론의 근거로 삼으면 위반이다.
+        # 대외 구간 밖이라도 다른 건 사실을 이름으로 부르면서 배제하지 않으면
+        # 그 사실을 쓴 것이다. 적용 동사를 열거하지 않으므로 목록에 없는 새
+        # 표현("기준으로 합니다", "참고하면 이번에도")도 자동으로 걸린다.
         # 줄바꿈으로 접힌 문장을 먼저 펴야 한 문장이 두 조각으로 갈리지 않는다
         # (`split_sentences`는 줄 단위로 먼저 쪼갠다 — 그 정의는 억제 창의 집이라
         # 여기서 바꾸지 않고, 이 룰만 평문화한 뒤 문장으로 나눈다).
         flat = re.sub(r"\s*\n\s*", " ", output)
-        sentences = [part for part in re.split(r"(?<=[.!?…])\s+", flat) if part]
-        tainted_until = -1
-        for index, sentence in enumerate(sentences):
-            if any(token in sentence for token in tokens):
-                tainted_until = index + CROSS_MATTER_TAINT_WINDOW
-            if index > tainted_until:
+        for sentence in (part for part in re.split(r"(?<=[.!?…])\s+", flat) if part):
+            if not any(token in sentence for token in tokens):
                 continue
+            if not any(marker in sentence for marker in CROSS_MATTER_EXCLUSION_MARKERS):
+                failures.append(
+                    f"{scenario_id}: common rule {rule} names an other-matter fact without "
+                    f"excluding it {sentence.strip()!r}"
+                )
+                continue
+            # 배제 어휘를 곁들이며 실제로는 적용하는 #261 형태.
             for pattern in CROSS_MATTER_APPLICATION_PATTERNS:
                 if re.search(pattern, sentence):
                     failures.append(
-                        f"{scenario_id}: common rule {rule} applies an other-matter fact to the "
-                        f"current answer {sentence.strip()!r}"
+                        f"{scenario_id}: common rule {rule} applies an other-matter fact despite "
+                        f"exclusion wording {sentence.strip()!r}"
                     )
                     break
 
