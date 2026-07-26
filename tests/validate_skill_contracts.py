@@ -424,6 +424,35 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_contains(text, required, label)
 
 
+def check_skill_resource_map_matches_tree() -> None:
+    """보조 리소스 지도가 실제 디렉터리 구조와 어긋나지 않게 고정한다.
+
+    이 표에는 검사가 하나도 걸려 있지 않았고, 그래서 #259로 저장 계층이 사라진
+    뒤에도 `assets/schemas/`를 "사용자 상태 템플릿 — 회사 프로필, 관심 법령,
+    과거 검토"로 서술한 채 남아 있었다. 지도가 존재하지 않는 영토를 가리키면
+    처음 읽는 사람이 없는 기능을 있다고 믿는다. 산문이 아니라 위치 집합·디렉터리
+    존재·은퇴 어휘 부재로 고정한다.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md 보조 리소스 지도"
+
+    rows = [row for row in parse_markdown_table(text, "| 위치 | 역할 | 예시 |") if len(row) == 3]
+    listed = {row[0].strip("`").rstrip("/") for row in rows}
+    expected = {"assets/policies", "assets/data", "assets/schemas", "references"}
+    if listed != expected:
+        raise AssertionError(f"{label}: 위치 집합 drift: {sorted(listed)!r}")
+
+    for location in sorted(listed):
+        if not (ROOT / "skills/beopsuny" / location).is_dir():
+            raise AssertionError(f"{label}: {location} 디렉터리가 실제로 없다")
+
+    # 은퇴한 저장 계층을 지도가 계속 광고하지 않게 한다 (#259).
+    for row in rows:
+        for retired in ["사용자 상태", "회사 프로필", "과거 검토", "메모리"]:
+            if retired in row[1] or retired in row[2]:
+                raise AssertionError(f"{label}: 은퇴한 저장 계층 어휘 {retired!r} — {row!r}")
+
+
 def check_contract_review_guide() -> None:
     text = read_text("skills/beopsuny/references/contract_review_guide.md")
     label = "contract_review_guide.md"
@@ -4014,6 +4043,7 @@ CHECK_GROUPS = (
             check_skill_frontmatter_minimal,
             check_skill_router_schema_references_precise,
             check_skill_company_context_read_only_and_trust_boundary,
+            check_skill_resource_map_matches_tree,
         ),
     ),
     CheckGroup(
