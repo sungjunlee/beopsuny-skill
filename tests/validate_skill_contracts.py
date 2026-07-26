@@ -436,7 +436,15 @@ def check_skill_resource_map_matches_tree() -> None:
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md 보조 리소스 지도"
 
-    rows = [row for row in parse_markdown_table(text, "| 위치 | 역할 | 예시 |") if len(row) == 3]
+    # 셀 수가 어긋난 행을 건너뛰면 그 행의 은퇴 어휘도 함께 건너뛰게 된다 —
+    # 나머지 행이 정상이면 검사가 통과하는 조용한 구멍이다 (PR #261 리뷰).
+    rows = parse_markdown_table(text, "| 위치 | 역할 | 예시 |")
+    if not rows:
+        raise AssertionError(f"{label}: 보조 리소스 지도 표가 없다")
+    for row in rows:
+        if len(row) != 3:
+            raise AssertionError(f"{label}: 행은 셀 3개여야 한다 — {row!r}")
+
     listed = {row[0].strip("`").rstrip("/") for row in rows}
     expected = {"assets/policies", "assets/data", "assets/schemas", "references"}
     if listed != expected:
