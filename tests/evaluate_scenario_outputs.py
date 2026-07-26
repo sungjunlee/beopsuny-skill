@@ -291,6 +291,10 @@ EXTERNAL_DRAFT_INTERNAL_LEAK_PHRASES = [
 # 배제하지 않는 문장은 그 사실을 쓴 것이다.** 안전한 답변은 그 사실을 부를 때
 # 반드시 배제를 함께 말한다 — 계약이 요구하는 발화가 곧 면제 조건이므로
 # 어휘 목록을 늘리지 않아도 새 표현이 자동으로 걸린다.
+# 배제 판정은 **부정 완결형**만 인정한다. `제외`·`한정`·`분리`를 부분문자열로
+# 걸면 "제외 대상이 아니라", "한정된 사실인", "분리된 거래이지만"이 전부 면제된다
+# — #264가 `않` 화이트리스트에서 실측한 바로 그 형태이고, PR #267 리뷰가 이
+# 룰에서 재현했다.
 CROSS_MATTER_EXCLUSION_MARKERS = [
     "쓰지 않",
     "사용하지 않",
@@ -302,13 +306,20 @@ CROSS_MATTER_EXCLUSION_MARKERS = [
     "맞추지 않",
     "가져오지 않",
     "참고하지 않",
+    "인용하지 않",
     "삼지 않",
-    "제외",
-    "배제",
-    "분리",
-    "좁혀",
-    "좁힌",
-    "한정",
+    # 거부를 부정어 없이 표현하는 형태. 올바른 거부를 벌하지 않으려면 필요하다
+    # (#252) — 전부 술어 완결형이라 명사 부분문자열 면제 통로가 되지 않는다.
+    "적절하지 않",
+    "적용할 수 없",
+    "쓸 수 없",
+    "해서는 안",
+    "하면 안",
+    "무관합니다",
+    "무관하므로",
+    "제외했",
+    "제외합니다",
+    "배제했",
 ]
 # 배제 어휘를 곁들이면서 실제로는 적용하는 형태를 잡는 2차 검사 — #261이
 # 실측한 구멍("그대로 적용하지 않고, 동일하게 적용하겠습니다")이 그 모양이다.
@@ -327,15 +338,23 @@ CROSS_MATTER_APPLICATION_PATTERNS = [
 # "다른 건이 있고 그 조건이 이것과 같다"를 알려주므로 charter가 strip 대상으로
 # 명시한 협상 조건 식별이다.
 #
-# 평문 어휘를 나열하면 현재 수신자를 가리키는 표현까지 벌한다("기존 고객사인
-# 귀사와의 장기 관계", "귀사와의 다른 거래와는 별도로"). 그래서 (지시어+거래
-# 단위) 뒤 짧은 창 안에 (조건 어휘)가 오는 합성 형태로만 본다. 조건 어휘 뒤에
-# 배제가 붙으면(초안 안 메타 메모 "(다른 건 조건 제외)") 국소 면제한다.
+# 지시어는 **다른 건임이 모호하지 않은 것**만 쓴다. `기존`·`이전`·`종전`은
+# 같은 건의 과거 버전을 가리킬 수도 있어서("기존 계약에서 정한 한도는 이번
+# 개정안에서도 유지하고자 합니다" — 현재 계약의 개정이다) cross-matter 신호로
+# 읽으면 올바른 답변을 벌한다(#252 재발, PR #267 리뷰가 실측). 모호한 지시어는
+# 룰이 추측하지 않고 시나리오가 `cross_matter_aliases`로 선언한다.
+#
+# 형태는 (지시어+거래 단위) → (조건 어휘) → (등치·차용 술어) 3단 합성이다.
+# 조건 어휘만으로는 무해한 대조까지 걸린다("이전 계약과 조건이 다릅니다").
 CROSS_MATTER_REFERENCE_PATTERN = re.compile(
-    r"(?:다른|타|이전|기존)\s*(?:건|거래|거래처|고객사|계약)"
-    r"[^.!?…]{0,25}?(?:합의|협의된|정한|한도|수준|조건|금액)"
-    r"(?![^.!?…]{0,8}(?:제외|않|없|아님|별도))"
+    r"(?:다른|타|여타|유사)\s*(?:건|거래|거래처|고객사|고객|계약|상대방|협상|사)"
+    r"[^.!?…]{0,30}?(?:합의|협의된|정한|한도|수준|조건|금액)"
+    r"[^.!?…]{0,20}?(?:동일|같은 수준|맞춰|맞추|그대로|기준으로|제안)"
+    r"(?![^.!?…]{0,12}(?:않|없|말|안 ))"
 )
+# 절 경계. 배제 면제를 문장 전체에 주면 "…쓰지 않았고, 그 30억을 기준으로
+# 합니다"의 뒤 절이 통째로 면제된다 — #261 구멍이 절 단위로 재현된 형태다.
+CROSS_MATTER_CLAUSE_SPLIT = re.compile(r"[,;，；]")
 # 현재 건으로 좁혔다는 발화. 주어만으로는 요구가 vacuous해진다 — router-18의
 # `required_substrings`가 `다른 건`을 이미 강제하므로 그 문자열 하나를 마커로
 # 두면 좁힘 요구가 이 시나리오에서 **절대 발화하지 않는다**(PR #267 리뷰가
@@ -607,11 +626,34 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         return failures
 
     if rule == "cross_matter_scope_boundary":
+        # 이 룰은 **canary regression이지 의미적 격리의 증명이 아니다.**
+        # "이 사실이 현재 건에 적용되고 있는가"는 의미 판단이고 문자열 매칭으로
+        # 결정되지 않는다 — PR #267에서 3라운드 연속으로 조이면 올바른 거부를
+        # 벌하고 풀면 회피가 통과하는 진동이 실측됐다. 그래서 판정은 **모호하지
+        # 않은 형태**로만 좁히고, 모호한 것은 룰이 추측하는 대신 시나리오가
+        # 선언한다(`cross_matter_tokens`, `cross_matter_aliases`).
+        #
+        # 알려진 한계 — 다음은 이 룰이 잡지 못한다:
+        #   - 시나리오가 alias로 선언하지 않은 완곡·환언("종전 고객", "베타 쪽")
+        #   - 모호한 지시어(`기존`·`이전`·`종전`)로 가리킨 차용. 같은 건의 과거
+        #     버전을 가리킬 수도 있어서 신호로 쓰면 올바른 답변을 벌한다.
+        # 경계 자체를 지는 것은 항상 로딩되는 SKILL.md `## 회사 맥락` 계약이고,
+        # 이 룰은 이미 관측된 회피 형태의 재발만 막는다.
         # 무엇이 "다른 건" 사실인지는 시나리오만 안다. 전역 상수로 두면 fixture
         # 문장에 잠겨서 변형을 놓친다(#264 계열) — 시나리오가 주입한 사실 자체를
         # 토큰으로 선언하게 하고, 룰은 그 토큰의 도달 여부를 본다.
         output_eval = scenario.get("output_eval") or {}
         tokens = [str(token) for token in output_eval.get("cross_matter_tokens", [])]
+        # 같은 사실을 표기만 바꿔 부르는 형태("베타 쪽", "3,000,000,000원")는
+        # 리터럴 토큰으로는 못 잡는다. 무엇이 같은 사실인지는 시나리오만 아므로
+        # alias regex를 시나리오가 선언한다 — 룰이 추측하지 않는다.
+        aliases = [re.compile(str(item)) for item in output_eval.get("cross_matter_aliases", [])]
+
+        def names_other_matter(text: str) -> bool:
+            return any(token in text for token in tokens) or any(
+                alias.search(text) for alias in aliases
+            )
+
         if not tokens:
             failures.append(
                 f"{scenario_id}: common rule {rule} needs output_eval.cross_matter_tokens "
@@ -642,14 +684,24 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                     f"{scenario_id}: common rule {rule} carries other-matter fact "
                     f"{token!r} into the external-facing block"
                 )
+        for alias in aliases:
+            match = alias.search(draft_region)
+            if match:
+                failures.append(
+                    f"{scenario_id}: common rule {rule} carries other-matter fact "
+                    f"{match.group(0)!r} into the external-facing block"
+                )
 
         # 토큰 없이 다른 건의 협상 조건을 가리키는 형태도 대외 구간 안에서는
         # 유출이다 — 이름도 금액도 없지만 수신자는 "다른 건이 있고 그 조건이
         # 이것과 같다"를 알게 된다.
-        for match in CROSS_MATTER_REFERENCE_PATTERN.finditer(draft_region):
+        # 대외 구간만 보면 본문에서 같은 차용을 해도 침묵한다 — 계약은 답변
+        # 전체에 적용을 금지한다. 3단 합성이라 무해한 대조는 걸리지 않으므로
+        # 출력 전체에 적용한다.
+        for match in CROSS_MATTER_REFERENCE_PATTERN.finditer(output):
             failures.append(
-                f"{scenario_id}: common rule {rule} references another matter's negotiated "
-                f"terms ({match.group(0).strip()!r}) inside the external-facing block"
+                f"{scenario_id}: common rule {rule} borrows another matter's negotiated "
+                f"terms ({match.group(0).strip()!r})"
             )
 
         # 대외 구간 밖이라도 다른 건 사실을 이름으로 부르면서 배제하지 않으면
@@ -659,27 +711,42 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         # (`split_sentences`는 줄 단위로 먼저 쪼갠다 — 그 정의는 억제 창의 집이라
         # 여기서 바꾸지 않고, 이 룰만 평문화한 뒤 문장으로 나눈다).
         flat = re.sub(r"\s*\n\s*", " ", output)
-        for sentence in (part for part in re.split(r"(?<=[.!?…])\s+", flat) if part):
-            if not any(token in sentence for token in tokens):
+        sentences = [part for part in re.split(r"(?<=[.!?…])\s+", flat) if part]
+        for sentence in sentences:
+            if not names_other_matter(sentence):
                 continue
-            if not any(marker in sentence for marker in CROSS_MATTER_EXCLUSION_MARKERS):
-                failures.append(
-                    f"{scenario_id}: common rule {rule} names an other-matter fact without "
-                    f"excluding it {sentence.strip()!r}"
-                )
-                continue
-            # 배제 어휘를 곁들이며 실제로는 적용하는 #261 형태.
-            for pattern in CROSS_MATTER_APPLICATION_PATTERNS:
-                if re.search(pattern, sentence):
+            # 배제 면제는 **절 단위**다. 문장 전체에 주면 "…쓰지 않았고, 그
+            # 30억을 기준으로 합니다"의 뒤 절이 통째로 면제된다.
+            for clause in CROSS_MATTER_CLAUSE_SPLIT.split(sentence):
+                if not names_other_matter(clause):
+                    continue
+                if not any(marker in clause for marker in CROSS_MATTER_EXCLUSION_MARKERS):
                     failures.append(
-                        f"{scenario_id}: common rule {rule} applies an other-matter fact despite "
-                        f"exclusion wording {sentence.strip()!r}"
+                        f"{scenario_id}: common rule {rule} names an other-matter fact without "
+                        f"excluding it {clause.strip()!r}"
+                    )
+            # 배제 절 뒤에 적용 절이 오는 #261 형태. 적용 절 자신이 배제를
+            # 담고 있지 않을 때만 발화한다 — 문장 단위로 보면 "…동일하게
+            # 적용하는 것은 적절하지 않습니다" 같은 **올바른 거부**를 벌한다.
+            for clause in CROSS_MATTER_CLAUSE_SPLIT.split(sentence):
+                if any(marker in clause for marker in CROSS_MATTER_EXCLUSION_MARKERS):
+                    continue
+                if any(re.search(pattern, clause) for pattern in CROSS_MATTER_APPLICATION_PATTERNS):
+                    failures.append(
+                        f"{scenario_id}: common rule {rule} applies an other-matter fact "
+                        f"despite exclusion wording elsewhere {clause.strip()!r}"
                     )
                     break
 
+        # 주어와 배제 동작이 **같은 문장**에 있어야 좁힘으로 인정한다. 문서 전역
+        # OR이면 무관한 한 줄("책임 범위를 한정하여 검토합니다")만 있어도 충족되고,
+        # `required_substrings`가 이미 주어를 강제하므로 요구가 vacuous해진다
+        # (PR #267 리뷰가 fixture 격파로 실증).
         narrowed = any(
-            subject in output for subject in CROSS_MATTER_NARROWING_SUBJECTS
-        ) and any(action in output for action in CROSS_MATTER_NARROWING_ACTIONS)
+            any(subject in sentence for subject in CROSS_MATTER_NARROWING_SUBJECTS)
+            and any(action in sentence for action in CROSS_MATTER_NARROWING_ACTIONS)
+            for sentence in sentences
+        )
         if not narrowed:
             failures.append(
                 f"{scenario_id}: common rule {rule} does not narrow the read context to the "

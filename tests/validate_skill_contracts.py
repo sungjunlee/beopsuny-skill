@@ -545,6 +545,12 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
         "건을 식별하는 산출물이 전역에 쌓이는 자리",
         "자동으로 지우지 않는다",
         "보존과 삭제는 사용자 책임",
+        # 의무형으로 쓴 문장은 그 절만 지워도 통과하면 안 된다 (PR #267 리뷰가
+        # mutation으로 실증) — 분리 안내 의무를 별도 토큰으로 건다.
+        "건별·클라이언트별로 분리",
+        # 다른 건 리포트 열람은 지명 요청이 있을 때만이다. 조건 없이 "읽어 오지
+        # 않는다"로 두면 SKILL.md의 명시-요청 예외와 모순된다.
+        "지명하지 않는 한 읽지 않는다",
     ]:
         assert_contains(report, required, "report-deliverable.md 보관 범위")
 
