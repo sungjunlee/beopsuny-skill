@@ -2773,6 +2773,42 @@ def check_bulk_grid_report_template_contract() -> None:
     )
 
 
+CHANGELOG_UNRELEASED_ITEM_MAX = 600
+
+
+def check_changelog_unreleased_entry_density() -> None:
+    """#245. CHANGELOG는 "무엇이 바뀌었는지"의 집이고 "어떻게 왜 그렇게 했는지"의
+    집은 sprint 파일과 PR이다. 항목이 길어지면 대개 sprint에 있어야 할 설계 서사가
+    넘어온 것이고, 그러면 같은 사건이 세 표면에 서로 다른 상세도로 서술된다 —
+    새 유지보수자가 무엇이 정본인지 판단할 수 없게 되는 지점이다.
+
+    이미 릴리즈된 절은 검사하지 않는다. 발행된 기록을 새 규칙에 맞추려고 다시
+    쓰는 것은 이 레포가 반복해서 경계해 온 churn이다. 규칙은 앞으로에만 적용한다.
+    """
+    lines = read_text("CHANGELOG.md").split("\n")
+    label = "CHANGELOG.md [Unreleased]"
+    try:
+        start = next(i for i, line in enumerate(lines) if line.startswith("## [Unreleased]"))
+    except StopIteration:
+        raise AssertionError(f"{label}: [Unreleased] 절이 없다")
+    end = next(
+        (i for i in range(start + 1, len(lines)) if lines[i].startswith("## [")),
+        len(lines),
+    )
+
+    too_long = [
+        (len(line), line[:60])
+        for line in lines[start + 1 : end]
+        if line.startswith("- **") and len(line) > CHANGELOG_UNRELEASED_ITEM_MAX
+    ]
+    if too_long:
+        raise AssertionError(
+            f"{label}: 항목이 {CHANGELOG_UNRELEASED_ITEM_MAX}자를 넘는다 — 사용자 관점의 "
+            "변경 요약만 남기고 설계 경위·시행착오·mutation 표는 sprint 파일이나 PR로 "
+            f"위임하라: {too_long}"
+        )
+
+
 def check_skill_model_floor_disclosure() -> None:
     """#253. 하위 모델에서 먼저 무너지는 것은 핵심 금지선이 아니라 evidence
     계약층이다(2026-07-21 플로어 실측: haiku가 판례 날조·무확인 쓰기·직접 송부는
@@ -4273,7 +4309,8 @@ CHECK_GROUPS = (
     CheckGroup(
         "router/loading: quality contract map",
         (
-            check_skill_model_floor_disclosure,
+            check_changelog_unreleased_entry_density,
+    check_skill_model_floor_disclosure,
     check_skill_gate_attachment_and_draft_first,
     check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,
