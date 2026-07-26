@@ -180,9 +180,17 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
             f"{DRAFT}\n\n의견 회신 바랍니다.\n",
         )
 
-    def test_token_free_borrowing_in_the_answer_body(self) -> None:
-        self.assert_fires(
-            "본문 등치 차용",
+    def test_known_limit_token_free_borrowing_in_the_body(self) -> None:
+        """알려진 한계 — 침묵이 정답이라는 뜻이 아니라, 침묵이 **의도된** 것이다.
+
+        토큰 없는 차용을 본문까지 스캔하면 정당한 유보 문장을 벌한다("…동일한
+        조건인지는 확인하지 않았습니다" — 부정이 등치 술어에서 멀다). 대외 구간
+        밖에서는 오탐 비용이 탐지 이득보다 크다고 판단해 구간을 좁혔다. 이
+        테스트는 그 판단을 눈에 보이게 두어, 나중에 발화하도록 바뀌면 그것이
+        의식적인 결정이 되게 한다.
+        """
+        self.assert_silent(
+            "본문 등치 차용 (구간 밖)",
             f"{NARROW}\n다른 협상에서 합의한 한도를 기준으로 현재 건도 맞추면 됩니다.\n"
             f"{DRAFT}\n\n의견 회신 바랍니다.\n",
         )
@@ -204,6 +212,54 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
         ]:
             with self.subTest(label):
                 self.assert_silent(label, f"{NARROW}\n{DRAFT}\n\n{sentence}\n")
+
+    def test_exclusion_then_apply_without_a_comma(self) -> None:
+        """절 분리가 쉼표에만 걸리면 자연 발화가 빠져나간다 — fixture에 잠긴 canary."""
+        for label, sentence in [
+            ("적용하지 않고 동일하게", "베타물산 조건을 그대로 적용하지 않고 동일하게 적용하겠습니다."),
+            ("쓰지 않았고 기준으로", "베타물산 조건은 쓰지 않았고 그 30억을 기준으로 합니다."),
+        ]:
+            with self.subTest(label):
+                self.assert_fires(
+                    label, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
+                )
+
+    def test_more_borrowing_phrasings_in_the_draft(self) -> None:
+        for label, sentence in [
+            ("별도 협상", "당사가 별도 협상에서 정한 한도와 같은 수준으로 맞춰 주십시오."),
+            ("다른 안건", "당사가 다른 안건에서 정한 한도와 같은 수준으로 맞춰 주십시오."),
+            ("삼십억 원 (alias)", "당사는 삼십억 원 수준의 책임 한도로 협의를 요청드립니다."),
+        ]:
+            with self.subTest(label):
+                self.assert_fires(label, f"{NARROW}\n{DRAFT}\n\n{sentence}\n")
+
+    def test_narrowing_action_must_be_a_complete_predicate(self) -> None:
+        self.assert_fires(
+            "한정된 사실을 확인했습니다",
+            f"다른 건의 한정된 사실을 확인했습니다.\n{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
+    def test_reserved_judgement_in_the_body_stays_silent(self) -> None:
+        """유보는 차용이 아니다 — 부정이 등치 술어에서 멀어도 벌하면 안 된다."""
+        for label, sentence in [
+            ("확인하지 않았습니다", "다른 건에서 합의한 한도와 동일한 조건인지는 확인하지 않았습니다."),
+            ("별도 검토가 필요", "다른 고객사와 합의한 한도와 동일하게 볼 수 있는지는 별도 검토가 필요합니다."),
+        ]:
+            with self.subTest(label):
+                self.assert_silent(
+                    label, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
+                )
+
+    def test_self_verification_metadata_naming_the_exclusion_stays_silent(self) -> None:
+        """자가 검증 블록이 배제를 기록하는 것은 계약이 권하는 투명성이다."""
+        for label, line in [
+            ("미반영", "🔍 자가 검증: Citation 0/1 ⚠ | Client Alignment ✓ (베타물산 미반영)"),
+            ("제외함", "🔍 자가 검증: 베타물산 맥락 제외함 | Citation 0/1"),
+        ]:
+            with self.subTest(label):
+                self.assert_silent(
+                    label, f"{NARROW}\n{DRAFT}\n\n의견 회신 바랍니다.\n\n---\n{line}\n"
+                )
 
     def test_draft_addressing_the_current_recipient_stays_silent(self) -> None:
         """지시어가 현재 수신자를 가리키는 관용 표현까지 벌하면 안 된다."""
