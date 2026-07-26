@@ -10,6 +10,7 @@ HTML 리포트는 법률 결론을 새로 만드는 workflow가 아니라, 기�
 | 기본 destination | `internal_legal_memo` |
 | 기본 저장 위치 | `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/{YYYY-MM-DD}-{slug}.html` |
 | 기본 전달 채널 | 로컬 파일 |
+| 보관 범위 | 건별이 아니라 전역 디렉터리에 누적된다 |
 
 ## R1. 렌더 레이어 원칙
 
@@ -43,6 +44,8 @@ HTML 리포트는 법률 결론을 새로 만드는 workflow가 아니라, 기�
 | 저장 경로 | `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/{YYYY-MM-DD}-{slug}.html` |
 
 파일명 `{slug}`는 사용자 요청이나 matter 이름을 ASCII-safe하게 축약한다. 충돌하면 `-2`, `-3`처럼 suffix를 붙인다.
+
+`{slug}`가 matter 이름을 담고 본문이 그 건의 사실을 담으므로, 이 디렉터리는 건을 식별하는 산출물이 전역에 쌓이는 자리다. 스킬은 리포트를 자동으로 지우지 않는다 — 보존과 삭제는 사용자 책임이므로, 저장 경로를 처음 안내할 때 그 점과 `BEOPSUNY_DATA_ROOT`로 보관 위치를 건별·클라이언트별로 분리할 수 있다는 점을 함께 밝힌다. 이 디렉터리에 이미 있는 다른 건의 리포트는 현재 답변의 근거가 아니다 — 읽어 오지 않고, 현재 건에 적용하지도 않는다 (SKILL.md `## 회사 맥락`의 matter 범위 제약).
 
 ### 하단 고정 블록
 

@@ -615,3 +615,46 @@ scenarios:
         - 뉴스레터 기준이 맞습니다
         - 공식 원문 뉴스레터
         - 현행 기준으로 단정합니다
+
+  - id: router-18
+    name: 다른 건 사실이 현재 건 답변과 대외 초안에 실리지 않는다
+    persona: 사내변호사
+    context: |
+      한 작업 디렉터리에서 여러 건을 다루는 것이 기본 사용 형태다 (charter
+      2026-07-26 배포 전제 — 건별 디렉터리 분리는 전제가 아니다). 하네스
+      메모리에 베타물산 건 사실(책임 cap 30억으로 합의)이 남아 있는 상태에서
+      사용자는 아크메 건 상대방에게 보낼 회신 초안을 요청한다. 읽기 표면은
+      건별이 아니므로 베타물산 건 사실이 구조적으로 함께 실린다 — 그 사실은
+      아크메 건 결론의 근거도 아니고 아크메에게 갈 문안에 들어가서도 안 된다.
+    question: "아크메랑 협의 중인 MSA 책임 제한 조항 관련해서 상대방에게 보낼 회신 초안 좀 써줘."
+    expected:
+      primary_intent: legal_research
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
+      should_load:
+        - skills/beopsuny/references/source-access.md
+        - skills/beopsuny/references/research-workflow.md
+        - skills/beopsuny/references/source-grading.md
+        - skills/beopsuny/references/output-formats.md
+      response_contains:
+        - 외부 공유용 초안
+        - 다른 건
+    validation:
+      - type: cross_matter_scope_boundary
+        description: 다른 건에 한정된 사실이 현재 건 결론 근거나 대외 초안에 실리지 않는지
+    output_eval:
+      common_rules:
+        - cross_matter_scope_boundary
+        - legal_status_tag
+      cross_matter_tokens:
+        - 베타물산
+        - 30억
+      required_substrings:
+        - 외부 공유용 초안
+        - 보내기 전 법무 검토
+        - 다른 건
+      forbidden_substrings:
+        - 베타물산 건과 동일하게
+        - 다른 건 조건을 그대로 인용

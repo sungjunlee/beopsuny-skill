@@ -440,6 +440,66 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_contains(text, required, label)
 
 
+def check_cross_matter_scope_boundary_has_a_home() -> None:
+    """다른 건에 한정된 사실이 현재 건 답변·대외 산출물에 실리지 않아야 한다.
+
+    `#259`는 HC2(cross-matter 격리)를 "referent가 사라졌다"며 지웠지만, HC2가
+    지키던 속성은 `projects/{slug}/` 디렉터리가 아니라 "다른 건의 사실이 이
+    답변에 닿지 않는다"였다. referent는 사라진 게 아니라 뒤집혔다 — 새 읽기
+    표면(하네스 메모리·지침 파일)은 건별이 아니라 **작업 디렉터리별**이고
+    스킬은 매 답변에서 지명 없이 그것을 읽는다. 한 디렉터리에 여러 건을 두는
+    것이 지원되는 기본값이므로(charter 2026-07-26) 안전은 사용자의 폴더 위생이
+    아니라 스킬이 진다. read 축 제약의 집은 SKILL.md `## 회사 맥락`, strip 목록의
+    정본은 `output_contract.yaml`이다 (#263).
+    """
+    section_text = read_text("skills/beopsuny/SKILL.md")
+    match = re.search(r"^## 회사 맥락\s*$(.*?)(?=^## )", section_text, re.MULTILINE | re.DOTALL)
+    if not match:
+        raise AssertionError("SKILL.md: `## 회사 맥락` 절이 없다 — matter 범위 제약의 집이 사라졌다")
+    section = match.group(1)
+
+    # 주어를 지목하는 토큰("다른 건", "건별 디렉터리")을 함께 건다. 이 절 안에서
+    # 두 토큰은 이 제약 문단에만 나오므로, 문단을 도려내면 통과하지 못한다 (#262).
+    for required in [
+        "건별 디렉터리",
+        "전제하지 않는다",
+        "다른 건에 한정된 사실",
+        "지명한 명시 요청 없이",
+        "현재 건으로 좁혀",
+    ]:
+        assert_contains(section, required, "SKILL.md `## 회사 맥락` matter 범위")
+
+    # 대외 산출물에서의 제외는 destination 계약이 소유한다 — 여기서 재서술하지
+    # 않고 포인터만 둔다. 포인터가 끊기면 제약이 도달 불가 문서가 된다 (#242 계열).
+    assert_contains(section, "references/output-formats.md", "SKILL.md `## 회사 맥락` matter 범위")
+
+    # 산문 표의 금지 열. 두 외부 destination 행 모두 cross-matter 사실을 걸어야
+    # 한다 — 한 행만 고치고 계열을 닫았다고 선언하는 것이 #261의 실패 형태였다.
+    formats = read_text("skills/beopsuny/references/output-formats.md")
+    for destination in ["`external_draft`", "`agency_or_court_submission`"]:
+        row = next(
+            (line for line in formats.splitlines() if line.startswith(f"| {destination} |")),
+            None,
+        )
+        if row is None:
+            raise AssertionError(f"output-formats.md: destination 표에 {destination} 행이 없다")
+        if "다른 건" not in row:
+            raise AssertionError(
+                f"output-formats.md: {destination} 금지 열에 다른 건 사실 제외가 없다: {row!r}"
+            )
+
+    # 리포트는 건별이 아니라 전역 디렉터리에 쌓인다. 그 사실과 보존·삭제 책임이
+    # 어디에도 적혀 있지 않으면 matter 식별 산출물이 조용히 누적된다.
+    report = read_text("skills/beopsuny/references/report-deliverable.md")
+    for required in [
+        "보관 범위",
+        "전역",
+        "자동으로 지우지 않는다",
+        "BEOPSUNY_DATA_ROOT",
+    ]:
+        assert_contains(report, required, "report-deliverable.md 보관 범위")
+
+
 def check_skill_resource_map_matches_tree() -> None:
     """보조 리소스 지도가 실제 디렉터리 구조와 어긋나지 않게 고정한다.
 
@@ -936,9 +996,17 @@ def check_output_contract_schema() -> None:
     external_draft = destination_map["external_draft"]
     if external_draft.get("may_include_internal_blocks") is not False:
         raise AssertionError(f"{label}: external_draft must not include internal blocks")
-    for required in ["검토자 메모", "자가 검증", "internal scratchpad"]:
+    # #263: 격리가 줄었으면 strip 목록이 늘었어야 하는데 그대로였다. 내부 프로세스
+    # 산출물만이 아니라 다른 건에서 온 사실도 대외 산출물에서 빠져야 한다.
+    for required in ["검토자 메모", "자가 검증", "internal scratchpad", "다른 건·상대방·협상 조건을 식별하는 사실"]:
         if required not in external_draft.get("must_strip", []):
             raise AssertionError(f"{label}: external_draft must strip {required!r}")
+
+    for required in ["다른 건·상대방·협상 조건을 식별하는 사실"]:
+        if required not in destination_map["agency_or_court_submission"].get("must_strip", []):
+            raise AssertionError(
+                f"{label}: agency_or_court_submission must strip {required!r}"
+            )
 
     agency_submission = destination_map["agency_or_court_submission"]
     if agency_submission.get("may_include_internal_blocks") is not False:
@@ -3708,6 +3776,7 @@ def check_router_guardrail_scenarios() -> None:
         "router-15",
         "router-16",
         "router-17",
+        "router-18",
     }
     missing = expected - scenario_ids
     if missing:
@@ -3747,6 +3816,7 @@ def check_router_fixture_integrity() -> None:
         "router-15",
         "router-16",
         "router-17",
+        "router-18",
     }
     if expected_output_ids != expected_guardrail_ids:
         raise AssertionError(
@@ -4103,6 +4173,7 @@ CHECK_GROUPS = (
             check_skill_frontmatter_minimal,
             check_skill_router_schema_references_precise,
             check_skill_company_context_read_only_and_trust_boundary,
+    check_cross_matter_scope_boundary_has_a_home,
             check_skill_resource_map_matches_tree,
         ),
     ),
