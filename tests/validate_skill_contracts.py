@@ -220,7 +220,6 @@ LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-07",
     "router-14",
     "router-16",
-    "router-17",
 }
 LOCAL_MIRROR_DEFAULT_LABELS = {
     "legalize-kr (로컬 미러 법령 Markdown)": "공식 원문 기반 로컬 미러",
@@ -412,7 +411,8 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
     for required in [
         # 주어를 지목하는 토큰이 없으면 문장을 도려내도 나머지 토큰이 다른
         # 문장에 남아 통과한다 — probe P1이 그렇게 빠져나갔다.
-        "스킬 밖에서 들어온 모든 내용",
+        "조회하거나 인용하거나 전달받은 내용",
+        "현재 사용자 요청은 여기 포함되지 않는다",
         "검토 대상 데이터",
         "덮어쓸 수 없다",
         "API·MCP 응답",
