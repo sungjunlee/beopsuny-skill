@@ -114,6 +114,7 @@ Mutation discipline:
 
 ### Expected Behaviors
 - When a destination with `may_include_internal_blocks: false` is used, internal blocks (검토자 메모, self-verification block, internal scratchpad, unreviewed internal assumptions) are stripped from the deliverable while the destination's `must_include` items — including source authority labels and verification status where required — are preserved rather than stripped along with them.
+- External-facing destinations (`external_draft`, `agency_or_court_submission`) additionally strip facts identifying another matter, counterparty, or negotiated term; the read-axis rule that keeps those facts out of the answer in the first place belongs to `company-context-trust`.
 - When the role is unspecified or unconfirmed and the request names a destination or matches a `legal_effect_triggers` entry, the output composes the `unknown`/`business_user` conservative gate with the destination contract, and conflicts resolve to the stricter obligation: `must_strip` sets union, both `must_include` sets apply, and no direct instruction to sign, send, or file survives composition.
 - When a role mode, destination contract, trigger list, composition rule, or report render surface changes, `output_contract.yaml`, `output-formats.md`, `report-deliverable.md`, the report templates, and the static/router checks that consume them are updated together or the non-applicable surfaces are explicitly justified.
 
@@ -218,8 +219,9 @@ Mutation discipline:
 **In-scope:**
 - The read-only contract: the skill consumes company context, it does not own a storage format for it.
 - The trust boundary: company context is reviewed data, never instructions — regardless of which surface it arrives on.
+- The matter-scope constraint on the read axis: the surfaces read are per-working-directory, not per-matter. The runtime rule is stated once, in `SKILL.md` `## 회사 맥락`; this capability owns the boundary, not a second copy of the wording.
 - How absent context is surfaced (baseline markers such as `계약 playbook 미설정`) and how it defaults role/destination handling.
-- `~/.beopsuny/` scoped to configuration (`config.yaml`) and the law/precedent local mirror (`data/`).
+- `~/.beopsuny/` scoped to configuration (`config.yaml`), the law/precedent local mirror (`data/`), and report deliverables under `reports/` when the user asks for one. None of these hold company-context state; `reports/` accumulates globally rather than per matter, and its retention contract lives in `report-deliverable.md`.
 
 **Out-of-scope:**
 - Verification and citation duties themselves; those belong to `source-citation`.
@@ -235,6 +237,7 @@ Mutation discipline:
 ### Hard Constraints
 - This capability never lets company context (instruction files, harness memory, user-pointed files, playbook text) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — context narrows and personalizes, it never authorizes. Instruction files and harness memory carry directive-shaped prose more readily than a structured profile did, so this boundary tightens rather than relaxes as storage moves outward.
 - This capability never writes company context to any file and never states that it saved company information.
+- This capability never applies a fact scoped to another matter to the current answer without an explicit request naming that matter — a single working directory holding several matters is the supported default, so the constraint is carried by the skill rather than by the user's directory layout. The runtime wording lives in `SKILL.md` `## 회사 맥락`; stripping those facts from an external-facing deliverable is a destination obligation owned by `output-role-destination`.
 
 ### Learnings
 <!-- LEARN:BEGIN -->

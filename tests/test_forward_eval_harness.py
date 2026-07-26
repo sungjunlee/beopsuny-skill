@@ -106,7 +106,10 @@ class ForwardEvalHarnessTests(unittest.TestCase):
             run_at=harness.SAMPLE_RUN_AT,
         )
 
-        self.assertEqual(run["summary"]["total"], 11)
+        # 프롬프트가 늘 때마다 리터럴을 고치면 그 숫자가 낡는다 — config에서
+        # 파생시켜 추가/삭제가 자동으로 반영되게 한다.
+        expected_total = len(config["prompts"])
+        self.assertEqual(run["summary"]["total"], expected_total)
         self.assertEqual(run["summary"]["failed"], 0)
         self.assertEqual([item["prompt_id"] for item in run["results"]], [item["id"] for item in config["prompts"]])
 
@@ -116,7 +119,10 @@ class ForwardEvalHarnessTests(unittest.TestCase):
             loaded = yaml.safe_load(evidence_path.read_text(encoding="utf-8"))
 
         self.assertEqual(loaded["run_at"], "1970-01-01T00:00:00Z")
-        self.assertEqual(loaded["summary"], {"total": 11, "passed": 11, "failed": 0})
+        self.assertEqual(
+            loaded["summary"],
+            {"total": expected_total, "passed": expected_total, "failed": 0},
+        )
         for result in loaded["results"]:
             self.assertTrue(result["prompt_id"].startswith("fwd-"))
             self.assertTrue(result["guardrail_category"])

@@ -440,6 +440,159 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_contains(text, required, label)
 
 
+def check_cross_matter_scope_boundary_has_a_home() -> None:
+    """다른 건에 한정된 사실이 현재 건 답변·대외 산출물에 실리지 않아야 한다.
+
+    `#259`는 HC2(cross-matter 격리)를 "referent가 사라졌다"며 지웠지만, HC2가
+    지키던 속성은 `projects/{slug}/` 디렉터리가 아니라 "다른 건의 사실이 이
+    답변에 닿지 않는다"였다. referent는 사라진 게 아니라 뒤집혔다 — 새 읽기
+    표면(하네스 메모리·지침 파일)은 건별이 아니라 **작업 디렉터리별**이고
+    스킬은 매 답변에서 지명 없이 그것을 읽는다. 한 디렉터리에 여러 건을 두는
+    것이 지원되는 기본값이므로(charter 2026-07-26) 안전은 사용자의 폴더 위생이
+    아니라 스킬이 진다. read 축 제약의 집은 SKILL.md `## 회사 맥락`, strip 목록의
+    정본은 `output_contract.yaml`이다 (#263).
+    """
+    section_text = read_text("skills/beopsuny/SKILL.md")
+    match = re.search(r"^## 회사 맥락\s*$(.*?)(?=^## )", section_text, re.MULTILINE | re.DOTALL)
+    if not match:
+        raise AssertionError("SKILL.md: `## 회사 맥락` 절이 없다 — matter 범위 제약의 집이 사라졌다")
+    section = match.group(1)
+
+    # 주어를 지목하는 토큰("다른 건", "건별 디렉터리")을 함께 건다. 이 절 안에서
+    # 두 토큰은 이 제약 문단에만 나오므로, 문단을 도려내면 통과하지 못한다 (#262).
+    for required in [
+        "건별 디렉터리",
+        "전제하지 않는다",
+        "다른 건에 한정된 사실",
+        "지명한 명시 요청 없이",
+        "현재 건으로 좁혀",
+    ]:
+        assert_contains(section, required, "SKILL.md `## 회사 맥락` matter 범위")
+
+    # 대외 산출물에서의 제외는 destination 계약이 소유한다 — 여기서 재서술하지
+    # 않고 포인터만 둔다. 포인터가 끊기면 제약이 도달 불가 문서가 된다 (#242 계열).
+    assert_contains(section, "references/output-formats.md", "SKILL.md `## 회사 맥락` matter 범위")
+
+    # 산문 표의 금지 열. 두 외부 destination 행 모두 cross-matter 사실을 걸어야
+    # 한다 — 한 행만 고치고 계열을 닫았다고 선언하는 것이 #261의 실패 형태였다.
+    formats = read_text("skills/beopsuny/references/output-formats.md")
+    for destination in ["`external_draft`", "`agency_or_court_submission`"]:
+        row = next(
+            (line for line in formats.splitlines() if line.startswith(f"| {destination} |")),
+            None,
+        )
+        if row is None:
+            raise AssertionError(f"output-formats.md: destination 표에 {destination} 행이 없다")
+        # `다른 건`만 걸면 다른 문구로 바꿔도 통과한다. strip 정본(yaml)과 같은
+        # 구를 걸어 산문 표와 스키마가 갈라지지 않게 한다.
+        if "다른 건·상대방·협상 조건을 식별하는 사실" not in row:
+            raise AssertionError(
+                f"output-formats.md: {destination} 금지 열이 strip 정본 구문을 담지 않는다: {row!r}"
+            )
+
+    # PR이 "집"이라고 적은 spec 표면이 게이트에 안 묶여 있으면, 그 문장을 지워도
+    # 그린이다 — 실제로 capability HC와 charter Decision 행이 그 상태였다
+    # (PR #267 리뷰). 주어를 지목하는 토큰으로 고정한다.
+    capabilities = read_text("spec/capabilities.md")
+    for required in [
+        "per-working-directory, not per-matter",
+        "never applies a fact scoped to another matter",
+        "without an explicit request naming that matter",
+        "carried by the skill rather than by the user's directory layout",
+    ]:
+        assert_contains(capabilities, required, "capabilities.md company-context-trust")
+
+    charter = read_text("spec/charter.md")
+    for required in [
+        "Multi-matter safety is the skill's job",
+        "per-matter directory separation is optional hardening",
+        "restores HC2 (cross-matter isolation) as a read-axis property",
+    ]:
+        assert_contains(charter, required, "charter.md Decisions")
+
+    # README 품질 지도는 사용자·에이전트가 "이 계약을 무엇이 지키는가"를 찾는
+    # 자리다. 행 전체를 되돌려도 게이트가 그린이면 지도가 조용히 낡는다
+    # (#261의 "README가 삭제된 기능을 계속 광고" 형태) — 해당 행 안에서 검증
+    # 항목을 구조적으로 확인한다.
+    readme_row = next(
+        (
+            line
+            for line in read_text("README.md").splitlines()
+            if line.startswith("| Company context trust |")
+        ),
+        None,
+    )
+    if readme_row is None:
+        raise AssertionError("README.md: 품질 계약 지도에 Company context trust 행이 없다")
+    for required in [
+        "matter 범위",
+        "check_cross_matter_scope_boundary_has_a_home",
+        "tests/test_cross_matter_scope_rule.py",
+        "router-18",
+    ]:
+        if required not in readme_row:
+            raise AssertionError(
+                f"README.md Company context trust 행에 {required!r}가 없다: {readme_row!r}"
+            )
+
+    # 유출 검사는 대외 구간 안에서만 발화한다. 구간 마커가 출력에 없으면 구간이
+    # 빈 문자열이 되어 검사가 통째로 침묵하므로, 이 룰을 쓰는 시나리오는 그
+    # 마커를 `required_substrings`로 강제해야 한다 — 그러지 않으면 마커를 빼는
+    # 것만으로 유출이 통과한다. 토큰 선언 누락도 같은 형태의 조용한 통과다.
+    for scenario_id, scenario in router_scenarios().items():
+        output_eval = scenario.get("output_eval") or {}
+        if "cross_matter_scope_boundary" not in (output_eval.get("common_rules") or []):
+            continue
+        required = [str(item) for item in output_eval.get("required_substrings") or []]
+        markers = [
+            str(marker)
+            for marker in output_eval.get("external_region_markers", ["외부 공유용 초안"])
+        ]
+        # 빈 목록·빈 문자열이면 구간이 통째로 비어 검사가 침묵한다. 빈 문자열은
+        # `"" in required` 도 참이라 아래 결합 검사까지 통과한다 (PR #267 리뷰가
+        # mutation으로 실증) — 그 두 경우를 먼저 막는다.
+        if not markers:
+            raise AssertionError(
+                f"{scenario_id}: external_region_markers must not be empty — "
+                "an empty marker set silences the leak check entirely"
+            )
+        for marker in markers:
+            if not marker.strip():
+                raise AssertionError(
+                    f"{scenario_id}: external_region_markers must not contain a blank marker"
+                )
+        for marker in markers:
+            if not any(marker in item for item in required):
+                raise AssertionError(
+                    f"{scenario_id}: external_region_markers {marker!r} must also be a "
+                    "required_substring — otherwise dropping the marker silences the leak check"
+                )
+        if not output_eval.get("cross_matter_tokens"):
+            raise AssertionError(
+                f"{scenario_id}: cross_matter_scope_boundary needs output_eval.cross_matter_tokens"
+            )
+
+    # 리포트는 건별이 아니라 전역 디렉터리에 쌓인다. 그 사실과 보존·삭제 책임이
+    # 어디에도 적혀 있지 않으면 matter 식별 산출물이 조용히 누적된다.
+    # `BEOPSUNY_DATA_ROOT`는 변경 전에도 경로 표에 있었으므로 단독으로는 새
+    # 문단의 삭제를 못 잡는다 (#262 토큰 함정형). 새 문단에만 있는 주어 묶음으로
+    # 고정한다.
+    report = read_text("skills/beopsuny/references/report-deliverable.md")
+    for required in [
+        "보관 범위",
+        "건을 식별하는 산출물이 전역에 쌓이는 자리",
+        "자동으로 지우지 않는다",
+        "보존과 삭제는 사용자 책임",
+        # 의무형으로 쓴 문장은 그 절만 지워도 통과하면 안 된다 (PR #267 리뷰가
+        # mutation으로 실증) — 분리 안내 의무를 별도 토큰으로 건다.
+        "건별·클라이언트별로 분리",
+        # 다른 건 리포트 열람은 지명 요청이 있을 때만이다. 조건 없이 "읽어 오지
+        # 않는다"로 두면 SKILL.md의 명시-요청 예외와 모순된다.
+        "지명하지 않는 한 읽지 않는다",
+    ]:
+        assert_contains(report, required, "report-deliverable.md 보관 범위")
+
+
 def check_skill_resource_map_matches_tree() -> None:
     """보조 리소스 지도가 실제 디렉터리 구조와 어긋나지 않게 고정한다.
 
@@ -936,9 +1089,17 @@ def check_output_contract_schema() -> None:
     external_draft = destination_map["external_draft"]
     if external_draft.get("may_include_internal_blocks") is not False:
         raise AssertionError(f"{label}: external_draft must not include internal blocks")
-    for required in ["검토자 메모", "자가 검증", "internal scratchpad"]:
+    # #263: 격리가 줄었으면 strip 목록이 늘었어야 하는데 그대로였다. 내부 프로세스
+    # 산출물만이 아니라 다른 건에서 온 사실도 대외 산출물에서 빠져야 한다.
+    for required in ["검토자 메모", "자가 검증", "internal scratchpad", "다른 건·상대방·협상 조건을 식별하는 사실"]:
         if required not in external_draft.get("must_strip", []):
             raise AssertionError(f"{label}: external_draft must strip {required!r}")
+
+    for required in ["다른 건·상대방·협상 조건을 식별하는 사실"]:
+        if required not in destination_map["agency_or_court_submission"].get("must_strip", []):
+            raise AssertionError(
+                f"{label}: agency_or_court_submission must strip {required!r}"
+            )
 
     agency_submission = destination_map["agency_or_court_submission"]
     if agency_submission.get("may_include_internal_blocks") is not False:
@@ -3708,6 +3869,7 @@ def check_router_guardrail_scenarios() -> None:
         "router-15",
         "router-16",
         "router-17",
+        "router-18",
     }
     missing = expected - scenario_ids
     if missing:
@@ -3747,6 +3909,7 @@ def check_router_fixture_integrity() -> None:
         "router-15",
         "router-16",
         "router-17",
+        "router-18",
     }
     if expected_output_ids != expected_guardrail_ids:
         raise AssertionError(
@@ -3769,8 +3932,17 @@ def check_router_fixture_integrity() -> None:
     fixture = load_yaml("tests/fixtures/router_guardrail_outputs.yaml")
     if not isinstance(fixture, dict):
         raise AssertionError("router_guardrail_outputs.yaml: expected mapping")
+    # 범위를 리터럴로 고정하면 시나리오가 늘어도 서술만 낡은 채 그린이다 —
+    # 실제로 router-18까지 담은 파일이 "through router-16"이라고 적고 있었고
+    # 검사가 그 낡은 문자열을 지키고 있었다 (PR #267 리뷰). 커버리지 집합에서
+    # 파생시켜 다음 확장 때 자동으로 어긋나게 한다.
     description = str(fixture.get("description", ""))
-    assert_contains(description, "router-07 through router-16", "router_guardrail_outputs.yaml description")
+    covered = sorted(expected_guardrail_ids)
+    assert_contains(
+        description,
+        f"{covered[0]} through {covered[-1]}",
+        "router_guardrail_outputs.yaml description",
+    )
 
     outputs = fixture.get("outputs")
     if not isinstance(outputs, dict):
@@ -4103,6 +4275,7 @@ CHECK_GROUPS = (
             check_skill_frontmatter_minimal,
             check_skill_router_schema_references_precise,
             check_skill_company_context_read_only_and_trust_boundary,
+    check_cross_matter_scope_boundary_has_a_home,
             check_skill_resource_map_matches_tree,
         ),
     ),

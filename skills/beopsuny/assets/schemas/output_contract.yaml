@@ -101,6 +101,7 @@ destinations:
       - "자가 검증"
       - "internal scratchpad"
       - "unreviewed internal assumptions"
+      - "다른 건·상대방·협상 조건을 식별하는 사실"
   - destination: "agency_or_court_submission"
     may_include_internal_blocks: false
     required_gate: "do not instruct filing without lawyer/legal_ops review"
@@ -111,6 +112,7 @@ destinations:
     must_strip:
       - "internal reviewer note"
       - "self-verification block"
+      - "다른 건·상대방·협상 조건을 식별하는 사실"
 
 # High-risk situations: role and destination packaging may only add
 # restrictions here, never substitute for them. Regardless of role_modes
