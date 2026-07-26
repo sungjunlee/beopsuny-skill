@@ -1,8 +1,8 @@
 ---
 milestone: review-followup-aim-realign
-status: active
+status: completed
 started: 2026-07-25
-due: TBD
+due: 2026-07-26
 objectives: [O1, O3]
 component: "router-loading"
 ---
@@ -54,6 +54,12 @@ component: "router-loading"
 
 ## Progress
 
+- **2026-07-26 (마감)** — v0.7.0 릴리즈. 에픽 #241 전 태스크 closed.
+  - 릴리즈 체크리스트 2단계에서 로컬 미러 2건 upstream 불일치 해소(재동기화). 법망 API HTTP 503은 외부 장애라 미해소 — 대신 `fwd-01`·`o4-04` degradation 경로가 **실제 조건**으로 실증됐다.
+  - 스모크: o4 **8/8**, guardrails 스코어러 6/11 → **정독 10/11 + 1 borderline**. FAIL 5건 중 4건이 같은 원인(거부 경로를 위반으로 읽음) → #252. **올바른 거부가 FAIL로 나오면 스코어러가 안전한 행동을 벌한다** — 이번 사이클 최대 발견.
+  - #246 회귀 없음 실증: `o4-02` 단순 조회가 출처 권위 라벨·verification status·provenance 분리를 유지하면서 38줄. **로딩 예산 축소와 경계 유지가 동시 성립.**
+  - #249 종결 — 사전 가정("자기보고는 약한 모델에서 부정확")이 실측 10/10으로 **반증**됐다. haiku도 `FLOOR=below`를 정직 보고. 단 Claude Code가 식별자를 주입하는 것이라 환경 종속. 결론은 차단이 아니라 **고지**(#253).
+  - 후속: #252 스코어러 하드닝, #253 하위 모델 고지, #245 히스토리 표면.
 - **2026-07-25 (6)** — #248 workflow-map 은퇴. **결정: 이동이 아니라 삭제.**
   - 근거: (a) 런타임 소비자 0 — `SKILL.md`·gate 표·의도 표·다른 reference 어디에도 로딩 포인터가 없고 forward-eval `source_references`에도 없다. (b) `spec/`·`docs/` 이동은 **두 번째 집을 만든다** — 의도→reference 매핑은 이미 `SKILL.md` 의도 표가, workflow별 verification 요구는 gate 표·`source-grading.md`가 소유하므로 map은 수동 동기화가 필요한 사본이었다. (c) 유지 비용은 CI check 4개 + 전문 1줄 prose-lock.
   - 4-check 처리: `check_workflow_map_structure` **함수 삭제**(SKILL 의도 집합 동등성은 `check_enforcement_response_workflow`에 이미 중복 존재 → 실질 승계, 라벨 비승격 guard는 `assert_not_router_intent()`로 이전) / `check_litigation_element_fact_template` **블록 제거 + #110 재앵커링**(`research-workflow.md` 분쟁 판단 구조 토큰 + 의도 표 구조) / `check_enforcement_response_workflow` **블록만 제거**(#242가 이미 `SKILL.md` 도달성 assert) / `check_cross_border_overlay_roadmap` **전문 1줄 assert 제거 + #112 재앵커링**(`SKILL.md` 라우팅 원칙 4 토큰 + 부정형 shape + 의도 표 구조).
