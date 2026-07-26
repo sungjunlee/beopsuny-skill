@@ -3503,6 +3503,8 @@ RETIRED_SURFACE_LIVE_GLOBS = (
     "DESIGN.md",
     "tests/scenarios/*.yaml",
     "tests/forward_evals/*.yaml",
+    # sprint 기록은 과거 서술이지만 _context.md 는 세션 시작 시 읽는 live 문서다.
+    "backlog/sprints/_context.md",
 )
 
 
