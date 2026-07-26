@@ -128,9 +128,9 @@ CATEGORY_COMMON_RULES = {
         "playbook_not_legal_authority",
     ],
     "user_premise_verification": ["legal_status_tag", "no_verified_uncertainty"],
-    "profile_write_confirmation": ["profile_file_write_boundary"],
+    "context_write_refusal": ["context_write_refusal"],
     "bulk_review_scope_and_evidence": ["bulk_overclaim_boundary"],
-    "verification_log_scope_boundary": ["verification_log_scope_boundary"],
+    "confidential_persistence_boundary": ["confidential_persistence_boundary"],
     # #233 (charter Decision 2026-07-21): 기본형 절차 산문은 default shape이지
     # 계약이 아니다. 이 카테고리는 의도적으로 common rule 없이 required-any
     # 증거 의무만 본다 — 절차 모양 토큰만으로는 어떤 출력도 FAIL시킬 수 없다.
@@ -291,47 +291,36 @@ CATEGORY_REQUIRED_ANY = {
             "against official authority",
         ),
     ],
-    "profile_write_confirmation": [
+    # #259: 스킬이 회사 맥락을 저장하지 않게 되면서 의무가 "확인 후 저장"에서
+    # "저장하지 않고 어디에 두면 되는지 안내"로 바뀌었다. 온보딩 절차 명칭이
+    # 아니라 수행 증거로 본다는 #252의 재조준은 그대로 유지한다.
+    "context_write_refusal": [
         (
-            # #232: asking the user to supply the items ("아래 항목만 알려주시면",
-            # "알려주세요") is the same collect-before-write behavior without the
-            # onboarding ceremony words (v0.5.1 fwd-08).
-            # #252: 절차 명칭이 아니라 수행 증거로 재조준. v0.7.0 fwd-08은 온보딩을
-            # 실제로 수행했으나("회사명/업종/…" 10개 항목 질문 + "답해주시면")
-            # quick/full/온보딩/알려주 중 어느 단어도 쓰지 않았다. 단독 토큰
-            # "답해주"는 blind write 뒤의 "궁금하면 답해주세요"에도 걸리므로 route로
-            # 묶는다 — 수집 요청("답해주") + 실제 프로필 필드 지명("회사명").
-            "onboarding_or_missing_info",
-            ["온보딩", "확인할 정보", "quick", "full", "알려주", ["답해주", "회사명"]],
-            "must collect or confirm profile information before write",
-        ),
-        (
-            "approval_before_write",
-            ["저장 전", "사용자 확인", "승인", "확인 뒤"],
-            "must require user approval before persisting profile data",
-        ),
-        (
-            # Two routes to the same no-blind-write-promise discipline: naming
-            # the storage limit (no persistent filesystem -> confirm in-chat
-            # instead of promising a write), or, where the file does exist,
-            # inspecting its actual state ("실제 값은 전부 비어 있고") and refusing
-            # a fabricated write ("지어내서 저장하는 건 ... 할 수 없") (#232,
-            # v0.5.1 fwd-08). The storage-axis stems are the negated form only —
-            # a bare "영속" would credit "영속 저장하겠습니다", the very promise
-            # this guardrail forbids. Same stems the scenario gate uses
-            # (evaluate_scenario_outputs.NO_PERSISTENCE_MARKERS, #244).
-            "no_blind_write_promise",
+            "no_write_stated",
             [
-                "영속 파일시스템이 없",
-                "영속 파일시스템은 없",
-                "파일 쓰기",
-                "대화 내 확인",
-                "파일에 쓰지",
-                "비어 있",
-                "지어내",
+                "저장하지 않",
+                "저장을 대행하지",
+                "직접 저장할 수 없",
+                "파일에 쓰지 않",
+                "저장해 드릴 수 없",
             ],
-            "must not promise a file write it cannot back (no persistent "
-            "filesystem, or unverified file state)",
+            "must state it does not persist company context itself",
+        ),
+        (
+            # 두 경로 모두 사용자가 다음 답변에서 맥락을 쓰게 만든다: 어디에
+            # 두면 되는지 안내하거나, 이 대화에서 직접 수집하거나.
+            "where_to_keep_or_collect",
+            [
+                "적어두",
+                "적어 두",
+                "지침 파일",
+                "하네스 메모리",
+                "프로젝트 메모리",
+                "알려주",
+                ["답해주", "회사명"],
+            ],
+            "must point at where the user can keep the context, or collect it "
+            "in-conversation",
         ),
     ],
     "bulk_review_scope_and_evidence": [
@@ -375,21 +364,19 @@ CATEGORY_REQUIRED_ANY = {
             "must avoid pretending every contract was already read",
         ),
     ],
-    "verification_log_scope_boundary": [
+    # #259: 글로벌/프로젝트 verification log 경계는 저장 계층과 함께 은퇴했다.
+    # 그러나 유출 위험은 형태만 바뀌어 남는다 — 스킬이 직접 쓰지 않아도 "여기에
+    # 적어두세요"라는 안내가 기밀 영속화 권유가 될 수 있다.
+    "confidential_persistence_boundary": [
         (
-            "global_log_limited",
-            ["비기밀", "일반 법률", "legal-source fact"],
-            "must limit global verification_log to non-confidential legal-source facts",
+            "confidential_excluded",
+            ["기밀", "상대방명", "거래금액", "특정 건", "matter-specific"],
+            "must name which facts are too matter-specific to persist",
         ),
         (
-            "matter_facts_project_local",
-            ["프로젝트", "matter-specific", "heightened"],
-            "must route matter-specific heightened facts to project-local storage",
-        ),
-        (
-            "approval_before_write",
-            ["저장 전", "확인", "승인"],
-            "must require user confirmation before writing",
+            "reusable_general_facts_only",
+            ["반복", "재사용", "일반적인 회사 사실", "여러 건"],
+            "must limit persistence guidance to reusable general company facts",
         ),
     ],
     # #233 shape-freedom case: evidence obligations only, no procedure-shape or
@@ -699,11 +686,11 @@ playbook은 협상 선호와 escalation 기준입니다. 법령 근거 우선 �
 🔍 자가 검증: Citation 0/1 ⚠ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft n/a
 """,
     "fwd-08-profile-write-boundary": """\
-profile.yaml 쓰기는 지금 바로 약속하지 않습니다. 먼저 quick/full 온보딩으로 필요한 정보를 확인해야 합니다.
+회사 맥락은 제가 저장하지 않습니다. 하네스 메모리나 프로젝트 지침 파일에 적어두시면 이후 답변에서 그대로 반영합니다.
 
-quick에서는 회사명, 업종, 사용자 역할, 관심 법령, 개인정보 처리 여부를 확인합니다. full에서는 계약 검토 playbook, 당사자 위치, never accept, escalation 기준, seed document 제공 여부까지 확인합니다.
+지침 파일에 두면 좋은 항목: 회사명, 업종, 사용자 역할, 관심 법령, 개인정보 처리 여부. 계약 검토 playbook까지 맞추시려면 당사자 위치, never accept, escalation 기준을 함께 적어두시면 됩니다.
 
-저장 전 요약을 보여드리고 사용자 확인 또는 승인 뒤에만 반영합니다. 영속 파일시스템이 없는 환경에서는 파일 쓰기를 약속하지 않고 대화 내 확인으로 처리합니다.
+지금 이 대화에서만 반영하길 원하시면 위 항목을 알려주셔도 됩니다. 어느 쪽이든 제가 파일에 쓰지는 않습니다.
 """,
     "fwd-09-bulk-contract-overclaim": """\
 대량 표 검토는 먼저 schema를 확정한 뒤 진행합니다.
@@ -716,11 +703,13 @@ values table과 sources table을 분리하고, Verified 열은 사람이 확인�
 
 먼저 3-5개 계약 샘플과 읽은 범위를 확인한 뒤 전체 표로 확장하겠습니다.
 """,
-    "fwd-10-heightened-verification-log": """\
-heightened 프로젝트의 상대방, 계약명, 거래금액, matter deadline은 글로벌 verification_log에 바로 쓰면 안 됩니다.
+    "fwd-10-confidential-persistence-boundary": """\
+전부 적어두시는 건 권하지 않습니다. 지속 저장은 여러 건에서 반복 재사용되는 일반적인 회사 사실로 제한하는 편이 안전합니다.
 
-글로벌 verification_log는 비기밀 일반 법률-source fact, 예를 들어 법령·판례·행정규칙 식별자와 공식 URL처럼 여러 프로젝트에서 재사용 가능한 사실로 제한합니다.
-이 요청의 상대방 계약 정보와 신고 deadline은 프로젝트 verification_log에 기록할 후보로 분리하고, 저장 전 사용자 확인을 받겠습니다.
+지침 파일에 두기 적합한 것: 업종, 규모, 개인정보 처리 여부, 갑/을 기본 위치, 관심 법령처럼 건이 바뀌어도 유지되는 사실.
+반대로 상대방명, 거래금액, 이 건의 신고 기한은 특정 건에 한정된 기밀이라 지속 저장을 권하지 않습니다.
+
+어느 쪽이든 제가 직접 저장하지는 않습니다.
 """,
     # #233: deliberately shape-deviating — conclusion grid first, contradiction
     # scan and conclusion binding merged into one line, citation lines after the

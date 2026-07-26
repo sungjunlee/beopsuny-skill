@@ -135,7 +135,7 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 | 출처 권위 / VERIFIED 계약 | `skills/beopsuny/references/citation-verification-contract.md`, `skills/beopsuny/references/source-grading.md`, `skills/beopsuny/assets/policies/source_grades.yaml`, `tests/fixtures/golden_citations.yaml` | `check_citation_verification_contract_single_source`, `check_golden_citation_fixtures`, `check_source_authority_verified_contract`, `legal_status_tag`, `no_verified_uncertainty` |
 | Freshness governance | `skills/beopsuny/references/freshness-governance.md`, `skills/beopsuny/assets/policies/freshness_debt.yaml`, `skills/beopsuny/assets/schemas/freshness_metadata.yaml`, `skills/beopsuny/assets/schemas/freshness_revalidation.yaml`, `skills/beopsuny/references/source-access.md#freshness-gate` | `check_freshness_metadata_schema`, `check_freshness_debt_registry`, `check_freshness_revalidation_records`, `router-15` |
 | Output role/destination gate | `skills/beopsuny/references/output-formats.md`, `skills/beopsuny/assets/schemas/output_contract.yaml`, `skills/beopsuny/references/self-verification.md#role--destination-gate` | `check_output_role_destination_contracts`, `router-14` |
-| Profile / practice direction | `skills/beopsuny/references/memory-structure.md`, `skills/beopsuny/assets/schemas/company_profile.yaml`, `skills/beopsuny/assets/schemas/practice_profile.yaml` | `check_memory_profile_workflow`, `check_memory_practice_profile_direction`, `router-10`, `router-13` |
+| Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 읽기 전용·트러스트 경계 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `router-10`, `router-13` |
 | Bulk evidence grid | `skills/beopsuny/references/bulk-tabular-review.md` | `check_bulk_tabular_review_reference`, `router-12` |
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
@@ -265,11 +265,11 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `freshness_debt.yaml` | stale 번들 자산 registry. 등록 자산은 live source 확인 전 `triage_only` |
 | `knowledge_manifest.yaml` | `beopsuny-knowledge` privacy manifest channel, asset key, checksum, usage-mode 소비 경계 |
 
-### ④ 메모리/검증 스키마 — `assets/schemas/` (10 files)
+### ④ 검증/출력 스키마 — `assets/schemas/` (4 files)
 
-두 갈래가 한 디렉터리에 있고 **환경 의존성이 서로 다르다**. 어느 쪽도 로컬 미러 다운로드 여부와는 무관하다.
+결론의 근거 요건과 출력 형식을 규정하므로 환경과 무관하게 그대로 적용된다. 로컬 미러 다운로드 여부와도 무관하다.
 
-**검증·출력 구조 (4) — 환경 무관.** 결론의 근거 요건과 출력 형식을 규정하므로 Chat 탭·zip 환경에서도 그대로 적용된다.
+회사 프로필·과거 검토 이력을 담던 저장 스키마 6종은 은퇴했다(#259). 스킬은 회사 맥락을 저장하지 않고 하네스 메모리·프로젝트 지침 파일에서 읽기만 한다.
 
 | 파일 | 용도 |
 |------|------|
@@ -277,17 +277,6 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
-
-**저장 상태 (6) — 영속 파일시스템 필요.** 회사 프로필·과거 검토 이력을 기억해서 맥락 있는 답을 돌려준다. **영속 파일시스템이 있는 환경(Claude Code / Codex 데스크톱·CLI)**이면 동작하고, Chat 탭·zip 환경은 대화 단위로만 유지된다.
-
-| 파일 | 용도 |
-|------|------|
-| `company_profile.yaml` | 회사 프로필 (업종, 규모, `interested_laws`, `party_position`) |
-| `practice_profile.yaml` | 업무별 profile overlay (`contract`, `privacy`, `labor`, `regulatory`, `litigation`) |
-| `internal_rules.yaml` | 사내 규정·결재 기준 |
-| `past_reviews.yaml` | 과거 검토 이력 |
-| `watched_laws.yaml` | 변경 감지 대상 법령 |
-| `compliance_status.yaml` | 연간 컴플라이언스 이행 상태 |
 
 ## Acknowledgments
 
