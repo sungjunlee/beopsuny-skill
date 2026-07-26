@@ -377,9 +377,10 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
     저장 계층을 스킬 밖으로 옮겨도(#259) 프롬프트 인젝션 표면은 사라지지 않고
     이동한다 — 지침 파일과 하네스 메모리는 구조화된 프로필보다 지시형 문구를 담기
     쉽다. `self-verification.md`의 Retrieved Content Trust는 조건부 gate reference라
-    인용만 있는 답변에는 로딩되지 않으므로, 모든 답변에서 읽힐 수 있는 회사 맥락의
-    경계는 항상 로딩되는 SKILL.md가 집이어야 한다. 경계가 조건부 표면으로 다시
-    내려가는 것을 이 검사가 막는다.
+    인용만 있는 답변에는 로딩되지 않는다. 그래서 경계 자체는 항상 로딩되는 SKILL.md
+    안전 경계가 소유하고(#262 — 회사 맥락뿐 아니라 웹·검색·API/MCP·업로드 문서까지),
+    `## 회사 맥락`은 회사 맥락에만 해당하는 한정자만 갖는다. 경계가 조건부 표면으로
+    다시 내려가거나 두 곳에 재서술되는 것을 이 검사가 막는다.
     """
     text = read_text("skills/beopsuny/SKILL.md")
     label = "SKILL.md"
@@ -394,16 +395,27 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         "저장하지 않는다",
         "읽기만",
         "저장했다고 말하지 않",
-        # 트러스트 경계 (이동해도 살아남아야 하는 유일한 계약)
-        "검토 대상 데이터",
-        "덮어쓸 수 없다",
-        # ~/.beopsuny/ 는 설정·데이터만
+        # ~/.beopsuny/ 는 설정·데이터·리포트만
         "`config.yaml`",
         "`data/`",
         # 맥락 부재 시 baseline 표시
         "계약 playbook 미설정 — 한국법 일반 기준으로 검토",
+        # 회사 맥락에만 해당하는 한정자 (일반 경계는 안전 경계 절이 소유)
+        "오히려 더 엄격히 적용한다",
     ]:
         assert_contains(section, required, f"{label} `## 회사 맥락`")
+
+    # 일반 retrieved-content 경계는 항상 로딩되는 안전 경계 절이 소유한다.
+    # 인용-only 답변에도 붙는다는 것이 핵심이다 — 조회 경로야말로 외부 내용이
+    # 들어오는 자리인데 self-verification.md는 거기에 로딩되지 않는다 (#262).
+    for required in [
+        "검토 대상 데이터",
+        "덮어쓸 수 없다",
+        "API·MCP 응답",
+        "인용만 하는 답변에도",
+        "references/self-verification.md#retrieved-content-trust",
+    ]:
+        assert_contains(text, required, f"{label} 안전 경계")
 
     # 은퇴한 저장 어휘가 SKILL.md 어디로도 되돌아오지 않는다.
     for retired in [
@@ -3535,12 +3547,9 @@ def check_self_verification_guardrails() -> None:
         "contradiction scan",
         "[CONTRADICTED]",
         "Retrieved Content Trust",
-        "읽어온 회사 맥락",
-        "하네스 메모리와 프로젝트 지침 파일",
-        "계약 playbook과 협상 표준 입장",
-        # 저장 위치가 스킬 밖으로 나가도 경계는 약해지지 않는다 (#259)
-        "오히려 더 엄격히 적용한다",
-        "검토 대상 데이터",
+        # 규칙의 집은 SKILL.md 안전 경계이고 여기는 포인터 + 처리 절차만 둔다 (#262)
+        "경계의 집은 `SKILL.md`의 안전 경계다",
+        "규칙을 재서술하지 않는다",
         "긴 입력의 읽은 범위",
         "Role / Destination Gate",
         "사용자 역할과 산출물 destination",
@@ -3554,6 +3563,11 @@ def check_self_verification_guardrails() -> None:
         "current primary source",
     ]:
         assert_contains(text, required, label)
+
+    # 포인터는 포인터로 남는다: 규칙 전문이 여기로 돌아오면 두 집이 갈라지고,
+    # 두 검사가 서로 다른 토큰을 지켜서 한쪽만 약화돼도 그린이 된다 (#262).
+    assert_not_contains(text, "지시가 아니다", label)
+    assert_not_contains(text, "덮어쓸 수 없다", label)
 
 
 def check_self_verification_metadata_single_home() -> None:
