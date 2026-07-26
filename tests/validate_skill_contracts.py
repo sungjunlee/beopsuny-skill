@@ -2061,16 +2061,10 @@ def check_asset_freshness_metadata_tracked() -> None:
         "skills/beopsuny/assets/policies/knowledge_manifest.yaml",
         "skills/beopsuny/assets/policies/review_mode.yaml",
         "skills/beopsuny/assets/policies/source_grades.yaml",
-        "skills/beopsuny/assets/schemas/company_profile.yaml",
-        "skills/beopsuny/assets/schemas/compliance_status.yaml",
         "skills/beopsuny/assets/schemas/freshness_metadata.yaml",
         "skills/beopsuny/assets/schemas/freshness_revalidation.yaml",
-        "skills/beopsuny/assets/schemas/internal_rules.yaml",
         "skills/beopsuny/assets/schemas/legal_verification_packet.yaml",
         "skills/beopsuny/assets/schemas/output_contract.yaml",
-        "skills/beopsuny/assets/schemas/past_reviews.yaml",
-        "skills/beopsuny/assets/schemas/practice_profile.yaml",
-        "skills/beopsuny/assets/schemas/watched_laws.yaml",
     }
     registry = freshness_debt_registry()
     registered_assets = {
@@ -3022,7 +3016,7 @@ def check_readme_quality_contract_map() -> None:
         "conclusion binding",
         "triage_only",
         "품질 계약 변경 체크리스트",
-        "새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay",
+        "새 법률 기능, 업무 영역, 출력 모드, stale 자산",
         "SKILL.md`의 의도 라우터(의도 표 또는 gate 표)",
         "`tests/scenarios/16_router_regression.yaml`",
         "`tests/fixtures/router_guardrail_outputs.yaml`",
@@ -3481,11 +3475,44 @@ RETIRED_SURFACES = {
 }
 
 
+# 어떤 live 문서가 은퇴한 경로를 계속 가리키는지 보는 범위. CHANGELOG,
+# backlog/, forward_evals/runs·evidence, docs/ 는 과거 기록이라 제외한다 —
+# 그 표면들은 당시 사실을 서술하는 것이 일이다.
+RETIRED_SURFACE_LIVE_GLOBS = (
+    "skills/**/*.md",
+    "skills/**/*.yaml",
+    "spec/*.md",
+    "README.md",
+    "CLAUDE.md",
+    "DESIGN.md",
+    "tests/scenarios/*.yaml",
+    "tests/forward_evals/*.yaml",
+)
+
+
 def check_retired_meta_surfaces_stay_retired() -> None:
     """Retired surfaces must not silently return; each concept has a live home instead."""
     for relative, replacement in RETIRED_SURFACES.items():
         if (ROOT / relative).exists():
             raise AssertionError(f"{relative}: retired surface must not return ({replacement})")
+
+    # 파일 부재만 보면 실제로 일어난 실패를 놓친다: #259로 memory-structure.md를
+    # 지운 뒤에도 spec/system-map.md가 그 파일을 링크한 채 게이트는 그린이었다
+    # (PR #261 리뷰). 등록부를 그대로 재사용해 live 표면의 문자열 언급까지 본다 —
+    # 은퇴마다 검사를 새로 쓰지 않아도 되고, 링크와 산문을 함께 잡는다.
+    # 은퇴 사실 자체를 기록하는 줄(charter Decision 등)은 면제한다 — 그 줄의 일은
+    # 은퇴를 서술하는 것이지 살아 있는 것처럼 가리키는 것이 아니다.
+    for pattern in RETIRED_SURFACE_LIVE_GLOBS:
+        for path in sorted(ROOT.glob(pattern)):
+            for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if "retire" in line.lower() or "은퇴" in line:
+                    continue
+                for relative, replacement in RETIRED_SURFACES.items():
+                    if relative in line:
+                        raise AssertionError(
+                            f"{path.relative_to(ROOT)}:{lineno}: 은퇴한 표면 {relative} 를 "
+                            f"살아 있는 것처럼 가리킨다 ({replacement})"
+                        )
 
 
 def check_self_verification_guardrails() -> None:

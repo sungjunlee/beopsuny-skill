@@ -28,7 +28,7 @@ You: "이 계약서 검토해줘"
 - **판례 조회** — 대법원/하급심 판례 검색 + [law.go.kr 판례](https://www.law.go.kr/) 원문 링크
 - **계약서 검토** — 유형별 체크리스트 + 조항 위험 분석 + 강행규정 충돌 탐지
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
-- **법령 변경 감지** — `watched_laws` 등록 법령의 개정 이력 추적 (`git log` + 법망 API)
+- **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력 추적 (`git log` + 법망 API)
 - **자가 검증 태그** — 답변마다 `[VERIFIED]`/`[UNVERIFIED]`/`[STALE]` 등 6종 태그 + 출처 권위 라벨 → 환각 방지
 - **Legal verification core** — 결론 후보별 authority mapping, citation ledger, contradiction scan, conclusion binding
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
@@ -36,7 +36,7 @@ You: "이 계약서 검토해줘"
 - **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
-- **회사 맥락 메모리** — 회사 프로필·과거 검토 이력 기반 맥락 답변
+- **회사 맥락 반영 (읽기 전용)** — 하네스 메모리·프로젝트 지침 파일에 적어둔 회사 사실을 답변에 반영. 스킬은 저장하지 않는다
 
 > **권장 모델**: sonnet급 이상. haiku급 하위 모델은 핵심 금지선(판례 날조 거부, 무확인 쓰기 거부, 직접 송부 지시 회피)은 대체로 지키지만, 출처 권위 라벨·verification status 표시와 시행 전 공포본 currency 판정을 신뢰할 수 없는 수준으로 떨어뜨린다 — 2026-07-21 플로어 실측 guardrails 3/11·o4 4/8, v0.5.1 baseline A/B로 스킬 경량화 인과 아님 확인 (`tests/forward_evals/evidence/*haiku45-20260721*.yaml`의 human_judgment 참조).
 
@@ -85,7 +85,7 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 
 ### 방법 3: Claude Desktop (Chat 탭) / claude.ai 웹 — 제한적·비권장
 
-> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 회사 프로필·검토 이력 등 메모리는 대화 단위입니다. 로컬 미러·영속 메모리·git 변경감지를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
+> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 로컬 미러를 쓸 수 없습니다. 로컬 미러·git 변경감지를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
 
 Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전제조건** Settings → Capabilities에서 **Code execution and file creation** 활성화 → [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 → **Customize → Skills → + Create skill → Upload a skill** → **beopsuny** 토글 ON → 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`).
 
@@ -146,7 +146,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 
 ### 품질 계약 변경 체크리스트
 
-새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay를 추가할 때 적용한다.
+새 법률 기능, 업무 영역, 출력 모드, stale 자산을 추가할 때 적용한다.
 
 **변경 비용 예산**: 행동 하나를 바꾸는 변경이 필수로 건드리는 표면은 기본 4개 이하다 — 기준 문서 하나 + 시나리오·fixture 하나 + 정적 검사 하나 + CHANGELOG. 아래 단계는 조건이 맞을 때만 수행하고, 예산을 넘겨야 하면 PR에 이유를 남긴다. 계약 개념 하나의 집은 1곳이다 — 다른 문서에는 재요약 대신 포인터만 둔다. 새 절차·순서·수치 서술을 reference에 추가할 때는 경계(boundary)인지 기본형(shape)인지 명시한다 — 라벨 없는 절차 추가는 재퇴적으로 본다 (charter Decision 2026-07-21).
 
@@ -223,7 +223,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
                           │
  ② 데이터 (후보·용어) ───┼──► ③ 정책 (판정 로직) ──► 공식 소스 확인 ──► 검토 출력
                           │
- ④ 메모리 (사용자 상태) ─┘       (영속 파일시스템 한정)
+ ④ 회사 맥락 (읽기 전용) ─┘       (하네스·지침 파일에서 읽음)
 ```
 
 ### ① 체크리스트 — `assets/policies/checklists/` (11종)
