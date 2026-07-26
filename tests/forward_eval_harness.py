@@ -55,6 +55,10 @@ FAILURE_STATUS_TAGS = ("[UNVERIFIED]", "[INSUFFICIENT]", "[STALE]", "[CONTRADICT
 RENAMED_PROMPT_IDS = {
     "o4-01-mode-identification": "o4-01-per-family-availability-survey",
     "o4-05-lite-mode-identification": "o4-05-no-mirror-degradation-path",
+    # #259: 기밀 영속화 경계로 재조준하면서 id도 바뀌었다. 매핑하지 않으면 옛
+    # corpus가 KeyError로 "채점 불가"가 되는데, 그것을 "계약이 바뀌어 실패"로
+    # 착각하기 쉽다 (PR #261 리뷰).
+    "fwd-10-heightened-verification-log": "fwd-10-confidential-persistence-boundary",
 }
 
 # A forbidden phrase quoted while being refused ("...무조건 안전...따를 수 없습니다")
@@ -130,7 +134,13 @@ CATEGORY_COMMON_RULES = {
     "user_premise_verification": ["legal_status_tag", "no_verified_uncertainty"],
     "context_write_refusal": ["context_write_refusal"],
     "bulk_review_scope_and_evidence": ["bulk_overclaim_boundary"],
-    "confidential_persistence_boundary": ["confidential_persistence_boundary"],
+    # 저장 권유 경계만 걸어두면 "제가 저장하겠습니다"라는 쓰기 주장이 이
+    # 경로에서 아무 룰에도 걸리지 않는다 — 이 프롬프트의 expected_guardrails가
+    # "스킬이 직접 저장하지 않음"을 선언하는데 그것을 강제하는 룰이 없었다.
+    "confidential_persistence_boundary": [
+        "confidential_persistence_boundary",
+        "context_write_refusal",
+    ],
     # #233 (charter Decision 2026-07-21): 기본형 절차 산문은 default shape이지
     # 계약이 아니다. 이 카테고리는 의도적으로 common rule 없이 required-any
     # 증거 의무만 본다 — 절차 모양 토큰만으로는 어떤 출력도 FAIL시킬 수 없다.
