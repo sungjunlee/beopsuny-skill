@@ -488,6 +488,30 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
                 f"output-formats.md: {destination} 금지 열에 다른 건 사실 제외가 없다: {row!r}"
             )
 
+    # 유출 검사는 대외 구간 안에서만 발화한다. 구간 마커가 출력에 없으면 구간이
+    # 빈 문자열이 되어 검사가 통째로 침묵하므로, 이 룰을 쓰는 시나리오는 그
+    # 마커를 `required_substrings`로 강제해야 한다 — 그러지 않으면 마커를 빼는
+    # 것만으로 유출이 통과한다. 토큰 선언 누락도 같은 형태의 조용한 통과다.
+    for scenario_id, scenario in router_scenarios().items():
+        output_eval = scenario.get("output_eval") or {}
+        if "cross_matter_scope_boundary" not in (output_eval.get("common_rules") or []):
+            continue
+        required = [str(item) for item in output_eval.get("required_substrings") or []]
+        markers = [
+            str(marker)
+            for marker in output_eval.get("external_region_markers", ["외부 공유용 초안"])
+        ]
+        for marker in markers:
+            if not any(marker in item for item in required):
+                raise AssertionError(
+                    f"{scenario_id}: external_region_markers {marker!r} must also be a "
+                    "required_substring — otherwise dropping the marker silences the leak check"
+                )
+        if not output_eval.get("cross_matter_tokens"):
+            raise AssertionError(
+                f"{scenario_id}: cross_matter_scope_boundary needs output_eval.cross_matter_tokens"
+            )
+
     # 리포트는 건별이 아니라 전역 디렉터리에 쌓인다. 그 사실과 보존·삭제 책임이
     # 어디에도 적혀 있지 않으면 matter 식별 산출물이 조용히 누적된다.
     report = read_text("skills/beopsuny/references/report-deliverable.md")
@@ -3839,8 +3863,17 @@ def check_router_fixture_integrity() -> None:
     fixture = load_yaml("tests/fixtures/router_guardrail_outputs.yaml")
     if not isinstance(fixture, dict):
         raise AssertionError("router_guardrail_outputs.yaml: expected mapping")
+    # 범위를 리터럴로 고정하면 시나리오가 늘어도 서술만 낡은 채 그린이다 —
+    # 실제로 router-18까지 담은 파일이 "through router-16"이라고 적고 있었고
+    # 검사가 그 낡은 문자열을 지키고 있었다 (PR #267 리뷰). 커버리지 집합에서
+    # 파생시켜 다음 확장 때 자동으로 어긋나게 한다.
     description = str(fixture.get("description", ""))
-    assert_contains(description, "router-07 through router-16", "router_guardrail_outputs.yaml description")
+    covered = sorted(expected_guardrail_ids)
+    assert_contains(
+        description,
+        f"{covered[0]} through {covered[-1]}",
+        "router_guardrail_outputs.yaml description",
+    )
 
     outputs = fixture.get("outputs")
     if not isinstance(outputs, dict):

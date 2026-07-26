@@ -494,6 +494,24 @@ def external_draft_region(output: str) -> str:
     return tail[: stop.start()] if stop else tail
 
 
+def external_facing_region(output: str, markers: list[str]) -> str:
+    """Return the slice that is an externally-destined block, for leak checks.
+
+    Generalizes `external_draft_region` to any destination that has an output
+    marker convention. Runs from the last matching marker to the next
+    standalone `---` rule (or end), so the answer's own trailing metadata does
+    not count as a leak. Returns "" when no marker is present — the caller
+    treats that as "this output presents no external block", which is why the
+    scenario must also require the marker via `required_substrings`.
+    """
+    start = max((output.rfind(marker) for marker in markers), default=-1)
+    if start == -1:
+        return ""
+    tail = output[start:]
+    stop = re.search(r"\n\s*---\s*\n", tail)
+    return tail[: stop.start()] if stop else tail
+
+
 def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str, rule: str) -> list[str]:
     failures: list[str] = []
 
@@ -579,15 +597,28 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
             )
             return failures
 
-        # 가장 무거운 형태 — 초안은 보내면 회수할 수 없다. 여기에는 부정 면제를
-        # 두지 않는다: 다른 상대방에게 갈 문안 안에 그 사실이 들어갈 정당한 이유가
-        # 없으므로 부정과 위반이 공존할 수 없는 자리가 아니다.
-        draft_region = external_draft_region(output)
+        # 가장 무거운 형태 — 대외 산출물은 보내면 회수할 수 없다. 여기에는 부정
+        # 면제를 두지 않는다: 다른 수신자에게 갈 문안 안에 그 사실이 들어갈 정당한
+        # 이유가 없으므로 부정과 위반이 공존할 수 없는 자리가 아니다.
+        #
+        # 구간 마커는 시나리오가 선언한다. 룰에 `외부 공유용 초안`을 박아 두면
+        # 그 마커를 쓰지 않는 destination은 검사가 통째로 침묵한다 —
+        # `output_contract.yaml`은 `external_draft`와 `agency_or_court_submission`
+        # 둘 다 must_strip에 걸었는데 검사는 한쪽만 보던 비대칭이었다(PR #267 리뷰).
+        # 토큰 검사를 출력 전체로 넓히는 것은 답이 아니다: 사용자는 두 건을 모두
+        # 소유하므로 "베타물산 조건은 쓰지 않았습니다"는 정당한 투명성 발화이고,
+        # 그걸 벌하면 이 레포가 #252에서 겪은 과억제가 재발한다. 경계는 수신자가
+        # 바뀌는 자리, 즉 대외 구간이다.
+        region_markers = [
+            str(marker)
+            for marker in output_eval.get("external_region_markers", ["외부 공유용 초안"])
+        ]
+        draft_region = external_facing_region(output, region_markers)
         for token in tokens:
             if token in draft_region:
                 failures.append(
                     f"{scenario_id}: common rule {rule} carries other-matter fact "
-                    f"{token!r} into the external draft"
+                    f"{token!r} into the external-facing block"
                 )
 
         # 토큰 없이 다른 건을 가리키는 형태도 초안 안에서는 유출이다. 상대방에게
@@ -597,7 +628,7 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
             if pattern in draft_region:
                 failures.append(
                     f"{scenario_id}: common rule {rule} references another matter "
-                    f"({pattern!r}) inside the external draft"
+                    f"({pattern!r}) inside the external-facing block"
                 )
 
         # 초안 밖이라도 다른 건 사실을 현재 건 결론의 근거로 삼으면 위반이다.

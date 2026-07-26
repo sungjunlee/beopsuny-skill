@@ -1,6 +1,6 @@
 description: |
   Sample outputs for scenario-output evaluation. These are not authoritative legal
-  answers. They pin the guardrail shape expected from router-07 through router-16.
+  answers. They pin the guardrail shape expected from router-07 through router-18.
 
 outputs:
   router-07: |
