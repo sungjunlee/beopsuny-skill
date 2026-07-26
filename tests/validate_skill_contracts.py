@@ -510,6 +510,31 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
     ]:
         assert_contains(charter, required, "charter.md Decisions")
 
+    # README 품질 지도는 사용자·에이전트가 "이 계약을 무엇이 지키는가"를 찾는
+    # 자리다. 행 전체를 되돌려도 게이트가 그린이면 지도가 조용히 낡는다
+    # (#261의 "README가 삭제된 기능을 계속 광고" 형태) — 해당 행 안에서 검증
+    # 항목을 구조적으로 확인한다.
+    readme_row = next(
+        (
+            line
+            for line in read_text("README.md").splitlines()
+            if line.startswith("| Company context trust |")
+        ),
+        None,
+    )
+    if readme_row is None:
+        raise AssertionError("README.md: 품질 계약 지도에 Company context trust 행이 없다")
+    for required in [
+        "matter 범위",
+        "check_cross_matter_scope_boundary_has_a_home",
+        "tests/test_cross_matter_scope_rule.py",
+        "router-18",
+    ]:
+        if required not in readme_row:
+            raise AssertionError(
+                f"README.md Company context trust 행에 {required!r}가 없다: {readme_row!r}"
+            )
+
     # 유출 검사는 대외 구간 안에서만 발화한다. 구간 마커가 출력에 없으면 구간이
     # 빈 문자열이 되어 검사가 통째로 침묵하므로, 이 룰을 쓰는 시나리오는 그
     # 마커를 `required_substrings`로 강제해야 한다 — 그러지 않으면 마커를 빼는
@@ -523,6 +548,19 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
             str(marker)
             for marker in output_eval.get("external_region_markers", ["외부 공유용 초안"])
         ]
+        # 빈 목록·빈 문자열이면 구간이 통째로 비어 검사가 침묵한다. 빈 문자열은
+        # `"" in required` 도 참이라 아래 결합 검사까지 통과한다 (PR #267 리뷰가
+        # mutation으로 실증) — 그 두 경우를 먼저 막는다.
+        if not markers:
+            raise AssertionError(
+                f"{scenario_id}: external_region_markers must not be empty — "
+                "an empty marker set silences the leak check entirely"
+            )
+        for marker in markers:
+            if not marker.strip():
+                raise AssertionError(
+                    f"{scenario_id}: external_region_markers must not contain a blank marker"
+                )
         for marker in markers:
             if not any(marker in item for item in required):
                 raise AssertionError(

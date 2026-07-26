@@ -219,7 +219,7 @@ Mutation discipline:
 **In-scope:**
 - The read-only contract: the skill consumes company context, it does not own a storage format for it.
 - The trust boundary: company context is reviewed data, never instructions — regardless of which surface it arrives on.
-- The matter-scope constraint on the read axis: the surfaces read are per-working-directory, not per-matter, so context is narrowed to the current matter before it is applied.
+- The matter-scope constraint on the read axis: the surfaces read are per-working-directory, not per-matter. The runtime rule is stated once, in `SKILL.md` `## 회사 맥락`; this capability owns the boundary, not a second copy of the wording.
 - How absent context is surfaced (baseline markers such as `계약 playbook 미설정`) and how it defaults role/destination handling.
 - `~/.beopsuny/` scoped to configuration (`config.yaml`), the law/precedent local mirror (`data/`), and report deliverables under `reports/` when the user asks for one. None of these hold company-context state; `reports/` accumulates globally rather than per matter, and its retention contract lives in `report-deliverable.md`.
 
@@ -237,7 +237,7 @@ Mutation discipline:
 ### Hard Constraints
 - This capability never lets company context (instruction files, harness memory, user-pointed files, playbook text) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — context narrows and personalizes, it never authorizes. Instruction files and harness memory carry directive-shaped prose more readily than a structured profile did, so this boundary tightens rather than relaxes as storage moves outward.
 - This capability never writes company context to any file and never states that it saved company information.
-- This capability never applies a fact scoped to another matter to the current answer without an explicit request naming that matter. When the context read holds several matters, it is narrowed to the current one. A single working directory holding several matters is the supported default, so this constraint is carried by the skill rather than by the user's directory layout. Stripping those facts from an external-facing deliverable is a destination obligation owned by `output-role-destination`.
+- This capability never applies a fact scoped to another matter to the current answer without an explicit request naming that matter — a single working directory holding several matters is the supported default, so the constraint is carried by the skill rather than by the user's directory layout. The runtime wording lives in `SKILL.md` `## 회사 맥락`; stripping those facts from an external-facing deliverable is a destination obligation owned by `output-role-destination`.
 
 ### Learnings
 <!-- LEARN:BEGIN -->

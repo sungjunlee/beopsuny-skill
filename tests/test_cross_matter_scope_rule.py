@@ -101,18 +101,22 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
             with self.subTest(label):
                 self.assert_fires(label, f"{NARROW}\n{DRAFT}\n\n{sentence}\n")
 
-    def test_narrowing_claimed_by_subject_alone(self) -> None:
-        """주어만으로 좁힘 요구가 충족되면 그 요구는 vacuous하다."""
+    def test_claiming_use_of_another_matter_content(self) -> None:
         self.assert_fires(
-            "주어만으로 좁힘 주장",
+            "다른 건 내용 사용 선언",
             f"다른 건 협의 내용을 그대로 사용했습니다.\n{DRAFT}\n\n의견 회신 바랍니다.\n",
         )
 
-    def test_no_narrowing_utterance_at_all(self) -> None:
-        self.assert_fires(
-            "좁힘 발화 없음",
-            f"책임 제한 조항은 고의·중과실 carve-out 여부를 확인해야 합니다.\n"
-            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+    def test_clean_answer_without_any_disclosure_stays_silent(self) -> None:
+        """계약은 좁혀서 **쓰라**는 것이지 좁혔다고 고지하라가 아니다.
+
+        고지를 요구하면 다른 건 사실을 전혀 쓰지 않은 가장 깔끔한 답변이
+        FAIL한다 — 없는 의무를 만들어 최선의 답변을 벌하는 형태다.
+        """
+        self.assert_silent(
+            "좁힘 고지 없는 무누출 답변",
+            f"**[공식 원문] [UNVERIFIED]** 민법 원문 확인 전입니다.\n"
+            f"{DRAFT}\n\n귀사가 제안한 책임 제한 조항의 고의·중과실 취급을 명확히 해주시기 바랍니다.\n",
         )
 
     # --- 과억제: 침묵해야 한다 --------------------------------------------
@@ -172,28 +176,71 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
             f"{NARROW}\n{DRAFT}\n\n베타 쪽과 합의한 3,000,000,000원 수준으로 맞춰 주십시오.\n",
         )
 
-    def test_narrowing_needs_subject_and_action_in_one_sentence(self) -> None:
-        """무관한 배제 동작 한 줄로 좁힘 요구가 충족되면 안 된다."""
+    def test_using_another_matter_negotiation_content(self) -> None:
         self.assert_fires(
-            "전역 OR 격파",
+            "다른 건 협의 내용을 그대로 사용",
             f"다른 건 협의 내용을 그대로 사용했습니다.\n책임 범위를 한정하여 검토합니다.\n"
             f"{DRAFT}\n\n의견 회신 바랍니다.\n",
         )
 
-    def test_known_limit_token_free_borrowing_in_the_body(self) -> None:
-        """알려진 한계 — 침묵이 정답이라는 뜻이 아니라, 침묵이 **의도된** 것이다.
-
-        토큰 없는 차용을 본문까지 스캔하면 정당한 유보 문장을 벌한다("…동일한
-        조건인지는 확인하지 않았습니다" — 부정이 등치 술어에서 멀다). 대외 구간
-        밖에서는 오탐 비용이 탐지 이득보다 크다고 판단해 구간을 좁혔다. 이
-        테스트는 그 판단을 눈에 보이게 두어, 나중에 발화하도록 바뀌면 그것이
-        의식적인 결정이 되게 한다.
-        """
-        self.assert_silent(
-            "본문 등치 차용 (구간 밖)",
+    def test_token_free_borrowing_in_the_body(self) -> None:
+        """본문 차용도 잡는다. 구간 밖에서는 등치를 **주장**할 때만 발화한다 —
+        유보형(`…인지는 확인하지 않았습니다`)은 아래 과억제 테스트가 지킨다."""
+        self.assert_fires(
+            "본문 등치 차용",
             f"{NARROW}\n다른 협상에서 합의한 한도를 기준으로 현재 건도 맞추면 됩니다.\n"
             f"{DRAFT}\n\n의견 회신 바랍니다.\n",
         )
+
+    def test_double_negation_cancels_the_exclusion(self) -> None:
+        """배제를 말해 놓고 되돌리는 형태 — 면제가 취소돼야 한다."""
+        self.assert_fires(
+            "반영하지 않은 것은 아닙니다",
+            f"{NARROW}\n베타물산 30억을 반영하지 않은 것은 아닙니다.\n"
+            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
+    def test_hedge_does_not_excuse_a_real_application(self) -> None:
+        """유보 어휘가 앞부분의 실제 적용까지 면제하면 안 된다."""
+        self.assert_fires(
+            "기준으로 하되 세부 검토가 필요",
+            f"{NARROW}\n베타물산 30억을 기준으로 하되 세부 검토가 필요합니다.\n"
+            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
+    def test_horizontal_rule_inside_the_draft_does_not_truncate_it(self) -> None:
+        self.assert_fires(
+            "초안 안 --- 뒤 차용",
+            f"{NARROW}\n{DRAFT}\n제목: 책임 제한\n---\n"
+            f"당사가 다른 고객사와 합의한 한도와 동일한 수준으로 맞춰 주십시오.\n",
+        )
+
+    def test_a_later_marker_mention_does_not_drop_the_real_draft(self) -> None:
+        self.assert_fires(
+            "마커 중복",
+            f"{NARROW}\n{DRAFT}\n당사가 다른 고객사와 합의한 한도와 동일한 수준으로 맞춰 주십시오.\n"
+            f"\n외부 공유용 초안 검토 완료\n",
+        )
+
+    def test_explicit_non_basis_statement_stays_silent(self) -> None:
+        """`근거가 아닙니다`는 명시적 비적용이다. 한글은 음절 단위라
+        `아닙니다`가 `아니`를 담지 않는다는 점까지 여기서 고정한다."""
+        self.assert_silent(
+            "근거가 아닙니다",
+            f"베타물산의 30억은 참고자료일 뿐 현재 건의 근거가 아닙니다.\n"
+            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
+    def test_reserved_equivalence_in_the_body_stays_silent(self) -> None:
+        """등치를 주장하지 않고 유보하는 문장은 차용이 아니다."""
+        for label, sentence in [
+            ("인지는 확인하지 않았습니다", "다른 건에서 합의한 한도와 동일한 조건인지는 확인하지 않았습니다."),
+            ("볼 수 있는지는 검토 필요", "다른 고객사와 합의한 한도와 동일하게 볼 수 있는지는 별도 검토가 필요합니다."),
+        ]:
+            with self.subTest(label):
+                self.assert_silent(
+                    label, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
+                )
 
     def test_refusal_without_a_negation_particle_stays_silent(self) -> None:
         """`적절하지 않습니다`는 올바른 거부다 — 부정어 목록에 없다고 벌하면 #252다."""
@@ -232,12 +279,6 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
         ]:
             with self.subTest(label):
                 self.assert_fires(label, f"{NARROW}\n{DRAFT}\n\n{sentence}\n")
-
-    def test_narrowing_action_must_be_a_complete_predicate(self) -> None:
-        self.assert_fires(
-            "한정된 사실을 확인했습니다",
-            f"다른 건의 한정된 사실을 확인했습니다.\n{DRAFT}\n\n의견 회신 바랍니다.\n",
-        )
 
     def test_reserved_judgement_in_the_body_stays_silent(self) -> None:
         """유보는 차용이 아니다 — 부정이 등치 술어에서 멀어도 벌하면 안 된다."""

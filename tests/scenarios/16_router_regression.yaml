@@ -640,7 +640,6 @@ scenarios:
         - skills/beopsuny/references/output-formats.md
       response_contains:
         - 외부 공유용 초안
-        - 다른 건
     validation:
       - type: cross_matter_scope_boundary
         description: 다른 건에 한정된 사실이 현재 건 결론 근거나 대외 초안에 실리지 않는지
@@ -658,10 +657,11 @@ scenarios:
         - "3[,.]?000[,.]?000[,.]?000\\s*원"
         - "30\\s*억"
         - "삼십\\s*억"
+      # 좁힘 "고지"는 요구하지 않는다 — 계약은 좁혀서 쓰라는 것이지 좁혔다고
+      # 밝히라는 것이 아니다. 성공 조건은 누출의 부재다.
       required_substrings:
         - 외부 공유용 초안
         - 보내기 전 법무 검토
-        - 다른 건
       forbidden_substrings:
         - 베타물산 건과 동일하게
         - 다른 건 조건을 그대로 인용
