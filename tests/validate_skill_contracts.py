@@ -157,9 +157,6 @@ QUALITY_CONTRACT_REFERENCES = {
         ("skills/beopsuny/references/output-formats.md", None),
         ("skills/beopsuny/assets/schemas/output_contract.yaml", None),
         ("skills/beopsuny/references/self-verification.md", "role--destination-gate"),
-        ("skills/beopsuny/references/memory-structure.md", None),
-        ("skills/beopsuny/assets/schemas/company_profile.yaml", None),
-        ("skills/beopsuny/assets/schemas/practice_profile.yaml", None),
         ("skills/beopsuny/references/bulk-tabular-review.md", None),
         ("tests/validate_skill_contracts.py", None),
         ("tests/scenarios/16_router_regression.yaml", None),
@@ -354,7 +351,16 @@ def check_skill_router_schema_references_precise() -> None:
 
     assert_not_contains(text, "`assets/schemas/*.yaml`", label)
     for required in [
+        "assets/schemas/legal_verification_packet.yaml",
+        "assets/schemas/freshness_revalidation.yaml",
+        "assets/schemas/output_contract.yaml",
+    ]:
+        assert_contains(text, required, label)
+
+    # #259로 은퇴한 저장 계층 자산이 라우터·gate 표로 되돌아오지 않는다.
+    for retired in [
         "`memory_profile`",
+        "references/memory-structure.md",
         "assets/schemas/company_profile.yaml",
         "assets/schemas/practice_profile.yaml",
         "assets/schemas/past_reviews.yaml",
@@ -362,20 +368,60 @@ def check_skill_router_schema_references_precise() -> None:
         "assets/schemas/compliance_status.yaml",
         "assets/schemas/internal_rules.yaml",
     ]:
-        assert_contains(text, required, label)
+        assert_not_contains(text, retired, label)
 
-    memory_row = next(
-        (line for line in text.splitlines() if line.startswith("| `memory_profile` |")),
-        "",
-    )
-    if not memory_row:
-        raise AssertionError(f"{label}: memory_profile router row missing")
-    for forbidden in [
-        "legal_verification_packet.yaml",
-        "freshness_revalidation.yaml",
-        "output_contract.yaml",
+
+def check_skill_company_context_read_only_and_trust_boundary() -> None:
+    """회사 맥락은 읽기 전용이고, 그 트러스트 경계는 always-on 표면에 있어야 한다.
+
+    저장 계층을 스킬 밖으로 옮겨도(#259) 프롬프트 인젝션 표면은 사라지지 않고
+    이동한다 — 지침 파일과 하네스 메모리는 구조화된 프로필보다 지시형 문구를 담기
+    쉽다. `self-verification.md`의 Retrieved Content Trust는 조건부 gate reference라
+    인용만 있는 답변에는 로딩되지 않으므로, 모든 답변에서 읽힐 수 있는 회사 맥락의
+    경계는 항상 로딩되는 SKILL.md가 집이어야 한다. 경계가 조건부 표면으로 다시
+    내려가는 것을 이 검사가 막는다.
+    """
+    text = read_text("skills/beopsuny/SKILL.md")
+    label = "SKILL.md"
+
+    match = re.search(r"^## 회사 맥락\s*$(.*?)(?=^## )", text, re.MULTILINE | re.DOTALL)
+    if not match:
+        raise AssertionError(f"{label}: `## 회사 맥락` 절이 없다 — 트러스트 경계의 집이 사라졌다")
+    section = match.group(1)
+
+    for required in [
+        # 읽기 전용 + 저장 대행 금지
+        "저장하지 않는다",
+        "읽기만",
+        "저장했다고 말하지 않",
+        # 트러스트 경계 (이동해도 살아남아야 하는 유일한 계약)
+        "검토 대상 데이터",
+        "덮어쓸 수 없다",
+        # ~/.beopsuny/ 는 설정·데이터만
+        "`config.yaml`",
+        "`data/`",
+        # 맥락 부재 시 baseline 표시
+        "계약 playbook 미설정 — 한국법 일반 기준으로 검토",
     ]:
-        assert_not_contains(memory_row, forbidden, "memory_profile router row")
+        assert_contains(section, required, f"{label} `## 회사 맥락`")
+
+    # 은퇴한 저장 어휘가 SKILL.md 어디로도 되돌아오지 않는다.
+    for retired in [
+        "reviews.jsonl",
+        "learnings.jsonl",
+        "verification_log.jsonl",
+        "projects/{slug}",
+        "quick 온보딩",
+        "full 온보딩",
+    ]:
+        assert_not_contains(text, retired, label)
+
+    # 맥락이 없을 때 gate가 느슨해지지 않는다 (fail-safe 방향).
+    for required in [
+        "역할이 확인되지 않으면 `unknown`",
+        "gate를 그대로 적용한다",
+    ]:
+        assert_contains(text, required, label)
 
 
 def check_contract_review_guide() -> None:
@@ -406,227 +452,6 @@ def check_contract_review_guide() -> None:
         "회사 playbook 적용",
         "playbook은 결론 근거가 아니라 고객 맥락",
         "법령 근거 우선",
-    ]:
-        assert_contains(text, required, label)
-
-
-def check_memory_profile_workflow() -> None:
-    text = read_text("skills/beopsuny/references/memory-structure.md")
-    label = "memory-structure.md"
-
-    for required in [
-        "Quick / Full 온보딩",
-        "quick 온보딩",
-        "full 온보딩",
-        "canonical shape는 nested `company:` 섹션이 아니라 top-level 필드",
-        "변호사",
-        "`lawyer`",
-        "법무 담당자",
-        "`legal_ops`",
-        "`customer`",
-        "`supplier`",
-        "`gap`",
-        "`eul`",
-        "저장 전에는 요약을 보여주고",
-        # quick 온보딩은 profile.yaml만 — practice profile 미확장 (토큰: 유일한 부정 kernel)
-        "`~/.beopsuny/profile.yaml`만",
-        "확장하지 않는다",
-        "evidence-based onboarding",
-        "stated position",
-        "signed practice",
-        # practice profile 후보 저장 전 명시 확인 + 대상 경로
-        "practice profile 후보",
-        "명시 확인",
-        "`~/.beopsuny/practices/<area>.yaml`",
-        # 건너뛴 항목은 빈 값/`unknown`, 추정 금지
-        "건너뛴 practice profile 항목",
-        "`unknown`",
-        # seed document 추출 라우팅: 회사 사실 -> profile.yaml, 업무별 선호 -> practices/<area>.yaml 후보
-        "seed document에서 추출한 회사 사실",
-        "`~/.beopsuny/practices/<area>.yaml` 후보",
-        "skipped field",
-        "escalation 판단 기준 또는 표시 조건",
-        "자동 알림·라우팅·티켓 생성을 뜻하지 않는다",
-        "역할별 gate",
-        "`business_user`",
-        "법적 효과 gate",
-        "Persisted memory trust boundary",
-        "검토 대상 데이터",
-        "프로젝트 workspace 경계",
-        "cross-project context 기본값은 `off`",
-        "overrides.party_position.default",
-        "per_clause_override",
-        "글로벌 (`~/.beopsuny/verification_log.jsonl`)",
-        "비기밀 reusable legal-source fact",
-        "matter-specific fact",
-        "verification_log.jsonl",
-        "출처 권위 라벨은 현재 세션에서",
-        "project.yaml.confidentiality: \"heightened\"",
-        "freshness_days",
-        "파일에 쓰지 않고 대화 내 확인",  # no-persistent-FS → no-write boundary (mode-agnostic token, #236)
-        # matter = 프로젝트 workspace 단위, 경로/slug 유지
-        "workspace 단위",
-        "`projects/{slug}/`",
-        # source-log/verification-log 역할 분리 라벨
-        "source-log =",
-        "verification-log =",
-        # matter별 독립 source_log + 타 matter 자동 읽기 금지
-        "`projects/{slug}/source_log.jsonl`",
-        "자동으로 읽지 않는다",
-        # cross-matter gate: 기본 off, 지명 요청만, heightened 기본 제외
-        "cross-matter(=cross-project)",
-        "`source_log.jsonl`, `reviews.jsonl`, `learnings.jsonl`, `verification_log.jsonl`, `outputs/`",
-        "지명한 명시 요청",
-        "`confidentiality: heightened`",
-        "cross-matter 노출",
-        "기본 제외",
-        # 계약 앵커 포인터
-        "`profile-practice-memory`",
-        "HC2",
-    ]:
-        assert_contains(text, required, label)
-
-    role_rows = parse_markdown_table(text, "| 파일 | owns | does-not-own |")
-    expected_role_rows = {
-        "`source_log.jsonl`": (
-            "이 matter에서 참조·pull한 소스의 provenance (무엇을 열었나 / 어떤 API·파일·URL / 언제)",
-            "결론, 사용자 1차 확인, 법령 권위 판단",
-        ),
-        "`reviews.jsonl` (review-log)": (
-            "검토 결론·질문·caveat 이력",
-            "소스 조회 provenance, 산출물 원문",
-        ),
-        "`outputs/`": (
-            "이 matter에서 생성한 산출물 보관 (리포트·메모·redline 힌트)",
-            "소스 권위 - 산출물도 계속 검토 대상 데이터",
-        ),
-        "`history` (`history.jsonl`)": (
-            "시간순 활동 인덱스 (열림·검토·산출물 생성·archive)",
-            "각 전용 로그의 상세 내용 - 복제하지 않고 포인터/요약만",
-        ),
-    }
-    role_map = {row[0]: row[1:] for row in role_rows if len(row) == 3}
-    for file_label, expected_cells in expected_role_rows.items():
-        if role_map.get(file_label) != list(expected_cells):
-            raise AssertionError(f"{label}: workspace role row mismatch for {file_label!r}")
-    assert_not_contains(text, "자동 escalation trigger", label)
-
-
-def check_company_profile_playbook_schema() -> None:
-    data = load_yaml("skills/beopsuny/assets/schemas/company_profile.yaml")
-    text = read_text("skills/beopsuny/assets/schemas/company_profile.yaml")
-
-    for key in ["company_name", "user_role", "interested_laws", "party_position", "contract_playbook"]:
-        if key not in data:
-            raise AssertionError(f"company_profile.yaml: missing top-level key {key!r}")
-    party_position = data["party_position"]
-    if not isinstance(party_position, dict):
-        raise AssertionError("company_profile.yaml: party_position must be a mapping")
-    if set(party_position) != {"default", "per_clause_override"}:
-        raise AssertionError(f"company_profile.yaml: unexpected party_position shape {party_position!r}")
-    if party_position["default"] not in {"gap", "eul", ""}:
-        raise AssertionError("company_profile.yaml: party_position.default must be gap/eul/empty")
-    if not isinstance(party_position["per_clause_override"], dict):
-        raise AssertionError("company_profile.yaml: party_position.per_clause_override must be a mapping")
-    for required in [
-        "lawyer | legal_ops | business_user | unknown",
-        "customer | supplier | platform | unknown",
-        '"gap" / "eul" / ""',
-    ]:
-        assert_contains(text, required, "company_profile.yaml")
-    if "contract_playbook" not in data:
-        raise AssertionError("company_profile.yaml: missing contract_playbook")
-    playbook = data["contract_playbook"]
-    for key in [
-        "default_role",
-        "risk_posture",
-        "standard_positions",
-        "acceptable_fallbacks",
-        "never_accept",
-        "escalation_triggers",
-        "seed_documents",
-    ]:
-        if key not in playbook:
-            raise AssertionError(f"company_profile.yaml: contract_playbook missing {key!r}")
-    if "user_role" not in data:
-        raise AssertionError("company_profile.yaml: missing user_role")
-
-
-def check_practice_profile_overlay_schema() -> None:
-    data = load_yaml("skills/beopsuny/assets/schemas/practice_profile.yaml")
-    text = read_text("skills/beopsuny/assets/schemas/practice_profile.yaml")
-    label = "practice_profile.yaml"
-
-    for key in [
-        "practice",
-        "version",
-        "jurisdiction_scope",
-        "allowed_scope",
-        "merge_order",
-        "cannot_override",
-        "conflict_handling",
-        "metadata",
-    ]:
-        if key not in data:
-            raise AssertionError(f"{label}: missing top-level key {key!r}")
-
-    jurisdiction_scope = data["jurisdiction_scope"]
-    if not isinstance(jurisdiction_scope, dict):
-        raise AssertionError(f"{label}: jurisdiction_scope must be a mapping")
-    if jurisdiction_scope.get("primary") != "KR":
-        raise AssertionError(f"{label}: primary jurisdiction must default to KR")
-    if not isinstance(jurisdiction_scope.get("secondary"), list):
-        raise AssertionError(f"{label}: jurisdiction_scope.secondary must be a list")
-
-    allowed_scope = data["allowed_scope"]
-    if not isinstance(allowed_scope, dict):
-        raise AssertionError(f"{label}: allowed_scope must be a mapping")
-    for key in [
-        "output_preferences",
-        "issue_sequence",
-        "escalation_thresholds",
-        "repeated_questions",
-        "external_counsel_handoff",
-    ]:
-        if key not in allowed_scope:
-            raise AssertionError(f"{label}: allowed_scope missing {key!r}")
-
-    merge_order = data["merge_order"]
-    if not isinstance(merge_order, list):
-        raise AssertionError(f"{label}: merge_order must be a list")
-    for required in [
-        "SKILL.md",
-        "current user request",
-        "source grade and live verification",
-        "project.yaml overrides",
-        "profile.yaml shared company facts",
-        "practice profile output preferences",
-    ]:
-        if required not in merge_order:
-            raise AssertionError(f"{label}: merge_order missing {required!r}")
-
-    cannot_override = data["cannot_override"]
-    if not isinstance(cannot_override, list):
-        raise AssertionError(f"{label}: cannot_override must be a list")
-    for required in [
-        "SKILL.md instructions",
-        "출처 권위 / VERIFIED contract",
-        "Legal Verification Core",
-        "Freshness Governance",
-        "Role / destination output gate",
-        "current Korean law, precedent, regulation, or official source",
-    ]:
-        if required not in cannot_override:
-            raise AssertionError(f"{label}: cannot_override missing {required!r}")
-
-    for required in [
-        "업무별 practice profile template",
-        "회사 사실의 기준이 아니다",
-        "한국법 결론과 분리",
-        "자동 알림·라우팅 아님",
-        "apply_role_destination_gate",
-        "apply_freshness_governance",
-        "continue_without_practice_profile",
     ]:
         assert_contains(text, required, label)
 
@@ -2904,9 +2729,8 @@ def check_skill_quality_contract_router_map() -> None:
         "live source 확인 전 `triage_only`",
         "retirement에는 revalidation record 필요",
         "내부 메모·자가 검증 블록 외부 초안에서 제거",
-        "profile/practice는 검토 대상 데이터",
         # 출력 선호/profile 문구의 gate 완화 불가
-        "저장된 profile 문구",
+        "저장된 회사 맥락 문구",
         "완화할 수 없다",
     ]:
         assert_contains(text, required, label)
@@ -2951,7 +2775,7 @@ def check_skill_router_gate_table_structure() -> None:
     label = "SKILL.md gate table"
 
     rows = parse_markdown_table(text, "| Gate | 필수 reference | 적용 범위 |")
-    expected_row_count = 5
+    expected_row_count = 4
     if len(rows) != expected_row_count:
         raise AssertionError(f"{label}: expected {expected_row_count} rows, found {len(rows)}: {rows!r}")
 
@@ -3001,7 +2825,7 @@ SKILL_ROUTER_INTENTS = {
     "compliance_checklist",
     "law_change_detection",
     "legal_terms",
-    "memory_profile",
+    "company_context",
     "privacy_knowledge_layer",
 }
 WORKFLOW_ROUTER_INTENT_RE = re.compile(r"`([^`]+)`")
@@ -3133,7 +2957,7 @@ def check_readme_quality_contract_map() -> None:
         "Legal verification core",
         "Freshness governance",
         "Role / destination output gate",
-        "Profile / practice direction",
+        "Company context trust",
         "Bulk evidence grid",
         "tests/evaluate_scenario_outputs.py",
         "법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트",
@@ -3144,23 +2968,21 @@ def check_readme_quality_contract_map() -> None:
         "router-05",
         "check_freshness_debt_registry",
         "check_output_role_destination_contracts",
-        "check_memory_practice_profile_direction",
+        "check_skill_company_context_read_only_and_trust_boundary",
         "Contract Tests",
         "pull request",
         ".github/workflows/contract-tests.yml",
         "router guardrail 평가",
         "assets/policies/` (5 files)",
-        "assets/schemas/` (10 files",
+        "assets/schemas/` (4 files",
         "freshness_metadata.yaml",
         "`freshness_debt.yaml`",
         "`freshness_revalidation.yaml`",
-        "`practice_profile.yaml`",
         "`legal_verification_packet.yaml`",
         "`output_contract.yaml`",
         "authority packet",
         "citation ledger",
         "conclusion binding",
-        "업무별 profile overlay",
         "triage_only",
         "품질 계약 변경 체크리스트",
         "새 법률 기능, 업무 영역, 출력 모드, stale 자산, profile overlay",
@@ -3191,16 +3013,12 @@ def check_readme_asset_inventory_counts() -> None:
         if not re.search(pattern, text):
             raise AssertionError(f"{label}: {section} inventory count must be {expected_count} files")
 
+    # #259: 저장 스키마 6종은 은퇴했다. 남은 4종은 전부 검증·출력 구조다.
     for schema_name in [
-        "company_profile.yaml",
-        "practice_profile.yaml",
         "legal_verification_packet.yaml",
+        "freshness_metadata.yaml",
         "freshness_revalidation.yaml",
         "output_contract.yaml",
-        "internal_rules.yaml",
-        "past_reviews.yaml",
-        "watched_laws.yaml",
-        "compliance_status.yaml",
     ]:
         assert_contains(text, f"`{schema_name}`", label)
 
@@ -3371,9 +3189,10 @@ def check_static_privacy_preknowledge_boundaries() -> None:
 
 
 def check_law_change_automation_promise_drift() -> None:
+    # watched_laws.yaml은 #259로 은퇴했다. 관심 법령은 회사 맥락에서 읽고,
+    # pull-only 경계는 law-change-detection.md와 SKILL.md가 소유한다.
     sensitive_docs = {
         "CLAUDE.md": read_text("CLAUDE.md"),
-        "watched_laws.yaml": read_text("skills/beopsuny/assets/schemas/watched_laws.yaml"),
     }
     forbidden_phrases = [
         "법 개정 시 자동 알림",
@@ -3394,13 +3213,6 @@ def check_law_change_automation_promise_drift() -> None:
     for label, text in sensitive_docs.items():
         for phrase in forbidden_phrases:
             assert_not_contains(text, phrase, label)
-
-    watched_laws = sensitive_docs["watched_laws.yaml"]
-    for required in [
-        "조회 후보",
-        "사용자가 저장을 확인한 경우에만 추가",
-    ]:
-        assert_contains(watched_laws, required, "watched_laws.yaml")
 
     law_change = read_text("skills/beopsuny/references/law-change-detection.md")
     for required in [
@@ -3618,6 +3430,17 @@ RETIRED_SURFACES = {
     "skills/beopsuny/references/workflow-map.md": (
         "use SKILL.md 의도 표 + 라우팅 원칙 (workflow별 재서술 금지)"
     ),
+    # #259: 인스턴스 0개인 저장 계층. 회사 맥락은 하네스·지침 파일이 소유하고
+    # 스킬은 읽기만 한다. 트러스트 경계의 집은 SKILL.md `## 회사 맥락`이다.
+    "skills/beopsuny/references/memory-structure.md": (
+        "use SKILL.md `## 회사 맥락` (스킬은 회사 맥락을 저장하지 않는다)"
+    ),
+    "skills/beopsuny/assets/schemas/company_profile.yaml": "use 하네스 메모리 / 지침 파일",
+    "skills/beopsuny/assets/schemas/practice_profile.yaml": "use 하네스 메모리 / 지침 파일",
+    "skills/beopsuny/assets/schemas/past_reviews.yaml": "use 하네스 메모리 / 지침 파일",
+    "skills/beopsuny/assets/schemas/watched_laws.yaml": "use 하네스 메모리 / 지침 파일",
+    "skills/beopsuny/assets/schemas/compliance_status.yaml": "use 하네스 메모리 / 지침 파일",
+    "skills/beopsuny/assets/schemas/internal_rules.yaml": "use 하네스 메모리 / 지침 파일",
 }
 
 
@@ -3645,14 +3468,15 @@ def check_self_verification_guardrails() -> None:
         "contradiction scan",
         "[CONTRADICTED]",
         "Retrieved Content Trust",
-        "저장된 Beopsuny memory",
-        "`profile.yaml`",
-        "`contract_playbook`",
-        "`verification_log.jsonl`",
+        "읽어온 회사 맥락",
+        "하네스 메모리와 프로젝트 지침 파일",
+        "계약 playbook과 협상 표준 입장",
+        # 저장 위치가 스킬 밖으로 나가도 경계는 약해지지 않는다 (#259)
+        "오히려 더 엄격히 적용한다",
         "검토 대상 데이터",
         "긴 입력의 읽은 범위",
         "Role / Destination Gate",
-        "`profile.yaml.user_role`과 산출물 destination",
+        "사용자 역할과 산출물 destination",
         "references/output-formats.md#role-based-output-modes",
         "references/output-formats.md#destination-output-contracts",
         "외부 공유용 초안에 내부 검토자 메모, 자가 검증 블록",
@@ -3737,60 +3561,14 @@ def check_output_role_destination_contracts() -> None:
         "`executive_report`",
         "`external_draft`",
         "`agency_or_court_submission`",
-        "`practice_profile.yaml`",
-        "practice profile은 출력 선호일 뿐",
+        "계약 playbook이 default destination",
+        "계약 playbook은 출력 선호일 뿐",
         "현재 사용자 요청과 role/destination gate를 우선",
         # external_draft: 내부 검토자 메모/자가 검증 블록 포함 금지
         "내부 검토자 메모",
         "그대로 포함하지 않는다",
         "보내기 전 법무 검토 필요",
         "변호사 또는 담당 법무 검토 없이 제출하라고 쓰지 않음",
-    ]:
-        assert_contains(text, required, label)
-
-
-def check_memory_practice_profile_direction() -> None:
-    text = read_text("skills/beopsuny/references/memory-structure.md")
-    label = "memory-structure.md"
-
-    for required in [
-        "Practice profile direction",
-        "Practice Profile Contract",
-        "assets/schemas/practice_profile.yaml",
-        "shared company profile",
-        "`~/.beopsuny/profile.yaml`",
-        "practice profiles",
-        "`~/.beopsuny/practices/{contract,privacy,labor,regulatory,litigation}.yaml`",
-        "allowed scope",
-        "Practice profile merge order",
-        "cannot_override",
-        "`jurisdiction_scope.primary`의 기본값은 `KR`",
-        "해외법 source도 별도 출처 권위 라벨과 verification status",
-        "practice profile 안의 destination 기본값이 `external_draft`",
-        "role/destination gate는 그대로 적용",
-        "의도→practice area 소비 매핑",
-        "`contract_review` → `contract`",
-        "개인정보 계열(`privacy_knowledge_layer` 포함) → `privacy`",
-        "노동 질문 → `labor`",
-        "`compliance_checklist` → `regulatory`",
-        "분쟁·소송 질문 → `litigation`",
-        # merge_order 그대로 소비 / 파일 없으면 continue (필드·enum 토큰)
-        "`merge_order`",
-        "`missing_profile: continue_without_practice_profile`",
-        "회사 사실을 복제하지 않고",
-        "검토 대상 데이터",
-        # practice 문구의 덮어쓰기 불가 대상 목록 + kernel
-        "SKILL.md, 출처 권위 라벨, 자가 검증, 현행 법령 확인",
-        "덮어쓸 수 없다",
-        "top-level `profile.yaml`과 `contract_playbook`을 유지",
-        # 단일 출처: profile.yaml / profile.yaml.contract_playbook
-        "`profile.yaml.contract_playbook`",
-        "단일 출처",
-        # practices/contract.yaml은 allowed_scope overlay만
-        "`practices/contract.yaml`",
-        "allowed_scope overlay",
-        "cold-start full onboarding",
-        "업무별 출력 선호와 escalation 기준",
     ]:
         assert_contains(text, required, label)
 
@@ -4235,15 +4013,13 @@ CHECK_GROUPS = (
         (
             check_skill_frontmatter_minimal,
             check_skill_router_schema_references_precise,
+            check_skill_company_context_read_only_and_trust_boundary,
         ),
     ),
     CheckGroup(
-        "profile/practice: contract review and memory schemas",
+        "contract review guide",
         (
             check_contract_review_guide,
-            check_memory_profile_workflow,
-            check_company_profile_playbook_schema,
-            check_practice_profile_overlay_schema,
         ),
     ),
     CheckGroup(
@@ -4346,12 +4122,6 @@ CHECK_GROUPS = (
             check_output_contract_high_risk_situations,
             check_output_contract_composition_rule,
             check_output_role_destination_contracts,
-        ),
-    ),
-    CheckGroup(
-        "profile/practice: practice direction",
-        (
-            check_memory_practice_profile_direction,
         ),
     ),
     CheckGroup(

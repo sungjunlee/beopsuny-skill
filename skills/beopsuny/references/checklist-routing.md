@@ -71,16 +71,16 @@
 
 ## Company Context
 
-가능하면 `~/.beopsuny/profile.yaml`의 아래 필드를 반영한다.
+가능하면 회사 맥락의 아래 필드를 반영한다.
 
-- `employee_count`
-- `industry`
-- `handles_personal_data`
-- `has_subcontract`
-- `party_position.default`
-- `interested_laws`
+- 회사 규모(직원 수)
+- 업종
+- 개인정보 처리 여부
+- 하도급 거래 여부
+- 갑/을 위치
+- 관심 법령
 
-영속 파일시스템이 없어 파일 접근이 안 되면 필요한 맥락만 사용자에게 묻는다.
+회사 맥락을 알 수 없으면 필요한 것만 사용자에게 묻는다.
 
 ## Related Checklists
 

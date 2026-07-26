@@ -65,7 +65,7 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 
 ## Candidate Capability Boundaries
 
-Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`, `profile-practice-memory`, `contract-review`.
+Landed — contracts now live in [`capabilities.md`](capabilities.md): `router-loading`, `source-citation`, `freshness-governance`, `output-role-destination`, `company-context-trust`, `contract-review`.
 
 No remaining candidates. `contract-review` was grilled into a first-class capability contract on 2026-07-07 (last reassess candidate resolved); new candidates are discovered via `spec-grill map` when future workflow packs (#110-112) demand distinct decision boundaries.
 

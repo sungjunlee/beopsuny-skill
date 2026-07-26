@@ -159,7 +159,7 @@ law.go.kr 판례 원문을 직접 열어 확인한 경우에는 다음처럼 표
 
 ## Role-based output modes
 
-`profile.yaml.user_role`은 법률 정확성 기준을 낮추지 않는다. 다만 같은 법률 검토라도 사용자가 바로 쓸 산출물의 모양과 법적 효과 gate를 바꾼다. 주 사용자는 사내변호사이므로 **기본 출력 shape는 `lawyer` draft-first(편집 가능한 초벌)**로 삼는다. 이는 산출물의 모양일 뿐 법적 효과 gate를 완화하지 않는다 — 외부 송부·기관 제출·서명·계약 체결처럼 법적 효과가 있는 행동, 또는 사용자가 `business_user`임이 드러나거나 명백히 비법무 맥락이면 `business_user`/`unknown` 출력 구조와 gate를 그대로 적용해 서명·송부·제출을 직접 지시하지 않는다.
+사용자 역할은 법률 정확성 기준을 낮추지 않는다. 다만 같은 법률 검토라도 사용자가 바로 쓸 산출물의 모양과 법적 효과 gate를 바꾼다. 주 사용자는 사내변호사이므로 **기본 출력 shape는 `lawyer` draft-first(편집 가능한 초벌)**로 삼는다. 이는 산출물의 모양일 뿐 법적 효과 gate를 완화하지 않는다 — 외부 송부·기관 제출·서명·계약 체결처럼 법적 효과가 있는 행동, 또는 사용자가 `business_user`임이 드러나거나 명백히 비법무 맥락이면 `business_user`/`unknown` 출력 구조와 gate를 그대로 적용해 서명·송부·제출을 직접 지시하지 않는다.
 
 역할과 destination의 구조화된 기준은 `assets/schemas/output_contract.yaml`을 따른다. 이 스키마는 결론의 법률 정확성을 낮추는 예외가 아니라, 검증된 결론이나 유보 결론을 누구에게 어떤 형태로 전달할지 정하는 포장 계약이다.
 
@@ -210,7 +210,7 @@ role이 미지정·미확정인 채로 destination이 지정되거나 `legal_eff
 
 Artifact/URL 배포 요청도 수신자나 사용처가 외부 송부·공유·제출 맥락이면 위 `legal_effect_triggers`를 적용한다. 채널별 배포 gate는 `references/report-deliverable.md#r4-artifact-배포-gate`를 따른다.
 
-`practice_profile.yaml`이 default destination이나 preferred section을 제안할 수는 있다. 그러나 practice profile은 출력 선호일 뿐이므로 `business_user`/`unknown` gate, 외부 송부 전 법무 검토, 출처 권위 라벨과 verification status를 덮어쓰지 못한다. practice profile과 현재 사용자 요청이 충돌하면 현재 사용자 요청과 role/destination gate를 우선한다.
+계약 playbook이 default destination이나 preferred section을 제안할 수는 있다. 그러나 계약 playbook은 출력 선호일 뿐이므로 `business_user`/`unknown` gate, 외부 송부 전 법무 검토, 출처 권위 라벨과 verification status를 덮어쓰지 못한다. 계약 playbook과 현재 사용자 요청이 충돌하면 현재 사용자 요청과 role/destination gate를 우선한다.
 
 | 목적지 | 출력 방식 | 금지/주의 |
 | --- | --- | --- |

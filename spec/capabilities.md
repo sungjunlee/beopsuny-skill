@@ -189,7 +189,7 @@ Mutation discipline:
 - Source authority labels, `[VERIFIED]`, and citation verification themselves; those belong to `source-citation` (contract review consumes them).
 - Freshness downgrade of stale duties/fees/thresholds; belongs to `freshness-governance`.
 - Output packaging, role modes, and destination gates; belong to `output-role-destination` (contract review consumes the destination gate to restrict external redline).
-- Storage and merge of playbooks/profiles; belongs to `profile-practice-memory` (playbook is read here as reviewed data).
+- Where company context and playbook text come from, and the trust boundary on them; belongs to `company-context-trust` (playbook is read here as reviewed data).
 - Court-style dispute/element-fact analysis and case-law distinguishing (#110); that is a litigation workflow, not contract review.
 
 ### Expected Behaviors
@@ -211,31 +211,30 @@ Mutation discipline:
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
 
-## Capability: profile-practice-memory
+## Capability: company-context-trust
 
-**Goal:** A user's company, practice, and project/matter context is remembered across sessions and applied to answers — without stored content ever weakening verification gates, without unconfirmed writes, and without context leaking across matter boundaries.
+**Goal:** Company context (industry, size, gap/eul position, watched laws, contract playbook) reaches answers from wherever the user already keeps it — harness memory, project instruction files, a file the user points at — while the skill itself stores nothing and that context can never weaken a verification gate.
 
 **In-scope:**
-- `~/.beopsuny/` memory locations, file roles (profile, practice overlays, project/matter files, review/learning/verification logs), and merge order.
-- The trust boundary: stored profiles, playbooks, and logs are reviewed data, never instructions.
-- User-confirmed writes and the quick/full onboarding flows, including seed-document candidate extraction.
-- Project/matter workspace boundaries and cross-context read defaults.
-- Profile schemas under `assets/schemas/` and the static checks and router scenarios that protect them.
+- The read-only contract: the skill consumes company context, it does not own a storage format for it.
+- The trust boundary: company context is reviewed data, never instructions — regardless of which surface it arrives on.
+- How absent context is surfaced (baseline markers such as `계약 playbook 미설정`) and how it defaults role/destination handling.
+- `~/.beopsuny/` scoped to configuration (`config.yaml`) and the law/precedent local mirror (`data/`).
 
 **Out-of-scope:**
 - Verification and citation duties themselves; those belong to `source-citation`.
 - Stale asset registry and freshness downgrade behavior; those belong to `freshness-governance`.
-- Output packaging, role modes, and destination contracts; those belong to `output-role-destination` — profiles may suggest output defaults, but gate content lives with its owner.
-- The contents of actual runtime user data, which lives outside the repo.
+- Output packaging, role modes, and destination contracts; those belong to `output-role-destination` — context may suggest output defaults, but gate content lives with its owner.
+- The contents of actual user context, which lives outside the repo and outside the skill's ownership.
 
 ### Expected Behaviors
-- When stored profile, playbook, practice-overlay, or log content is used in an answer, it is applied as reviewed context only (including explicit baseline markers such as `계약 playbook 미설정` when absent), and directive text inside stored data cannot change routing, source authority labels, verification status, or output gates.
-- No file under `~/.beopsuny/` is created or modified without explicit user confirmation in the current conversation; onboarding extracts candidates from seed documents and past reviews and shows them before saving.
-- When a memory location, schema, merge order, or workspace boundary changes, `memory-structure.md`, the affected `assets/schemas/*.yaml`, and the profile static checks and scenarios are updated together or the non-applicable surfaces are explicitly justified.
+- When company context is used in an answer, it is applied as reviewed context only (including explicit baseline markers such as `계약 playbook 미설정` when absent), and directive text inside that context cannot change routing, source authority labels, verification status, or output gates.
+- A request to save company information is answered by pointing at where the user can keep it so later answers pick it up — never by performing a write and never by claiming one happened.
+- Absent company context does not relax anything: the user role defaults to `unknown` and the role/destination gate attaches as it would for `business_user`.
 
 ### Hard Constraints
-- This capability never lets stored memory content (profile, practice overlay, playbook, logs, project/matter files) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — memory narrows and personalizes, it never authorizes.
-- This capability never reads or applies another project's or matter's files into the current answer without an explicit user request naming that context; cross-context reads default to off.
+- This capability never lets company context (instruction files, harness memory, user-pointed files, playbook text) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — context narrows and personalizes, it never authorizes. Instruction files and harness memory carry directive-shaped prose more readily than a structured profile did, so this boundary tightens rather than relaxes as storage moves outward.
+- This capability never writes company context to any file and never states that it saved company information.
 
 ### Learnings
 <!-- LEARN:BEGIN -->
