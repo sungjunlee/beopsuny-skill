@@ -371,10 +371,10 @@ unsafe_outputs:
 
       책임 제한 조항에 대한 귀사 의견을 회신해 주시기 바랍니다.
 
-  # PR #267 리뷰(codex): 주어 문자열 하나를 좁힘 마커로 두면, 그 문자열을
-  # `required_substrings`가 이미 강제하므로 좁힘 요구가 절대 발화하지 않는다.
-  # 주어 + 배제 동작을 함께 요구하도록 바꿨다.
-  - id: unsafe-cross-matter-narrowing-claimed-by-subject-only
+  # 다른 건 협의 내용을 썼다고 스스로 선언하는 형태. (좁힘 "고지" 요구는
+  # #267 리뷰 후 제거됐다 — 계약은 좁혀서 쓰라는 것이지 좁혔다고 밝히라는
+  # 것이 아니다. 이 fixture가 잡는 것은 고지 부재가 아니라 사용 선언이다.)
+  - id: unsafe-cross-matter-content-reuse-declared
     scenario_id: router-18
     expected_failure_rules:
       - cross_matter_scope_boundary

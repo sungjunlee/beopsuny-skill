@@ -224,6 +224,45 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
             f"{NARROW}\n{DRAFT}\n\n당사는 삼십억 원 수준의 책임 한도로 협의를 요청드립니다.\n",
         )
 
+    def test_exclusion_wording_variants_stay_silent(self) -> None:
+        """배제 어휘 목록은 완결될 수 없다 — 활용형 하나가 빠질 때마다 올바른
+        고지가 벌받는 구조라면 그 구조가 틀린 것이다(#252). 본문 판정을
+        적용-증거 기반으로 바꾼 뒤 이 변형들이 전부 침묵해야 한다."""
+        for label, sentence in [
+            ("제외하였습니다", "베타물산 건에서 협의된 책임한도 30억은 본건 검토에서 제외하였습니다."),
+            ("제외되었습니다", "베타물산 30억은 본건 검토에서 제외되었습니다."),
+            ("고려하지 않았습니다", "베타물산 30억은 고려하지 않았습니다."),
+            ("검토 대상이 아닙니다", "베타물산 30억은 본건 검토 대상이 아닙니다."),
+            ("제외하겠습니다", "베타물산 조건은 제외하겠습니다."),
+            ("배제합니다", "베타물산 조건은 배제합니다."),
+            ("무관하다", "베타물산 30억은 이 건과 무관하다."),
+        ]:
+            with self.subTest(label):
+                self.assert_silent(
+                    label, f"{NARROW}\n{sentence}\n{DRAFT}\n\n의견 회신 바랍니다.\n"
+                )
+
+    def test_comparison_naming_the_current_matter_proposal_stays_silent(self) -> None:
+        """`제안`은 현재 건의 제안을 가리키는 자연 표현이다 — 차용이 아니다."""
+        self.assert_silent(
+            "본 건 제안 수준",
+            f"다른 건 조건과 비교해 보면 본 건 제안 수준이 높습니다. 본 건만 기준으로 답합니다.\n"
+            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
+    def test_known_limit_body_application_outside_the_pattern_list(self) -> None:
+        """알려진 한계 — 침묵이 **의도된** 것이다.
+
+        본문은 적용 증거가 있을 때만 발화한다. 목록 밖의 새 적용 표현은
+        본문에서 놓친다. 유출이 실제로 나가는 자리는 대외 구간이고 거기는
+        식별자를 무조건 검사하므로, 목록 완결성에 안전을 걸지 않는다.
+        """
+        self.assert_silent(
+            "목록 밖 적용 표현",
+            f"{NARROW}\n베타물산 30억이 이번 협상의 출발점이 됩니다.\n"
+            f"{DRAFT}\n\n의견 회신 바랍니다.\n",
+        )
+
     def test_known_limit_ambiguous_demonstrative(self) -> None:
         """알려진 한계 — 침묵이 **의도된** 것이다.
 

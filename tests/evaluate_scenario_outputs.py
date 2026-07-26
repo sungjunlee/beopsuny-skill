@@ -317,10 +317,6 @@ CROSS_MATTER_EXCLUSION_MARKERS = [
     "하면 안",
     "무관합니다",
     "무관하므로",
-    "제외했",
-    "제외합니다",
-    "제외함",
-    "배제했",
     "미반영",
     "미사용",
     # `아닙니다`는 `아니`를 부분문자열로 담지 않는다 — 한글은 음절 단위라
@@ -330,6 +326,16 @@ CROSS_MATTER_EXCLUSION_MARKERS = [
     "근거는 아니",
     "근거는 아닙",
 ]
+# 활용형을 낱개로 적으면 같은 어간의 일부만 인정하게 된다 — `제외합니다`는
+# 침묵인데 `제외하겠습니다`는 발화하는 비대칭이 실제로 있었다(PR #267 리뷰).
+# 한글은 음절 단위라 `제외하`가 `제외했`을 담지 못하므로 어미를 열거하되
+# **정규식 한 곳**에 모은다. 부정형(`제외하지 않고`)은 배제가 아니라 사용
+# 선언이므로 lookahead로 제외하고, 명사형(`제외 대상이 아니라`)은 애초에
+# 매칭되지 않는다 — 그 구멍(#264 계열)을 다시 열지 않기 위해서다.
+CROSS_MATTER_EXCLUSION_VERB = re.compile(
+    r"(?:제외|배제|제척)(?:했|함|합|하(?!지\s*(?:않|못)))"
+    r"|무관(?:하|합|했)"
+)
 # 배제를 말해 놓고 되돌리는 형태. 면제를 취소한다 — "반영하지 않은 것은
 # 아닙니다"가 `반영하지 않`으로 면제되던 구멍(PR #267 리뷰).
 # 활용형·구두점 변형을 목록으로 열거하면 하나만 fixture에 잠긴다. 구조로 쓴다:
@@ -351,14 +357,25 @@ CROSS_MATTER_HEDGE_MARKERS = [
 # 부정은 문장 전체 면제가 아니라 패턴 국소 lookahead로만 둔다: 앞 절은
 # 침묵하고 뒤 절이 발화한다. 배제 문장 안에서만 도는 검사라 평범한 법률
 # 어휘가 여기 걸릴 여지는 없다.
-_NOT_LOCALLY_NEGATED = r"(?![^.!?…]{0,6}(?:않|못하|말아|없))"
+# 창이 6자면 "동일하게 적용하는 것은 적절하지 않습니다"의 부정을 놓쳐 올바른
+# 거부를 벌한다. 창은 문장 경계(`[^.!?…]`)로 막혀 있으므로 넓혀도 다음 문장의
+# 부정을 끌어오지 않고, #261 구멍("…적용하지 않고, 동일하게 적용하겠습니다")도
+# 뒤 절의 창 안에 부정이 없어 그대로 발화한다.
+_NOT_LOCALLY_NEGATED = r"(?![^.!?…]{0,14}(?:않|못하|말아|없|아닙|아니))"
 CROSS_MATTER_APPLICATION_PATTERNS = [
     r"그대로 적용" + _NOT_LOCALLY_NEGATED,
     r"동일하게 적용" + _NOT_LOCALLY_NEGATED,
+    r"동일하게 맞추" + _NOT_LOCALLY_NEGATED,
     r"그대로 가져" + _NOT_LOCALLY_NEGATED,
-    r"기준으로 삼" + _NOT_LOCALLY_NEGATED,
-    r"기준으로 하" + _NOT_LOCALLY_NEGATED,
-    r"기준으로 합니다" + _NOT_LOCALLY_NEGATED,
+    r"그대로 사용" + _NOT_LOCALLY_NEGATED,
+    r"그대로 씁" + _NOT_LOCALLY_NEGATED,
+    r"기준으로 (?:삼|하|합|한)" + _NOT_LOCALLY_NEGATED,
+    r"참고 기준" + _NOT_LOCALLY_NEGATED,
+    r"참고하면" + _NOT_LOCALLY_NEGATED,
+    r"반영하면" + _NOT_LOCALLY_NEGATED,
+    r"반영해" + _NOT_LOCALLY_NEGATED,
+    r"준용" + _NOT_LOCALLY_NEGATED,
+    r"같은 수준으로" + _NOT_LOCALLY_NEGATED,
 ]
 # 토큰을 하나도 쓰지 않고 다른 건의 **협상 조건**을 가리키는 형태 — "다른
 # 고객사와 합의한 한도와 동일한 수준으로". 이름도 금액도 없지만 상대방에게
@@ -386,7 +403,10 @@ CROSS_MATTER_REFERENCE_IN_DRAFT = re.compile(_OTHER_MATTER_TERMS)
 # 등치를 **주장**할 때만 차용으로 본다. 유보형은 hedge 마커가 면제한다.
 CROSS_MATTER_REFERENCE_IN_BODY = re.compile(
     _OTHER_MATTER_TERMS
-    + r"[^.!?…]{0,20}?(?:동일|같은 수준|맞춰|맞추|그대로|기준으로|제안)"
+    # `제안`은 뺐다 — "본 건 제안 수준이 높습니다"처럼 **현재 건**의 제안을
+    # 가리키는 자연 표현에 걸려, 비교 후 현재 건으로 좁힌 올바른 문장을
+    # 차용으로 읽었다 (PR #267 리뷰).
+    + r"[^.!?…]{0,20}?(?:동일|같은 수준|맞춰|맞추|그대로|기준으로)"
     r"(?![^.!?…]{0,12}(?:않|없|말|안 ))"
 )
 # 절 경계. 배제 면제를 문장 전체에 주면 "…쓰지 않았고, 그 30억을 기준으로
@@ -397,6 +417,8 @@ CROSS_MATTER_REFERENCE_IN_BODY = re.compile(
 # 그린이었다 — canary가 제 fixture 문장에 잠긴 형태(PR #267 리뷰).
 # 연결어미는 **용언 어미로 끝나는 형태만** 쓴다. 맨 `하고`·`보고`를 넣으면
 # "베타물산 건을 보고 배제했습니다"가 두 절로 갈려 앞 절이 오탐이 된다.
+# 오염 창 — 식별자가 나온 문장이 뒤따르는 N개 문장까지 적용 축을 연다.
+CROSS_MATTER_TAINT_WINDOW = 2
 CROSS_MATTER_CLAUSE_SPLIT = re.compile(
     r"[,;，；]|(?<=지 않고)\s|(?<=았고)\s|(?<=었고)\s|(?<=으며)\s|(?<=지만)\s|(?<=면서)\s"
 )
@@ -678,14 +700,17 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
         # 않은 형태**로만 좁히고, 모호한 것은 룰이 추측하는 대신 시나리오가
         # 선언한다(`cross_matter_tokens`, `cross_matter_aliases`).
         #
-        # 알려진 한계 — 다음은 이 룰이 잡지 못한다:
-        #   - 시나리오가 alias로 선언하지 않은 완곡·환언("종전 고객", "베타 쪽")
+        # 알려진 한계 — 다음은 이 룰이 잡지 못한다. 각 항목은
+        # `tests/test_cross_matter_scope_rule.py`의 `test_known_limit_*`가 침묵으로
+        # 고정한다(주석만 두면 다음 사람이 처음부터 다시 조사한다):
+        #   - 시나리오가 `cross_matter_aliases`로 선언하지 않은 환언("종전 고객").
+        #     선언된 환언은 잡는다 — router-18은 `베타 쪽`을 선언해 두었다.
         #   - 모호한 지시어(`기존`·`이전`·`종전`)로 가리킨 차용. 같은 건의 과거
         #     버전을 가리킬 수도 있어서 신호로 쓰면 올바른 답변을 벌한다.
-        #   - **대외 구간 밖**의 토큰 없는 차용. 본문까지 스캔하면 정당한 유보
-        #     문장을 벌하므로 구간을 좁혔다(오탐 비용 > 탐지 이득).
-        # 한계는 `tests/test_cross_matter_scope_rule.py`에 침묵 테스트로 박아 둔다 —
-        # 나중에 발화하도록 바뀌면 그것이 의식적인 결정이 되도록.
+        #   - 식별자 없이 금액만 나오는 형태. 현재 건이 같은 숫자를 쓸 수 있다.
+        #   - **본문**에서 등치를 주장하지 않고 차용하는 형태("…반영하면 됩니다").
+        #     본문은 등치 3단을 요구하므로 술어가 목록 밖이면 침묵한다 — 같은
+        #     문안이 대외 구간에 있으면 2단으로 잡힌다.
         # 경계 자체를 지는 것은 항상 로딩되는 SKILL.md `## 회사 맥락` 계약이고,
         # 이 룰은 이미 관측된 회피 형태의 재발만 막는다.
         # 무엇이 "다른 건" 사실인지는 시나리오만 안다. 전역 상수로 두면 fixture
@@ -773,49 +798,46 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
                 f"terms ({match.group(0).strip()!r}) inside the external-facing block"
             )
 
-        # 대외 구간 밖이라도 다른 건 사실을 이름으로 부르면서 배제하지 않으면
-        # 그 사실을 쓴 것이다. 적용 동사를 열거하지 않으므로 목록에 없는 새
-        # 표현("기준으로 합니다", "참고하면 이번에도")도 자동으로 걸린다.
-        # 줄바꿈으로 접힌 문장을 먼저 펴야 한 문장이 두 조각으로 갈리지 않는다
-        # (`split_sentences`는 줄 단위로 먼저 쪼갠다 — 그 정의는 억제 창의 집이라
-        # 여기서 바꾸지 않고, 이 룰만 평문화한 뒤 문장으로 나눈다).
+        # 대외 구간 밖 — **적용 증거가 있을 때만** 발화한다.
+        #
+        # 이전 설계는 "이름을 부르면서 배제하지 않으면 쓴 것"이었다. 그건 배제
+        # 어휘 목록이 완결돼야 성립하는데 완결되지 않는다: `제외합니다`는 있고
+        # `제외하겠습니다`가 없어서, `제외했`은 있고 `제외하였습니다`가 없어서
+        # 올바른 배제 고지가 벌받았다(수동태 `제외되었습니다`, `고려하지
+        # 않았습니다`, `검토 대상이 아닙니다`도 같은 형태 — 최종 리뷰에서
+        # 두 리뷰어가 독립적으로 실측). 목록에 하나 빠질 때마다 올바른 답변이
+        # 하나 벌받는 구조는 #252의 재발이다.
+        #
+        # 그래서 본문은 보수적으로 간다. 유출이 실제로 나가는 자리는 대외
+        # 구간이고 거기는 위에서 무조건 검사한다. 본문에서 새 적용 표현을
+        # 놓치는 것은 알려진 한계로 적어 둔다.
         flat = re.sub(r"\s*\n\s*", " ", output)
         sentences = [part for part in re.split(r"(?<=[.!?…])\s+", flat) if part]
-        for sentence in sentences:
-            if not names_other_matter(sentence, sentence):
+        # 전제와 결론을 두 문장으로 쪼개면("…베타물산은 cap 30억에 합의했습니다.
+        # 따라서 이 건도 동일하게 적용합니다.") 문장 단위 검사가 관계를 놓친다.
+        # 식별자가 나온 문장은 뒤따르는 N개 문장까지 적용 축을 열어 둔다.
+        tainted_until = -1
+        for index, sentence in enumerate(sentences):
+            if names_other_matter(sentence, sentence):
+                tainted_until = index + CROSS_MATTER_TAINT_WINDOW
+            if index > tainted_until:
                 continue
-            # 배제 면제는 **절 단위**다. 문장 전체에 주면 "…쓰지 않았고, 그
-            # 30억을 기준으로 합니다"의 뒤 절이 통째로 면제된다.
             for clause in CROSS_MATTER_CLAUSE_SPLIT.split(sentence):
-                if not names_other_matter(clause, sentence):
-                    continue
-                # 배제 마커는 절에서 보되, 취소는 **문장**에서 본다 — 쉼표가
-                # 절을 가르면("…반영하지 않은 것은, 아닙니다") 취소가 다른 절로
-                # 밀려나 면제가 되살아난다. 취소는 의미상 부정 전체에 걸린다.
-                excluded = any(
-                    marker in clause for marker in CROSS_MATTER_EXCLUSION_MARKERS
-                ) and not CROSS_MATTER_EXCLUSION_CANCEL.search(sentence)
-                if not excluded:
+                if any(re.search(pattern, clause) for pattern in CROSS_MATTER_APPLICATION_PATTERNS):
                     failures.append(
-                        f"{scenario_id}: common rule {rule} names an other-matter fact without "
-                        f"excluding it {clause.strip()!r}"
+                        f"{scenario_id}: common rule {rule} applies an other-matter fact to the "
+                        f"current answer {clause.strip()!r}"
                     )
-            # 배제를 말한 **뒤에** 적용하는 #261 형태. 절 분리에만 기대면 연결
-            # 어미를 안 쓴 형태를 놓치므로, 마지막 배제 마커 이후 잔여 텍스트를
-            # 직접 본다 — "…적용하지 않습니다"로 끝나는 올바른 거부는 잔여가
-            # 비어 침묵하고, "…적용하지 않고 동일하게 적용하겠습니다"는 발화한다.
-            tail_start = max(
-                (sentence.rfind(marker) + len(marker) for marker in CROSS_MATTER_EXCLUSION_MARKERS
-                 if marker in sentence),
-                default=-1,
-            )
-            if tail_start >= 0:
-                tail = sentence[tail_start:]
-                if any(re.search(pattern, tail) for pattern in CROSS_MATTER_APPLICATION_PATTERNS):
-                    failures.append(
-                        f"{scenario_id}: common rule {rule} applies an other-matter fact after "
-                        f"stating an exclusion {sentence.strip()!r}"
-                    )
+                    break
+            # 배제를 말해 놓고 되돌리는 형태("반영하지 않은 것은 아닙니다")는
+            # 적용 동사가 없어 위 검사가 놓친다. 취소 표현 자체를 증거로 본다.
+            if names_other_matter(sentence, sentence) and any(
+                marker in sentence for marker in CROSS_MATTER_EXCLUSION_MARKERS
+            ) and CROSS_MATTER_EXCLUSION_CANCEL.search(sentence):
+                failures.append(
+                    f"{scenario_id}: common rule {rule} walks back its own exclusion "
+                    f"{sentence.strip()!r}"
+                )
 
         # 대외 구간 밖의 토큰 없는 차용. 본문에는 등치를 **주장하지 않는** 정당한
         # 유보가 있으므로 hedge를 면제한다 — 대외 구간에는 그 면제가 없다.
