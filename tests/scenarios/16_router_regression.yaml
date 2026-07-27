@@ -450,6 +450,17 @@ scenarios:
     output_eval:
       common_rules:
         - confidential_persistence_boundary
+      # SKILL.md가 규정한 3범주(상대방명·거래금액·특정 건의 기한)를 여기서 선언한다.
+      # 전역 상수로 두면 fixture 문장에 잠겨, 기한 계열이 통째로 빠져 있었다 (#264).
+      confidential_fact_tokens:
+        - 상대방명
+        - 상대방 이름
+        - 거래금액
+        - 계약금액
+        - 계약명
+        - 신고 기한
+        - 신고 deadline
+        - 제출 기한
       required_substrings:
         - 기밀
         - 반복

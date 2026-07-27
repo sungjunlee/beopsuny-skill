@@ -440,6 +440,35 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_contains(text, required, label)
 
 
+def check_confidential_fact_categories_reach_the_scorer() -> None:
+    """SKILL.md가 규정한 기밀 3범주가 시나리오 선언까지 도달하는지 (#264).
+
+    이 룰은 무엇이 "이 건에 한정된 기밀 사실"인지를 시나리오 선언으로 받는다 —
+    전역 상수로 두었더니 fixture 문장에 잠겨, 문서가 명시한 "특정 건의 기한"이
+    목록에 없는 채로 게이트가 그린이었다. 선언으로 옮긴 것만으로는 같은 결함이
+    형태만 바꿔 재발하므로(선언에서 토큰을 빼도 조용히 통과), **문서의 범주와
+    선언을 대조**한다. 어휘가 아니라 범주 단위로 본다 — 표기가 늘어나는 것은
+    자유이고, 범주가 빠지는 것만 막는다.
+    """
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    match = re.search(r"([^.\n]*?)처럼 그 건에 한정된 기밀 사실은 지속 저장을 권하지 않는다", skill_text)
+    if not match:
+        raise AssertionError("SKILL.md: 기밀 범주를 규정한 문장이 없다 (#264 계약의 상류)")
+    declared_categories = [part.strip() for part in match.group(1).split("·") if part.strip()]
+
+    scenario = router_scenarios().get("router-13") or {}
+    tokens = (scenario.get("output_eval") or {}).get("confidential_fact_tokens") or []
+    joined = " ".join(str(token) for token in tokens)
+    for category in declared_categories:
+        # "특정 건의 기한" 같은 수식어는 빼고 핵심 명사만 본다.
+        head = category.split()[-1]
+        if head not in joined:
+            raise AssertionError(
+                f"router-13: SKILL.md가 규정한 기밀 범주 {category!r}가 "
+                f"confidential_fact_tokens에 없다 — 문서와 검사가 갈라진다"
+            )
+
+
 def check_cross_matter_scope_boundary_has_a_home() -> None:
     """다른 건에 한정된 사실이 현재 건 답변·대외 산출물에 실리지 않아야 한다.
 
@@ -4282,6 +4311,7 @@ CHECK_GROUPS = (
             check_skill_router_schema_references_precise,
             check_skill_company_context_read_only_and_trust_boundary,
     check_cross_matter_scope_boundary_has_a_home,
+            check_confidential_fact_categories_reach_the_scorer,
             check_skill_resource_map_matches_tree,
         ),
     ),
