@@ -28,6 +28,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -57,6 +58,14 @@ LINK_CHECKS = (
 )
 
 STATUS_WIDTH = 15
+
+# 서비스가 스스로 공지한 중단은 원인불명 실패와 다르다 — 대체 경로로 내려가면
+# 되는 알려진 조건이고, 릴리즈마다 손으로 넘겨야 하는 빨간불이면 게이트를 아무도
+# 읽지 않게 된다. 그래서 WARN으로 낮추되 freshness_debt의 `overdue_resolve_by`와
+# 같은 자기만료를 준다: 아래 날짜가 지나면 서비스가 여전히 공지 중이어도 FAIL로
+# 돌아간다. 무기한 WARN은 조용한 영구화다. 날짜를 연장하지 말고 그때 다시 판단한다.
+BEOPMANG_PAUSE_ACCEPTED_UNTIL = "2027-06-30"
+BEOPMANG_PAUSE_TRACKED_ISSUE = "https://github.com/sungjunlee/beopsuny-skill/issues/268"
 
 
 def data_root() -> Path:
@@ -146,9 +155,41 @@ def http_get(url: str, timeout: int = HTTP_TIMEOUT) -> tuple[int | None, bytes, 
         return None, b"", f"{type(exc).__name__}: {exc}"
 
 
-def check_beopmang() -> dict[str, Any]:
+def declared_outage(text: str, today: str) -> dict[str, str] | None:
+    """서비스가 스스로 공지한 중단이면 판정을 돌려주고, 아니면 None.
+
+    `error` 값이 아니라 **응답 shape**으로 알아본다 — 벤더는 코드 이름을 바꾸고
+    (`service_maintenance` → `service_paused`, #268), 코드를 열거하는 판정은 그때마다
+    조용히 빗나간다. 사람이 읽을 공지(`service_notice`)를 담은 `ok: false` 응답이
+    "서비스가 자기 입으로 밝힌 중단"의 구조다.
+    """
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict) or payload.get("ok") is not False:
+        return None
+    notice = payload.get("service_notice")
+    if not isinstance(notice, dict):
+        return None
+
+    recovery = notice.get("estimated_recovery") or payload.get("estimated_recovery") or "미공지"
+    detail = f"서비스 공지 중단 (복구 예상 {recovery}, 조회 실패 ≠ 개정 없음)"
+    if today > BEOPMANG_PAUSE_ACCEPTED_UNTIL:
+        return {
+            "status": "FAIL",
+            "detail": (
+                f"{detail} — 수용 기한 {BEOPMANG_PAUSE_ACCEPTED_UNTIL} 경과. "
+                f"경로 유지 여부를 다시 판단한다: {BEOPMANG_PAUSE_TRACKED_ISSUE}"
+            ),
+        }
+    return {"status": "WARN", "detail": f"{detail}, {BEOPMANG_PAUSE_ACCEPTED_UNTIL}까지 수용"}
+
+
+def check_beopmang(today: str | None = None) -> dict[str, Any]:
     # 조회 실패는 개정 없음이 아니다 — 이 헬스체크는 스킬 계약의 실패 의미론을 따른다.
     axis = "법망 API"
+    today = today or date.today().isoformat()
     status, body, err = http_get(BEOPMANG_SEARCH_URL)
     text = body.decode("utf-8", errors="replace")
 
@@ -156,12 +197,9 @@ def check_beopmang() -> dict[str, Any]:
         return {"status": "FAIL", "axis": axis, "detail": "timeout (조회 실패)"}
     if status is None:
         return {"status": "FAIL", "axis": axis, "detail": f"{err} (조회 실패)"}
-    if "service_maintenance" in text:
-        return {
-            "status": "FAIL",
-            "axis": axis,
-            "detail": "service_maintenance (조회 실패 ≠ 개정 없음)",
-        }
+    outage = declared_outage(text, today)
+    if outage:
+        return {"status": outage["status"], "axis": axis, "detail": outage["detail"]}
     if status >= 500:
         return {
             "status": "FAIL",

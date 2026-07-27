@@ -48,10 +48,12 @@ You: "이 계약서 검토해줘"
 |------|------|------|
 | 1 | [legalize-kr](https://github.com/legalize-kr/legalize-kr) + [admrule-kr](https://github.com/legalize-kr/admrule-kr) + [precedent-kr](https://github.com/legalize-kr/precedent-kr) | 법령·행정규칙·판례 공식 원문 기반 로컬 미러 Markdown (직접 공식 사이트 확인과 provenance 분리; 최신 개수는 upstream repo 확인) |
 | 선택 | [ordinance-kr](https://github.com/legalize-kr/ordinance-kr) | 자치법규 로컬 미러. 파일 수가 커서 지역·지자체 질문이 많은 환경에서 선택 설치 |
-| 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 로컬 미러가 없는 family의 원문 조회 (무인증) |
+| 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 로컬 미러가 없는 family의 원문 조회 (무인증) — **2026-07-27 현재 서비스 중단**, 아래 참조 |
 | 3 | [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 헌재·행정심판·자치법규·조약 등 (OC 코드 필요) |
 
 원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다.
+
+> ⚠️ **법망 API 중단 (2026-07-27 확인)** — 서비스가 서버 물리 장애로 중단을 공지했고 복구 예상 시점은 2027년 1분기다. 법령·판례는 1순위 로컬 미러로 그대로 동작한다. 영향을 받는 것은 **로컬 미러를 설치하지 않은 family의 discovery**이며, 그 범위는 law.go.kr·korean-law-mcp·웹검색으로 내려간다 — 행정규칙을 자주 다룬다면 `admrule-kr` 미러 설치를 권한다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 직접 확인할 수 있다.
 
 ## 설치
 

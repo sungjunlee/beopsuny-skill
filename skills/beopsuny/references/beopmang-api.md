@@ -8,7 +8,7 @@
 
 실행 전 가능하면 `https://api.beopmang.org/api/v4/help?action=schema` 또는 랜딩 페이지의 현재 예시를 확인한다. 현재 기본 예시는 검색에 `q`, 법령 본문/이력/비교에 `law_id`, 조문 조회에 `article`을 사용한다. 과거 예시의 `query` 또는 `id` alias는 보조 단서로만 보고, 새 문서와 답변의 1차 예시는 현재 schema를 따른다.
 
-API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니다. 로컬 미러가 있으면 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 데이터로 fallback하고, 없으면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.
+API timeout, 5xx, 오류 응답(`ok: false`), 빈 응답은 "결과 없음"이 아니다. 판정 기준은 `error` 값이 아니라 원문을 확인하지 못했다는 사실이므로, 처음 보는 오류 코드도 같게 다룬다. 로컬 미러가 있으면 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 데이터로 fallback하고, 없으면 확인 실패 범위를 `[INSUFFICIENT]` 또는 `[UNVERIFIED]`로 표시한다.
 
 ## 엔드포인트 맵
 
@@ -30,7 +30,7 @@ API timeout, 5xx, `service_maintenance`, 빈 응답은 "결과 없음"이 아니
 
 ### 행정규칙 찾기
 
-`admrule-kr` 로컬 미러가 있으면 먼저 읽는다. 법망 API는 로컬 미러가 없을 때 기본 경로이며, 로컬 미러가 있어도 discovery와 교차확인에 사용한다.
+`admrule-kr` 로컬 미러가 있으면 먼저 읽는다. 법망 API는 응답할 때 로컬 미러 없는 family의 조회 경로가 되고, 로컬 미러가 있어도 discovery와 교차확인에 쓴다. 가용성은 고정 사실이 아니므로 응답으로 판단하고, 응답하지 않으면 law.go.kr·korean-law-mcp로 내려간다.
 
 ```
 # "과징금" 관련 고시/훈령/예규 검색
@@ -161,16 +161,18 @@ WebFetch "https://api.beopmang.org/api/v4/tools?action=verify&citation=개인정
 }
 ```
 
-maintenance류 응답 예:
+중단·장애 응답 예:
 ```json
 {
   "ok": false,
-  "error": "service_maintenance",
-  "retry_after": 3600
+  "error": "<서비스가 정한 코드>",
+  "service_status": "<paused | maintenance | ...>",
+  "retryable": false,
+  "estimated_recovery": "<서비스가 밝힌 경우에만>"
 }
 ```
 
-이 응답은 API 장애 또는 점검 상태다. "검색 결과 0건" 또는 "개정 없음"으로 요약하지 말고, 다른 1차 소스 재조회 또는 조회 실패 표시로 처리한다.
+`error`·`service_status`의 구체적인 값은 서비스가 바꾼다 — 문서에 고정하지 않고 응답에서 읽는다. `ok: false`면 값이 무엇이든 조회 실패다. "검색 결과 0건" 또는 "개정 없음"으로 요약하지 말고, 다른 1차 소스 재조회 또는 조회 실패 표시로 처리한다. 응답이 장기 중단을 알리더라도 결론은 같다 — 그 사이 개정이 없었다는 근거가 되지 않는다. `retryable`이나 복구 예정 시점을 답변에 옮길 때는 응답에서 읽은 값임을 밝히고, 확인하지 않은 기간을 스스로 단정하지 않는다.
 
 ## 운영 정보
 

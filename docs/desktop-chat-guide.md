@@ -115,7 +115,7 @@ Chat 탭은 채팅마다 스토리지가 초기화되고 영속 파일시스템�
 | 판례 상세 | `case?action=get&prec_id={prec_id}` |
 
 fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback.
-응답에 `"error": "service_maintenance"`가 오거나 timeout, 5xx, 빈 응답이면 WebSearch 또는 공식 사이트로 전환하고 조회 실패 범위를 표시한다. API 실패를 검색 결과 없음, 규범 부존재, 개정 없음으로 쓰지 않는다.
+응답이 오류 응답(`ok: false`)이거나 timeout, 5xx, 빈 응답이면 WebSearch 또는 공식 사이트로 전환하고 조회 실패 범위를 표시한다. `error` 값은 서비스가 바꾸므로 특정 코드를 기다리지 않는다. API 실패를 검색 결과 없음, 규범 부존재, 개정 없음으로 쓰지 않는다.
 
 ### 2순위: WebSearch
 

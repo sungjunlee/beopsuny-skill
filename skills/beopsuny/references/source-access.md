@@ -117,9 +117,9 @@ https://api.beopmang.org/api/v4/law?action=get&law_id={law_id}&article={조문}
 https://api.beopmang.org/api/v4/case?action=search&q={키워드}
 ```
 
-법망 API는 로컬 미러가 없을 때 기본 검색 경로이고, 로컬 미러가 있어도 discovery와 교차확인에 유용하다. `admrule-kr` 또는 `ordinance-kr`가 없으면 행정규칙·자치법규는 법망 API, law.go.kr, korean-law-mcp로 확인한다.
+법망 API는 응답할 때 로컬 미러 없는 family의 검색·원문 조회 경로가 되고, 로컬 미러가 있어도 discovery와 교차확인에 유용하다. 가용성은 고정 사실이 아니므로 문서가 아니라 응답으로 판단한다. `admrule-kr` 또는 `ordinance-kr`가 없으면 행정규칙·자치법규는 법망 API, law.go.kr, korean-law-mcp 순으로 확인하되, 법망이 응답하지 않으면 남은 경로로 좁히고 좁혔다는 사실을 표시한다.
 
-법망 응답이 `service_maintenance`, timeout, 5xx, 빈 응답이면 조회 실패로 표시한다. 이는 검색 0건, 규범 부존재, 개정 없음의 근거가 아니다.
+법망 응답이 오류 응답(`ok: false`), timeout, 5xx, 빈 응답이면 조회 실패로 표시한다. 판정 기준은 `error` 값이 아니라 원문을 확인하지 못했다는 구조이므로, 처음 보는 오류 코드도 같게 다룬다. 조회 실패는 검색 0건, 규범 부존재, 개정 없음의 근거가 아니며, 응답이 장기 중단을 알리더라도 마찬가지다.
 
 ## korean-law-mcp
 

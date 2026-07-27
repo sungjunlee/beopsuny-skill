@@ -26,7 +26,7 @@ git -C "$DR/legalize-kr" show {SHA} -- kr/{법령명}/법률.md
 
 로컬 미러가 없으면 사용자가 특정 법령을 지정했거나 회사 맥락의 관심 법령이 있을 때 법망 API history/diff를 사용한다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다.
 
-법령명만 있으면 먼저 `law?action=search&q={법령명}`으로 `law_id`를 확인한 뒤 `law?action=history&law_id={law_id}` 또는 `law?action=diff&law_id={law_id}&from={이전기준}`을 호출한다. `service_maintenance`, timeout, 5xx, 빈 응답은 조회 실패이며 개정 없음이 아니다.
+법령명만 있으면 먼저 `law?action=search&q={법령명}`으로 `law_id`를 확인한 뒤 `law?action=history&law_id={law_id}` 또는 `law?action=diff&law_id={law_id}&from={이전기준}`을 호출한다. 오류 응답(`ok: false`), timeout, 5xx, 빈 응답은 조회 실패이며 개정 없음이 아니다. `error` 값이 무엇이든, 서비스가 장기 중단을 알리더라도 같다 — 확인하지 못한 기간을 "개정 없음"으로 바꾸지 않는다.
 
 ## Output Fields
 

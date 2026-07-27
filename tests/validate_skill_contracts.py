@@ -4130,7 +4130,7 @@ def check_volatile_api_docs() -> None:
         "`q`",
         "`law_id`",
         "`article`",
-        "`service_maintenance`",
+        "`ok: false`",
         "조회 실패",
         "개정 없음",
     ]:
@@ -4161,12 +4161,18 @@ def check_volatile_api_docs() -> None:
         "action=diff&id=",
         "case?action=get&id=",
     ]
-    failure_terms = ["service_maintenance", "timeout", "5xx", "빈 응답", "조회 실패"]
+    # 실패 축은 벤더가 정하는 `error` 문자열이 아니라 우리 판정 어휘로 고정한다.
+    # `service_maintenance`를 열거했더니 서비스가 `service_paused`를 새로 내놓는
+    # 순간 문서 4곳이 동시에 실제와 갈라졌다 (#268). 벤더 코드 열거는 수렴하지
+    # 않으므로 금지하고, "응답을 못 받았다"는 구조만 요구한다.
+    failure_terms = ["오류 응답", "timeout", "5xx", "빈 응답", "조회 실패"]
     for doc_label, doc_text in docs.items():
         for pattern in stale_patterns:
             assert_not_contains(doc_text, pattern, doc_label)
         for required in failure_terms:
             assert_contains(doc_text, required, doc_label)
+        assert_not_contains(doc_text, "service_maintenance", doc_label)
+        assert_not_contains(doc_text, "service_paused", doc_label)
 
 
 def check_international_index_routing() -> None:
