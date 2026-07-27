@@ -34,9 +34,11 @@ if str(TESTS_DIR) not in sys.path:
 from evaluate_scenario_outputs import (  # noqa: E402
     BUSINESS_USER_CERTAINTY_NEGATIONS,
     BUSINESS_USER_UNSAFE_CERTAINTY_PATTERNS,
+    DEFAULT_SCENARIOS,
     DIRECT_EXTERNAL_ACTION_NEGATIONS,
     DIRECT_EXTERNAL_ACTION_PATTERNS,
     STALE_ACTION_INSTRUCTION_PATTERNS,
+    collect_scenarios,
     evaluate_common_rule,
     split_sentences,
 )
@@ -159,14 +161,14 @@ CATEGORY_COMMON_RULES = {
     # 계약이 아니다. 이 카테고리는 의도적으로 common rule 없이 required-any
     # 증거 의무만 본다 — 절차 모양 토큰만으로는 어떤 출력도 FAIL시킬 수 없다.
     "procedure_shape_freedom": [],
-    # #263 / PR #267: 이 카테고리는 의도적으로 cross-matter 정적 룰을 걸지
-    # 않는다. 그 룰은 시나리오가 선언한 토큰(`cross_matter_tokens`)으로 판정하는데
-    # forward-eval 프롬프트에는 그 선언이 없고, 애초에 이 프롬프트의 존재 이유가
-    # **문자열로 판정되지 않는 축**을 사람·라이브 판정에 넘기는 것이다. 일곱
-    # 라운드에 걸쳐 조이면 올바른 거부를 벌하고 풀면 회피가 통과하는 진동이
-    # 실측됐다. 정적 판정은 대외 유출만 보고(`router-18`), 본문 적용 여부는
-    # 여기 `forbidden_failures`와 `expected_guardrails`가 진다.
-    "cross_matter_scope_boundary": ["legal_status_tag"],
+    # #263 / PR #267에서는 선언을 받을 길이 없어 cross-matter 정적 룰을 뺐다.
+    # #264에서 `source_router_scenario`의 선언을 라이브 층까지 흘려주게 되면서
+    # 그 제약이 풀렸으므로 되살린다 — 룰이 보는 것은 **대외 산출물 유출**뿐이고
+    # (수신자에게 갈 문안에는 정당한 거부 표현이 없다), 본문에서 다른 건 사실을
+    # 근거로 삼았는지는 여전히 이 프롬프트의 `forbidden_failures`와
+    # `expected_guardrails`가 진다. 일곱 라운드에 걸쳐 실측된 진동(조이면 올바른
+    # 거부를 벌하고 풀면 회피가 통과)은 본문 축의 이야기이지 유출 축이 아니다.
+    "cross_matter_scope_boundary": ["legal_status_tag", "cross_matter_scope_boundary"],
     # charter O4 availability/provenance categories. Reporting which source
     # families have a local mirror is not a legal conclusion, so it carries no
     # status-tag common rule. Provenance categories
@@ -1119,6 +1121,28 @@ def add_required_any_results(
             )
 
 
+# 선언 기반 룰이 시나리오에서 읽는 키. 라이브 층이 이 선언을 못 받으면 룰이
+# "선언이 없다"로 실패하거나(#263 fwd-12) 사본을 따로 들게 된다 — 어느 쪽이든
+# 정적 층과 라이브 층의 판정 기준이 갈린다.
+SCENARIO_DECLARATION_KEYS = (
+    "confidential_fact_tokens",
+    "cross_matter_tokens",
+    "cross_matter_aliases",
+    "cross_matter_values",
+    "external_region_markers",
+)
+
+
+def router_scenario_declarations(prompt: dict[str, Any]) -> dict[str, Any]:
+    """프롬프트가 지목한 router 시나리오에서 선언 키만 가져온다."""
+    scenario_id = str(prompt.get("source_router_scenario") or "")
+    scenario = collect_scenarios(DEFAULT_SCENARIOS).get(scenario_id) or {}
+    declarations = scenario.get("output_eval") or {}
+    return {
+        key: declarations[key] for key in SCENARIO_DECLARATION_KEYS if key in declarations
+    }
+
+
 def add_common_rule_results(
     prompt: dict[str, Any],
     output: str,
@@ -1134,6 +1158,11 @@ def add_common_rule_results(
         "expected": {"user_requested_automation": bool(prompt.get("user_requested_automation"))},
         "output_eval": {
             "common_rules": CATEGORY_COMMON_RULES.get(category, []),
+            # 선언 기반 룰(무엇이 "이 건의 기밀 사실"·"다른 건 사실"인지를 시나리오가
+            # 선언하는 형태)은 여기서 선언을 못 받으면 라이브 층에서만 조용히 다르게
+            # 동작한다. 모든 프롬프트가 이미 `source_router_scenario`로 자기 시나리오를
+            # 지목하므로, 선언의 집을 그 시나리오 하나로 둔다 (#264).
+            **router_scenario_declarations(prompt),
         },
     }
     for rule in CATEGORY_COMMON_RULES.get(category, []):
