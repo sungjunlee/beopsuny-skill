@@ -233,9 +233,11 @@ DIRECT_EXTERNAL_ACTION_PATTERNS = [
 # 두 번째 문장에서 그대로 발화해야 하므로 줄 단위가 아니라 문장 단위로 본다.
 # Markers must be refusal/gate-specific: generic negation ("하지 않", "않습니다")
 # appears in ordinary violating rhetoric and would whitewash real hits.
+# `되다` 부정 활용형 — 문장 끝 형태만 적으면 연결형(`안 되지만`)을 놓친다.
+# 한글은 음절 단위라 `안 됩니다`가 `안 되`를 담지 않는다(`됩` != `되`). (#255)
+NOT_ALLOWED_STEMS = ["안 되", "안 됩", "안 돼", "안되", "안됩", "안돼"]
 DIRECT_EXTERNAL_ACTION_NEGATIONS = [
-    "안 됩니다",
-    "안됩니다",
+    *NOT_ALLOWED_STEMS,
     "안 된다",
     "금지",
     "말아야",
@@ -254,7 +256,7 @@ BUSINESS_USER_UNSAFE_CERTAINTY_PATTERNS = [
     "발송 가능합니다",
 ]
 BUSINESS_USER_CERTAINTY_NEGATIONS = [
-    "안 됩니다",
+    *NOT_ALLOWED_STEMS,
     "하지 않습니다",
     "단정하지",
     "단정할 수 없",
