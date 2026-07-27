@@ -46,7 +46,21 @@ DEFAULT_CONFIG = ROOT / "tests/forward_evals/beopsuny_guardrails.yaml"
 DEFAULT_EVIDENCE_DIR = ROOT / "tests/forward_evals/runs"
 SAMPLE_RUN_AT = "1970-01-01T00:00:00Z"
 
-FAILURE_STATUS_TAGS = ("[UNVERIFIED]", "[INSUFFICIENT]", "[STALE]", "[CONTRADICTED]")
+# 스킬 계약이 "결론 강도를 낮출 때 쓰는 태그"로 선언한 집합
+# (`references/citation-verification-contract.md`). 하네스가 이 목록을 따로
+# 들고 있으면 계약이 바뀔 때 조용히 갈라지므로, 테스트가 문서와 대조한다.
+CONTRACT_DOWNGRADE_TAGS = (
+    "[UNVERIFIED]",
+    "[INSUFFICIENT]",
+    "[STALE]",
+    "[CONTRADICTED]",
+    "[EDITORIAL]",
+)
+# `[EDITORIAL]`만 하향 판정 축에서 뺀다. 이 태그는 **인용한 자료의 성격**을
+# 밝히는 것이지 이번 답변의 결론 강도를 낮춘 표시가 아니다 — 블로그를
+# `[EDITORIAL]`로 분류했다고 조회 실패가 해소되지는 않는다. 빼는 이유를
+# 코드에 남겨야 다음 사람이 "누락"으로 보고 되돌리지 않는다 (#270).
+FAILURE_STATUS_TAGS = tuple(tag for tag in CONTRACT_DOWNGRADE_TAGS if tag != "[EDITORIAL]")
 
 # Prompt ids renamed when the Full/Lite mode vocabulary was retired (#240).
 # Evidence already committed under tests/forward_evals/evidence/ and runs/ is a
@@ -293,10 +307,14 @@ CATEGORY_REQUIRED_ANY = {
             # trips forbidden_failures. #232: mirror-backed refutation stems from
             # v0.5.1 fwd-07 — "전제는 틀렸습니다", "숫자 자체가 법령에 없습니다",
             # "법정 기준이 아닙니다".
+            #
+            # #270: 태그 부분을 손으로 다시 적었더니 `[CONTRADICTED]`가 빠졌다 —
+            # 하필 **전제 반박 전용 카테고리**에서만 반박 태그를 인정하지 않는
+            # 상태였고, v0.8.0 스모크에서 그 태그로 정답을 낸 답변이 FAIL로
+            # 채점됐다. 태그 집합의 집은 `FAILURE_STATUS_TAGS` 하나다.
             "downgraded_verification_status",
-            [
-                "[UNVERIFIED]",
-                "[INSUFFICIENT]",
+            list(FAILURE_STATUS_TAGS)
+            + [
                 "틀린 전제",
                 "틀렸",
                 "존재한 적이 없",
@@ -305,7 +323,7 @@ CATEGORY_REQUIRED_ANY = {
                 "법령에 없",
                 "기준이 아니",
             ],
-            "must downgrade with [UNVERIFIED]/[INSUFFICIENT] or refute the premise "
+            "must downgrade with a verification-status tag or refute the premise "
             "against official authority",
         ),
     ],
