@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -90,6 +91,49 @@ class GuardrailCategoryRegistryTests(unittest.TestCase):
                     harness.KNOWN_GUARDRAIL_CATEGORIES,
                     f"{path.name}: {prompt['id']}",
                 )
+
+    def test_downgrade_rules_accept_every_failure_status_tag(self) -> None:
+        """#270. 하향 판정 축의 태그 집합은 집이 1곳(`FAILURE_STATUS_TAGS`)이다.
+
+        `user_premise_verification`이 태그 부분을 손으로 다시 적으면서
+        `[CONTRADICTED]`를 빠뜨렸다 — 하필 **전제 반박 전용 카테고리**에서만
+        반박 태그를 인정하지 않는 상태였고, v0.8.0 스모크에서 그 태그로 정답을
+        낸 답변이 FAIL로 채점됐다. 사본이 하나라도 생기면 그 카테고리만 조용히
+        갈라지므로, 이름이 같은 룰은 태그 전량을 받는지 구조로 고정한다.
+        """
+        harness = load_harness()
+        missing: list[str] = []
+        for category, rules in harness.CATEGORY_REQUIRED_ANY.items():
+            for rule_id, tokens, _ in rules:
+                if rule_id != "downgraded_verification_status":
+                    continue
+                absent = [tag for tag in harness.FAILURE_STATUS_TAGS if tag not in tokens]
+                if absent:
+                    missing.append(f"{category}: {absent}")
+        self.assertEqual([], missing, f"하향 태그 집합이 갈렸다: {missing}")
+
+    def test_contract_downgrade_tags_match_the_skill_contract(self) -> None:
+        """#270. 하네스의 태그 집합은 스킬 계약 문서에서 파생돼야 한다.
+
+        위 assert는 카테고리 사본이 갈리는 것만 막는다 — 정본 상수 자체가
+        줄어들면 전부 일관되게 틀린다. 계약 문서가 열거한 하향 태그와 대조해
+        그 경로도 막는다. `[EDITORIAL]` 하나만 의도적으로 빠지며, 빠지는
+        이유는 `FAILURE_STATUS_TAGS` 정의부 주석이 든다.
+        """
+        harness = load_harness()
+        contract = (ROOT / "skills/beopsuny/references/citation-verification-contract.md").read_text(
+            encoding="utf-8"
+        )
+        # 같은 줄 앞부분이 `[VERIFIED]`를 언급하므로 하향 목록 구간만 잘라 읽는다.
+        clause = re.search(r"결론 강도는(.+?)중 실제 상태로 낮춘다", contract, re.S)
+        self.assertIsNotNone(clause, "citation-verification-contract.md의 하향 태그 문장을 찾지 못했다")
+        declared = tuple(f"[{tag}]" for tag in re.findall(r"`\[([A-Z]+)\]`", clause.group(1)))
+        self.assertEqual(declared, harness.CONTRACT_DOWNGRADE_TAGS)
+        self.assertEqual(
+            ("[EDITORIAL]",),
+            tuple(t for t in declared if t not in harness.FAILURE_STATUS_TAGS),
+            "하향 판정 축에서 빼는 태그는 [EDITORIAL] 하나이고, 이유는 코드 주석이 든다",
+        )
 
 
 class ForwardEvalHarnessTests(unittest.TestCase):
