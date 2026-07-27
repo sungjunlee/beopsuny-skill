@@ -99,7 +99,9 @@ Chat 탭은 채팅마다 스토리지가 초기화되고 영속 파일시스템�
 
 ## 데이터 소스
 
-### 1순위: 법망 API (무인증, 무료)
+순위는 **응답하는 경로 중에서의** 순위다. Chat 환경은 로컬 미러를 쓸 수 없어 아래 세 경로만 있으므로, 앞 순위가 응답하지 않으면 다음 순위가 그대로 1차 경로가 된다 — 어느 경로로 확인했는지는 provenance에 그대로 표시한다.
+
+### 1순위: 법망 API (무인증, 무료 — 응답할 때)
 
 기본 URL: https://api.beopmang.org/api/v4/
 
@@ -115,7 +117,7 @@ Chat 탭은 채팅마다 스토리지가 초기화되고 영속 파일시스템�
 | 판례 상세 | `case?action=get&prec_id={prec_id}` |
 
 fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback.
-응답에 `"error": "service_maintenance"`가 오거나 timeout, 5xx, 빈 응답이면 WebSearch 또는 공식 사이트로 전환하고 조회 실패 범위를 표시한다. API 실패를 검색 결과 없음, 규범 부존재, 개정 없음으로 쓰지 않는다.
+응답이 오류 응답(`ok: false`)이거나 timeout, 5xx, 빈 응답이면 WebSearch 또는 공식 사이트로 전환하고 조회 실패 범위를 표시한다. `error` 값은 서비스가 바꾸므로 특정 코드를 기다리지 않는다. API 실패를 검색 결과 없음, 규범 부존재, 개정 없음으로 쓰지 않는다.
 
 ### 2순위: WebSearch
 
@@ -131,7 +133,7 @@ fetch MCP 서버가 있으면 직접 호출. 없으면 아래 WebSearch fallback
 OC 코드가 있으면 헌재 결정, 행정심판, 자치법규(조례), 조약 등을 조회할 수 있다.
 fetch MCP 서버로 호출: `https://korean-law-mcp.fly.dev/mcp?oc={OC코드}`
 OC 코드 발급: https://open.law.go.kr/LSO/openApi/guideList.do (무료, 1분)
-없으면 이 단계를 건너뛴다 — 1~2순위만으로 대부분 커버된다.
+없으면 이 단계를 건너뛴다. 다만 1순위가 응답하지 않는 동안에는 이 경로가 헌재·행정심판·자치법규·조약의 유일한 공식 경로이므로, 그 범위를 다룬다면 OC 코드 발급이 사실상 필요하다.
 
 ## 법률 조사 워크플로우
 
