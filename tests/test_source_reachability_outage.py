@@ -87,5 +87,42 @@ class DeclaredOutageTest(unittest.TestCase):
                 self.assertIsNone(health.declared_outage(body, BEFORE))
 
 
+class BeopmangAxisTest(unittest.TestCase):
+    """축 전체 판정 — `declared_outage`가 None을 준 뒤 무엇이 되는가.
+
+    WARN 경로를 새로 내면서 200 + `ok: false`가 그대로 `summarize_beopmang()`까지
+    흘러 **OK로 보고되던** 구멍이 생겼다 (PR #269 codex 리뷰). 계약 문서는 오류
+    응답을 조회 실패로 규정하므로, 공지 shape이 아니라는 이유로 그린이 되면
+    문서와 검사가 다시 갈라진다.
+    """
+
+    def axis(self, body: bytes, status: int = 200, today: str = BEFORE) -> dict[str, str]:
+        original = health.http_get
+        health.http_get = lambda url, timeout=15: (status, body, "")
+        try:
+            return health.check_beopmang(today=today)
+        finally:
+            health.http_get = original
+
+    def test_ok_false_without_a_notice_fails_the_axis(self) -> None:
+        for label, body in [
+            ("일반 오류", b'{"ok": false, "error": "internal_error"}'),
+            ("옛 maintenance 형태", b'{"ok": false, "error": "service_maintenance"}'),
+            ("사유 없는 오류", b'{"ok": false}'),
+        ]:
+            with self.subTest(label):
+                result = self.axis(body)
+                self.assertEqual("FAIL", result["status"], label)
+                self.assertIn("조회 실패", result["detail"])
+
+    def test_declared_outage_still_warns_on_the_axis(self) -> None:
+        result = self.axis(notice_body().encode(), status=503)
+        self.assertEqual("WARN", result["status"])
+
+    def test_healthy_response_is_ok(self) -> None:
+        result = self.axis(b'{"data": {"total": 5}}')
+        self.assertEqual("OK", result["status"])
+
+
 if __name__ == "__main__":
     unittest.main()

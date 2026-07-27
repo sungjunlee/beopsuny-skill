@@ -214,6 +214,13 @@ def check_beopmang(today: str | None = None) -> dict[str, Any]:
     except json.JSONDecodeError:
         return {"status": "FAIL", "axis": axis, "detail": "non-JSON body (조회 실패)"}
 
+    # 200 + `ok: false`는 공지 없이 실패한 응답이다. 계약 문서가 규정한 실패 구조
+    # 그대로이므로, 공지 shape이 아니라는 이유로 그린이 되면 안 된다 — WARN은
+    # 서비스가 스스로 밝힌 중단에만 준다 (PR #269 codex 리뷰).
+    if isinstance(payload, dict) and payload.get("ok") is False:
+        reason = payload.get("error") or "사유 미상"
+        return {"status": "FAIL", "axis": axis, "detail": f"ok: false ({reason}) — 조회 실패"}
+
     summary = summarize_beopmang(payload)
     return {"status": "OK", "axis": axis, "detail": summary}
 
