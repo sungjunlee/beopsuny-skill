@@ -3362,7 +3362,15 @@ def check_readme_investigation_assist_posture() -> None:
 
 
 def check_design_decision_archive() -> None:
-    """DESIGN.md stays a structural-decision archive; current truth lives in spec/."""
+    """DESIGN.md stays a pure structural-decision archive; live rules live in spec/.
+
+    The archive keeps only: the split-trigger table, the two §6 split-decision
+    records, the #9716 auto-discovery evidence, the rejected alternative, and the
+    change log. Live rules that used to sit here (router flow, spine budget,
+    split-time asset referencing) now live in spec/ and are pinned at their
+    canonical home; DESIGN.md must keep only pointers to them, so the archive
+    cannot re-bloat with re-restated copies.
+    """
     text = read_text("DESIGN.md")
     label = "DESIGN.md"
 
@@ -3371,20 +3379,57 @@ def check_design_decision_archive() -> None:
         "결정 아카이브",
         "spec/system-map.md",
         "spec/charter.md",
-        # split triggers remain the archive's operative content
+        # split-trigger table stays the archive's load-bearing content
         "Multi-skill 전환 트리거",
         "`wc -l skills/beopsuny/SKILL.md` > 800",
-        # split 결정 자체의 아카이브 헤딩 (workflow-map.md 링크 소비자는 #248에서 은퇴)
+        # the two §6 split-decision records
         "### 2026-05-10: 단일 스킬 유지 + 내부 router spine 전환",
-        "source authority labels + verification status + self verification",
+        "### 2026-04-12: 단일 스킬 유지 (reversed from multi-skill)",
+        # the only external evidence for the single-skill decision
+        "anthropics/claude-code#9716",
+        # rejected alternative (blocks re-proposal) and the change log
+        "대체 안 (기각됨)",
+        "## 변경 이력",
+        # moved-out concepts survive only as pointers, not restatements
+        "System Shape",
+        "router-loading",
     ]:
         assert_contains(text, required, label)
+
+    # The router flow diagram's 정본 is system-map.md, not the archive: pin the
+    # four-stage structure there so the authoritative copy is what is protected.
+    system_map = read_text("spec/system-map.md")
+    for required in [
+        "skills/beopsuny/SKILL.md router spine",
+        "source/citation/freshness/output gates",
+    ]:
+        assert_contains(system_map, required, "spec/system-map.md")
+
+    # The split-time shared-asset referencing rule moved to system-map's
+    # Project-Wide Invariants as a conditional ("if we split") invariant.
+    for required in [
+        "${CLAUDE_PLUGIN_ROOT}/assets/",
+        "skills/shared/",
+    ]:
+        assert_contains(system_map, required, "spec/system-map.md")
+
+    # The spine line budget's 정본 is the router-loading capability, which owns
+    # the sizing decision and its number together.
+    capabilities = read_text("spec/capabilities.md")
+    assert_contains(capabilities, "~270 lines", "spec/capabilities.md")
+
     for stale in [
         # retired snapshot/roadmap sections must not silently return
         "## 1. 현재 아키텍처",
         "## 3. 진화 방향",
         "Source Grading A/B/C/D",
         "-> Source Grade + self verification",
+        # single-home guards: live rules moved to spec/ must not re-enter the
+        # archive as restated copies (the pointers above are the only allowed
+        # remaining trace).
+        "source authority labels + verification status + self verification",
+        "전환 시 공유 자산 참조 규칙",
+        "~270줄 예산",
     ]:
         assert_not_contains(text, stale, label)
 

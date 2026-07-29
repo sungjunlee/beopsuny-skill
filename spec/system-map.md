@@ -54,6 +54,7 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 ## Project-Wide Invariants
 
 - The public artifact remains one `beopsuny` skill until the documented split triggers are met; internal references may act like a virtual suite, but public routing must remain predictable.
+- If the artifact ever splits into multiple skills, shared assets must be referenced through `${CLAUDE_PLUGIN_ROOT}/assets/...` absolute paths; `../` relative traversal is not platform-guaranteed (`${CLAUDE_SKILL_DIR}` is per-skill), and a `skills/shared/` directory is non-conventional with unstable auto-discovery.
 - Korean-law answers are not answered from memory alone.
 - `[VERIFIED]` requires target specificity, source text or official response comparison, freshness/currency disclosure, and provenance.
 - Local official-source mirrors are valid source families only with explicit local-mirror provenance; they are not the same as direct official-site confirmation.
