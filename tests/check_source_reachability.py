@@ -15,6 +15,22 @@
 timeout/거부될 수 있어(실측: GitHub 러너에서 law.go.kr timeout, 법망 410)
 링크 축은 DNS 해석만 판정하고(glaw류 도메인 사망은 DNS로 전 세계에서 감지됨)
 법망 축 실패는 WARN으로 낮춘다. 사용자 vantage(국내) 판정은 로컬 실행이 기준.
+
+CI vs 로컬 커버리지 — 이 도크스트링이 이 계약의 집이다 (#286). 다른 표면은
+포인터만 둔다 (`README.md` 릴리즈 체크리스트 2번 ·
+`.github/workflows/source-reachability.yml` cron·이슈 메커닉).
+- CI (`--dns-links`, 미러 clone 안 함): ① 미러 축은 항상 `NOT_INSTALLED`
+  (FAIL 아님, 조용히 넘어감). ② 법망 축은 서비스가 공지한 중단 동안 자기만료
+  WARN (아래 `BEOPMANG_PAUSE_ACCEPTED_UNTIL`). ③ 링크 축은 DNS 해석만. 그러므로
+  CI의 그린은 "3축 정상"이 아니라 "law.go.kr 도메인 1개 생존"이다 — 수용 기한
+  `2027-06-30`까지 이 상태가 유지된다. 이 워크플로의 원래 목적은 glaw류 도메인
+  사망 감지이고, CI는 그 목적을 유지한다.
+- 로컬 릴리즈 체크 (`README.md` `### 릴리즈 체크리스트` 2번, 미러 설치된 국내
+  vantage): 위 3축이 전부 실제로 돈다. 릴리즈 전 3축 확인은 이 경로가 기준이다.
+- 미러 축을 CI에서 돌릴지: **돌리지 않는다** — clone 비용·weekly cron 시간
+  예산이 크고, CI의 역할은 도메인 사망 감지(DNS로 충분)이지 미러 freshness가
+  아니다. 미러 staleness는 로컬 릴리즈 체크가 담당한다. 번복하려면 clone 비용과
+  cron 예산을 함께 다시 판단한다.
 """
 
 from __future__ import annotations
@@ -63,7 +79,13 @@ STATUS_WIDTH = 15
 # 되는 알려진 조건이고, 릴리즈마다 손으로 넘겨야 하는 빨간불이면 게이트를 아무도
 # 읽지 않게 된다. 그래서 WARN으로 낮추되 freshness_debt의 `overdue_resolve_by`와
 # 같은 자기만료를 준다: 아래 날짜가 지나면 서비스가 여전히 공지 중이어도 FAIL로
-# 돌아간다. 무기한 WARN은 조용한 영구화다. 날짜를 연장하지 말고 그때 다시 판단한다.
+# 돌아간다. 무기한 WARN은 조용한 영속화다. 날짜를 연장하지 말고 그때 다시 판단한다.
+#
+# 수용 기한(2027-06-30)이 복구 예상(estimated_recovery 2027-Q1)보다 약 2분기
+# 뒤인 것은 의도다 (#286) — 복구가 예상보다 늦어지는 날 한 번에 WARN→FAIL로
+# 뒤집히면 그 지연이 즉시 빨간불이 되어 게이트를 아무도 읽지 않는다. 버퍼가
+# 있어야 "재판단 시점"이 의미 있다. 기한을 미루는 것이 아니라, 지난 뒤에
+# 다시 판단하게 두는 것 — 바로 위 자기만료 문장의 연장선이다.
 BEOPMANG_PAUSE_ACCEPTED_UNTIL = "2027-06-30"
 BEOPMANG_PAUSE_TRACKED_ISSUE = "https://github.com/sungjunlee/beopsuny-skill/issues/268"
 
