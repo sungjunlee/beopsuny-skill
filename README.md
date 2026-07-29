@@ -173,6 +173,7 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_cross_matter_scope_rule.py \
   tests/test_confidential_persistence_rule.py \
+  tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py
 $PYTHON -m py_compile \
@@ -184,6 +185,7 @@ $PYTHON -m py_compile \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_cross_matter_scope_rule.py \
   tests/test_confidential_persistence_rule.py \
+  tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py
 git diff --check

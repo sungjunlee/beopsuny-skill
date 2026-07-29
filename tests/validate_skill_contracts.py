@@ -20,6 +20,7 @@ Assertion style policy (2026-07-12, charter Decision):
 
 from __future__ import annotations
 
+import ast
 import json
 import hashlib
 import os
@@ -244,30 +245,14 @@ QUALITY_CONTRACT_REFERENCES = {
 }
 
 
+_SOURCE_GRADES = load_yaml("skills/beopsuny/assets/policies/source_grades.yaml")
 SOURCE_AUTHORITIES = {
-    "공식 원문",
-    "공식 원문: 하급심",
-    "공식 원문 기반 로컬 미러",
-    "공식 원문 기반 로컬 미러: 하급심",
-    "공식 실무자료",
-    "공식 실무자료: 미확정",
-    "해설/의견",
-    "참고 제외",
+    str(item["label"])
+    for item in _SOURCE_GRADES["source_classes"].values()
+    if isinstance(item, dict) and isinstance(item.get("label"), str)
 }
-VERIFICATION_STATUSES = {
-    "[VERIFIED]",
-    "[UNVERIFIED]",
-    "[INSUFFICIENT]",
-    "[CONTRADICTED]",
-    "[STALE]",
-    "[EDITORIAL]",
-}
-FAILURE_STATUSES = {
-    "[UNVERIFIED]",
-    "[INSUFFICIENT]",
-    "[STALE]",
-    "[CONTRADICTED]",
-}
+VERIFICATION_STATUSES = set(_SOURCE_GRADES["rules"]["existing_tag_mapping"])
+FAILURE_STATUSES = VERIFICATION_STATUSES - {"[VERIFIED]", "[EDITORIAL]"}
 ALWAYS_ON_LEGAL_GATES = {
     "citation_verification": "skills/beopsuny/references/citation-verification-contract.md",
     "self_verification": "skills/beopsuny/references/self-verification.md",
@@ -279,14 +264,12 @@ ALWAYS_ON_LEGAL_GATES = {
 # two scripts stay independently runnable.
 VERIFICATION_TIER_AUTO_RULES = {
     "light": "light_tier_no_packet_ceremony",
-    "full": "legal_verification_core_trace",
 }
 # Mirrors tests/evaluate_scenario_outputs.py's output_common_rules() primary_intent
 # branch. Kept as a duplicated constant (same rationale as VERIFICATION_TIER_AUTO_RULES)
 # so both scripts stay independently runnable.
 PRIMARY_INTENT_AUTO_RULES = {
     "contract_review": "contract_counter_draft_boundary",
-    "law_change_detection": "law_change_push_boundary",
     "legal_research": "mirror_promulgation_currency_gate",
 }
 LEGAL_RESEARCH_GATE_SCENARIOS = {
@@ -360,6 +343,32 @@ def defined_check_functions() -> set[str]:
 def evaluator_rule_names() -> set[str]:
     text = read_text("tests/evaluate_scenario_outputs.py")
     return set(re.findall(r'if rule == "([^"]+)"', text))
+
+
+def common_rule_audit() -> dict[str, dict[str, Any]]:
+    data = load_yaml("tests/common_rule_layers.yaml")
+    rules = data.get("rules") if isinstance(data, dict) else None
+    if not isinstance(rules, dict):
+        raise AssertionError("common_rule_layers.yaml: rules must be a mapping")
+    return {str(name): item for name, item in rules.items() if isinstance(item, dict)}
+
+
+def forward_category_common_rules() -> dict[str, list[str]]:
+    tree = ast.parse(read_text("tests/forward_eval_harness.py"))
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if any(
+            isinstance(target, ast.Name) and target.id == "CATEGORY_COMMON_RULES"
+            for target in node.targets
+        ):
+            value = ast.literal_eval(node.value)
+            if isinstance(value, dict):
+                return {
+                    str(category): [str(rule) for rule in rules]
+                    for category, rules in value.items()
+                }
+    raise AssertionError("forward_eval_harness.py: CATEGORY_COMMON_RULES missing")
 
 
 def router_scenario_ids() -> set[str]:
@@ -646,8 +655,9 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
 
     # 유출 검사는 대외 구간 안에서만 발화한다. 구간 마커가 출력에 없으면 구간이
     # 빈 문자열이 되어 검사가 통째로 침묵하므로, 이 룰을 쓰는 시나리오는 그
-    # 마커를 `required_substrings`로 강제해야 한다 — 그러지 않으면 마커를 빼는
-    # 것만으로 유출이 통과한다. 토큰 선언 누락도 같은 형태의 조용한 통과다.
+    # 마커 중 적어도 하나를 `required_substrings`로 강제해야 한다. 나머지는
+    # "아래는 상대방에게 보낼 문안" 같은 동등한 구간 리드인이다. 모든 대체
+    # 마커를 동시에 요구하면 자연스러운 한 구간이 오히려 불가능해진다.
     for scenario_id, scenario in router_scenarios().items():
         output_eval = scenario.get("output_eval") or {}
         if "cross_matter_scope_boundary" not in (output_eval.get("common_rules") or []):
@@ -670,12 +680,11 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
                 raise AssertionError(
                     f"{scenario_id}: external_region_markers must not contain a blank marker"
                 )
-        for marker in markers:
-            if not any(marker in item for item in required):
-                raise AssertionError(
-                    f"{scenario_id}: external_region_markers {marker!r} must also be a "
-                    "required_substring — otherwise dropping the marker silences the leak check"
-                )
+        if not any(marker in item for marker in markers for item in required):
+            raise AssertionError(
+                f"{scenario_id}: at least one external_region_marker must also be a "
+                "required_substring — otherwise dropping every marker silences the leak check"
+            )
         if not output_eval.get("cross_matter_tokens"):
             raise AssertionError(
                 f"{scenario_id}: cross_matter_scope_boundary needs output_eval.cross_matter_tokens"
@@ -4049,22 +4058,89 @@ def check_router_guardrail_scenarios() -> None:
         raise AssertionError(f"router guardrail scenarios missing: {sorted(missing)!r}")
 
 
+def check_common_rule_layer_audit() -> None:
+    """Pin all 19 historical rules to their honest scoring layer."""
+    audit = common_rule_audit()
+    if len(audit) != 19:
+        raise AssertionError(
+            f"common_rule_layers.yaml: expected 19 audited rules, got {len(audit)}"
+        )
+
+    valid_dispositions = {"retained", "moved_to_live", "retained_pending_live"}
+    for rule, item in audit.items():
+        if item.get("class") not in {"a", "b", "c"}:
+            raise AssertionError(f"{rule}: class must be a/b/c")
+        if item.get("static_disposition") not in valid_dispositions:
+            raise AssertionError(f"{rule}: invalid static_disposition")
+        rationale = str(item.get("rationale", "")).strip()
+        if not rationale:
+            raise AssertionError(f"{rule}: rationale missing")
+        if item.get("class") != "c" and item.get("static_disposition") != "retained":
+            raise AssertionError(f"{rule}: (a)/(b) rule must stay in the static scorer")
+        if item.get("static_disposition") == "moved_to_live" and not item.get("live_axis"):
+            raise AssertionError(f"{rule}: moved semantic rule needs a live_axis")
+        if item.get("static_disposition") == "retained_pending_live" and not item.get("follow_up"):
+            raise AssertionError(f"{rule}: preserved semantic rule needs follow_up")
+
+    retained = {
+        rule
+        for rule, item in audit.items()
+        if item.get("static_disposition") != "moved_to_live"
+    }
+    evaluator_rules = evaluator_rule_names()
+    if evaluator_rules != retained:
+        raise AssertionError(
+            "evaluate_common_rule branches drift from common_rule_layers.yaml: "
+            f"missing={sorted(retained - evaluator_rules)!r}, "
+            f"unexpected={sorted(evaluator_rules - retained)!r}"
+        )
+
+    moved = set(audit) - retained
+    scenario_rules = {
+        str(rule)
+        for scenario in router_scenarios().values()
+        for rule in (scenario.get("output_eval") or {}).get("common_rules", [])
+    }
+    category_rules = {
+        rule
+        for rules in forward_category_common_rules().values()
+        for rule in rules
+    }
+    still_attached = moved & (scenario_rules | category_rules)
+    if still_attached:
+        raise AssertionError(
+            f"moved semantic rules still attached to a static scorer: {sorted(still_attached)!r}"
+        )
+
+    live_prompt_ids = {
+        str(prompt["id"])
+        for path in [
+            "tests/forward_evals/beopsuny_guardrails.yaml",
+            "tests/forward_evals/beopsuny_o4_provenance.yaml",
+        ]
+        for prompt in load_yaml(path).get("prompts", [])
+    }
+    for rule in sorted(moved):
+        missing_live = set(audit[rule]["live_axis"]) - live_prompt_ids
+        if missing_live:
+            raise AssertionError(
+                f"{rule}: declared live axes do not exist: {sorted(missing_live)!r}"
+            )
+
+
 def check_router_fixture_integrity() -> None:
     scenarios = router_scenarios()
     evaluator_rules = evaluator_rule_names()
     expected_output_ids = router_output_eval_ids()
-    # router-01/router-05 have no output_eval block (they carry no required
-    # safe sample output — see completion criterion "safe 10 유지") but do
-    # carry expected.verification_tier, which auto-attaches a common rule
-    # (see VERIFICATION_TIER_AUTO_RULES). unsafe_outputs may target them too.
+    # router-01 has no output_eval block but carries a light verification tier,
+    # which auto-attaches a structural rule. unsafe_outputs may target it.
     tier_rule_scenario_ids = {
         scenario_id
         for scenario_id, scenario in scenarios.items()
         if scenario.get("expected", {}).get("verification_tier") in VERIFICATION_TIER_AUTO_RULES
     }
-    # Some scenarios (e.g. router-04) carry no output_eval block but auto-attach a
-    # common rule via expected.primary_intent (see output_common_rules). unsafe_outputs
-    # may target them too — same allowance pattern as tier_rule_scenario_ids.
+    # Contract review and legal research scenarios may auto-attach retained
+    # structural/literal rules via expected.primary_intent.
     intent_rule_scenario_ids = {
         scenario_id
         for scenario_id, scenario in scenarios.items()
@@ -4074,7 +4150,6 @@ def check_router_fixture_integrity() -> None:
         "router-07",
         "router-08",
         "router-09",
-        "router-10",
         "router-11",
         "router-12",
         "router-13",
@@ -4096,8 +4171,21 @@ def check_router_fixture_integrity() -> None:
         if not isinstance(output_eval, dict):
             raise AssertionError(f"{scenario_id}: output_eval must be a mapping")
         common_rules = output_eval.get("common_rules", [])
-        if not isinstance(common_rules, list) or not common_rules:
-            raise AssertionError(f"{scenario_id}: output_eval.common_rules must be a non-empty list")
+        if not isinstance(common_rules, list):
+            raise AssertionError(f"{scenario_id}: output_eval.common_rules must be a list")
+        scoring_fields = (
+            "common_rules",
+            "required_substrings",
+            "forbidden_substrings",
+            "conditional_forbidden",
+        )
+        if not any(
+            isinstance(output_eval.get(field), list) and output_eval[field]
+            for field in scoring_fields
+        ):
+            raise AssertionError(
+                f"{scenario_id}: output_eval must contain a non-empty scoring field"
+            )
         missing_rules = sorted(str(rule) for rule in common_rules if str(rule) not in evaluator_rules)
         if missing_rules:
             raise AssertionError(f"{scenario_id}: evaluator missing common rules {missing_rules!r}")
@@ -4571,6 +4659,7 @@ CHECK_GROUPS = (
             check_router_scenario_references,
             check_router_always_on_legal_gates,
             check_router_guardrail_scenarios,
+            check_common_rule_layer_audit,
             check_router_fixture_integrity,
             check_router_output_eval,
         ),
