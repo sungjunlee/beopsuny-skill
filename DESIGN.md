@@ -54,7 +54,7 @@
    - 법률 도메인은 "틀리면 피해가 크다" — 라우팅 불확실성을 수용할 수 없다.
 
 3. **Desktop Chat (Lite) paste 모드 호환성**
-   - Lite 사용자는 `docs/desktop-chat-guide.md`의 프로젝트 지침 템플릿을 복사해서 쓴다.
+   - Lite 사용자는 프로젝트 지침 템플릿을 복사해서 쓴다.
    - 멀티 스킬 구조는 여러 SKILL.md를 하나로 합치는 사전 처리를 요구하거나, 사용자에게 파일 선택 부담을 준다.
    - 단일 파일 paste 가능성이 Primary 페르소나의 실제 접근성을 좌우한다.
    - **(2026-07-24 #238, historical)** chat-Lite 폐기(Full-first 전환)로 이 paste 호환성 근거는 더 이상 유효하지 않다. 단일 스킬 결정 자체는 위 1·2(auto-discovery 불안정)·4(통합 workflow)와 규모 근거로 유지된다.

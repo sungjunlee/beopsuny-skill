@@ -2552,7 +2552,6 @@ VOLATILE_REFERENCE_PATTERNS = [
 
 VOLATILE_DOC_PATHS = [
     "README.md",
-    "docs/desktop-chat-guide.md",
     "skills/beopsuny/references/output-formats.md",
 ]
 
@@ -3786,32 +3785,6 @@ def check_release_workflow_preflight() -> None:
         raise AssertionError(f"{label}: preflight checks must run before release zip creation")
 
 
-def check_desktop_chat_degradation_gate_card() -> None:
-    """The guide is deprecated (#238) but ships a STANDALONE Custom Instructions
-    template for the no-Skills path README still links. In that environment
-    skills/beopsuny/** is never loaded, so citation-verification-contract.md and
-    output-formats.md do not reach the user — this template is the only carrier
-    of the evidence boundary there. Hence the check stays; only the Full/Lite
-    vocabulary is retired (#240)."""
-    text = read_text("docs/desktop-chat-guide.md")
-    label = "desktop-chat-guide.md"
-
-    for required in [
-        "## Degradation Gate Card",
-        "[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]",
-        "법망 API 원문 필드",
-        # 스니펫/검색결과/발췌만으로는 공식 원문 확인 불가
-        "WebSearch 스니펫",
-        "사용자 제공 발췌",
-        "공식 원문 확인이 아니다",
-        "source/provenance를 분리",
-        "stale/live 여부를 표시",
-        "role/destination gate",
-        "법무 검토 전 확정 결론처럼 쓰지 않는다",
-    ]:
-        assert_contains(text, required, label)
-
-
 # 은퇴한 표면 → 그 개념의 현재 집. 재퇴적(파일 복귀)을 하드 실패로 막는다.
 RETIRED_SURFACES = {
     # 2026-07-12: GitHub Issues own live work, CHANGELOG owns history.
@@ -3836,12 +3809,15 @@ RETIRED_SURFACES = {
 
 
 # 어떤 live 문서가 은퇴한 경로를 계속 가리키는지 보는 범위. CHANGELOG,
-# backlog/, forward_evals/runs·evidence, docs/ 는 과거 기록이라 제외한다 —
-# 그 표면들은 당시 사실을 서술하는 것이 일이다.
+# backlog/, forward_evals/runs·evidence 는 과거 기록이라 제외한다 —
+# 그 표면들은 당시 사실을 서술하는 것이 일이다. docs/ 는 사용자 안내 문서(live)라
+# 편입한다: #280 이전엔 제외돼 있어 은퇴 표면 sweep이 docs/ 안의 참조를 보지
+# 못했고, 그 사각지대에서 desktop-chat-guide.md 좀비가 CI 예산을 계속 소비했다.
 RETIRED_SURFACE_LIVE_GLOBS = (
     "skills/**/*.md",
     "skills/**/*.yaml",
     "spec/*.md",
+    "docs/**/*.md",
     "README.md",
     "CLAUDE.md",
     "DESIGN.md",
@@ -4335,7 +4311,6 @@ def check_volatile_api_docs() -> None:
         "skills/beopsuny/references/law-change-detection.md": read_text(
             "skills/beopsuny/references/law-change-detection.md"
         ),
-        "docs/desktop-chat-guide.md": read_text("docs/desktop-chat-guide.md"),
     }
     stale_patterns = [
         "action=search&query=",
@@ -4561,7 +4536,6 @@ CHECK_GROUPS = (
             check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
             check_release_workflow_preflight,
-            check_desktop_chat_degradation_gate_card,
             check_retired_meta_surfaces_stay_retired,
         ),
     ),
