@@ -144,7 +144,7 @@ Mutation discipline:
 - The SKILL.md router spine: primary-intent classification, the intent → workflow-reference table, and routing principles including Right-sizing as the single over-routing criterion.
 - The always-on / conditional gate attachment tables and gate-attachment semantics at the routing layer.
 - Progressive-disclosure loading rules: what stays in the always-loaded spine versus what loads on demand from `references/` and `assets/`.
-- Spine sizing decisions, router regression fixtures, and the router static checks that protect intent-table and gate-table structure.
+- Spine sizing decisions (current budget: ~270 lines post-2026-07 pruning; the 800-line split trigger is archived in [`../DESIGN.md`](../DESIGN.md)), router regression fixtures, and the router static checks that protect intent-table and gate-table structure.
 
 **Out-of-scope:**
 - The content of the gates themselves — citation, verification status, and provenance belong to `source-citation`; stale-asset handling belongs to `freshness-governance`; packaging belongs to `output-role-destination`.

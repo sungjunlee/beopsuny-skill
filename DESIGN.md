@@ -4,7 +4,7 @@
 
 ## Multi-skill 전환 트리거
 
-아래 중 **하나라도** 발생하면 물리적 multi-skill 분리를 재평가한다. 트리거 없이는 분리하지 않는다 (charter Non-Goal: "내부 정돈만을 위한 공개 스킬 분리 금지"와 정렬).
+아래 중 **하나라도** 발생하면 물리적 multi-skill 분리를 재평가한다. 분리 금지 정책은 [`spec/charter.md`](spec/charter.md) Non-Goal이 단일 소스다.
 
 | 트리거 | 조건 | 근거 |
 |--------|------|------|
@@ -15,13 +15,7 @@
 
 **트리거 발동 시 행동**: 이 문서에 재평가 결정을 기록하고 마일스톤을 연다.
 
-참고: 2026-07 프루닝 이후 SKILL.md는 ~270줄 예산으로 관리되며(규모 트리거 대비 충분한 여유), spine 사이징은 `spec/capabilities.md`의 `router-loading` capability가 소유한다.
-
-### 전환 시 공유 자산 참조 규칙 (강제)
-
-- **금지**: `../` 상대경로 트래버설. Claude Code `${CLAUDE_SKILL_DIR}`은 per-skill이라 cross-skill 트래버설은 플랫폼이 보장하지 않는다.
-- **필수**: `${CLAUDE_PLUGIN_ROOT}/assets/...` 절대경로. 플러그인 레벨에서 공유 자산은 플러그인 루트 기준으로 접근한다.
-- **금지**: `skills/shared/` 디렉토리 (비관습, 자동 발견 불안정).
+참고: spine 사이징(현행 줄 수 예산 포함)은 [`spec/capabilities.md`](spec/capabilities.md)의 `router-loading` capability가 소유한다.
 
 ---
 
@@ -35,17 +29,11 @@
 
 **결정**: 외부 artifact는 단일 `beopsuny` skill로 유지하되, 내부 구조는 virtual skill suite처럼 재정렬한다.
 
-```
-User question
-  -> SKILL.md router spine
-  -> intent-specific reference
-  -> source authority labels + verification status + self verification
-  -> answer
-```
+흐름도는 [`spec/system-map.md`](spec/system-map.md) System Shape 절이 정본이다.
 
 **이유**:
 
-1. §6의 2026-04-12 단일 스킬 유지 근거는 여전히 유효하다. Desktop Chat/Lite paste 호환성, 통합형 사내변호사 workflow, multi-skill 자동 발견 불안정성이 남아 있다.
+1. §6의 2026-04-12 단일 스킬 유지 근거는 여전히 유효하다. 통합형 사내변호사 workflow, multi-skill 자동 발견 불안정성이 남아 있다. **(2026-07-24 #238, historical)** Desktop Chat/Lite paste 호환성 근거는 chat-Lite 폐기(Full-first 전환)로 더 이상 유효하지 않다.
 2. 하지만 `SKILL.md`가 매뉴얼이 되면 단순 조문 질문에도 계약 검토, checklist, 변경 감지, memory 규칙이 모델 context에 올라와 오답 리스크가 커진다.
 3. 따라서 물리적 multi-skill 전환 대신 `SKILL.md`는 router + mandatory gates로 축소하고, source access, research, checklist, law change, output formats를 on-demand reference로 이동한다.
 
