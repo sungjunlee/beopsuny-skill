@@ -24,6 +24,7 @@ import json
 import hashlib
 import os
 import re
+import shlex
 import subprocess
 import sys
 from datetime import date, timedelta
@@ -48,6 +49,81 @@ def load_yaml(path: str) -> Any:
 def load_json(path: str) -> Any:
     with (ROOT / path).open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def workflow_run_commands(path: str, job_name: str) -> list[str]:
+    """Return shell commands from one workflow job's run steps."""
+    data = load_yaml(path)
+    if not isinstance(data, dict):
+        raise AssertionError(f"{path}: workflow must be a mapping")
+    jobs = data.get("jobs")
+    if not isinstance(jobs, dict):
+        raise AssertionError(f"{path}: jobs must be a mapping")
+    job = jobs.get(job_name)
+    if not isinstance(job, dict):
+        raise AssertionError(f"{path}: missing job {job_name!r}")
+    steps = job.get("steps")
+    if not isinstance(steps, list):
+        raise AssertionError(f"{path}: {job_name}.steps must be a list")
+
+    commands: list[str] = []
+    for step in steps:
+        if not isinstance(step, dict) or "run" not in step:
+            continue
+        command = step["run"]
+        if not isinstance(command, str) or not command.strip():
+            raise AssertionError(f"{path}: {job_name} run step must be a non-empty string")
+        commands.append(command)
+    return commands
+
+
+def bash_fence_commands(text: str) -> list[str]:
+    """Return logical command lines from bash fences, joining continuations."""
+    commands: list[str] = []
+    for block in re.findall(r"```bash\s*\n(.*?)\n```", text, flags=re.S):
+        logical_block = re.sub(r"\\\s*\n\s*", " ", block)
+        commands.extend(line.strip() for line in logical_block.splitlines() if line.strip())
+    return commands
+
+
+def python_module_test_targets(commands: list[str], module: str, label: str) -> set[str]:
+    """Parse the sole ``-m <module>`` command and return test module paths."""
+    matched_tokens: list[list[str]] = []
+    for command in commands:
+        try:
+            tokens = shlex.split(command)
+        except ValueError as exc:
+            raise AssertionError(f"{label}: invalid shell command: {exc}") from exc
+        if any(tokens[index : index + 2] == ["-m", module] for index in range(len(tokens) - 1)):
+            matched_tokens.append(tokens)
+
+    if len(matched_tokens) != 1:
+        raise AssertionError(
+            f"{label}: expected exactly one '-m {module}' command, found {len(matched_tokens)}"
+        )
+
+    tokens = matched_tokens[0]
+    module_index = next(
+        index for index in range(len(tokens) - 1) if tokens[index : index + 2] == ["-m", module]
+    )
+    targets: set[str] = set()
+    for token in tokens[module_index + 2 :]:
+        path = PurePosixPath(token)
+        is_top_level_test = (
+            path.parent == PurePosixPath("tests")
+            and path.name.startswith("test_")
+            and path.suffix == ".py"
+        )
+        if is_top_level_test:
+            targets.add(path.as_posix())
+    return targets
+
+
+def assert_same_paths(actual: set[str], expected: set[str], label: str) -> None:
+    missing = sorted(expected - actual)
+    unexpected = sorted(actual - expected)
+    if missing or unexpected:
+        raise AssertionError(f"{label}: missing={missing!r}, unexpected={unexpected!r}")
 
 
 def freshness_debt_registry() -> dict[str, Any]:
@@ -3584,12 +3660,29 @@ def check_contract_tests_workflow() -> None:
         "requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
-        "python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
-        "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
+        "python -m unittest",
+        "python -m py_compile",
         "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
-        "tests/test_knowledge_manifest_ingest.py",
     ]:
         assert_contains(text, required, label)
+
+    test_paths = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "tests").glob("test_*.py")
+        if path.is_file()
+    }
+    workflow_commands = workflow_run_commands(
+        ".github/workflows/contract-tests.yml", "contracts"
+    )
+    unittest_targets = python_module_test_targets(
+        workflow_commands, "unittest", f"{label} unittest"
+    )
+    assert_same_paths(unittest_targets, test_paths, f"{label} unittest vs tests/test_*.py")
+
+    compile_targets = python_module_test_targets(
+        workflow_commands, "py_compile", f"{label} py_compile"
+    )
+    assert_same_paths(compile_targets, test_paths, f"{label} py_compile vs tests/test_*.py")
 
     requirements = read_text("requirements-dev.txt")
     assert_contains(requirements, "PyYAML", "requirements-dev.txt")
@@ -3599,9 +3692,25 @@ def check_contract_tests_workflow() -> None:
         "$PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt",
         "PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py",
         "PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py",
-        "PYTHONPATH=.test-deps $PYTHON -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
+        "PYTHONPATH=.test-deps $PYTHON -m unittest",
     ]:
         assert_contains(readme, required, "README.md")
+    readme_unittest_targets = python_module_test_targets(
+        bash_fence_commands(readme), "unittest", "README.md unittest"
+    )
+    assert_same_paths(
+        readme_unittest_targets,
+        unittest_targets,
+        "README.md unittest vs contract-tests.yml unittest",
+    )
+    readme_compile_targets = python_module_test_targets(
+        bash_fence_commands(readme), "py_compile", "README.md py_compile"
+    )
+    assert_same_paths(
+        readme_compile_targets,
+        compile_targets,
+        "README.md py_compile vs contract-tests.yml py_compile",
+    )
 
 
 def check_release_workflow_preflight() -> None:

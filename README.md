@@ -144,7 +144,7 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 
 `tests/forward_evals/beopsuny_guardrails.yaml`은 실제 모델 응답을 수동 또는 `tests/forward_eval_harness.py`로 점검하는 forward-eval prompt set이다. CI의 빠른 gate는 아니며, sample/template/score/command 모드 evidence는 `tests/forward_evals/runs/`에 기록한다. 실패 시 `prompt_id`, `guardrail_category`, `source_router_scenario`, output evidence 기준으로 이슈를 남긴다.
 
-GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, forward eval/knowledge manifest ingest 테스트, 테스트 harness compile을 실행한다.
+GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, 전체 `tests/test_*.py` unittest, 테스트 harness compile을 실행한다.
 
 ### 품질 계약 변경 체크리스트
 
@@ -169,8 +169,24 @@ $PYTHON -m pip install --no-input --disable-pip-version-check --target .test-dep
 PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evidence tests/forward_evals/runs/sample.yaml
-PYTHONPATH=.test-deps $PYTHON -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py
-$PYTHON -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py skills/beopsuny/assets/tools/knowledge_manifest_ingest.py tests/test_knowledge_manifest_ingest.py
+PYTHONPATH=.test-deps $PYTHON -m unittest \
+  tests/test_forward_eval_harness.py \
+  tests/test_knowledge_manifest_ingest.py \
+  tests/test_cross_matter_scope_rule.py \
+  tests/test_confidential_persistence_rule.py \
+  tests/test_suppression_window_limits.py \
+  tests/test_source_reachability_outage.py
+$PYTHON -m py_compile \
+  tests/validate_skill_contracts.py \
+  tests/evaluate_scenario_outputs.py \
+  tests/forward_eval_harness.py \
+  skills/beopsuny/assets/tools/knowledge_manifest_ingest.py \
+  tests/test_forward_eval_harness.py \
+  tests/test_knowledge_manifest_ingest.py \
+  tests/test_cross_matter_scope_rule.py \
+  tests/test_confidential_persistence_rule.py \
+  tests/test_suppression_window_limits.py \
+  tests/test_source_reachability_outage.py
 git diff --check
 ```
 
