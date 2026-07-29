@@ -92,8 +92,6 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전제조건** Settings → Capabilities에서 **Code execution and file creation** 활성화 → [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 → **Customize → Skills → + Create skill → Upload a skill** → **beopsuny** 토글 ON → 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`).
 
 > UI 경로는 Anthropic이 자주 바꾼다. 다르면 공식 가이드 참고: [KO](https://support.claude.com/ko/articles/12512180-claude에서-스킬-사용하기) · [EN](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
->
-> Skills 기능을 못 쓰는 환경의 Projects + Custom Instructions fallback은 [Chat 탭 가이드](docs/desktop-chat-guide.md)(deprecated, historical) 참조.
 
 ## 고급 설정 (선택)
 
