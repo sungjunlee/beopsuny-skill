@@ -9,7 +9,7 @@ component: ""
 
 # report-deliverable
 
-에픽 #184 — 리포트 산출물 레이어(self-contained HTML). PRD: `docs/prd/2026-07-report-deliverable.md`.
+에픽 #184 — 리포트 산출물 레이어(self-contained HTML). 설계 근거: 이슈 #184 / PR #189–#192.
 
 ## Goal
 
@@ -36,6 +36,7 @@ Batch 4 — 마감:
 - **component 빈 값 사유**: 리포트 레이어는 `source-citation` capability의 out-of-scope("답변 레이아웃은 output-role-destination 소관")에 해당하나 해당 capability가 아직 `spec/capabilities.md`에 없다. 스프린트 중 필요해지면 spec-grill로 신설 검토.
 - **테스트↔문서 강결합** (_context.md 참조): 문서 문구 수정 전 `tests/validate_skill_contracts.py`의 check 함수 grep 필수. 게이트: `PYTHONPATH=.test-deps python3 tests/validate_skill_contracts.py`(O1) + `tests/evaluate_scenario_outputs.py`(O2, 기대 "PASS 10 outputs, 9 unsafe fixtures" — fixture 추가 시 수치 갱신).
 - **PRD 채택 결정**: D1 접근 A(파일 우선), D2 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/reports/{YYYY-MM-DD}-{slug}.html`, D3 기본 destination internal_legal_memo, D4 Artifact gate 중간 수위, D5 S1(bulk grid) 우선.
+- **접근안 기록 (PRD §5, #279로 PRD 삭제 후 보존)**: A. 파일 우선·얇은 렌더 계약 — 환경 독립·#96과 직교·공유 고민 최소화(채택). B. Artifact-native — 체감 크지만 Codex CLI 배제·공유 계약 설계 선행 필요, S3 시나리오로 부분 수용(기각). C. #96 통합 재설계 — 범위 과대, 내용 계약은 #96에 남기고 본 레이어는 렌더만(기각).
 - **self-contained 제약**: 인라인 CSS만, 외부 리소스 0 (Artifact CSP 대비). 고정 footer 블록(provenance/한계 고지) 필수.
 - **O2 기대 수치 변동**: #186부터 unsafe fixture 10개 ("PASS 10 outputs, 10 unsafe fixtures"). #188에서 또 늘어날 예정 — 이후 이슈의 게이트 확인 시 최신 수치 기준.
 - **템플릿 위치 확정**: `skills/beopsuny/assets/templates/report_bulk_grid.html` (#186). #187 템플릿도 같은 디렉토리에.

@@ -74,7 +74,7 @@ Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하
 
 ## R4. Artifact 배포 gate
 
-계약 문장: Claude Code Artifact는 호스팅 URL이므로, 생성 시 내부용으로 만들었더라도 배포 시점부터 공유 가능 산출물로 취급한다. 이 gate는 PRD D4의 중간 수위다.
+계약 문장: Claude Code Artifact는 호스팅 URL이므로, 생성 시 내부용으로 만들었더라도 배포 시점부터 공유 가능 산출물로 취급한다. 이 gate는 공유 가정(내부 산출물을 외부로 내보내는 시점)의 중간 수위다 — 아래 표가 그 수위를 규정한다.
 
 | 항목 | 계약 |
 | --- | --- |
