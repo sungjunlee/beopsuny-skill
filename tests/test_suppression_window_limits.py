@@ -139,3 +139,5 @@ class SuppressionWindowTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ci-negative probe (#295 gate 검증): tests/만 변경, CHANGELOG 없음
