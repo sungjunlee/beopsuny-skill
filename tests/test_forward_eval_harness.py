@@ -358,6 +358,10 @@ class CorpusRegressionTests(unittest.TestCase):
 
     def test_verified_conditional_forbidden_needs_provenance(self) -> None:
         prompt = self.prompts["fwd-04-stale-checklist-current-obligation"]
+        self.assertTrue(
+            prompt.get("conditional_forbidden"),
+            "fwd-04 must own the live conditional guard used by the scorer",
+        )
         bare = "이 의무는 [VERIFIED] 확정입니다."
         bare_guardrails = {
             failure["guardrail"]

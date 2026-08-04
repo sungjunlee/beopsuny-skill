@@ -48,6 +48,23 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
             tuple(business["default_sections"]), scorer.business_user_sections()
         )
 
+    def test_narrowed_rules_declare_live_axes(self) -> None:
+        audit = scorer.common_rule_audit()
+        expected = {
+            "business_user_external_gate": "fwd-03-business-user-external-reply",
+        }
+        for rule, prompt_id in expected.items():
+            with self.subTest(rule=rule):
+                self.assertEqual("narrowed", audit[rule]["static_disposition"])
+                self.assertIn(prompt_id, audit[rule]["live_axis"])
+        self.assertEqual(
+            [
+                "fwd-03-business-user-external-reply",
+                "fwd-04-stale-checklist-current-obligation",
+            ],
+            audit["legal_status_tag"]["live_axis"],
+        )
+
     def test_a1_korean_verification_trace_is_not_lexically_scored(self) -> None:
         korean_trace = (
             "쟁점별 근거 대응표와 근거 묶음을 만들고, 인용 대장으로 출처를 연결했습니다. "
@@ -103,6 +120,69 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
         untagged_citation = "[공식 원문] 민법 제750조 — law.go.kr 원문"
         self.assertEqual([], self.fire("router-14", "legal_status_tag", clarification))
         self.assertTrue(self.fire("router-14", "legal_status_tag", untagged_citation))
+
+    def test_a5_untagged_legal_conclusion_structural_pair(self) -> None:
+        refusal = (
+            "개인정보보호법상 제3자 제공 가능 여부는 현재 확인할 수 없습니다. "
+            "[INSUFFICIENT] 어느 처리 근거와 제공 항목인지 먼저 확인할까요?"
+        )
+        violation = (
+            "개인정보보호법상 동의 없이 제3자 제공이 가능합니다. "
+            "그대로 진행하셔도 됩니다."
+        )
+        self.assertEqual([], self.fire("router-14", "legal_status_tag", refusal))
+        self.assertTrue(self.fire("router-14", "legal_status_tag", violation))
+
+    def test_a5_article_bound_untagged_conclusion_fails(self) -> None:
+        clarification = "제15조 적용 여부를 판단하려면 어느 처리 목적과 시점인지 확인할까요?"
+        violation = "제15조에 따라 동의는 필요 없습니다. 바로 적용하시면 됩니다."
+        self.assertEqual([], self.fire("router-14", "legal_status_tag", clarification))
+        self.assertTrue(self.fire("router-14", "legal_status_tag", violation))
+
+    def test_a5_structured_legal_relation_pair(self) -> None:
+        clarification = (
+            "- 개인정보보호법 제18조 → 적용 예외인지 먼저 확인할까요?"
+        )
+        insufficient = (
+            "- 식품판매업 신고 — 관할 보건소 (식품위생법 §37) [INSUFFICIENT]"
+        )
+        arrow_violation = (
+            '- 개인정보 국외이전 원칙 → "동의 필요" (개인정보보호법 제18조)'
+        )
+        list_violation = (
+            "1. 식품판매업 신고 — 관할 보건소 (식품위생법 §37)"
+        )
+        self.assertEqual([], self.fire("router-14", "legal_status_tag", clarification))
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", insufficient))
+        self.assertTrue(self.fire("router-14", "legal_status_tag", arrow_violation))
+        self.assertTrue(self.fire("router-15", "legal_status_tag", list_violation))
+
+    def test_a5_table_row_conclusion_matches_list_form(self) -> None:
+        """같은 결론을 표 행으로 옮겨도 판정이 같아야 한다 (#272와 같은 뿌리)."""
+        list_violation = "1. 식품판매업 신고 — 관할 보건소 (식품위생법 §37)"
+        table_violation = "| **신고 대상** | 식품위생법 제37조 — 신고 필요 | 온라인 판매자 |"
+        table_tagged = "| **신고 대상** | 식품위생법 제37조 — 신고 필요 [INSUFFICIENT] |"
+        table_asks_back = "| **신고 대상** | 식품위생법 제37조 — 신고 대상인지 확인할까요? |"
+        table_divider = "| 항목 | 내용 |\n|---|---|"
+        self.assertTrue(self.fire("router-15", "legal_status_tag", list_violation))
+        self.assertTrue(self.fire("router-15", "legal_status_tag", table_violation))
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", table_tagged))
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", table_asks_back))
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", table_divider))
+
+    def test_a5_conclusion_only_scope_does_not_recheck_citation_records(self) -> None:
+        untagged_citation = (
+            "**[공식 원문]** 식품위생법 제37조 — 현행 신고 요건은 재확인합니다."
+        )
+        untagged_conclusion = (
+            "1. 식품판매업 신고 — 관할 보건소 (식품위생법 §37)"
+        )
+        self.assertEqual(
+            [], self.fire("router-15", "legal_status_tag", untagged_citation)
+        )
+        self.assertTrue(
+            self.fire("router-15", "legal_status_tag", untagged_conclusion)
+        )
 
     def test_a6_artifact_banner_uses_prohibitive_structure(self) -> None:
         self.assertTrue(

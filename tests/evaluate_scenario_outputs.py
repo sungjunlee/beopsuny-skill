@@ -22,6 +22,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCENARIOS = [ROOT / "tests/scenarios/16_router_regression.yaml"]
 DEFAULT_OUTPUTS = ROOT / "tests/fixtures/router_guardrail_outputs.yaml"
+DEFAULT_FORWARD_EVAL = ROOT / "tests/forward_evals/beopsuny_guardrails.yaml"
 UNCERTAINTY_PATTERNS = [
     "확인 불가",
     "원문 미확인",
@@ -365,6 +366,55 @@ def citation_record_lines(output: str) -> list[str]:
     return [line for line in output.splitlines() if any(f"[{label}]" in line for label in labels)]
 
 
+LEGAL_BASIS_BINDING = re.compile(
+    r"(?:[가-힣A-Za-z·]+법상|제\s*\d+\s*조(?:의\s*\d+)?(?:에\s*따라|에\s*의하면))"
+)
+DECLARATIVE_SENTENCE_END = re.compile(r"니다\s*[.!?…]?(?:\s|$)")
+LEGAL_ARTICLE_REFERENCE = re.compile(
+    r"[가-힣A-Za-z·]+법\s*(?:제\s*\d+\s*조(?:의\s*\d+)?|§\s*\d+)"
+)
+LIST_ITEM_PREFIX = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+")
+LEGAL_RELATION_MARKER = re.compile(r"(?:→|—)")
+# 같은 결론을 표 행으로 옮기면 리스트 판정을 빠져나간다 — #272와 같은 뿌리다.
+# 구분선 행(`|---|---|`)은 내용이 아니므로 제외한다.
+TABLE_ROW_PREFIX = re.compile(r"^\s*\|.*\|\s*$")
+TABLE_DIVIDER_ROW = re.compile(r"^\s*\|[\s:|-]+\|\s*$")
+
+
+def conclusion_bearing_lines(output: str) -> list[str]:
+    """Lines that carry a claim in list or table form, not free prose."""
+    lines = []
+    for line in output.splitlines():
+        if TABLE_DIVIDER_ROW.match(line):
+            continue
+        if LIST_ITEM_PREFIX.search(line) or TABLE_ROW_PREFIX.match(line):
+            lines.append(line)
+    return lines
+
+
+def asks_back(line: str) -> bool:
+    """True if the line's own text ends in a question, cell delimiters aside."""
+    return any(cell.strip().endswith("?") for cell in line.split("|"))
+
+
+def has_untagged_legal_conclusion(output: str) -> bool:
+    """Detect a legal-basis-to-conclusion sentence with no contract status symbol."""
+    if any(tag in output for tag in contract_status_tags()):
+        return False
+    if any(
+        LEGAL_BASIS_BINDING.search(sentence)
+        and DECLARATIVE_SENTENCE_END.search(sentence)
+        for sentence in split_sentences(output)
+    ):
+        return True
+    return any(
+        LEGAL_RELATION_MARKER.search(line)
+        and LEGAL_ARTICLE_REFERENCE.search(line)
+        and not asks_back(line)
+        for line in conclusion_bearing_lines(output)
+    )
+
+
 EFFECTIVE_DATE_PATTERN = re.compile(
     r"시행일자\s*[:：]?\s*(\d{4})\s*(?:-|\.|/|년)\s*(\d{1,2})\s*"
     r"(?:-|\.|/|월)\s*(\d{1,2})\s*일?"
@@ -394,6 +444,32 @@ def conditional_forbidden_hits(entries: list[Any], output: str) -> list[str]:
         if not any(marker in output for marker in allowed):
             hits.append(pattern)
     return hits
+
+
+@lru_cache(maxsize=1)
+def forward_conditional_forbidden() -> dict[str, list[Any]]:
+    """Load conditional symbol guards from their live-prompt single home."""
+    data = load_yaml(DEFAULT_FORWARD_EVAL)
+    prompts = data.get("prompts") if isinstance(data, dict) else None
+    if not isinstance(prompts, list):
+        raise AssertionError("forward eval prompts must be a list")
+    return {
+        str(prompt["id"]): list(prompt.get("conditional_forbidden") or [])
+        for prompt in prompts
+        if isinstance(prompt, dict) and prompt.get("conditional_forbidden")
+    }
+
+
+def scenario_conditional_forbidden(output_eval: dict[str, Any]) -> list[Any]:
+    prompt_id = output_eval.get("conditional_forbidden_from")
+    if prompt_id:
+        entries = forward_conditional_forbidden().get(str(prompt_id))
+        if not entries:
+            raise AssertionError(
+                f"conditional_forbidden source {prompt_id!r} is missing or empty"
+            )
+        return entries
+    return list(output_eval.get("conditional_forbidden", []) or [])
 
 
 def has_external_use_review_gate(output: str) -> bool:
@@ -532,6 +608,12 @@ def evaluate_common_rule(scenario_id: str, scenario: dict[str, Any], output: str
     if rule == "legal_status_tag":
         tags = contract_status_tags()
         records = citation_record_lines(output)
+        if not records and has_untagged_legal_conclusion(output):
+            failures.append(
+                f"{scenario_id}: common rule {rule} legal conclusion missing contract symbols"
+            )
+        if rule_inputs(scenario).get("legal_status_scope") == "untagged_conclusion_only":
+            return failures
         for line in records:
             if not any(tag in line for tag in tags):
                 failures.append(
@@ -822,7 +904,7 @@ def evaluate_one_output(scenario_id: str, scenario: dict[str, Any], output: str)
             failures.append(f"{scenario_id}: contains forbidden substring {needle!r}")
 
     for needle in conditional_forbidden_hits(
-        list(output_eval.get("conditional_forbidden", []) or []), output
+        scenario_conditional_forbidden(output_eval), output
     ):
         failures.append(
             f"{scenario_id}: contains conditionally forbidden substring {needle!r} "

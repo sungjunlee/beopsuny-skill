@@ -4066,7 +4066,12 @@ def check_common_rule_layer_audit() -> None:
             f"common_rule_layers.yaml: expected 19 audited rules, got {len(audit)}"
         )
 
-    valid_dispositions = {"retained", "moved_to_live", "retained_pending_live"}
+    valid_dispositions = {
+        "retained",
+        "narrowed",
+        "moved_to_live",
+        "retained_pending_live",
+    }
     for rule, item in audit.items():
         if item.get("class") not in {"a", "b", "c"}:
             raise AssertionError(f"{rule}: class must be a/b/c")
@@ -4075,10 +4080,15 @@ def check_common_rule_layer_audit() -> None:
         rationale = str(item.get("rationale", "")).strip()
         if not rationale:
             raise AssertionError(f"{rule}: rationale missing")
-        if item.get("class") != "c" and item.get("static_disposition") != "retained":
+        if item.get("class") != "c" and item.get("static_disposition") not in {
+            "retained",
+            "narrowed",
+        }:
             raise AssertionError(f"{rule}: (a)/(b) rule must stay in the static scorer")
-        if item.get("static_disposition") == "moved_to_live" and not item.get("live_axis"):
-            raise AssertionError(f"{rule}: moved semantic rule needs a live_axis")
+        if item.get("static_disposition") in {"narrowed", "moved_to_live"} and not item.get(
+            "live_axis"
+        ):
+            raise AssertionError(f"{rule}: live-backed rule needs a live_axis")
         if item.get("static_disposition") == "retained_pending_live" and not item.get("follow_up"):
             raise AssertionError(f"{rule}: preserved semantic rule needs follow_up")
 
@@ -4120,7 +4130,12 @@ def check_common_rule_layer_audit() -> None:
         ]
         for prompt in load_yaml(path).get("prompts", [])
     }
-    for rule in sorted(moved):
+    live_backed = moved | {
+        rule
+        for rule, item in audit.items()
+        if item.get("static_disposition") == "narrowed"
+    }
+    for rule in sorted(live_backed):
         missing_live = set(audit[rule]["live_axis"]) - live_prompt_ids
         if missing_live:
             raise AssertionError(
@@ -4132,6 +4147,12 @@ def check_router_fixture_integrity() -> None:
     scenarios = router_scenarios()
     evaluator_rules = evaluator_rule_names()
     expected_output_ids = router_output_eval_ids()
+    forward_prompts = {
+        str(prompt["id"]): prompt
+        for prompt in load_yaml(
+            "tests/forward_evals/beopsuny_guardrails.yaml"
+        ).get("prompts", [])
+    }
     # router-01 has no output_eval block but carries a light verification tier,
     # which auto-attaches a structural rule. unsafe_outputs may target it.
     tier_rule_scenario_ids = {
@@ -4179,13 +4200,23 @@ def check_router_fixture_integrity() -> None:
             "forbidden_substrings",
             "conditional_forbidden",
         )
-        if not any(
+        has_list_scoring = any(
             isinstance(output_eval.get(field), list) and output_eval[field]
             for field in scoring_fields
-        ):
+        )
+        conditional_source = output_eval.get("conditional_forbidden_from")
+        if not has_list_scoring and not isinstance(conditional_source, str):
             raise AssertionError(
                 f"{scenario_id}: output_eval must contain a non-empty scoring field"
             )
+        if conditional_source:
+            source_prompt = forward_prompts.get(str(conditional_source)) or {}
+            entries = source_prompt.get("conditional_forbidden")
+            if not entries:
+                raise AssertionError(
+                    f"{scenario_id}: conditional_forbidden source is missing or empty: "
+                    f"{conditional_source!r}"
+                )
         missing_rules = sorted(str(rule) for rule in common_rules if str(rule) not in evaluator_rules)
         if missing_rules:
             raise AssertionError(f"{scenario_id}: evaluator missing common rules {missing_rules!r}")

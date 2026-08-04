@@ -7,10 +7,14 @@ description: |
 rules:
   legal_status_tag:
     class: a
-    static_disposition: retained
+    static_disposition: narrowed
     rationale: |
-      verification status는 자유 산문이 아니라 인용 레코드에 붙는 계약 심볼이다.
-      태그 집합은 source_grades.yaml의 existing_tag_mapping에서 읽는다.
+      verification status는 자유 산문이 아니라 인용 레코드와 법적 근거에
+      결박된 결론에 붙는 계약 심볼이다. 자유 산문의 의미 판정은 fwd-03
+      라이브·정독이 담당한다.
+    live_axis:
+      - fwd-03-business-user-external-reply
+      - fwd-04-stale-checklist-current-obligation
 
   no_verified_uncertainty:
     class: b
@@ -117,10 +121,12 @@ rules:
 
   business_user_external_gate:
     class: b
-    static_disposition: retained
+    static_disposition: narrowed
     rationale: |
       정적 층은 대외 초안 구간에 내부 블록이 섞였는지만 본다. 절 제목,
       직접 발송 지시, 법적 확실성의 의미는 fwd-03 라이브·정독이 담당한다.
+    live_axis:
+      - fwd-03-business-user-external-reply
 
   freshness_debt_triage_only:
     class: c

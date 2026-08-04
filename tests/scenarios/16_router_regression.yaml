@@ -543,15 +543,10 @@ scenarios:
       - type: freshness_debt_boundary
         description: stale 등록 자산이 현행 의무로 승격되지 않는지
     output_eval:
-      conditional_forbidden:
-        - pattern: "[VERIFIED]"
-          allowed_if_any:
-            - 정부24
-            - gov.kr
-            - 실시간
-            - 직접 조회
-            - 로컬 미러 확인
-            - law.go.kr 원문
+      common_rules:
+        - legal_status_tag
+      legal_status_scope: untagged_conclusion_only
+      conditional_forbidden_from: fwd-04-stale-checklist-current-obligation
 
   - id: router-16
     name: 복합 법률 결론은 legal verification core 흔적을 유지
