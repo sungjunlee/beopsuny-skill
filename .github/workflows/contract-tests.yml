@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # merge-base 대비 diff를 계산하려면 base SHA의 히스토리가 로컬에 필요하다 (#295)
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -27,6 +30,13 @@ jobs:
 
       - name: Evaluate router guardrail outputs
         run: python tests/evaluate_scenario_outputs.py
+
+      # 계약 표면(대상 경로 집합의 단일 소스: tests/check_changelog_gate.py)을
+      # 건드린 PR이 CHANGELOG.md 없이 그린을 받는 경로를 닫는다 (#295).
+      # main push에서는 돌지 않는다 — squash 후에는 비교 대상이 애매하다.
+      - name: Require CHANGELOG.md for contract-surface PRs
+        if: github.event_name == 'pull_request'
+        run: python tests/check_changelog_gate.py
 
       - name: Run unit regression tests
         run: >-
@@ -44,6 +54,7 @@ jobs:
           python -m py_compile
           tests/validate_skill_contracts.py
           tests/evaluate_scenario_outputs.py
+          tests/check_changelog_gate.py
           tests/forward_eval_harness.py
           skills/beopsuny/assets/tools/knowledge_manifest_ingest.py
           tests/test_forward_eval_harness.py

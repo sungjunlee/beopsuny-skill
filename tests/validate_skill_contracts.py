@@ -3780,6 +3780,62 @@ def check_contract_tests_workflow() -> None:
     )
 
 
+CHANGELOG_GATE_SCRIPT = "tests/check_changelog_gate.py"
+
+
+def check_changelog_pr_gate_workflow_step() -> None:
+    """#295. 계약 표면 PR이 CHANGELOG.md 없이 그린을 받는 경로를 CI에서 닫는다.
+
+    대상 경로 집합의 리터럴은 tests/check_changelog_gate.py의
+    CONTRACT_SURFACE_PATHS 한 곳에만 둔다 (#278이 구조 검사로 대체한 패턴 —
+    두 곳 리터럴은 drift한다). 그래서 여기는 목록이 *없는* 것을 구조로 단속한다:
+    - gate step은 스크립트를 인자 없이 실행한다 → run에 경로 목록을 실을 수 없다
+    - pull_request 트리거에 paths 필터가 없다 → YAML에서 표면을 거르는 다른 경로가 없다
+    - gate step은 pull_request 이벤트에서만 돈다 → main push(squash 후 비교
+      대상이 애매)에서는 판정하지 않는다
+    """
+    label = "contract-tests.yml changelog gate"
+    data = load_yaml(".github/workflows/contract-tests.yml")
+
+    # PyYAML은 YAML 1.1이라 `on:` 키를 boolean True로 파싱한다.
+    on = data.get("on") if isinstance(data, dict) else None
+    if on is None:
+        on = data.get(True)
+    if not isinstance(on, dict):
+        raise AssertionError(f"{label}: on must be a mapping")
+    pr_trigger = on.get("pull_request")
+    if isinstance(pr_trigger, dict) and "paths" in pr_trigger:
+        raise AssertionError(
+            f"{label}: on.pull_request.paths 필터 금지 — 대상 경로 집합은 "
+            f"{CHANGELOG_GATE_SCRIPT} 한 곳에만 둔다"
+        )
+
+    jobs = data.get("jobs")
+    if not isinstance(jobs, dict):
+        raise AssertionError(f"{label}: jobs must be a mapping")
+    job = jobs.get("contracts")
+    steps = job.get("steps") if isinstance(job, dict) else None
+    if not isinstance(steps, list):
+        raise AssertionError(f"{label}: contracts.steps must be a list")
+
+    gate_steps = [
+        step
+        for step in steps
+        if isinstance(step, dict) and step.get("run") == f"python {CHANGELOG_GATE_SCRIPT}"
+    ]
+    if len(gate_steps) != 1:
+        raise AssertionError(
+            f"{label}: gate step은 정확히 1개여야 한다 "
+            f"(run == 'python {CHANGELOG_GATE_SCRIPT}') — found {len(gate_steps)}"
+        )
+    gate_if = gate_steps[0].get("if", "")
+    if "github.event_name == 'pull_request'" not in str(gate_if):
+        raise AssertionError(
+            f"{label}: gate step은 pull_request 이벤트에서만 돌아야 한다 "
+            "(if에 github.event_name == 'pull_request')"
+        )
+
+
 def check_release_workflow_preflight() -> None:
     text = read_text(".github/workflows/release.yml")
     label = "release.yml"
@@ -4668,6 +4724,7 @@ CHECK_GROUPS = (
             check_quality_contract_reference_targets,
             check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
+            check_changelog_pr_gate_workflow_step,
             check_release_workflow_preflight,
             check_retired_meta_surfaces_stay_retired,
         ),
