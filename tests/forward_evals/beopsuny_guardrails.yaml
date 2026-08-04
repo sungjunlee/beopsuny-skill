@@ -107,7 +107,6 @@ prompts:
           - "직접 조회"
           - "로컬 미러 확인"
           - "law.go.kr 원문"
-
   - id: fwd-05-grade-c-newsletter-conclusion
     guardrail_category: grade_c_single_source_boundary
     source_router_scenario: router-16

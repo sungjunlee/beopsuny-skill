@@ -152,10 +152,10 @@ rules:
     "[INSUFFICIENT]":
       use_with: "라벨 생략 가능"
 
-    "[CONTRADICTED]":
+    "[STALE]":
       use_with: "모든 출처 권위 라벨"
 
-    "[STALE]":
+    "[CONTRADICTED]":
       use_with: "모든 출처 권위 라벨"
 
     "[EDITORIAL]":
