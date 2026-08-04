@@ -348,6 +348,10 @@ def yaml_file_count(path: str) -> int:
     return sum(1 for item in (ROOT / path).glob("*.yaml") if item.is_file())
 
 
+def glob_file_count(path: str, pattern: str) -> int:
+    return sum(1 for item in (ROOT / path).glob(pattern) if item.is_file())
+
+
 def defined_check_functions() -> set[str]:
     text = read_text("tests/validate_skill_contracts.py")
     return set(re.findall(r"^def (check_[a-zA-Z0-9_]+)\(", text, flags=re.M))
@@ -3261,6 +3265,10 @@ def check_cross_border_overlay_roadmap() -> None:
 
 
 def check_readme_quality_contract_map() -> None:
+    # #285 AC5(capabilities.md ↔ 지도 행 파티션 검사)는 의도적으로 생략했다.
+    # 지도 행 8개와 capability 6개는 1:1이 아니라서 — 한 capability가 여러 행에 걸친다 —
+    # 파티션을 기계로 대조하려면 행↔slug 매핑 토큰을 사용자용 표에 새 열로 심어야 한다.
+    # 그 판단은 이 함수의 조준 재정비를 소유한 #283에서 함께 한다.
     text = read_text("README.md")
     label = "README.md"
 
@@ -3271,6 +3279,7 @@ def check_readme_quality_contract_map() -> None:
         "Freshness governance",
         "Role / destination output gate",
         "Company context trust",
+        "Contract review",
         "Bulk evidence grid",
         "tests/evaluate_scenario_outputs.py",
         "법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트",
@@ -3315,14 +3324,19 @@ def check_readme_quality_contract_map() -> None:
 def check_readme_asset_inventory_counts() -> None:
     text = read_text("README.md")
     label = "README.md"
+    # 5 레이어 전부: data/policies/schemas는 *.yaml, templates는 *.html, tools는 *.py.
+    # 한 레이어라도 빠지면 README 인벤토리가 디스크 보다 늘어난 디렉터리를 묵인한다 —
+    # contract-review 행 누락(#285)과 같은 사각지대가 자산 쪽에서도 재발하지 않게 한다.
     expected_counts = {
         "assets/data/": yaml_file_count("skills/beopsuny/assets/data"),
         "assets/policies/": yaml_file_count("skills/beopsuny/assets/policies"),
         "assets/schemas/": yaml_file_count("skills/beopsuny/assets/schemas"),
+        "assets/templates/": glob_file_count("skills/beopsuny/assets/templates", "*.html"),
+        "assets/tools/": glob_file_count("skills/beopsuny/assets/tools", "*.py"),
     }
 
     for section, expected_count in expected_counts.items():
-        pattern = rf"{re.escape(section)}` \({expected_count} files(?:,|\))"
+        pattern = rf"{re.escape(section)}` \({expected_count} files?(?:,|\))"
         if not re.search(pattern, text):
             raise AssertionError(f"{label}: {section} inventory count must be {expected_count} files")
 

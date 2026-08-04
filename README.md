@@ -136,7 +136,8 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 | Legal verification core | `skills/beopsuny/references/research-workflow.md#legal-verification-core`, `skills/beopsuny/assets/schemas/legal_verification_packet.yaml`, `skills/beopsuny/references/self-verification.md`, `skills/beopsuny/references/citation-verification-contract.md`, `skills/beopsuny/references/source-grading.md` | `tests/validate_skill_contracts.py`, `tests/scenarios/16_router_regression.yaml` `router-16` |
 | 출처 권위 / VERIFIED 계약 | `skills/beopsuny/references/citation-verification-contract.md`, `skills/beopsuny/references/source-grading.md`, `skills/beopsuny/assets/policies/source_grades.yaml`, `tests/fixtures/golden_citations.yaml` | `check_citation_verification_contract_single_source`, `check_golden_citation_fixtures`, `check_source_authority_verified_contract`, `legal_status_tag`, `no_verified_uncertainty` |
 | Freshness governance | `skills/beopsuny/references/freshness-governance.md`, `skills/beopsuny/assets/policies/freshness_debt.yaml`, `skills/beopsuny/assets/schemas/freshness_metadata.yaml`, `skills/beopsuny/assets/schemas/freshness_revalidation.yaml`, `skills/beopsuny/references/source-access.md#freshness-gate` | `check_freshness_metadata_schema`, `check_freshness_debt_registry`, `check_freshness_revalidation_records`, `router-15` |
-| Output role/destination gate | `skills/beopsuny/references/output-formats.md`, `skills/beopsuny/assets/schemas/output_contract.yaml`, `skills/beopsuny/references/self-verification.md#role--destination-gate` | `check_output_role_destination_contracts`, `router-14` |
+| Output role/destination gate | `skills/beopsuny/references/output-formats.md`, `skills/beopsuny/assets/schemas/output_contract.yaml`, `skills/beopsuny/references/self-verification.md#role--destination-gate`, `skills/beopsuny/references/report-deliverable.md`, `skills/beopsuny/assets/templates/report_bulk_grid.html`, `skills/beopsuny/assets/templates/report_contract_review.html` | `check_output_role_destination_contracts`, `check_report_deliverable_contract`, `check_bulk_grid_report_template_contract`, `router-14` |
+| Contract review | `skills/beopsuny/references/contract_review_guide.md`, `skills/beopsuny/assets/policies/review_mode.yaml`, `skills/beopsuny/assets/data/clause_references.yaml` | `check_contract_review_guide`, `router-09`, `router-11` |
 | Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 읽기 전용·트러스트 경계·matter 범위 제약 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `check_cross_matter_scope_boundary_has_a_home`, `check_confidential_fact_categories_reach_the_scorer`, `tests/test_cross_matter_scope_rule.py`, `tests/test_confidential_persistence_rule.py`, `router-10`, `router-13`, `router-18` |
 | Bulk evidence grid | `skills/beopsuny/references/bulk-tabular-review.md` | `check_bulk_tabular_review_reference`, `router-12` |
 
@@ -234,12 +235,12 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 
 ## 포함된 자산
 
-법순이의 보조 자산은 **4개 레이어**로 분리되어 있다. 현행 법령·인허가·서식·기한은 번들 데이터에 저장하지 않고 공식 소스로 실시간 확인하며, 체크리스트와 후보 데이터는 조사 범위를 좁히는 용도로만 쓴다.
+법순이의 보조 자산은 **5개 레이어**로 분리되어 있다. 현행 법령·인허가·서식·기한은 번들 데이터에 저장하지 않고 공식 소스로 실시간 확인하며, 체크리스트와 후보 데이터는 조사 범위를 좁히는 용도로만 쓴다.
 
 ```
  ① 체크리스트 (진입점)  ──┐
                           │
- ② 데이터 (후보·용어) ───┼──► ③ 정책 (판정 로직) ──► 공식 소스 확인 ──► 검토 출력
+ ② 데이터 (후보·용어) ───┼──► ③ 정책 (판정 로직) ──► 공식 소스 확인 ──► 검토 출력 ──► ⑤ 리포트 템플릿·도구 (렌더·인제스트)
                           │
  ④ 회사 맥락 (읽기 전용) ─┘       (하네스·지침 파일에서 읽음)
 ```
@@ -295,6 +296,16 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
+
+### ⑤ 리포트 템플릿·인제스트 도구 — `assets/templates/` (2 files) + `assets/tools/` (1 file)
+
+검증된 결론을 HTML 리포트로 내거나 knowledge manifest를 ingest할 때 쓰는 렌더·도구 표면. destination gate를 소비할 뿐 새 의도를 만들지 않는다 — 리포트 템플릿은 `references/report-deliverable.md`가 정의하는 render contract(self-contained, 외부 리소스 로딩 금지, `external_draft`/`agency_or_court_submission` destination gate 부착)를 따르고, `knowledge_manifest_ingest.py`는 privacy manifest channel의 checksum·`usage_mode`·`publish_ready` 경계를 집행한다.
+
+| 파일 | 용도 |
+|------|------|
+| `report_bulk_grid.html` | 대량 증거 격자 리포트 템플릿 (self-contained, `references/bulk-tabular-review.md` 참조) |
+| `report_contract_review.html` | 계약 검토 리포트 템플릿 (검토자 메모·자가 검증·destination gate 부착, `references/contract_review_guide.md` 참조) |
+| `knowledge_manifest_ingest.py` | `beopsuny-knowledge` privacy manifest ingest 도구 (`--strict`, sha256·usage_mode 검증, 실패 시 knowledge injection skip 후 live legal research 계속) |
 
 ## Acknowledgments
 
