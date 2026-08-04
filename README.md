@@ -138,12 +138,13 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 | Contract review | `skills/beopsuny/references/contract_review_guide.md`, `skills/beopsuny/assets/policies/review_mode.yaml`, `skills/beopsuny/assets/data/clause_references.yaml` | `check_contract_review_guide`, `router-09`, `router-11` |
 | Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 읽기 전용·트러스트 경계·matter 범위 제약 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `check_cross_matter_scope_boundary_has_a_home`, `check_confidential_fact_categories_reach_the_scorer`, `tests/test_cross_matter_scope_rule.py`, `tests/test_confidential_persistence_rule.py`, `router-10`, `router-13`, `router-18` |
 | Bulk evidence grid | `skills/beopsuny/references/bulk-tabular-review.md` | `check_bulk_tabular_review_reference`, `router-12` |
+| Changelog gate | README 품질 계약 변경 체크리스트 7단계 · `CHANGELOG.md` | `check_changelog_pr_gate_workflow_step`, `tests/check_changelog_gate.py` |
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
 
 `tests/forward_evals/beopsuny_guardrails.yaml`은 실제 모델 응답을 수동 또는 `tests/forward_eval_harness.py`로 점검하는 forward-eval prompt set이다. CI의 빠른 gate는 아니며, sample/template/score/command 모드 evidence는 `tests/forward_evals/runs/`에 기록한다. 실패 시 `prompt_id`, `guardrail_category`, `source_router_scenario`, output evidence 기준으로 이슈를 남긴다.
 
-GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, 전체 `tests/test_*.py` unittest, 테스트 harness compile을 실행한다.
+GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크플로는 pull request와 `main`/`master` push에서 위 계약 검증, router guardrail 평가, 전체 `tests/test_*.py` unittest, 테스트 harness compile을 실행한다. pull request에서는 추가로 계약 표면이 바뀌었는데 `CHANGELOG.md`가 없으면 FAIL하는 gate가 돈다 — 대상 경로 집합의 단일 소스는 `tests/check_changelog_gate.py`이고, 예외는 PR 본문 또는 커밋 메시지의 `no-changelog:` 마커 + 사유뿐이다 (#295).
 
 ### 품질 계약 변경 체크리스트
 
@@ -159,7 +160,7 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 | 4 | `tests/scenarios/16_router_regression.yaml`에 대표 정상 시나리오 추가 또는 기존 router 시나리오의 `output_eval`(`common_rules`/`required_substrings`/`forbidden_substrings`) 갱신 | 사용자 노출 행동이 바뀌는 경우. `output_eval`은 5단계 fixture와 짝이 있어야 실행된다 — 짝 없는 서술 필드는 검증되지 않으므로 추가하지 않는다 |
 | 5 | `tests/fixtures/router_guardrail_outputs.yaml`와 `tests/evaluate_scenario_outputs.py`에 unsafe fixture 또는 guardrail rule 추가 | 새 금지 실패모드가 생기는 경우에만 |
 | 6 | `tests/validate_skill_contracts.py`에 drift 검사 추가 | 새 계약 표면이 생기는 경우에만. 전문 문장 고정 금지 — 토큰·구조·포인터·출력 리터럴만 assert (파일 상단 assertion style policy 참조) |
-| 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 |
+| 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 — 예외는 PR 본문/커밋 메시지의 `no-changelog:` 마커 + 사유뿐 |
 | 8 | 검증 게이트 전체 실행 (아래 명령 블록) | 항상 |
 
 ```bash
@@ -179,6 +180,7 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
 $PYTHON -m py_compile \
   tests/validate_skill_contracts.py \
   tests/evaluate_scenario_outputs.py \
+  tests/check_changelog_gate.py \
   tests/forward_eval_harness.py \
   skills/beopsuny/assets/tools/knowledge_manifest_ingest.py \
   tests/test_forward_eval_harness.py \
