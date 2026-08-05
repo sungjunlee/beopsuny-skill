@@ -15,6 +15,7 @@
 
 - `runs/`: harness가 기본으로 evidence YAML을 쓰는 곳. 일회성이라 gitignore한다(커밋하지 않는다).
 - `evidence/`: charter 목표를 실증하기 위해 `runs/`에서 골라 **승격한 스모크 증거만** 커밋한다. charter/PR에서 이 경로를 인용한다.
+- `rescore_baseline.json`: evidence 전량을 현재 스코어러로 재채점한 판정의 체크인 baseline — 차등 재채점 게이트가 대조한다 (계약의 집: `tests/check_rescore_baseline.py` docstring).
 
 ## 실행 방법
 

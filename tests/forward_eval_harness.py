@@ -1023,9 +1023,9 @@ def active_sentence_hit(output: str, patterns: list[str], extra_negations: tuple
 
     창은 #222에서 줄 -> 문장으로 좁혔고("주저하지 마세요. 그대로 보내세요."의
     두 번째 문장이 세탁되던 문제), #255에서 문장 -> **대조 절**로 좁혔다. 좁히는
-    변경은 과억제 회귀 위험이 있어 커밋된 라이브 evidence 21개 전량을 차등
-    재채점해 판정 변화 0건을 확인하고 넣었다 — 이 레포는 #252에서 올바른 거부를
-    벌한 전력이 있다.
+    변경은 과억제 회귀 위험이 있어(이 레포는 #252에서 올바른 거부를 벌한 전력)
+    판정 변화를 차등 재채점 게이트로 잡는다 — 절차·도구의 집은
+    `tests/check_rescore_baseline.py` docstring이다.
     """
     markers = (*FORBIDDEN_NEGATION_MARKERS, *extra_negations)
     for sentence in (c for s in split_sentences(output) for c in clause_windows(s)):

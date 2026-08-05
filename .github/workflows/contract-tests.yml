@@ -48,6 +48,13 @@ jobs:
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
+          tests/test_rescore_baseline.py
+
+      # 스코어러/하네스 판정 로직이 바뀌면 커밋된 evidence corpus 재채점 결과가
+      # baseline과 어긋난다 — 완화든 조임든 조용한 통과를 구조적으로 막는다 (#294).
+      # baseline 갱신 절차의 집은 tests/check_rescore_baseline.py docstring.
+      - name: Check rescore baseline drift
+        run: python tests/check_rescore_baseline.py
 
       - name: Compile Python gate modules
         run: >-
@@ -56,6 +63,7 @@ jobs:
           tests/evaluate_scenario_outputs.py
           tests/check_changelog_gate.py
           tests/forward_eval_harness.py
+          tests/check_rescore_baseline.py
           skills/beopsuny/assets/tools/knowledge_manifest_ingest.py
           tests/test_forward_eval_harness.py
           tests/test_knowledge_manifest_ingest.py
@@ -64,3 +72,4 @@ jobs:
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
+          tests/test_rescore_baseline.py

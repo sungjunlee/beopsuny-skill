@@ -139,6 +139,7 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 | Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 읽기 전용·트러스트 경계·matter 범위 제약 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `check_cross_matter_scope_boundary_has_a_home`, `check_confidential_fact_categories_reach_the_scorer`, `tests/test_cross_matter_scope_rule.py`, `tests/test_confidential_persistence_rule.py`, `router-10`, `router-13`, `router-18` |
 | Bulk evidence grid | `skills/beopsuny/references/bulk-tabular-review.md` | `check_bulk_tabular_review_reference`, `router-12` |
 | Changelog gate | README 품질 계약 변경 체크리스트 7단계 · `CHANGELOG.md` | `check_changelog_pr_gate_workflow_step`, `tests/check_changelog_gate.py` |
+| 차등 재채점 gate | `tests/forward_evals/rescore_baseline.json` (계약의 집: `tests/check_rescore_baseline.py` docstring) | `tests/check_rescore_baseline.py` · `tests/test_rescore_baseline.py` |
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
 
@@ -163,12 +164,15 @@ GitHub Actions의 `.github/workflows/contract-tests.yml` `Contract Tests` 워크
 | 7 | README 품질 계약 지도와 CHANGELOG 갱신 | 지도는 계약 표면·검증 매핑이 바뀔 때만, CHANGELOG는 항상 — 예외는 PR 본문/커밋 메시지의 `no-changelog:` 마커 + 사유뿐 |
 | 8 | 검증 게이트 전체 실행 (아래 명령 블록) | 항상 |
 
+**스코어러/하네스 판정 로직을 건드리는 변경**은 차등 재채점 게이트(`tests/check_rescore_baseline.py`, 계약의 집)를 통과해야 한다 — 커밋된 evidence corpus 전량을 현재 스코어러로 재채점해 baseline(`tests/forward_evals/rescore_baseline.json`)과 대조한다. 판정 변화가 있으면 `--write-baseline`으로 baseline을 **같은 PR에서** 함께 갱신하고, PR 본문에 baseline diff를 붙이며 **완화 한 건마다 근거를 남긴다** — 완화는 조임보다 강한 문구로 경고한다 (#294).
+
 ```bash
 PYTHON=${PYTHON:-python3}
 $PYTHON -m pip install --no-input --disable-pip-version-check --target .test-deps -r requirements-dev.txt
 PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evidence tests/forward_evals/runs/sample.yaml
+PYTHONPATH=.test-deps $PYTHON tests/check_rescore_baseline.py
 PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_forward_eval_harness.py \
   tests/test_knowledge_manifest_ingest.py \
@@ -176,12 +180,14 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_confidential_persistence_rule.py \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
-  tests/test_source_reachability_outage.py
+  tests/test_source_reachability_outage.py \
+  tests/test_rescore_baseline.py
 $PYTHON -m py_compile \
   tests/validate_skill_contracts.py \
   tests/evaluate_scenario_outputs.py \
   tests/check_changelog_gate.py \
   tests/forward_eval_harness.py \
+  tests/check_rescore_baseline.py \
   skills/beopsuny/assets/tools/knowledge_manifest_ingest.py \
   tests/test_forward_eval_harness.py \
   tests/test_knowledge_manifest_ingest.py \
@@ -189,7 +195,8 @@ $PYTHON -m py_compile \
   tests/test_confidential_persistence_rule.py \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
-  tests/test_source_reachability_outage.py
+  tests/test_source_reachability_outage.py \
+  tests/test_rescore_baseline.py
 git diff --check
 ```
 
