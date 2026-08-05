@@ -177,7 +177,9 @@ def parse_markdown_table(text: str, header_line: str) -> list[list[str]]:
     try:
         header_idx = lines.index(header_line)
     except ValueError:
-        raise AssertionError(f"markdown table header not found: {header_line!r}")
+        raise AssertionError(
+            f"markdown table header not found: {header_line!r}"
+        ) from None
 
     separator_idx = header_idx + 1
     if separator_idx >= len(lines) or not re.match(r"^\|[\s:|-]+\|$", lines[separator_idx].strip()):
@@ -480,35 +482,47 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
     section = match.group(1)
 
     for required in [
-        # 읽기 전용 + 저장 대행 금지
-        "저장하지 않는다",
+        # 읽기 전용 + 저장 대행 금지. 어간 토큰으로 핀한다 — "저장하지 않는다"를
+        # "저장하지 않습니다"로 다듬어도 통과하되, 문장 삭제는 잡힌다 (#283).
+        "저장하지 않",
         "읽기만",
         "저장했다고 말하지 않",
         # ~/.beopsuny/ 는 설정·데이터·리포트만
         "`config.yaml`",
         "`data/`",
-        # 맥락 부재 시 baseline 표시
+        # 맥락 부재 시 baseline 표시 (출력 리터럴 — 모델이 verbatim 출력)
         "계약 playbook 미설정 — 한국법 일반 기준으로 검토",
-        # 회사 맥락에만 해당하는 한정자 (일반 경계는 안전 경계 절이 소유)
-        "오히려 더 엄격히 적용한다",
+        # 회사 맥락에만 해당하는 한정자 (일반 경계는 안전 경계 절이 소유).
+        # "더 엄격히" → "더 엄격하게" 다듬기는 허용하도록 순서 토큰으로
+        # 분리한다 (#283).
     ]:
         assert_contains(section, required, f"{label} `## 회사 맥락`")
+    assert_ordered_tokens(section, ["오히려", "엄격"], f"{label} `## 회사 맥락` 한정자")
 
     # 일반 retrieved-content 경계는 항상 로딩되는 안전 경계 절이 소유한다.
     # 인용-only 답변에도 붙는다는 것이 핵심이다 — 조회 경로야말로 외부 내용이
     # 들어오는 자리인데 self-verification.md는 거기에 로딩되지 않는다 (#262).
-    for required in [
-        # 주어를 지목하는 토큰이 없으면 문장을 도려내도 나머지 토큰이 다른
-        # 문장에 남아 통과한다 — probe P1이 그렇게 빠져나갔다.
-        "조회하거나 인용하거나 전달받은 내용",
-        "현재 사용자 요청은 여기 포함되지 않는다",
-        "검토 대상 데이터",
-        "덮어쓸 수 없다",
-        "API·MCP 응답",
-        "인용만 하는 답변에도",
-        "references/self-verification.md#retrieved-content-trust",
-    ]:
-        assert_contains(text, required, f"{label} 안전 경계")
+    # 문단을 "검토 대상 데이터" 앵커로 추출해 스코프를 좁힌다 — 전역 토큰은
+    # "인용"이 gate 표 문장("인용만 있고 …")에도 남아 #262 함정이 된다 (#283).
+    boundary = re.search(r"^.*검토 대상 데이터.*$", text, re.MULTILINE)
+    if not boundary:
+        raise AssertionError(f"{label}: 검토 대상 데이터 안전 경계 문단이 없다")
+    paragraph = boundary.group(0)
+    # 주어 열거는 순서 토큰으로 — "조회하거나 인용하거나 전달받은 내용은"을
+    # 도려내면 남는 "조회"(조회 경로)가 "인용"(인용만)보다 뒤라 순서 검사가
+    # 잡는다 (#262 probe P1 형태, #283).
+    assert_ordered_tokens(paragraph, ["조회", "인용", "전달받"], f"{label} 안전 경계")
+    assert_contains(paragraph, "현재 사용자 요청", f"{label} 안전 경계")
+    assert_contains(paragraph, "포함되지 않", f"{label} 안전 경계")
+    assert_contains(paragraph, "검토 대상 데이터", f"{label} 안전 경계")
+    assert_contains(paragraph, "덮어쓸 수 없", f"{label} 안전 경계")
+    assert_contains(paragraph, "API·MCP 응답", f"{label} 안전 경계")
+    assert_ordered_tokens(paragraph, ["인용만", "적용된"], f"{label} 안전 경계")
+    assert_contains(
+        paragraph,
+        "`references/self-verification.md#retrieved-content-trust`",
+        f"{label} 안전 경계",
+    )
 
     # 은퇴한 저장 어휘가 SKILL.md 어디로도 되돌아오지 않는다.
     for retired in [
@@ -522,11 +536,13 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_not_contains(text, retired, label)
 
     # 맥락이 없을 때 gate가 느슨해지지 않는다 (fail-safe 방향).
-    for required in [
-        "역할이 확인되지 않으면 `unknown`",
-        "gate를 그대로 적용한다",
-    ]:
-        assert_contains(text, required, label)
+    # 순서 토큰: `unknown`(역할 폴백) → "느슨해지"(대조문) → "보수적"(방향).
+    # "그대로 적용"은 빠진다 — 그 핀은 240행("destination gate를 그대로
+    # 적용한다")에도 남아 단독으로는 아무것도 못 잡는 중복이었고, "동일하게
+    # 적용한다" 같은 다듬기를 막는 잔여 prose-lock이었다. "보수적" 단독은
+    # "덜 보수적으로" 반전을 못 잡으니 대조문 토큰 "느슨해지"를 앞에 둔다 —
+    # 셋 다 fail-safe 절에만 있으므로 절 삭제·방향 반전은 잡힌다 (#283).
+    assert_ordered_tokens(text, ["`unknown`", "느슨해지", "보수적"], label)
 
 
 def check_confidential_fact_categories_reach_the_scorer() -> None:
@@ -2940,7 +2956,7 @@ def check_changelog_unreleased_entry_density() -> None:
     try:
         start = next(i for i, line in enumerate(lines) if line.startswith("## [Unreleased]"))
     except StopIteration:
-        raise AssertionError(f"{label}: [Unreleased] 절이 없다")
+        raise AssertionError(f"{label}: [Unreleased] 절이 없다") from None
     end = next(
         (i for i in range(start + 1, len(lines)) if lines[i].startswith("## [")),
         len(lines),
@@ -3285,19 +3301,16 @@ def check_readme_quality_contract_map() -> None:
         "Always-on legal conclusion gates",
         "Legal verification core",
         "Freshness governance",
-        "Role / destination output gate",
         "Company context trust",
         "Contract review",
         "Bulk evidence grid",
         "tests/evaluate_scenario_outputs.py",
         "법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트",
-        "router-14",
         "router-15",
         "router-16",
         "router-01",
         "router-05",
         "check_freshness_debt_registry",
-        "check_output_role_destination_contracts",
         "check_skill_company_context_read_only_and_trust_boundary",
         "Contract Tests",
         "pull request",
@@ -3327,6 +3340,32 @@ def check_readme_quality_contract_map() -> None:
         "새 계약은 기존 gate를 우회하지 말고",
     ]:
         assert_contains(text, required, label)
+
+    # 지도 행 이름은 상단 기능 불릿("Role / destination output gate", README
+    # 상단)과 어순이 다르다 — 불릿을 핀 채로는 지도 행을 통째로 지워도 그린이다
+    # (#261의 "README가 삭제된 기능을 계속 광고" 형태, #283). 행을 구조적으로
+    # 바인드하고 검증 항목을 행 안에서 확인한다.
+    destination_row = next(
+        (
+            line
+            for line in text.splitlines()
+            if line.startswith("| Output role/destination gate |")
+        ),
+        None,
+    )
+    if destination_row is None:
+        raise AssertionError(
+            "README.md: 품질 계약 지도에 Output role/destination gate 행이 없다"
+        )
+    for required in [
+        "check_output_role_destination_contracts",
+        "router-14",
+    ]:
+        if required not in destination_row:
+            raise AssertionError(
+                f"README.md Output role/destination gate 행에 {required!r}가 없다: "
+                f"{destination_row!r}"
+            )
 
 
 def check_readme_asset_inventory_counts() -> None:
