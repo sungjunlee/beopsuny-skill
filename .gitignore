@@ -23,7 +23,8 @@ node_modules/
 
 # dev-backlog: GitHub issue mirrors are regenerable via sync-pull (GitHub is source of truth)
 backlog/tasks/
-# backlog-triage: fetch cache is regenerable (reports stay tracked)
+# backlog-triage: fetch cache is regenerable; triage reports are one-off —
+# deleted once the triage is applied (GitHub issues are the record)
 backlog/triage/.cache/
 # dev-backlog: completed issue mirrors are GitHub copies without the close state,
 # completion comments, or PR links that matter (#245). GitHub is the record.

@@ -18,6 +18,7 @@
 - **계약 표면 PR에 CHANGELOG.md가 없으면 CI가 FAIL한다 (#295)** — README 품질 계약 변경 체크리스트 7단계는 CHANGELOG 갱신을 규칙으로 규정했지만 강제 장치가 없어 2026-07-29 위임 5건이 전부 게이트 그린으로 누락됐다. pull request에서 계약 표면(대상 경로 집합의 단일 소스는 `tests/check_changelog_gate.py`)이 바뀌었는데 `CHANGELOG.md`가 없으면 FAIL하고, 예외는 PR 본문 또는 커밋 메시지의 `no-changelog:` 마커 + 사유뿐이다. 사용자 관점 — CHANGELOG 누락이 사람 기억에 의존하지 않는다.
 
 ### Removed
+- **triage 보고서가 1회성 산출물로 규정되고 정리됐다 (#299)** — `backlog/triage/`에 남아 있던 2026-07-05~08 보고서 3건(11개 이슈 스냅샷 triage + reassess 2건)은 외부 참조 0건이고, 리뷰 대상 이슈 11건 중 9건이 종결된 뒤에도 추적 md로 남아 있었다. 이 레포의 기록 규율은 "무엇을 어떻게 했는지"의 집이 GitHub 이슈·PR이고 triage 보고서는 스냅샷 시점의 1회성 판단이라, 수락된 action 반영 여부는 GitHub 이슈 상태가 정본이다. 보고서를 삭제하고 gitignore 주석을 "보고서도 1회성 — 완료 후 삭제"로 갱신해 다음 triage부터 쌓이지 않게 했다. 사용자 관점 — 백로그 정리 기록의 정본이 GitHub 이슈 한 곳으로 모인다.
 - **deprecated `docs/desktop-chat-guide.md` 폐기 (#280)** — #238 Full-first 전환으로 Desktop Chat paste 모드가 은퇴한 뒤 배너만 단 채 남아 있던 가이드를 삭제했다(같은 이유로 삭제한 `desktop-chat-dogfood.md` 전례와 일관). README의 no-Skills fallback 링크도 제거한다. 사용자 관점 — Chat 탭은 1급 경로가 아니고 로컬 앱(Claude Code / Codex)이 권장된다. 이 문서를 지키던 전용 gate card 검사를 포함해 결합된 검사 3종을 정리하고, 은퇴 표면 sweep에 `docs/`를 편입해 같은 사각지대가 재발하지 않게 했다.
 
 ## [0.8.0] - 2026-07-27
