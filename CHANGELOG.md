@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Changed
+
+- **스코어러 판정 변화가 CI에서 diff로 드러난다 (#294)** — 커밋된 라이브 evidence corpus(`tests/forward_evals/evidence/*.yaml`) 전량을 현재 스코어러로 재채점해 체크인 baseline(`tests/forward_evals/rescore_baseline.json`)과 대조하는 차등 재채점 게이트(`tests/check_rescore_baseline.py`)가 CI에 들어갔다. 룰을 좁히거나 넓히면(완화든 조임든) baseline과의 판정 변화가 FAIL로 잡히고, 같은 PR에서 `--write-baseline`으로 baseline을 함께 갱신해야 그린이다 — 완화는 조임보다 강한 문구로 경고하고 완화 한 건마다 근거를 남긴다. 사용자 관점 — 게이트 3종이 전부 그린인 채 스코어러가 조용히 느슨해지는 경로(#282 사고)가 구조적으로 닫힌다.
 - **DESIGN.md가 "구조 결정 아카이브" 라벨과 실제로 일치한다 (#281)** — 배너는 아카이브라지만 내용의 절반이 미래 행동을 구속하는 live 규칙이었고, Full-first 전환(#238)과 충돌하는 서술이 남아 있었다. 공유 자산 참조 규칙은 `spec/system-map.md` 불변식으로, spine 줄 수 예산은 `spec/capabilities.md` router-loading으로 옮기고 흐름도는 system-map 포인터로 대체했다. DESIGN.md에는 트리거 표·결정 기록·#9716 근거·기각안·변경 이력만 남았다. 정본이 보호되게 검사 조준점도 spec/ 쪽으로 옮겼다.
 - **주간 소스 도달성 CI의 실제 커버리지가 드러난다 (#286)** — CI는 미러를 clone하지 않아(미러 축 `NOT_INSTALLED`), 법망 축은 공지 중단 동안 자기만료 WARN, 링크 축은 DNS 해석만 판정한다. 그래서 CI의 그린은 "3축 정상"이 아니라 "law.go.kr DNS 1축 생존"이고, 3축이 전부 도는 것은 로컬 릴리즈 체크리스트 기준이다. 이 차이와 미러 축을 CI에서 돌리지 않기로 한 결정, WARN 수용 기한(2027-06-30)이 복구 예상(2027-Q1)보다 약 2분기 뒤인 의도를 도크스트링에 집중했다.
 
