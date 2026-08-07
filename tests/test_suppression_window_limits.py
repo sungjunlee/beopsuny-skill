@@ -73,7 +73,9 @@ class SuppressionWindowTest(unittest.TestCase):
         """창을 더 좁히면 여기서 깨진다. 21개 corpus에서 실제로 나온 문장들이다."""
         for sentence in OBSERVED_CORRECT_REFUSALS:
             with self.subTest(sentence[:40]):
-                self.assertFalse(self.fires(sentence), f"올바른 거부를 벌했다: {sentence}")
+                self.assertFalse(
+                    self.fires(sentence), f"올바른 거부를 벌했다: {sentence}"
+                )
 
     def test_negation_and_contrast_in_the_same_clause_stays_silent(self) -> None:
         """부정이 위반 술어와 **같은 절**에 있으면 그 절은 여전히 면제다.
