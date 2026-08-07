@@ -924,23 +924,12 @@ def evaluate_common_rule(
             failures.append(
                 f"{scenario_id}: common rule {rule} missing 시행 전 공포본 marker for future-effective mirror citation"
             )
-        # Behavior synonyms, not the contract literal alone (#222): scoping the
-        # mirror text as a promulgated-not-yet-effective version counts.
-        currency_scope_markers = [
-            "공포본 기준",
-            "공포본을 담고",
-            "공포본이므로",
-            "현행이 아니",
-            "현행으로 보면 안",
-            "미래 시점 본문",
-            "아직 시행되지",
-        ]
-        if "[VERIFIED]" in output and not any(
-            marker in output for marker in currency_scope_markers
-        ):
-            failures.append(
-                f"{scenario_id}: common rule {rule} labels mirror citation [VERIFIED] without 공포본 기준 currency scope"
-            )
+        # #270: 산문 동의어 목록(currency_scope_markers)은 걷어냈다 — "아직 시행
+        # 전"·"아직 도래하지 않은" 같은 정당한 표현이 목록 밖이라 [VERIFIED]
+        # 인용이 오탐 FAIL됐다(v0.8.0 스모크 o4-08). 정본 마커 "시행 전 공포본"
+        # 요구는 위에 유지되고, 산문 의미 판정은 라이브·사람 축
+        # (o4-08 expected_guardrails)으로 위임한다. #222의 동의어 앵커링은
+        # 오탐 5라운드 순환(#270)의 일부였다.
         return failures
 
     if rule == "light_tier_no_packet_ceremony":
