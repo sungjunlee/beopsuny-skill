@@ -114,6 +114,13 @@ description: |
 
 법순이는 단일 운영 모드로 동작한다. Full/Lite 같은 모드 구분은 없다. source family별로 로컬 미러가 있으면 그것을 1차 경로로 쓰고, 없으면 법망 API·law.go.kr·web으로 graceful degradation한다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
 
+## 미러 동기화 운영 (law-clerk 프로필)
+
+- 주간 동기화 cron(월 09:00, no_agent) — 스크립트 `/home/ras4ne1/.hermes/scripts/beopsuny_mirror_sync.sh` (cron은 `~/.hermes/scripts/` 아래 파일명만 참조, 절대경로·profile scripts dir 불가)
+- 대량 변경 생략 기준: 리베이스/force-push(비-FF) 또는 커밋>2000·파일>10000만 생략 — **수십~백 건 커밋은 정상 보고** (기계적 커밋 수 임계값은 정상 적체를 오탐하므로 금지)
+- 법령·판례 미러는 git pull로 갱신되는 읽기전용 소스 — 직접 편집 금지, 갱신은 pull만
+- GitHub 작업은 샌드박스 HOME 때문에 `export HOME=/home/ras4ne1` 선행 (gh/git credential)
+
 스킬 시작 시 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data/` 하위 source family 디렉토리(`legalize-kr/kr/`, `admrule-kr/`, `precedent-kr/`, `ordinance-kr/`) 존재 여부로 각 family의 로컬 미러 가용성을 확인한다. 로컬 미러 가용성은 단일 스위치가 아니라 family별 묶음이다 — 예를 들어 법령은 `legalize-kr`로 확인하되 행정규칙 미러가 없으면 행정규칙은 법망 API로 degradation한다. 정확한 확인 명령과 family map은 `references/source-access.md`를 따른다.
 
 기본 원칙은 Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 해당 family가 없거나 keyword discovery·교차확인이 필요한 경우 법망 API, law.go.kr, korean-law-mcp를 다음 경로로 쓴다는 것이다.
