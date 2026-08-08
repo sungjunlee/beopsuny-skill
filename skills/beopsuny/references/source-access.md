@@ -39,6 +39,7 @@
 | `law.go.kr` | 법령, 행정규칙, 자치법규, 판례 공식 화면 | 공식 원문 | 직접 원문 화면 또는 공식 응답을 연 경우. 판례는 로컬 미러 frontmatter `출처`(precSeq) 우선, 없으면 `판례/({사건번호})` |
 | `법망 API wrapper` | 로컬 미러 없을 때 검색/원문 조회(graceful degradation), 법령·행정규칙·해석례·판례 discovery | 공식 원문 또는 공식 실무자료: 미확정 | **비공식(재능기부) 서버 — 가용성·신뢰성 기대 금지.** 검색 결과만으로는 `[VERIFIED]` 금지. 원문 필드나 verify 결과 필요 |
 | `korean-law-mcp` | 헌재, 행정심판, 조세심판, 자치법규, 조약, 별표/서식 | 공식 원문 | OC 코드 또는 설치된 MCP 도구가 있을 때 사용 |
+| `assembly-api-mcp` | 국회 진행 중인 의안·심사경과·발의자·표결·회의록 (공포 전 입법 추적) | 공식 원문 (열린국회정보 API) | **입법 중(未공포) 법안의 유일한 실시간 경로.** 미러·law.go.kr은 공포된 법령만 있어서 이 시점을 못 잡는다. `assembly_bill(bill_name=...)` 검색, `bill_id+include_history`로 심사경과. API 키는 프로필 `.env`의 `ASSEMBLY_API_KEY`. 주의: `keyword`(단수) 파라미터 없음 — `keywords` 또는 `bill_name` 사용 |
 | `WebSearch` | 공식 사이트 discovery, 정책·제재 동향, 보도자료·해설 보조 | 공식 실무자료 / 해설·의견 / 참고 제외 | 공식 원문 접근을 돕는 보조. 검색 스니펫 자체는 `[VERIFIED]` 아님 |
 
 로컬 미러를 읽은 경우 provenance는 각 source family를 명시한다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`. `law.go.kr 원문 확인`은 해당 공식 사이트/공식 응답을 실제로 연 경우에만 쓴다.
