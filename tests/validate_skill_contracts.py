@@ -1391,13 +1391,11 @@ def check_bulk_tabular_review_reference() -> None:
     label = "bulk-tabular-review.md"
 
     for required in [
-        "대량 표 검토 워크플로",
         "schema 초안 작성",
         "Column Type",
         "`verbatim`",
         "`classify`",
         "`needs_review`",
-        "quote/location을 확보하지 못하면",
         'state: "needs_review"',
         'source_authority: ""',
         "`answered`는 quote/location 또는 live 출처 권위 verification이 있을 때만 허용",
@@ -1409,7 +1407,6 @@ def check_bulk_tabular_review_reference() -> None:
         "Normalization Spot-check",
         "quote mismatch",
         "읽은 문서 수",
-        "법률 리스크가 있는 column",
         "`contract_review` 또는 `compliance_checklist`",
         "Freshness Rule",
         # stale 후보 -> `answered` 승격 금지
@@ -1421,6 +1418,40 @@ def check_bulk_tabular_review_reference() -> None:
         "live source로 재확인한 경우에만 `answered`",
     ]:
         assert_contains(text, required, label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
+    # 문서 제목: "대량 표 검토" → "워크플로" 순서 — "워크플로우" 표기 다듬기는
+    # "워크플로"가 substring이라 PASS, 제목 축 삭제·교체는 FAIL.
+    title_line = re.search(r"^# 대량 표 검토.*$", text, re.MULTILINE)
+    if not title_line:
+        raise AssertionError(f"{label}: 문서 제목이 없다")
+    assert_ordered_tokens(
+        title_line.group(0), ["대량 표 검토", "워크플로"], f"{label} 제목"
+    )
+
+    # quote/location 규칙: "확보하지 못하면" 뒤에 "needs_review" — "확보하지
+    # 못할 경우" 다듬기는 어간("확보하지 못")이 살아 있으므로 PASS, 규칙 문장
+    # 삭제·`answered` 허용 방향 반전은 FAIL.
+    quote_rule = re.search(r"^quote/location을 확보하지 못.*$", text, re.MULTILINE)
+    if not quote_rule:
+        raise AssertionError(f"{label}: quote/location 규칙 문단이 없다")
+    assert_ordered_tokens(
+        quote_rule.group(0), ["확보하지 못", "needs_review"], f"{label} quote/location"
+    )
+
+    # 법률 리스크 column: "법률 리스크가 있는 column" 뒤에 "결론 내리지 않"
+    # 어간 — "결론 내리지 않습니다" 다듬기 허용, 이 문서만으로 결론 확정 방향
+    # 반전은 FAIL.
+    risk_column_para = re.search(
+        r"^\- 책임제한, 해지권.*$", text, re.MULTILINE
+    )
+    if not risk_column_para:
+        raise AssertionError(f"{label}: 법률 리스크 column 문단이 없다")
+    assert_ordered_tokens(
+        risk_column_para.group(0),
+        ["법률 리스크가 있는 column", "결론 내리지 않"],
+        f"{label} 법률 리스크 column",
+    )
 
 
 def check_source_access_fallbacks() -> None:
@@ -1656,7 +1687,7 @@ def check_policy_checklist_runtime_contracts() -> None:
                     raise AssertionError(f"{relative}: volatile_fields missing {required!r}")
 
         serialized = path.read_text(encoding="utf-8")
-        if re.search(r"^\s*law_id\s*:", serialized, flags=re.M):
+        if re.search(r"^\s*law_id\s*:", serialized, flags=re.MULTILINE):
             raise AssertionError(f"{relative}: checklist policies must not include direct law_id shortcuts")
         if "related_permits" in serialized or re.search(r"\bpermit-\d+\b", serialized):
             raise AssertionError(f"{relative}: stale permit id references must use live-check wording")
@@ -1683,7 +1714,11 @@ def check_source_authority_verified_contract() -> None:
 
     for required in [
         "VERIFIED 계약",
-        "이번 응답에서 해당 법률 사실을 실제 원문 또는 공식 응답으로 대조",
+        # #306: 문장 통째 핀은 어간 토큰으로 — "대조했다"→"대조한다" 다듬기
+        # 허용, 의미 삭제는 문단 앵커로 잡는다.
+        "실제 원문 또는 공식 응답으로 대조",
+        # #306: 문장 통째 핀은 어간 토큰으로 — "분리한다"→"분리됩니다" 다듬기
+        # 허용, "분리" 축 자체 삭제는 문단 앵커로 잡는다.
         "출처 권위 라벨과 verification status는 분리",
         # A/B/C/D 점수형 등급 공개 출력 금지
         "A/B/C/D",
@@ -1825,7 +1860,6 @@ def check_source_authority_verified_contract() -> None:
 
     output_formats = docs["output-formats.md"]
     for required in [
-        "출력 형식과 예시는 이 문서를 단일 소스로 삼고",
         "소스 인용의 첫 줄 맨 앞",
         "[출처 권위 라벨] [VERIFIED/UNVERIFIED/INSUFFICIENT/CONTRADICTED/STALE/EDITORIAL]",
         "로컬 미러 원문 확인",
@@ -1835,6 +1869,20 @@ def check_source_authority_verified_contract() -> None:
         "원문 확인 불가",
     ]:
         assert_contains(output_formats, required, "output-formats.md")
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "출력 형식과 예시는 이
+    # 문서를 단일 소스로 삼고" 문장을 통째로 고정하면 "단일 소스로 따른다"
+    # 같은 다듬기가 CI를 깨므로, 문단 스코프 안에서 "출력 형식과 예시는" →
+    # "단일 소스" 순서만 핀다 — 문장 삭제·단일 소스 표현 이탈은 FAIL.
+    single_source_para = re.search(
+        r"^출력 형식과 예시는.*$", output_formats, re.MULTILINE
+    )
+    if not single_source_para:
+        raise AssertionError("output-formats.md: 출력 형식 단일 소스 문단이 없다")
+    assert_ordered_tokens(
+        single_source_para.group(0),
+        ["출력 형식과 예시는", "단일 소스"],
+        "output-formats.md 출력 형식 단일 소스",
+    )
 
 
 def check_citation_verification_contract_single_source() -> None:
@@ -2055,13 +2103,7 @@ def check_research_workflow_verification_core() -> None:
         "`provenance`",
         "`currency`",
         "`supports`",
-        "ledger에 없는 인용은 출력하지 않는다",
-        "source가 서로 다르면 숨기지 않는다",
         "[CONTRADICTED]",
-        # conclusion binding: 가장 약한 필수 authority 기준
-        "가장 약한 필수 authority",
-        "stale 자산만 있음",
-        "triage 후보로만 제시",
         "`matter`",
         "`issue_to_authority_map`",
         "`authority_packets`",
@@ -2070,12 +2112,60 @@ def check_research_workflow_verification_core() -> None:
         "`conclusion_binding`",
         "`self_verification`",
         "`output_allowed: true`가 아닌 ledger 항목",
-        "애매하면 `full`로 올린다",
         # light tier는 packet 생성 없음 (kernel이 곧 계약)
         "`light` tier",
-        "packet을 만들지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰/표 구조. 전역 토큰 대신 문단
+    # 스코프로 좁혀 #262 함정을 피한다. "않는다"→"않습니다" 같은 의미 보존
+    # 다듬기는 어간("않")이 살아 있으므로 PASS, 문장 삭제·방향 반전은 FAIL.
+    ledger_line = re.search(r"^ledger에 없는 인용은.*$", text, re.MULTILINE)
+    if not ledger_line:
+        raise AssertionError(f"{label}: ledger 인용 금지 문단이 없다")
+    assert_ordered_tokens(
+        ledger_line.group(0), ["없는 인용은", "출력하지 않"], f"{label} ledger 인용"
+    )
+    assert_contains(ledger_line.group(0), "결론 근거로 쓰지 않", f"{label} ledger 인용")
+
+    scan_line = re.search(r"^같은 결론 후보에 대해.*$", text, re.MULTILINE)
+    if not scan_line:
+        raise AssertionError(f"{label}: contradiction scan 문단이 없다")
+    assert_ordered_tokens(
+        scan_line.group(0), ["서로 다르면", "숨기지 않"], f"{label} contradiction scan"
+    )
+
+    binding_line = re.search(r"^최종 결론의 강도는.*$", text, re.MULTILINE)
+    if not binding_line:
+        raise AssertionError(f"{label}: conclusion binding 문단이 없다")
+    assert_ordered_tokens(
+        binding_line.group(0), ["가장 약한", "필수 authority"], f"{label} conclusion binding"
+    )
+
+    # stale 자산 행은 표 구조로 — 행 삭제·셀 이탈이 FAIL, "stale 자산만 있음"→
+    # "stale 자산만 있을 때" 같은 다듬기는 셀 토큰이 살아 있으므로 PASS.
+    binding_table = parse_markdown_table(text, "| 상태 | 결론 표현 |")
+    stale_rows = [row for row in binding_table if "stale 자산" in row[0]]
+    if len(stale_rows) != 1:
+        raise AssertionError(f"{label}: 결론 binding 표에 stale 자산 행이 정확히 1개여야 한다")
+    assert_contains(stale_rows[0][1], "triage 후보로만", f"{label} stale 자산 행")
+
+    trigger_line = re.search(r"^모든 법률 결론은.*$", text, re.MULTILINE)
+    if not trigger_line:
+        raise AssertionError(f"{label}: verification core 경계 문단이 없다")
+    # 방향 토큰으로 핀한다: "올린다→올립니다" 다듬기는 어간이 음절 합성으로
+    # 리(0xB9AC)/린(0xB9B0)이 갈라져 substring 매치가 불안정하다 — "애매하면"
+    # 뒤에 "`full`로"가 오는지(방향)만 본다. "애매하면 `light`로" 반전은 FAIL.
+    assert_ordered_tokens(
+        trigger_line.group(0), ["애매하면", "`full`로"], f"{label} 트리거 판정"
+    )
+
+    packet_line = re.search(r"^`full` tier 중에서도.*$", text, re.MULTILINE)
+    if not packet_line:
+        raise AssertionError(f"{label}: packet 계약 문단이 없다")
+    assert_ordered_tokens(
+        packet_line.group(0), ["`light` tier에서는", "packet을 만들지 않"], f"{label} light tier"
+    )
     # 2단 트리거 표(light/full) 셀 구조는 check_research_workflow_tier_table_structure가
     # 파싱 기반으로 검증한다(issue #182) — 표 헤더/light 행 ledger 필드 열거 문구를
     # exact-string으로 고정하지 않는다.
@@ -2167,12 +2257,26 @@ def check_current_law_verified_binding_excludes_unconfirmed_practice_material() 
     ]:
         assert_contains(research, required, "research-workflow.md")
     for required in [
-        "공식 원문으로 뒷받침하는 것을 우선한다",
         # 미확정 실무자료는 현재법 [VERIFIED] 근거 불가
         "`공식 실무자료: 미확정`",
         "`[VERIFIED]` 근거",
     ]:
         assert_contains(skill, required, "SKILL.md")
+
+    # #306: (c) 산문 핀 → 목록 앵커 + 순서 토큰. "핵심 결론은 공식 원문으로
+    # 뒷받침하는 것을 우선한다" 문장을 통째로 고정하면 "우선합니다" 다듬기가
+    # 깨진다 — 목록 항목 안에서 "공식 원문으로 뒷받침하는 것을" 뒤에 "우선"
+    # 어근이 따라오는지만 본다. 문장 삭제·2차 자료 우선 방향 반전은 FAIL.
+    official_priority_line = re.search(
+        r"^\- 핵심 결론은 공식 원문으로.*$", skill, re.MULTILINE
+    )
+    if not official_priority_line:
+        raise AssertionError("SKILL.md: 공식 원문 우선 규칙 목록 항목이 없다")
+    assert_ordered_tokens(
+        official_priority_line.group(0),
+        ["공식 원문으로 뒷받침하는 것을", "우선"],
+        "SKILL.md 공식 원문 우선",
+    )
 
 
 def check_admin_rule_provenance_examples_split_search_and_original_confirmation() -> None:
@@ -2207,7 +2311,6 @@ def check_litigation_element_fact_template() -> None:
         "**미확인 사실**",
         "**증거**",
         "**잠정 결론**",
-        "미확인 사실이 있으면 결론 강도를 낮춘다",
         # 판단 얼개 제공 / 결과 예측 금지
         "판단 얼개",
         "형량·승패·소송 결과",
@@ -2218,21 +2321,62 @@ def check_litigation_element_fact_template() -> None:
         assert_contains(research, required, research_label)
 
     output_label = "output-formats.md precedent distinguishing"
+
+    # #306: (c) 산문 핀 → 표 셀 앵커 + 순서 토큰. "미확인 사실이 있으면
+    # 결론 강도를 낮춘다" 문장을 통째로 고정하면 "낮춥니다" 다듬기가 깨지므로,
+    # 잠정 결론 행 셀 안에서 "미확인 사실이 있으면" → "결론 강도를" 순서만
+    # 핀다 — 문장 삭제·강도 하향 규칙 이탈은 FAIL.
+    conclusion_cell = re.search(r"^\| \*\*잠정 결론\*\*.*$", research, re.MULTILINE)
+    if not conclusion_cell:
+        raise AssertionError(f"{research_label}: 잠정 결론 표 행이 없다")
+    assert_ordered_tokens(
+        conclusion_cell.group(0),
+        ["미확인 사실이 있으면", "결론 강도를"],
+        f"{research_label} 결론 강도 하향",
+    )
+    # "낮춘다→낮춥니다" 같은 어미 변형은 어근 "낮추-"가 음절 합성으로
+    # 갈라져 substring 매치가 불안정하다 — 활용형 3종을 OR로 본다.
+    if not re.search(r"낮춘다|낮춥니다|낮추", conclusion_cell.group(0)):
+        raise AssertionError(f"{research_label}: 결론 강도 하향 동사가 없다")
     for required in [
         "**유사점**",
         "**차이점**",
         "**적용 한계**",
         "**distinguishing**",
-        "차이로 인해 결론이 달라질 수 있는지",
         # 판례 provenance 라벨 3종: 미러 라벨 2종 + 하급심 caveat kernel
         "`공식 원문 기반 로컬 미러`",
         "`공식 원문 기반 로컬 미러: 하급심`",
-        "상급심 변경 가능성",
         "**[공식 원문 기반 로컬 미러: 하급심] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)",
     ]:
         assert_contains(output_formats, required, output_label)
 
     # #110 계약의 구조 앵커: litigation은 도메인 라벨이지 라우터 의도가 아니다.
+
+    # #306: (c) 산문 핀 → 목록 앵커 + 순서 토큰. distinguishing 줄은 두 곳
+    # (판례 비교, 분쟁 템플릿) 모두 "차이로 인해" → "결론이 달라질 수 있"
+    # 순서를 가져야 한다 — "달라질 수 있는지"→"달라질 수 있는가" 다듬기는
+    # PASS, 차이 검증 축 문장 삭제는 FAIL.
+    distinguishing_lines = re.findall(
+        r"^- \*\*distinguishing\*\*.*$", output_formats, re.MULTILINE
+    )
+    if len(distinguishing_lines) < 2:
+        raise AssertionError(f"{output_label}: distinguishing 목록 항목이 2곳이어야 한다")
+    for line in distinguishing_lines:
+        assert_ordered_tokens(
+            line, ["차이로 인해", "결론이 달라질 수 있"], f"{output_label} distinguishing"
+        )
+
+    # 하급심 caveat: "상급심 변경 가능성을 언급한다" 문장을 통째로 고정하면
+    # "언급합니다" 다듬기가 깨진다. 하급심 인용 문단 안에서 "상급심 변경
+    # 가능성" kernel만 핀다 — 문장 삭제·caveat 제거는 FAIL.
+    lower_court_para = re.search(
+        r"^대법원과 하급심 모두 직접 공식 사이트.*$", output_formats, re.MULTILINE
+    )
+    if not lower_court_para:
+        raise AssertionError(f"{output_label}: 하급심 provenance 문단이 없다")
+    assert_contains(
+        lower_court_para.group(0), "상급심 변경 가능성", f"{output_label} 하급심 caveat"
+    )
     assert_not_router_intent(skill_text, "litigation", "#110")
 
     assert_contains(
@@ -2754,7 +2898,6 @@ def check_output_contract_right_sizing() -> None:
 
     for required in [
         "출력 크기 조절",
-        "면책 고지는 답변 성격에 따라 붙인다",
         "검토자 메모",
         "Sources",
         "Read",
@@ -2766,11 +2909,35 @@ def check_output_contract_right_sizing() -> None:
         "비법률 운영 응답",
         "역할별 output mode와 destination별 산출물 계약",
         "references/output-formats.md",
-        "바로 서명·송부·제출하라는 지시는 피한다",
     ]:
         assert_contains(text, required, label)
     assert_ordered_tokens(text, ROLE_GATE_OUTPUT_SECTION_ORDER, label)
     assert_not_contains(text, "답변 마지막에는 항상 면책 고지를 붙인다", label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
+    # 면책: "답변 성격에 따라 붙인다" 문장을 통째로 고정하면 "붙입니다" 같은
+    # 다듬기가 CI를 깨므로, 문단 스코프 안에서 "면책 고지는"→"답변 성격에
+    # 따라" 순서만 핀다 — 문장 삭제·성격 의존 표현 이탈은 FAIL.
+    disclaimer_para = re.search(r"^면책 고지는.*$", text, re.MULTILINE)
+    if not disclaimer_para:
+        raise AssertionError(f"{label}: 면책 고지 문단이 없다")
+    assert_ordered_tokens(
+        disclaimer_para.group(0),
+        ["면책 고지는", "답변 성격에 따라"],
+        f"{label} 면책 고지",
+    )
+
+    # 지시 금지: "바로 서명·송부·제출하라는 지시는 피한다" 문장 전체를 고정하면
+    # "피합니다" 다듬기가 깨진다. 어간 "지시는 피"로 "피한다/피합니다" 둘 다
+    # 허용하되, "지시는 강조한다" 같은 방향 반전은 FAIL.
+    role_para = re.search(r"^역할별 output mode와 destination별 산출물 계약은.*$", text, re.MULTILINE)
+    if not role_para:
+        raise AssertionError(f"{label}: role/destination 문단이 없다")
+    assert_ordered_tokens(
+        role_para.group(0),
+        ["바로 서명·송부·제출하라는", "지시는 피"],
+        f"{label} 지시 금지",
+    )
 
 
 def check_report_deliverable_contract() -> None:
@@ -2796,27 +2963,58 @@ def check_report_deliverable_contract() -> None:
         "인용 링크",
         "law.go.kr",
         "`<a href>`",
-        "하이퍼링크는 콘텐츠이며 외부 리소스 로딩이 아니므로",
         "`references/output-formats.md`의 링크 생성 규칙",
     ]:
         assert_contains(text, required, label)
 
+    # #306: (c) 산문 핀 → 표 구조. R2 인용 링크 셀에서 "하이퍼링크는
+    # 콘텐츠이며"→"외부 리소스 로딩이 아니" 순서 토큰으로 핀한다 — 문장 통째
+    # 고정 대신 의미 토큰이 살아 있으면 다듬기 PASS, 행 삭제·의미 이탈은 FAIL.
+    r2 = parse_markdown_table(text, "| 규격 | 계약 |")
+    r2_by_label = {row[0]: row[1] for row in r2}
+    link_cell = r2_by_label.get("인용 링크")
+    if not link_cell:
+        raise AssertionError(f"{label}: R2 규격 표에 인용 링크 행이 없다")
+    assert_ordered_tokens(
+        link_cell, ["하이퍼링크는 콘텐츠이며", "외부 리소스 로딩이 아니"], f"{label} 인용 링크"
+    )
+
     for required in [
         "## R4. Artifact 배포 gate",
-        "공유 가정 구성 강제",
-        "내부 검토자 메모",
-        "자가 검증 블록",
-        "미확인 내부 노트",
         "법무/변호사 검토 전 대외 사용 금지",
-        "명시 요청 시에만 배포",
-        "자동 배포 금지",
-        "같은 파일 경로 재배포",
-        "같은 URL 갱신",
         "`external_draft` destination 규칙 + role/destination gate",
         "`assets/schemas/output_contract.yaml#legal_effect_triggers`",
         "`references/output-formats.md#destination-output-contracts`",
     ]:
         assert_contains(text, required, label)
+
+    # #306: R4 표 행 라벨 + 셀 토큰 구조. 행 통째 삭제는 FAIL, 셀 문구
+    # 다듬기는 토큰이 살아 있으면 PASS. "자동 배포 금지"→"자동 배포하지
+    # 않는다" 류 재표현은 셀 스코프 안 "자동 배포"→"금지" 순서로 잡는다.
+    # 헤더 "| 항목 | 계약 |"는 적용 범위 표(L7)와 중복이므로 R4 섹션으로
+    # 스코프를 좁힌다.
+    r4_section = re.search(r"## R4\. Artifact 배포 gate\n(?P<body>.*?)(?=\n## |\Z)", text, flags=re.S)
+    if not r4_section:
+        raise AssertionError(f"{label}: R4 섹션을 찾지 못했다")
+    r4 = parse_markdown_table(r4_section.group("body"), "| 항목 | 계약 |")
+    r4_by_label = {row[0]: row[1] for row in r4}
+    for row_label in ["공유 가정 구성 강제", "명시 요청 시에만 배포", "재배포 고지"]:
+        if row_label not in r4_by_label:
+            raise AssertionError(f"{label}: R4 표에 {row_label!r} 행이 없다")
+    shared_cell = r4_by_label["공유 가정 구성 강제"]
+    for token in ["내부 검토자 메모", "자가 검증 블록", "미확인 내부 노트"]:
+        assert_contains(shared_cell, token, f"{label} R4 공유 가정 행")
+    explicit_cell = r4_by_label["명시 요청 시에만 배포"]
+    # "자동 배포 금지"→"자동 배포하지 않는다" 류 재표현을 모두 허용하되,
+    # 자동 배포 허용 반전은 잡는다: "자동 배포" 필수 + 금지/부정 어휘 중 하나.
+    if "자동 배포" not in explicit_cell or (
+        "금지" not in explicit_cell and "하지 않" not in explicit_cell
+    ):
+        raise AssertionError(f"{label}: R4 명시 요청 행에서 자동 배포 금지 계약을 찾지 못했다")
+    republish_cell = r4_by_label["재배포 고지"]
+    assert_ordered_tokens(
+        republish_cell, ["같은 파일 경로 재배포", "같은 URL 갱신"], f"{label} R4 재배포 고지 행"
+    )
     assert_not_contains(text, "공유 가정 gate는 #188에서 상세화 예정", label)
 
     skill_text = read_text("skills/beopsuny/SKILL.md")
@@ -2877,7 +3075,7 @@ def check_bulk_grid_report_template_contract() -> None:
         "xhr": r"\bXMLHttpRequest\b",
     }
     for description, pattern in forbidden_resource_patterns.items():
-        if re.search(pattern, template, flags=re.I):
+        if re.search(pattern, template, flags=re.IGNORECASE):
             raise AssertionError(f"{label}: forbidden external resource pattern: {description}")
 
     contract_template_path = ROOT / "skills/beopsuny/assets/templates/report_contract_review.html"
@@ -2923,7 +3121,7 @@ def check_bulk_grid_report_template_contract() -> None:
             )
 
     for description, pattern in forbidden_resource_patterns.items():
-        if re.search(pattern, contract_template, flags=re.I):
+        if re.search(pattern, contract_template, flags=re.IGNORECASE):
             raise AssertionError(f"{contract_label}: forbidden external resource pattern: {description}")
 
     bulk_reference = read_text("skills/beopsuny/references/bulk-tabular-review.md")
@@ -3020,20 +3218,58 @@ def check_skill_gate_attachment_and_draft_first() -> None:
 
     for required in [
         # (1) 부착은 라우팅이 아니라 답변 내용이 정한다 + 완화 아님 단서
-        "인용만 있고 결론·초벌이 없는 답변",
-        "부착 시점이 정해지는 것",
         "출처 권위 라벨과 verification status는 그대로",
         # 부착 tier가 조건부 gate까지 끄지 않는지. "Citation verification만"으로
         # 적으면 번들 자산에서 나온 시행일·수수료를 인용만 하는 답변이
         # Freshness gate의 triage_only를 우회한다 (PR #250 리뷰 P1).
-        "조건부 gate는 트리거가 보이면 그대로 붙는다",
         "Freshness gate의 `triage_only`",
         # (2) 기본 산출물 kernel
         "편집 가능한 초벌",
         "draft-first",
-        "gate를 완화하지 않는다",
     ]:
         assert_contains(text, required, label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
+    # 부착 tier 서술 문단("이 gate들은 주 의도를 바꾸지 않는다")을 앵커로
+    # 잡아 "인용만 있고 결론·초벌이 없는 답변" → "부착하지 않는다" 순서만
+    # 핀다 — "부착하지 않습니다" 다듬기는 어간("부착하지 않")이 살아 있어 PASS,
+    # 부착 규칙 문장 삭제는 FAIL.
+    attachment_para = re.search(
+        r"^이 gate들은 주 의도를 바꾸지 않는다.*$", text, re.MULTILINE
+    )
+    if not attachment_para:
+        raise AssertionError(f"{label}: gate 부착 tier 문단이 없다")
+    assert_ordered_tokens(
+        attachment_para.group(0),
+        ["인용만 있고 결론·초벌이 없는 답변", "부착하지 않"],
+        f"{label} 부착 tier",
+    )
+    # 조건부 gate는 인용만 있는 답변에도 붙는다 — "트리거가 보이면" 뒤에
+    # "그대로 붙는다"가 따라와야 한다 ("붙습니다" 다듬기 허용).
+    assert_ordered_tokens(
+        attachment_para.group(0),
+        ["조건부 gate는 트리거가 보이면", "그대로 붙"],
+        f"{label} 조건부 gate",
+    )
+    # 완화 아님 단서: "완화" → "아니라" → "부착 시점" 순서. "부착 시점이
+    # 정해지는/부착 시점을 정하는" 수동태·능동태 다듬기를 모두 허용하되,
+    # 완화 축 문장 삭제·방향 반전은 FAIL (#306).
+    assert_ordered_tokens(
+        attachment_para.group(0),
+        ["완화", "아니라", "부착 시점"],
+        f"{label} 완화 아님 단서",
+    )
+
+    # draft-first kernel 문단: "gate를 완화하지 않는다" 어간으로 — "완화하지
+    # 않습니다" 다듬기 허용, 완화 서술 문장 삭제는 FAIL.
+    draft_para = re.search(
+        r"^기본 산출물은 \*\*편집 가능한 초벌\(draft-first\)\*\*.*$",
+        text,
+        re.MULTILINE,
+    )
+    if not draft_para:
+        raise AssertionError(f"{label}: draft-first kernel 문단이 없다")
+    assert_contains(draft_para.group(0), "gate를 완화하지 않", f"{label} draft-first")
 
     # one-home: 역할별 output mode와 초벌 밀도 기준의 집은 reference다.
     assert_contains(text, "`references/output-formats.md`가 단일 소스", label)
@@ -3063,18 +3299,39 @@ def check_skill_quality_contract_router_map() -> None:
     # check_skill_router_gate_table_structure가 담당한다(issue #182).
     for required in [
         "법률 결론 always-on gate",
-        "의도별 workflow reference와 별도로 항상 적용",
         # reference 추가 로딩은 라우팅 원칙 1(Right-sizing) 소관
         "라우팅 원칙 1(Right-sizing)",
         "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
         "live source 확인 전 `triage_only`",
         "retirement에는 revalidation record 필요",
         "내부 메모·자가 검증 블록 외부 초안에서 제거",
-        # 출력 선호/profile 문구의 gate 완화 불가
-        "저장된 회사 맥락 문구",
-        "완화할 수 없다",
     ]:
         assert_contains(text, required, label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
+    # always-on gate 문단: "의도별 workflow reference와 별도로" 뒤에 "항상
+    # 적용"이 따라와야 한다 — "항상 적용합니다" 다듬기는 어간("항상 적용")이
+    # 살아 있어 PASS, 문장 삭제·조건부화는 FAIL.
+    always_on_para = re.search(r"^법률 결론 always-on gate는.*$", text, re.MULTILINE)
+    if not always_on_para:
+        raise AssertionError(f"{label}: always-on gate 문단이 없다")
+    assert_ordered_tokens(
+        always_on_para.group(0),
+        ["의도별 workflow reference와 별도로", "항상 적용"],
+        f"{label} always-on gate",
+    )
+
+    # gate 완화 불가 문단: "출력 선호나 저장된 회사 맥락 문구가" 뒤에
+    # "완화할 수 없" 어간 — "완화할 수 없다"→"완화할 수 없습니다" 다듬기
+    # 허용, 완화 허용 문장 삭제·방향 반전은 FAIL.
+    no_weaken_para = re.search(r"^계약이 충돌하면.*$", text, re.MULTILINE)
+    if not no_weaken_para:
+        raise AssertionError(f"{label}: gate 완화 불가 문단이 없다")
+    assert_ordered_tokens(
+        no_weaken_para.group(0),
+        ["저장된 회사 맥락 문구가", "완화할 수 없"],
+        f"{label} 완화 불가",
+    )
 
     # 게이트 라우팅의 단일 소스는 의도 라우터의 gate 표다. 과거의 중복 라우터
     # 섹션(품질 계약 매핑) 부활을 막고, 삭제된 self-verification 차원 상세 표는
@@ -3411,7 +3668,6 @@ def check_readme_investigation_assist_posture() -> None:
     label = "README.md"
 
     for required in [
-        "확인 가능한 1차 소스 중심의 법률 조사를 보조",
         "출처 권위 라벨, verification status, 최신성 caveat",
         "[INSUFFICIENT] 법인세법·조세조약·원천징수율은 live source 확인 전 결론 금지",
         "[UNVERIFIED] 다수 이용자 대상 표준 약관 가능성",
@@ -3420,6 +3676,19 @@ def check_readme_investigation_assist_posture() -> None:
     ]:
         assert_contains(text, required, label)
     assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "확인 가능한 1차 소스 중심의
+    # 법률 조사를 보조" 문장을 통째로 고정하면 "보조합니다" 다듬기가 깨진다 —
+    # 도입 문단 안에서 "확인 가능한 1차 소스 중심" → "법률 조사를 보조" 순서만
+    # 핀다. 조사 보조 축 삭제·확정적 제공 방향 반전은 FAIL.
+    posture_para = re.search(r"^\[legalize-kr\].*$", text, re.MULTILINE)
+    if not posture_para:
+        raise AssertionError(f"{label}: 조사 보조 포지션 문단이 없다")
+    assert_ordered_tokens(
+        posture_para.group(0),
+        ["확인 가능한 1차 소스 중심", "법률 조사를 보조"],
+        f"{label} 조사 보조 포지션",
+    )
 
 
 def check_design_decision_archive() -> None:
@@ -3582,13 +3851,34 @@ def check_static_privacy_preknowledge_boundaries() -> None:
     skill_text = read_text("skills/beopsuny/SKILL.md")
     knowledge_text = read_text("skills/beopsuny/references/knowledge-injection.md")
 
-    for required in [
-        "이 축이 결론을 강제하지 않는다",
-        # 개인정보 쟁점 없는 질문 미적용 (명사 kernel 토큰)
-        "개인정보 쟁점이 없는 질문",
-        "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용",
-    ]:
-        assert_contains(skill_text, required, "SKILL.md")
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
+    # "이 축이 결론을 강제하지 않는다. 개인정보 쟁점이 없는 질문에는 적용하지
+    # 않는다." 문장 통째 고정은 "강제하지 않습니다" 다듬기를 막는다 — 문단
+    # 스코프 안에서 "결론을 강제하지 않" 어간 + "개인정보 쟁점이 없는 질문"
+    # 순서만 핀다. 문장 삭제·축이 결론을 강제하는 방향 반전은 FAIL.
+    privacy_boundary_para = re.search(
+        r"^이 축이 결론을.*$", skill_text, re.MULTILINE
+    )
+    if not privacy_boundary_para:
+        raise AssertionError("SKILL.md: 개인정보 사전지식 경계 문단이 없다")
+    assert_ordered_tokens(
+        privacy_boundary_para.group(0),
+        ["결론을 강제하지 않", "개인정보 쟁점이 없는 질문"],
+        "SKILL.md 개인정보 사전지식 경계",
+    )
+
+    # "지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용" 금지 항목 —
+    # 사용법 3축("최초 경로/결론 근거/포괄 체크리스트")이 목록 항목에 함께
+    # 살아 있어야 한다. "사용"→"활용" 다듬기는 마지막 토큰 밖이라 PASS.
+    knowledge_usage_line = re.search(
+        r"^\- 지식 자산을 최초 경로.*$", skill_text, re.MULTILINE
+    )
+    if not knowledge_usage_line:
+        raise AssertionError("SKILL.md: 지식 자산 사용법 금지 항목이 없다")
+    for token in ["최초 경로", "결론 근거", "포괄 체크리스트"]:
+        assert_contains(
+            knowledge_usage_line.group(0), token, "SKILL.md 지식 자산 사용 축"
+        )
 
     for required in [
         "Privacy 사전지식",
@@ -3636,14 +3926,57 @@ def check_law_change_automation_promise_drift() -> None:
     law_change = read_text("skills/beopsuny/references/law-change-detection.md")
     for required in [
         "법령 변경 감지는 pull 방식이다",
-        "사용자가 명시적으로 automation을 요청하지 않으면",
-        "이 스킬의 기본 변경 감지와 섞지 않는다",
-        "사용자 확인을 받은 뒤에만 생성한다",
-        "관리·삭제 경로를 반드시 보고한다",
         # automation 논의와 별개로 즉시 pull 1회 제안 (라벨 토큰)
         "즉시 1회 확인(pull)",
     ]:
         assert_contains(law_change, required, "law-change-detection.md")
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. Pull Boundary 경계 문단에서
+    # "명시적으로 automation을 요청하지 않으면" 뒤에 부정 서술이 따라와야 한다.
+    no_request_para = re.search(
+        r"^사용자가 명시적으로 automation을 요청하지 않으면.*$", law_change, re.MULTILINE
+    )
+    if not no_request_para:
+        raise AssertionError("law-change-detection.md: 명시 요청 부재 경계 문단이 없다")
+    assert_ordered_tokens(
+        no_request_para.group(0),
+        ["명시적으로 automation을 요청하지 않으면", "하지 않"],
+        "law-change-detection.md 명시 요청 부재",
+    )
+
+    # 기본 변경 감지와의 분리: "이 스킬의 기본 변경 감지와 섞지 않" 어간 — "섞지
+    # 않습니다" 다듬기 허용, 섞는 방향 반전은 FAIL.
+    no_mix_para = re.search(
+        r"^사용자가 automation을 요청하면.*$", law_change, re.MULTILINE
+    )
+    if not no_mix_para:
+        raise AssertionError("law-change-detection.md: 기본 감지 분리 문단이 없다")
+    assert_contains(no_mix_para.group(0), "기본 변경 감지와 섞지 않", "law-change-detection.md 분리")
+
+    # 생성 전 확인: "사용자 확인을 받은 뒤에만" 뒤에 "생성" 어근, 생성 후 보고:
+    # "관리·삭제 경로를 반드시" 뒤에 "보고" 어근. "생성한다/생성합니다",
+    # "보고한다/보고합니다" 어미 변형은 어간이 갈라져 substring 매치가
+    # 불안정하므로 확인 gate 부사 + 어근으로 핀다 (#306).
+    confirm_para = re.search(
+        r"^1\. \*\*생성 전 확인\*\*:.*$", law_change, re.MULTILINE
+    )
+    if not confirm_para:
+        raise AssertionError("law-change-detection.md: 생성 전 확인 문단이 없다")
+    assert_ordered_tokens(
+        confirm_para.group(0),
+        ["사용자 확인을 받은 뒤에만", "생성"],
+        "law-change-detection.md 생성 전 확인",
+    )
+    report_para = re.search(
+        r"^2\. \*\*생성 후 보고\*\*:.*$", law_change, re.MULTILINE
+    )
+    if not report_para:
+        raise AssertionError("law-change-detection.md: 생성 후 보고 문단이 없다")
+    assert_ordered_tokens(
+        report_para.group(0),
+        ["관리·삭제 경로를 반드시", "보고"],
+        "law-change-detection.md 생성 후 보고",
+    )
 
 
 def check_readme_quality_verification_refs_resolve() -> None:
@@ -3996,11 +4329,8 @@ def check_self_verification_guardrails() -> None:
         "규칙을 재서술하지 않는다",
         "긴 입력의 읽은 범위",
         "Role / Destination Gate",
-        "사용자 역할과 산출물 destination",
         "references/output-formats.md#role-based-output-modes",
         "references/output-formats.md#destination-output-contracts",
-        "외부 공유용 초안에 내부 검토자 메모, 자가 검증 블록",
-        "법무/변호사 검토 전 단계와 실제 외부 행동 단계를 분리",
         "데이터 무결성 이슈",
         "`assets/policies/mandatory_provisions.yaml`",
         "후보 인덱스",
@@ -4012,6 +4342,34 @@ def check_self_verification_guardrails() -> None:
     # 두 검사가 서로 다른 토큰을 지켜서 한쪽만 약화돼도 그린이 된다 (#262).
     assert_not_contains(text, "지시가 아니다", label)
     assert_not_contains(text, "덮어쓸 수 없다", label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "사용자 역할과 산출물
+    # destination" 절이 통째로 삭제되면 FAIL, "destination이 반영되었는가"처럼
+    # 다듬으면 토큰이 살아 있어 PASS.
+    role_dest_line = re.search(r"^- 사용자 역할과 산출물 destination.*$", text, re.MULTILINE)
+    if not role_dest_line:
+        raise AssertionError(f"{label}: 사용자 역할/산출물 destination 체크 문단이 없다")
+    assert_ordered_tokens(
+        role_dest_line.group(0), ["사용자 역할과 산출물 destination", "gate에 반영"], f"{label} role/destination"
+    )
+
+    # 외부 공유용 초안 gate: "그대로 붙이지 않았는가" 어간으로 다듬기를 허용하되,
+    # 초안 내부 메모 포함 금지 문장 삭제는 FAIL.
+    external_draft_line = re.search(r"^- 외부 공유용 초안에.*$", text, re.MULTILINE)
+    if not external_draft_line:
+        raise AssertionError(f"{label}: 외부 공유용 초안 체크 문단이 없다")
+    assert_ordered_tokens(
+        external_draft_line.group(0), ["외부 공유용 초안에", "그대로 붙이지 않"], f"{label} external draft"
+    )
+
+    # 법무 검토 전 단계 분리: "분리했는가"→"분리했는지" 다듬기 허용, 분리 축
+    # 문장 삭제는 FAIL.
+    lawyer_review_line = re.search(r"^- 법무/변호사 검토 전 단계와.*$", text, re.MULTILINE)
+    if not lawyer_review_line:
+        raise AssertionError(f"{label}: 법무 검토 단계 분리 문단이 없다")
+    assert_ordered_tokens(
+        lawyer_review_line.group(0), ["법무/변호사 검토 전 단계와", "분리"], f"{label} lawyer review"
+    )
 
 
 def check_self_verification_metadata_single_home() -> None:
@@ -4087,8 +4445,6 @@ def check_output_role_destination_contracts() -> None:
         "`external_draft`",
         "`agency_or_court_submission`",
         "계약 playbook이 default destination",
-        "계약 playbook은 출력 선호일 뿐",
-        "현재 사용자 요청과 role/destination gate를 우선",
         # external_draft: 내부 검토자 메모/자가 검증 블록 포함 금지
         "내부 검토자 메모",
         "그대로 포함하지 않는다",
@@ -4096,6 +4452,27 @@ def check_output_role_destination_contracts() -> None:
         "변호사 또는 담당 법무 검토 없이 제출하라고 쓰지 않음",
     ]:
         assert_contains(text, required, label)
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. playbook 우선순위 문단에서
+    # "출력 선호" → "뿐" → "덮어쓰지 못" 순서가 살아 있어야 한다. "출력
+    # 선호일 뿐"→"출력 선호에 불과할 뿐" 다듬기는 "일 뿐" 어미가 갈라져
+    # substring 매치가 불안정하므로 "출력 선호" → "뿐" → "덮어쓰지 못" 순서만
+    # 핀다. "뿐"이 사라지면(playbook이 gate를 덮어쓰는 방향 반전) FAIL.
+    playbook_priority_para = re.search(
+        r"^계약 playbook이 default destination이나.*$", text, re.MULTILINE
+    )
+    if not playbook_priority_para:
+        raise AssertionError(f"{label}: 계약 playbook 우선순위 문단이 없다")
+    assert_ordered_tokens(
+        playbook_priority_para.group(0),
+        ["출력 선호", "뿐", "덮어쓰지 못"],
+        f"{label} playbook 우선순위",
+    )
+    assert_ordered_tokens(
+        playbook_priority_para.group(0),
+        ["현재 사용자 요청과 role/destination gate를", "우선"],
+        f"{label} 사용자 요청 우선",
+    )
 
 
 def check_router_scenario_references() -> None:
@@ -4566,8 +4943,25 @@ def check_international_index_routing() -> None:
     guide_text = read_text("skills/beopsuny/references/international_guide.md")
 
     assert_contains(skill_text, "references/international_guide.md", "SKILL.md")
-    assert_contains(guide_text, "별도 router intent가 아니라", "international_guide.md")
-    assert_contains(guide_text, "한국법상 확인할 후보 쟁점", "international_guide.md")
+
+    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. 국제 인덱스는 별도 라우터
+    # 의도가 아니라 필요할 때만 읽는 인덱스다. "router intent가 아"로 부정
+    # 형태(아니라/아닌/아니고)를 통째로 핀다 — "아니라→아닌" 다듬기는 음절
+    # 합성(아니/아닌)으로 "아니" substring이 갈라져서다. router intent 축
+    # 삭제·긍정 반전은 FAIL (#306).
+    guide_lead = re.search(
+        r"^해외직접투자, 전략물자 수출.*$", guide_text, re.MULTILINE
+    )
+    if not guide_lead:
+        raise AssertionError("international_guide.md: 도입 문단이 없다")
+    assert_contains(
+        guide_lead.group(0), "router intent가 아", "international_guide.md router intent 부정"
+    )
+    assert_ordered_tokens(
+        guide_lead.group(0),
+        ["한국법상", "후보 쟁점"],
+        "international_guide.md 한국법 쟁점 범위",
+    )
 
 
 def check_optional_installed_skill_drift() -> None:
