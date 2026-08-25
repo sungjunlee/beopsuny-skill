@@ -127,13 +127,11 @@ def validate_asset(
         "authority_map_overlay": "post_search_audit_only",
         "session_schema": "validation_reference_only",
     }
+    # Usage vocabulary contrast (single home: knowledge_manifest.yaml authority_map usage):
+    #   post_search_audit_only  -> accepted (current policy vocab)
+    #   audit_only              -> rejected (legacy beopsuny-knowledge vocab; must not
+    #                              be silently remapped — knowledge repo must update first)
     actual_usage = usage_mode or allowed_usage_by_type.get(asset_type)
-    if (
-        actual_usage == "audit_only"
-        and expected_usage == "post_search_audit_only"
-        and asset_type in {"authority_map_core", "authority_map_overlay"}
-    ):
-        actual_usage = expected_usage
     if actual_usage != expected_usage:
         raise IngestError(f"{key}: usage mismatch expected={expected_usage!r} actual={actual_usage!r}")
 
