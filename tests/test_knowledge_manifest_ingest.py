@@ -121,6 +121,35 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
         self.assertEqual(usages["authority_map.core"], "post_search_audit_only")
         self.assertEqual(usages["authority_map.overlay"], "post_search_audit_only")
 
+    # NOTE: beopsuny-knowledge currently still ships usage_mode: audit_only on its
+    # authority-map assets. Until that repo is updated to post_search_audit_only,
+    # ingestion of those assets must fail here — the legacy term must not be absorbed.
+
+    def test_post_search_audit_only_usage_passes(self) -> None:
+        helper = load_helper()
+        content = "schema_version: 1\nasset_type: authority_map_core\nusage_mode: post_search_audit_only\n"
+        result = helper.validate_asset(
+            "authority_map.core",
+            {"id": "x", "version": "1", "url": "file:///x", "sha256": helper.sha256_text(content), "publish_ready": True, "url_status": "live"},
+            content,
+            "post_search_audit_only",
+            {"1"},
+        )
+        self.assertEqual(result["usage"], "post_search_audit_only")
+
+    def test_legacy_audit_only_usage_fails(self) -> None:
+        helper = load_helper()
+        for asset_type in ("authority_map_core", "authority_map_overlay"):
+            content = f"schema_version: 1\nasset_type: {asset_type}\nusage_mode: audit_only\n"
+            with self.assertRaises(helper.IngestError):
+                helper.validate_asset(
+                    "authority_map.core" if asset_type == "authority_map_core" else "authority_map.overlay",
+                    {"id": "x", "version": "1", "url": "file:///x", "sha256": helper.sha256_text(content), "publish_ready": True, "url_status": "live"},
+                    content,
+                    "post_search_audit_only",
+                    {"1"},
+                )
+
     @unittest.skipUnless(KNOWLEDGE_ROOT.exists(), "local beopsuny-knowledge checkout not available")
     def test_local_stable_manifest_validates_assets_and_builds_packet(self) -> None:
         helper = load_helper()
