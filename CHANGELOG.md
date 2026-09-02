@@ -4,6 +4,7 @@
 
 ### Changed
 
+- **포워드 평가 하네스 테스트가 구조 검사와 채점 재현을 나눈다 (#303)** — 커밋된 라이브 corpus를 다시 채점하던 검사는 차등 재채점 게이트(`tests/check_rescore_baseline.py`)가 전량 담당하고, 하네스 파일에는 런처·카테고리 등록·합성 프로브만 남긴다. 사용자 관점 — 스코어러가 느슨해지면 한 게이트가 잡고, 하네스 테스트는 하네스 자체만 지킨다.
 - **지식 매니페스트 인제스트가 구형 `audit_only` 용어를 조용히 흡수하지 않는다 (#301)** — `knowledge_manifest_ingest.py`는 권위 지도 자산의 `usage_mode: audit_only`(beopsuny-knowledge 구형 용어)를 정책 용어 `post_search_audit_only`로 묶어 통과시켰다. 이 특례 분기를 제거해 두 용어가 어긋나면 IngestError로 스킵되고, 정책 yaml(`knowledge_manifest.yaml`)이 유일한 용어 집이다. 사용자 관점 — 지식 저장소가 아직 구형 용어를 쓰면 실패가 보인다(조용히 낡은 검증 우회 없음); 지식 저장소를 새 용어로 갱신하면 다시 ready.
 - **플러그인 description·keywords의 집이 plugin.json 한 곳으로 모인다 (#302)** — `.claude-plugin/plugin.json`과 `marketplace.json` plugins[0]에 같은 description·keywords가 각각 적혀 있어 한쪽만 고치면 조용히 어긋났다. 이제 plugin.json이 정본이고, marketplace 쪽은 릴리즈 zip용 복사본으로만 남는다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 기존 version 검사에 이어 description(정확 일치)·keywords(순서 포함 목록 비교) drift도 함께 잡는다. README 릴리즈 체크리스트도 "두 파일을 손으로 범프"에서 "plugin.json을 먼저 고치고 marketplace 복사본을 일치시키기"로 갱신. 사용자 관점 — 마켓플레이스에 보이는 스킬 설명·태그가 설치된 플러그인과 어긋나는 일이 없다.
 - **법령 변경 감지에 "파급·공백 분석 레시피"가 추가된다** — 단건 개정 요약을 넘어 (1) 같은 공포번호를 가진 커밋을 묶어 "타법개정 묶음"을 인식하고 원인 개정부터 설명하고, (2) 폐지·개정 대상 법령을 인용하는 다른 법령을 전수 grep해 위험도 3단계(🔴 하위 법령 / 🟡 특수 목적법 / 🟡 일반 법률) 공백 위험 지도를 만들고, (3) 미러에 아직 없는 신설 법령은 "미러 갱신 전"으로 보고 웹(법제처·로펌 뉴스레터)으로 보완하도록 했다. 사용자 관점 — 조직 개편 같은 파급형 개정과 시행 전 미정비 법령 리스크를 놓치지 않는다.
