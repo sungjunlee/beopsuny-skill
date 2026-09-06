@@ -1,0 +1,52 @@
+asset_path: "skills/beopsuny/assets/policies/mandatory_provisions.yaml"
+checked_at: "2026-09-06"
+checked_by: "relay (issue #243 overdue_resolve_by expiry)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/243"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "law.go.kr"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 강행규정 후보 법령"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-09-06"
+    notes: "legalize-kr main@dd548e68 (2026-09-04). 후보 인덱스 14개 조문 전부 미러 본문에서 확인: 약관규제법 제7조, 민법 제103·393·398조, 발명진흥법 제15조, 저작권법 제9·14조, 개인정보보호법 제26조·제28조의8, 공정거래법 제45조, 하도급법 제3·13조, 근로기준법 제15·20조(법률(법률).md). 직접 공식 사이트 조문 본문 확인 아님."
+  - title: "법제처 국가법령정보센터 조문 본문 접근"
+    url: "https://www.law.go.kr/"
+    source_authority: "공식 원문"
+    verification_status: "[INSUFFICIENT]"
+    retrieved_at: "2026-09-06"
+    notes: "law.go.kr 홈은 200이지만 LSW 조문 URL은 본문을 반환하지 않아 시행일·개정 이력은 검증하지 않음."
+
+volatile_items_checked:
+  - item: "other"
+    previous_value: "후보 인덱스 14개 법률명+조문"
+    refreshed_value: "14개 조문 번호가 legalize-kr 미러 본문에 존재"
+    source_ref: "legalize-kr 로컬 미러 강행규정 후보 법령"
+    result: "unchanged"
+  - item: "other"
+    previous_value: "enforced_at / 시행일 / 강행규정 효력 힌트"
+    refreshed_value: "[UNVERIFIED] law.go.kr 조문 본문 미확보"
+    source_ref: "법제처 국가법령정보센터 조문 본문 접근"
+    result: "insufficient"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2026-06-24"
+  maintenance_next_review_after: "2026-10-06"
+  summary: "조문 번호 존재는 미러로 확인하고 시행일·효력 힌트는 live-check-only로 남겨 registry를 유지한다. overdue_resolve_by 2026-08-31은 연장하지 않고 재검증으로 해소."
+
+retirement_decision:
+  decision: "partial_refresh"
+  reason: "법률명·조문 번호는 미러에서 확인됐지만 시행일, 시행령, 판례, 강행규정 효력 판단은 미검증이라 registry 유지."
+  remaining_stale_scope: "enforced_at dates, enforcement decrees, court sources, and legal-effect issue hints in notes."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true
