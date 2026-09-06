@@ -34,8 +34,8 @@ last_updated: "2026-04-12"
 
 maintenance:
   review_cycle: "monthly"
-  next_review: "2026-06-24"
-  last_verified: "2026-05-24"
+  next_review: "2026-10-06"
+  last_verified: "2026-09-06"
   source_url: "https://www.law.go.kr/"
   freshness_days: 30
   must_reverify: true
