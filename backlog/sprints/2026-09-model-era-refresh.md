@@ -39,7 +39,7 @@ component: "router-loading"
 ### 초안·표현·평가 계약 순차 정렬
 
 - [~] #323 [contract] 검토용 완성 조항 초안과 수정 제안 지원 — 선행: #318, #322, #319. [branch:codex/milestone-8-model-era-refresh] · evidence: `tests/forward_evals/model_era/integration-report.md`
-- [x] #272 [skill] fwd-11 — 절차 모양을 바꾼 답변에서 출처 권위 라벨이 빠졌다 (실위반, 경미) — 선행: #323.
+- [~] #272 [skill] fwd-11 — 절차 모양을 바꾼 답변에서 출처 권위 라벨이 빠졌다 (실위반, 경미) — 선행: #323. [branch:codex/milestone-8-model-era-refresh]
 - [x] #324 [tests] counter-draft 금지 문자열 오탐을 의미 평가로 이관 — 선행: #323, #272, #284.
 
 ### 통합 검증과 도입 판정
@@ -90,15 +90,16 @@ component: "router-loading"
 
 오케스트레이터가 의존성별 writer 소유권을 인계받아 통합했다. 실행 전후 최신 GitHub effective spec 15개는 변경 없음으로 재확인했다. [검증·도입 보고서](../../tests/forward_evals/model_era/integration-report.md)에 baseline/hash·모델 조건·비용·검사·판정 한계를 기록한다. 기존 계획·결정 이력은 보존했다.
 
-완료 범위는 #318/#271/#319/#320/#321/#284/#322/#272/#324 및 #326의 통합 보고·검토용 산출물이다. 완성 초안·유연한 절차의 구현 자체와 광범위한 법률 성능 도입은 구별한다. O5–O7은 active, sprint/마일스톤은 완료가 아니다.
+완료 범위는 #318/#271/#319/#320/#321/#284/#322/#324 및 #326의 통합 보고·검토용 산출물이다. 완성 초안·유연한 절차의 구현 자체와 광범위한 법률 성능 도입은 구별한다. O5–O7은 active, sprint/마일스톤은 완료가 아니다.
 
+- #272 남은 일: 기존 fwd-11 직접 변형의 독립 리뷰가 timeout으로 미판정이다. `model_era/evidence/fwd11-variants-*`에서 AC1을 재개한다. 별도 형식 fixture PASS와 원본 변형 검증을 혼동하지 않는다.
 - #323 남은 일: Opus 고정 계약 사례에서 미제공 별첨을 부재로 단정한 B1, 의미 경계 보완 후에도 같은 서술을 남긴 B2를 검토한다. 재개 입력/응답·source hash는 `model_era/evidence/*claude-contract*`. 새 금지어·형식 강제로 점수를 맞추지 말고 사실 근거와 결론 강도를 평가한다. 독립 재검토와 필요 시 반복/holdout 후 닫는다.
 - #325 남은 일: manifest 준비는 성공했으나 Grok 환경/실행 실패, Claude SaaS 양군 timeout으로 품질 비교 불가. 검색 순서 runtime은 유지. `model_era/evidence/privacy-execution.json`의 조건·호출 순서에서 재개하되 timeout을 모델 성능이나 NO-GO로 세지 않는다. tags·반복·incident holdout 미측정.
 - 그 밖의 완료 표시는 commit에 담긴 구현·검증/보고 완료이며 merge·release·배포 승인이 아니다. 고정 의미 fixture의 독립 모델 판정은 expert gold가 아니다. 실제 새 출력의 pending 기록은 자동 PASS로 바꾸지 않는다.
 
 ## Progress
 
-- 2026-09-08 구현: e05ecda 기준선 보존, 승인 core 구현·죽은 소비자/검사 제거, 독립 Grok 최종 리뷰의 병렬 pending 종료·상태 중복 집계·live 축 정렬 지적 처리. 검증 가능한 통합 commit과 draft PR로 인계한다. #323/#325 잔여를 열어 두며 sprint는 active다.
+- 2026-09-08 구현: e05ecda 기준선 보존, 승인 core 구현·죽은 소비자/검사 제거, 독립 Grok 최종 리뷰의 병렬 pending 종료·상태 중복 집계·live 축 정렬 지적 처리. 검증 가능한 통합 commit과 draft PR로 인계한다. #272/#323/#325 잔여를 열어 두며 sprint는 active다.
 
 - 2026-09-08 실행: `codex/milestone-8-model-era-refresh`에서 착수. 기존 계획 변경 보존, e05ecda detached worktree와 42개 runtime 파일 SHA256 manifest 보존. #318 spec 목표 계약 구현, #271 격리 setup/실행 상태 구현(52개 관련 검사), #319 인덱스 삭제·소비자 통합 후 현재 날짜 O1 PASS/O2 11+14 PASS 및 전체 119 unit PASS. 독립 리뷰·live 검증·통합 전까지 해당 항목은 in-flight다. #321 native writer와 #320 평가 준비 writer는 파일 소유권을 분리했다.
 
@@ -126,3 +127,7 @@ https://github.com/sungjunlee/beopsuny-skill/milestone/8
 
 각 이슈의 AC에 맞는 구현·삭제·검증과 필요한 README/CHANGELOG/spec 정합성을 마치고, 실제 증거에 맞춰 이슈·에픽·sprint 인계를 갱신해줘. 완료한 범위와 남은 범위, 도입 판단과 검증 한계를 보고해. merge·release·배포는 이번 완료 범위에 포함하지 않아.
 ```
+
+### GitHub 실행 인계 확인
+
+Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `45d7ac6`. 15개 이슈 본문·상태를 갱신하고 readback으로 확인했다. 실행 이슈 #318/#271/#319/#320/#321/#284/#322/#324/#326과 에픽 #277은 CLOSED, #272/#323/#325 및 에픽 #316/#317은 OPEN이다. 마일스톤·sprint는 완료 처리하지 않았다. 최종 문서 반영 후 O1 PASS. 원격 Contract Tests 실행은 확인되지 않았으며 로컬 검증과 구별한다.

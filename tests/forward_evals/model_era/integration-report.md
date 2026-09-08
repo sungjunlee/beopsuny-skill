@@ -86,3 +86,11 @@ Grok 4.6 high가 GPT/Claude 작성 diff를 read-only 검토했다. P1(병렬 pen
 수정 후 Grok 후속 코드 재리뷰는300초 한도에서 답변 없이 종료(exit124)했다. 재승인으로 계산하지 않았다. 원래 독립 리뷰의3개 지적은 root가 수정하고17개 재현 검사와 전체113개 unit·O1·rescore로 검증했다. 후속 모델 판정은 미측정이다. backlog doctor8개 검사도 PASS다.
 
 원문/응답 capture의 공백·줄바꿈은 SHA256 증거이므로 정규화하지 않았다. `.gitattributes`의 text/whitespace 예외는 해당 capture 경로에만 적용하며 코드·문서 검사는 그대로다.
+
+## 최종 AC 대조와 PR 인계
+
+Draft PR [#327](https://github.com/sungjunlee/beopsuny-skill/pull/327), 구현 commit `45d7ac6`. 로컬 CHANGELOG PR gate도 통과했다. GitHub Contract Tests 실행은 확인되지 않아 원격 CI 통과를 주장하지 않는다.
+
+#272 AC1은 미완료다. 독립 검토된 별도 표·산문·각주 의미 fixture와 실제 누락 사례는 보유하지만, 기존 fwd-11 원본과 그 직접 변형을 동일한 완료 증거로 대체할 수 없다. [원본 변형 입력](evidence/fwd11-variants-input.json)을 준비했으나 Grok4.6 독립 검토는 180초 timeout, 판정 없음([실행 상태](evidence/fwd11-variants-review.json)). 이는 평가 실행 실패이며 모델의 법률 실패가 아니다. 원본의 인용 확인 경로를 대조하고 변형별 추적 가능성을 검토한 뒤 AC1을 닫는다. 고정 라벨 의무를 복원하거나 과거 법률 주장을 현재 법률 검증으로 취급하지 않는다.
+
+잔여 실행 이슈는 #272, #323, #325이며 에픽 #316/#317과 마일스톤8은 열린 상태로 인계한다. #326 완료는 한계를 포함한 통합 보고·도입 판단 산출물 완료이며 잔여 AC나 출시 승인을 대신하지 않는다.

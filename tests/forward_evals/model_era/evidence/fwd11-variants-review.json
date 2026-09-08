@@ -1,0 +1,10 @@
+{
+  "model": "grok-4.6",
+  "effort": "high",
+  "seconds": 180.05423295800574,
+  "returncode": 124,
+  "status": "execution_error",
+  "verdict": null,
+  "reason": "timeout; no completed independent review; not PASS or model failure",
+  "scope": "Historical fwd-11 and deterministic display variants; not current-law validation"
+}
