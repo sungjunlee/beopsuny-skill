@@ -36,3 +36,12 @@ Opus 후속 지적 중 과거 합집합 hash와 신규 과제별 hash의 시제�
 최종 승인: Sol 코드/계약 두 범위, Grok 코드·계약, Opus 증거·보고 모두 LGTM. Grok이 언급한 잘린 주석은 이미 삭제된 부분이며 복원하지 않았다. 비차단 문장·푸터 열/CSS·죽은 토큰은 정리했다. Opus가 발견한 CHANGELOG Added 누락/Changed 중복은 항목 내용 보존 후 병합했고, 섹션 순서·유일성 assert PASS. 구현 commit `b97c5e2` 후 인계 변경은 CHANGELOG 구조와 검토 기록·sprint뿐이다. 원격 Contract Tests 실행은 여전히 확인되지 않았으며 CodeRabbit 상태만 SUCCESS다.
 
 최종 quota 재조회(12:48:22Z): Codex Pro 주간42% 사용/58% 잔여, reset 09-15 10:56:38Z, OAuth/exact, pace·ETA 및 다른 창 unknown. Claude/Grok 재조회는45초 timeout으로 unknown이며 마지막 성공 snapshot을 소진으로 바꾸지 않는다. 모델 리뷰 호출은 모두 정상 완료했고 개인별 소비량으로 quota 차이를 귀속하지 않는다.
+
+
+## main 통합 — 2026-09-08
+
+`909f206`의 plugin metadata drift 검사, knowledge usage 거부, corpus 테스트 분리를 보존했다. 삭제한 mandatory asset을 대상으로 한 partial-refresh fixture도 제거했다. 해당 과거 기록은 main 이력에 남아 있으며 날짜 연장으로 현재 검증을 대체하지 않는다. corpus별 옛 PASS/문자열 FAIL 앵커는 현행 의미 검토 대기와 구별하고, 19 corpus 전체 baseline 일치 검사와 원본은 유지했다.
+
+개인 절대 경로의 sibling knowledge checkout을 읽는 테스트는 제거했다. 임시 자산 5개로 실제 build_packet을 검증하는 기존 검사와 현행 usage 수용/구형 usage 거부 검사는 유지한다. 제거 전 실제 로컬 통합은 `audit_only`와 `post_search_audit_only` 불일치로 실패했다. 외부 지식 자산의 호환성은 해결되지 않았고 ready로 보고하지 않는다.
+
+통합 후 118 unittest, O1, O2(11 outputs/13 unsafe), 19 corpus 재채점(66 메시지, 변화 0), diff whitespace 검사가 통과했다. 소스 도달성은 WARN(OK 2/WARN 3/FAIL 0/미설치 2): 두 로컬 미러 upstream 불일치, 법망 공지 중단, law.go.kr 두 링크 HTTP 200. HTTP 성공은 조문 내용·적용 시점 검증이 아니다. #272/#323/#325 및 릴리즈 스모크의 남은 검증은 유지한다.

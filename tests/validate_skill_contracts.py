@@ -399,6 +399,12 @@ def forward_eval_prompts() -> dict[str, Any]:
 
 
 def check_version_sync() -> None:
+    """plugin.json is the single home for version, description, and keywords.
+
+    marketplace.json plugins[0] keeps release-zip copies, but they must match
+    plugin.json exactly so the metadata cannot drift between releases (#302).
+    Edit plugin.json first; copy (or re-derive) into marketplace.json.
+    """
     plugin = load_json(".claude-plugin/plugin.json")
     marketplace = load_json(".claude-plugin/marketplace.json")
 
@@ -408,6 +414,25 @@ def check_version_sync() -> None:
     }
     if len(set(values.values())) != 1:
         raise AssertionError(f"version drift: {values}")
+
+    # Description: exact-match drift check (source of truth: plugin.json).
+    descriptions = {
+        ".claude-plugin/plugin.json description": str(plugin["description"]),
+        ".claude-plugin/marketplace.json plugins[0].description": str(
+            marketplace["plugins"][0]["description"]
+        ),
+    }
+    if len(set(descriptions.values())) != 1:
+        raise AssertionError(f"description drift (source of truth: plugin.json): {descriptions}")
+
+    # Keywords: order-sensitive list comparison against the plugin.json home.
+    plugin_keywords = [str(item) for item in plugin["keywords"]]
+    marketplace_keywords = [str(item) for item in marketplace["plugins"][0]["keywords"]]
+    if plugin_keywords != marketplace_keywords:
+        raise AssertionError(
+            "keywords drift (source of truth: plugin.json): "
+            f"plugin.json={plugin_keywords!r} marketplace.json={marketplace_keywords!r}"
+        )
 
 
 def check_skill_frontmatter_minimal() -> None:

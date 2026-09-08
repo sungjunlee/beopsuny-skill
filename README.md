@@ -212,7 +212,7 @@ git diff --check
 2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage, 미러 설치됨)에서** 로컬 미러 staleness / 법망 API / law.go.kr 링크 3축을 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 3축의 기준이다 — 주간 CI(`--dns-links`)가 실제로 감지하는 것은 law.go.kr DNS 1축뿐이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
 3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
 4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
-5. plugin 버전 범프: `.claude-plugin/plugin.json`과 `.claude-plugin/marketplace.json`의 version을 태그 버전과 일치시킨다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
+5. plugin 버전 범프: 정본은 `.claude-plugin/plugin.json` 하나다 — version·description·keywords를 여기만 고치고, `.claude-plugin/marketplace.json` plugins[0]의 복사본을 일치시킨다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 세 필드 모두의 drift를 잡는다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
 6. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
 
 ### 로컬 미러 셋업 (권장)

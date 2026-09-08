@@ -161,5 +161,78 @@ class RescoreBaselineTests(unittest.TestCase):
             )
 
 
+# #303: 하네스가 커밋된 evidence를 다시 채점하던 검사. 차등 재채점 스캔이
+# 유일한 집이다. 이 목록에서 빼면서 하네스 (b) 테스트도 없으면 커버리지가
+# 사라지므로, 아래 mutation이 그 상태를 FAIL로 만든다.
+ABSORBED_CORPUS_STEMS = (
+    "guardrails-live-sonnet5-20260709",
+    "fwd02-recheck-live-sonnet5-20260710",
+    "guardrails-live-sonnet5-20260710-v050",
+    "o4-live-driver-sonnet5-20260710",
+    "guardrails-live-sonnet5-20260720-v051",
+    "o4-live-sonnet5-20260720-v051",
+    "guardrails-live-sonnet5-20260725-v070",
+)
+
+HARNESS_TEST_PATH = ROOT / "tests/test_forward_eval_harness.py"
+
+class AbsorbedHarnessCorpusTests(unittest.TestCase):
+    """#303: (b) 채점 재현을 baseline 스캔으로 이관한 뒤의 mutation.
+
+    (b) 테스트를 지우고 이 스템들이 스캔·baseline에도 없으면 커버리지가
+    조용히 사라진다 — 그 상태가 여기서 FAIL이어야 한다.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.check = load_check()
+        cls.actual = cls.check.rescore_all()
+        try:
+            cls.baseline = json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise AssertionError(
+                f"baseline 파일을 읽지 못했다 — --write-baseline으로 생성해야 한다: {exc}"
+            ) from exc
+
+    def test_absorbed_corpora_remain_in_the_baseline_scan(self) -> None:
+        """하네스 (b)를 지운 뒤 evidence glob이 이 스템을 빠뜨리면 FAIL."""
+        evidence_stems = {
+            path.stem
+            for path in (ROOT / "tests/forward_evals/evidence").glob("*.yaml")
+        }
+        missing_files = sorted(set(ABSORBED_CORPUS_STEMS) - evidence_stems)
+        missing_scan = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.actual))
+        missing_baseline = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.baseline))
+        self.assertEqual([], missing_files)
+        self.assertEqual([], missing_scan)
+        self.assertEqual([], missing_baseline)
+
+    def test_harness_tests_do_not_rescore_absorbed_evidence(self) -> None:
+        """한 개념 한 집 — 흡수된 corpus 스템이 하네스 테스트로 되돌아오면 FAIL."""
+        text = HARNESS_TEST_PATH.read_text(encoding="utf-8")
+        returned = [stem for stem in ABSORBED_CORPUS_STEMS if stem in text]
+        self.assertEqual([], returned)
+
+    def test_absorbed_corpus_anchor_judgments(self) -> None:
+        """정적 실위반과 현재 의미 검토 대기를 구별한다.
+
+        전체 메시지와 corpus별 판정은 baseline 일치 검사가 잠근다.
+        과거 키워드 PASS/FAIL을 현재 의미 판정으로 재사용하지 않는다.
+        """
+        july09 = self.actual["guardrails-live-sonnet5-20260709"]
+        self.assertTrue(any("forbidden failure phrase" in message
+                            for message in july09["fwd-02-law-change-automation-request"]))
+        self.assertNotIn("fwd-02-law-change-automation-request",
+                         self.actual["fwd02-recheck-live-sonnet5-20260710"])
+        for stem in ("guardrails-live-sonnet5-20260710-v050",
+                     "guardrails-live-sonnet5-20260720-v051"):
+            messages = self.actual[stem]["fwd-08-profile-write-boundary"]
+            self.assertTrue(messages)
+            self.assertTrue(all(message.startswith("REVIEW_REQUIRED:") for message in messages))
+        messages = self.actual["guardrails-live-sonnet5-20260725-v070"]["fwd-11-shape-deviating-verification"]
+        self.assertTrue(messages)
+        self.assertTrue(all(message.startswith("REVIEW_REQUIRED:") for message in messages))
+
+
 if __name__ == "__main__":
     unittest.main()

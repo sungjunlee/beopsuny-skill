@@ -29,6 +29,9 @@ corpus의 prompt가 현재 config에 없으면(은퇴·rename 누락) `["<prompt
 current config>"]` 마커로 기록한다. 매핑되지 않은 rename은 `RENAMED_PROMPT_IDS`에
 없으면 KeyError로 "채점 불가"가 되는데, 그 상태를 "계약이 바뀌어 실패"로 착각하지
 않도록 마커가 명시적으로 드러낸다 (PR #261 선례).
+
+커밋된 corpus를 다시 채점하던 하네스 테스트는 이 스캔이 대체한다 (#303).
+합성 프로브·런처 구조는 `tests/test_forward_eval_harness.py`가 남긴다.
 """
 
 from __future__ import annotations
