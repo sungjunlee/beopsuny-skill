@@ -260,20 +260,6 @@ ALWAYS_ON_LEGAL_GATES = {
     "self_verification": "skills/beopsuny/references/self-verification.md",
     "output_contract": "skills/beopsuny/references/output-formats.md",
 }
-# Mirrors tests/evaluate_scenario_outputs.py's VERIFICATION_TIER_AUTO_RULES.
-# Kept as a separate duplicated constant (same pattern as STATUS_TAGS /
-# VERIFICATION_STATUSES) rather than importing the evaluator module, so the
-# two scripts stay independently runnable.
-VERIFICATION_TIER_AUTO_RULES = {
-    "light": "light_tier_no_packet_ceremony",
-}
-# Mirrors tests/evaluate_scenario_outputs.py's output_common_rules() primary_intent
-# branch. Kept as a duplicated constant (same rationale as VERIFICATION_TIER_AUTO_RULES)
-# so both scripts stay independently runnable.
-PRIMARY_INTENT_AUTO_RULES = {
-    "contract_review": "contract_counter_draft_boundary",
-    "legal_research": "mirror_promulgation_currency_gate",
-}
 LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-01",
     "router-03",
@@ -468,7 +454,6 @@ def check_skill_router_schema_references_precise() -> None:
     assert_not_contains(text, "`assets/schemas/*.yaml`", label)
     for required in [
         "assets/schemas/legal_verification_packet.yaml",
-        "assets/schemas/freshness_revalidation.yaml",
         "assets/schemas/output_contract.yaml",
     ]:
         assert_contains(text, required, label)
@@ -487,87 +472,33 @@ def check_skill_router_schema_references_precise() -> None:
         assert_not_contains(text, retired, label)
 
 
-def check_skill_company_context_read_only_and_trust_boundary() -> None:
-    """회사 맥락은 읽기 전용이고, 그 트러스트 경계는 always-on 표면에 있어야 한다.
+def section_body(text: str, heading: str) -> str:
+    match = re.search(r"^" + re.escape(heading) + r"\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if not match:
+        raise AssertionError(f"missing section: {heading}")
+    return match.group(1)
 
-    저장 계층을 스킬 밖으로 옮겨도(#259) 프롬프트 인젝션 표면은 사라지지 않고
-    이동한다 — 지침 파일과 하네스 메모리는 구조화된 프로필보다 지시형 문구를 담기
-    쉽다. `self-verification.md`의 Retrieved Content Trust는 조건부 gate reference라
-    인용만 있는 답변에는 로딩되지 않는다. 그래서 경계 자체는 항상 로딩되는 SKILL.md
-    안전 경계가 소유하고(#262 — 회사 맥락뿐 아니라 웹·검색·API/MCP·업로드 문서까지),
-    `## 회사 맥락`은 회사 맥락에만 해당하는 한정자만 갖는다. 경계가 조건부 표면으로
-    다시 내려가거나 두 곳에 재서술되는 것을 이 검사가 막는다.
+
+def check_skill_company_context_read_only_and_trust_boundary() -> None:
+    """Check the homes of authority, storage scope and actual-success evidence.
+
+    Whether a request authorizes a write is a semantic live-review obligation;
+    this structural check must not restore the retired blanket write refusal.
     """
     text = read_text("skills/beopsuny/SKILL.md")
-    label = "SKILL.md"
-
-    match = re.search(r"^## 회사 맥락\s*$(.*?)(?=^## )", text, re.MULTILINE | re.DOTALL)
-    if not match:
-        raise AssertionError(f"{label}: `## 회사 맥락` 절이 없다 — 트러스트 경계의 집이 사라졌다")
-    section = match.group(1)
-
-    for required in [
-        # 읽기 전용 + 저장 대행 금지. 어간 토큰으로 핀한다 — "저장하지 않는다"를
-        # "저장하지 않습니다"로 다듬어도 통과하되, 문장 삭제는 잡힌다 (#283).
-        "저장하지 않",
-        "읽기만",
-        "저장했다고 말하지 않",
-        # ~/.beopsuny/ 는 설정·데이터·리포트만
-        "`config.yaml`",
-        "`data/`",
-        # 맥락 부재 시 baseline 표시 (출력 리터럴 — 모델이 verbatim 출력)
-        "계약 playbook 미설정 — 한국법 일반 기준으로 검토",
-        # 회사 맥락에만 해당하는 한정자 (일반 경계는 안전 경계 절이 소유).
-        # "더 엄격히" → "더 엄격하게" 다듬기는 허용하도록 순서 토큰으로
-        # 분리한다 (#283).
-    ]:
-        assert_contains(section, required, f"{label} `## 회사 맥락`")
-    assert_ordered_tokens(section, ["오히려", "엄격"], f"{label} `## 회사 맥락` 한정자")
-
-    # 일반 retrieved-content 경계는 항상 로딩되는 안전 경계 절이 소유한다.
-    # 인용-only 답변에도 붙는다는 것이 핵심이다 — 조회 경로야말로 외부 내용이
-    # 들어오는 자리인데 self-verification.md는 거기에 로딩되지 않는다 (#262).
-    # 문단을 "검토 대상 데이터" 앵커로 추출해 스코프를 좁힌다 — 전역 토큰은
-    # "인용"이 gate 표 문장("인용만 있고 …")에도 남아 #262 함정이 된다 (#283).
-    boundary = re.search(r"^.*검토 대상 데이터.*$", text, re.MULTILINE)
-    if not boundary:
-        raise AssertionError(f"{label}: 검토 대상 데이터 안전 경계 문단이 없다")
-    paragraph = boundary.group(0)
-    # 주어 열거는 순서 토큰으로 — "조회하거나 인용하거나 전달받은 내용은"을
-    # 도려내면 남는 "조회"(조회 경로)가 "인용"(인용만)보다 뒤라 순서 검사가
-    # 잡는다 (#262 probe P1 형태, #283).
-    assert_ordered_tokens(paragraph, ["조회", "인용", "전달받"], f"{label} 안전 경계")
-    assert_contains(paragraph, "현재 사용자 요청", f"{label} 안전 경계")
-    assert_contains(paragraph, "포함되지 않", f"{label} 안전 경계")
-    assert_contains(paragraph, "검토 대상 데이터", f"{label} 안전 경계")
-    assert_contains(paragraph, "덮어쓸 수 없", f"{label} 안전 경계")
-    assert_contains(paragraph, "API·MCP 응답", f"{label} 안전 경계")
-    assert_ordered_tokens(paragraph, ["인용만", "적용된"], f"{label} 안전 경계")
-    assert_contains(
-        paragraph,
-        "`references/self-verification.md#retrieved-content-trust`",
-        f"{label} 안전 경계",
-    )
-
-    # 은퇴한 저장 어휘가 SKILL.md 어디로도 되돌아오지 않는다.
-    for retired in [
-        "reviews.jsonl",
-        "learnings.jsonl",
-        "verification_log.jsonl",
-        "projects/{slug}",
-        "quick 온보딩",
-        "full 온보딩",
-    ]:
-        assert_not_contains(text, retired, label)
-
-    # 맥락이 없을 때 gate가 느슨해지지 않는다 (fail-safe 방향).
-    # 순서 토큰: `unknown`(역할 폴백) → "느슨해지"(대조문) → "보수적"(방향).
-    # "그대로 적용"은 빠진다 — 그 핀은 240행("destination gate를 그대로
-    # 적용한다")에도 남아 단독으로는 아무것도 못 잡는 중복이었고, "동일하게
-    # 적용한다" 같은 다듬기를 막는 잔여 prose-lock이었다. "보수적" 단독은
-    # "덜 보수적으로" 반전을 못 잡으니 대조문 토큰 "느슨해지"를 앞에 둔다 —
-    # 셋 다 fail-safe 절에만 있으므로 절 삭제·방향 반전은 잡힌다 (#283).
-    assert_ordered_tokens(text, ["`unknown`", "느슨해지", "보수적"], label)
+    section = section_body(text, "## 회사 맥락")
+    for token in ["`config.yaml`", "`data/`", "`reports/`", "명시적인 저장 요청",
+                  "현재 권한", "일반 메모리", "실제 성공", "다른 사건",
+                  "계약 playbook 미설정"]:
+        assert_contains(section, token, "SKILL.md company context")
+    boundary = section_body(text, "## 역할과 안전 경계")
+    for token in ["검토 대상 데이터", "API·MCP 응답", "현재 사용자 요청",
+                  "하네스 지시", "인용만", "사건 격리",
+                  "references/self-verification.md#retrieved-content-trust"]:
+        assert_contains(boundary, token, "SKILL.md trust boundary")
+    for retired in ["reviews.jsonl", "learnings.jsonl", "verification_log.jsonl",
+                    "projects/{slug}", "quick 온보딩", "full 온보딩"]:
+        assert_not_contains(text, retired, "SKILL.md")
 
 
 def check_confidential_fact_categories_reach_the_scorer() -> None:
@@ -581,7 +512,7 @@ def check_confidential_fact_categories_reach_the_scorer() -> None:
     자유이고, 범주가 빠지는 것만 막는다.
     """
     skill_text = read_text("skills/beopsuny/SKILL.md")
-    match = re.search(r"([^.\n]*?)처럼 그 건에 한정된 기밀 사실은 지속 저장을 권하지 않는다", skill_text)
+    match = re.search(r"(상대방명·[^.\n]*?) 같은 기밀·사건 사실", section_body(skill_text, "## 회사 맥락"))
     if not match:
         raise AssertionError("SKILL.md: 기밀 범주를 규정한 문장이 없다 (#264 계약의 상류)")
     declared_categories = [part.strip() for part in match.group(1).split("·") if part.strip()]
@@ -632,22 +563,10 @@ def check_cross_matter_scope_boundary_has_a_home() -> None:
     # 않고 포인터만 둔다. 포인터가 끊기면 제약이 도달 불가 문서가 된다 (#242 계열).
     assert_contains(section, "references/output-formats.md", "SKILL.md `## 회사 맥락` matter 범위")
 
-    # 산문 표의 금지 열. 두 외부 destination 행 모두 cross-matter 사실을 걸어야
-    # 한다 — 한 행만 고치고 계열을 닫았다고 선언하는 것이 #261의 실패 형태였다.
     formats = read_text("skills/beopsuny/references/output-formats.md")
-    for destination in ["`external_draft`", "`agency_or_court_submission`"]:
-        row = next(
-            (line for line in formats.splitlines() if line.startswith(f"| {destination} |")),
-            None,
-        )
-        if row is None:
-            raise AssertionError(f"output-formats.md: destination 표에 {destination} 행이 없다")
-        # `다른 건`만 걸면 다른 문구로 바꿔도 통과한다. strip 정본(yaml)과 같은
-        # 구를 걸어 산문 표와 스키마가 갈라지지 않게 한다.
-        if "다른 건·상대방·협상 조건을 식별하는 사실" not in row:
-            raise AssertionError(
-                f"output-formats.md: {destination} 금지 열이 strip 정본 구문을 담지 않는다: {row!r}"
-            )
+    assert_contains(formats, "assets/schemas/output_contract.yaml", "output-formats.md")
+    # The role/destination schema check enforces both external strip lists.
+    check_output_contract_schema()
 
     # PR이 "집"이라고 적은 spec 표면이 게이트에 안 묶여 있으면, 그 문장을 지워도
     # 그린이다 — 실제로 capability HC와 charter Decision 행이 그 상태였다
@@ -812,7 +731,8 @@ def check_contract_review_guide() -> None:
         "`assets/templates/report_contract_review.html`",
         "`references/report-deliverable.md`",
         "상대방 송부용",
-        "확정 문구가 아니라 검토 힌트",
+        "draft_clause",
+        "검토용 완성",
         "자가 검증",
         "회사 playbook 적용",
         "playbook은 결론 근거가 아니라 고객 맥락",
@@ -823,124 +743,30 @@ def check_contract_review_guide() -> None:
 
 def check_legal_verification_packet_schema() -> None:
     data = load_yaml("skills/beopsuny/assets/schemas/legal_verification_packet.yaml")
-    text = read_text("skills/beopsuny/assets/schemas/legal_verification_packet.yaml")
     label = "legal_verification_packet.yaml"
-
-    for key in [
-        "matter",
-        "issue_to_authority_map",
-        "authority_packets",
-        "citation_ledger",
-        "contradiction_scan",
-        "conclusion_binding",
-        "self_verification",
-    ]:
-        if key not in data:
-            raise AssertionError(f"{label}: missing top-level key {key!r}")
-
-    matter = data["matter"]
-    if not isinstance(matter, dict):
-        raise AssertionError(f"{label}: matter must be a mapping")
-    jurisdiction = matter.get("jurisdiction")
-    if not isinstance(jurisdiction, dict):
-        raise AssertionError(f"{label}: matter.jurisdiction must be a mapping")
-    if jurisdiction.get("primary") != "KR":
+    if set(data) != {"matter", "sources", "conclusions", "conflicts"}:
+        raise AssertionError(f"{label}: evidence must have one source home and conclusion references")
+    if data["matter"].get("jurisdiction", {}).get("primary") != "KR":
         raise AssertionError(f"{label}: primary jurisdiction must default to KR")
-    if not isinstance(jurisdiction.get("secondary"), list):
-        raise AssertionError(f"{label}: jurisdiction.secondary must be a list")
-    for required in ["question", "user_role", "destination"]:
-        if required not in matter:
-            raise AssertionError(f"{label}: matter missing {required!r}")
-
-    issue = first_mapping(data["issue_to_authority_map"], label, "issue_to_authority_map")
-    for required in [
-        "issue_id",
-        "conclusion_candidate",
-        "required_authority",
-        "legal_effect",
-        "must_not_conclude_without",
-    ]:
-        if required not in issue:
-            raise AssertionError(f"{label}: issue_to_authority_map entry missing {required!r}")
-    if not isinstance(issue["required_authority"], list):
-        raise AssertionError(f"{label}: required_authority must be a list")
-
-    packet = first_mapping(data["authority_packets"], label, "authority_packets")
-    if "issue_id" not in packet or "authorities" not in packet:
-        raise AssertionError(f"{label}: authority packet must contain issue_id and authorities")
-    authority = first_mapping(packet["authorities"], label, "authority_packets.authorities")
-    for required in [
-        "authority_id",
-        "type",
-        "citation",
-        "pinpoint",
-        "source_authority",
-        "verification_status",
-        "provenance",
-        "currency",
-        "retrieved_at",
-        "supports",
-        "limitations",
-    ]:
-        if required not in authority:
-            raise AssertionError(f"{label}: authority entry missing {required!r}")
-
-    ledger = first_mapping(data["citation_ledger"], label, "citation_ledger")
-    for required in [
-        "citation_id",
-        "authority_id",
-        "citation",
-        "pinpoint",
-        "source_authority",
-        "verification_status",
-        "provenance",
-        "currency",
-        "supports",
-        "output_allowed",
-    ]:
-        if required not in ledger:
-            raise AssertionError(f"{label}: citation ledger entry missing {required!r}")
-    if ledger["output_allowed"] is not False:
-        raise AssertionError(f"{label}: output_allowed must default to false")
-
-    scan = data["contradiction_scan"]
-    if not isinstance(scan, dict):
-        raise AssertionError(f"{label}: contradiction_scan must be a mapping")
-    if "checked" not in scan or "conflicts" not in scan:
-        raise AssertionError(f"{label}: contradiction_scan missing checked/conflicts")
-
-    binding = first_mapping(data["conclusion_binding"], label, "conclusion_binding")
-    for required in ["issue_id", "conclusion_strength", "binding_reason", "required_next_check"]:
-        if required not in binding:
-            raise AssertionError(f"{label}: conclusion_binding entry missing {required!r}")
-
-    self_check = data["self_verification"]
-    if not isinstance(self_check, dict):
-        raise AssertionError(f"{label}: self_verification must be a mapping")
-    for required in [
-        "source_authority_applied",
-        "ledger_covers_output_citations",
-        "freshness_gate_checked",
-        "role_destination_gate_checked",
-        "no_unledgered_citation_in_output",
-        "unresolved_limits",
-    ]:
-        if required not in self_check:
-            raise AssertionError(f"{label}: self_verification missing {required!r}")
-
-    for required in [
-        "Legal Verification Core packet template",
-        "not a required user-facing output",
-        "한국법 결론과 분리",
-        "[VERIFIED]",
-        "[INSUFFICIENT]",
-        "[CONTRADICTED]",
-        "[STALE]",
-        "[EDITORIAL]",
-        "external_send",
-        "role_destination_gate_checked",
-    ]:
-        assert_contains(text, required, label)
+    for key in ["scope", "question", "user_role", "destination"]:
+        if key not in data["matter"]:
+            raise AssertionError(f"{label}: matter missing {key}")
+    fields = {
+        "sources": ["source_id", "citation", "pinpoint", "source_authority", "verification_status",
+                    "provenance", "currency", "retrieved_at", "limitations"],
+        "conclusions": ["conclusion_id", "issue", "conclusion", "source_ids", "applicable_at",
+                        "exceptions_and_transitions", "fact_basis", "unresolved_facts",
+                        "conclusion_strength", "limitations", "required_next_check"],
+        "conflicts": ["conclusion_ids", "source_ids", "discrepancy", "treatment"],
+    }
+    for section, required in fields.items():
+        entry = first_mapping(data[section], label, section)
+        for field in required:
+            if field not in entry:
+                raise AssertionError(f"{label}: {section} missing {field}")
+        for field in ("source_ids", "conclusion_ids", "unresolved_facts"):
+            if field in entry and not isinstance(entry[field], list):
+                raise AssertionError(f"{label}: {section}.{field} must be list")
 
 
 def check_freshness_revalidation_schema() -> None:
@@ -1296,7 +1122,7 @@ def check_output_contract_schema() -> None:
 
     for required in [
         "Role and destination output contract template",
-        "does not reduce legal verification duties",
+        "default_sections",
         "send as-is",
         "file as-is",
         "sign as-is",
@@ -1349,8 +1175,7 @@ def check_output_contract_high_risk_situations() -> None:
     md_text = read_text("skills/beopsuny/references/output-formats.md")
     md_label = "output-formats.md (high_risk_situations pointer)"
     assert_contains(md_text, "high_risk_situations", md_label)
-    for situation in HIGH_RISK_SITUATIONS:
-        assert_contains(md_text, situation, md_label)
+    assert_contains(md_text, "assets/schemas/output_contract.yaml", md_label)
 
 
 COMPOSITION_RESOLUTION_PRINCIPLES = {"stricter_wins", "must_strip_union", "must_include_both"}
@@ -1402,7 +1227,7 @@ def check_output_contract_composition_rule() -> None:
     md_text = read_text("skills/beopsuny/references/output-formats.md")
     md_label = "output-formats.md (composition_rule pointer)"
     assert_contains(md_text, "composition_rule", md_label)
-    assert_contains(md_text, "합성", md_label)
+    assert_contains(md_text, "assets/schemas/output_contract.yaml", md_label)
 
 
 def first_mapping(value: Any, label: str, field: str) -> dict[str, Any]:
@@ -1496,8 +1321,6 @@ def check_source_access_fallbacks() -> None:
         "[STALE]",
         "references/freshness-governance.md",
         "assets/policies/freshness_debt.yaml",
-        "assets/schemas/freshness_revalidation.yaml",
-        "retirement decision",
     ]:
         assert_contains(text, required, label)
 
@@ -1518,14 +1341,6 @@ def check_source_access_mirror_promulgation_currency() -> None:
         # 현행 조문은 law.go.kr 현행본으로 별도 확인
         "law.go.kr 현행본",
         # healthcare 실전 예시 데이터 토큰
-        "공포일자 2026-06-09",
-        "시행일자 2026-12-10",
-        "제34조",
-        "비대면협진",
-        "원격의료",
-        "2026-07",
-        "`assets/policies/checklists/healthcare.yaml`",
-        "health-09",
     ]:
         assert_contains(text, required, label)
 
@@ -1558,8 +1373,6 @@ def check_checklist_routing_freshness() -> None:
         "live legal research로 재확인",
         "[STALE]",
         "[INSUFFICIENT]",
-        "검토자 메모",
-        "Currency",
     ]:
         assert_contains(text, required, label)
 
@@ -1655,27 +1468,6 @@ def check_volatile_policy_literals_require_live_check() -> None:
                     )
 
 
-def check_mandatory_provision_notes_are_candidates() -> None:
-    data = load_yaml("skills/beopsuny/assets/policies/mandatory_provisions.yaml")
-    if not isinstance(data, dict):
-        raise AssertionError("mandatory_provisions.yaml: expected mapping")
-    provisions = data.get("provisions")
-    if not isinstance(provisions, list):
-        raise AssertionError("mandatory_provisions.yaml: provisions must be a list")
-
-    final_terms = ("무효", "위반", "필수", "금지", "불가", "의무")
-    for index, provision in enumerate(provisions):
-        if not isinstance(provision, dict):
-            raise AssertionError(f"mandatory_provisions.yaml: provisions[{index}] must be a mapping")
-        note = provision.get("note")
-        if not isinstance(note, str):
-            raise AssertionError(f"mandatory_provisions.yaml: provisions[{index}].note must be a string")
-        if any(term in note for term in final_terms) and not has_live_check_cue(note):
-            raise AssertionError(
-                "mandatory_provisions.yaml: "
-                f"provisions[{index}].note has conclusion-style wording without verification cue: {note!r}"
-            )
-
 
 def check_policy_checklist_runtime_contracts() -> None:
     checklist_dir = ROOT / "skills/beopsuny/assets/policies/checklists"
@@ -1717,19 +1509,6 @@ def check_policy_checklist_runtime_contracts() -> None:
         if "related_permits" in serialized or re.search(r"\bpermit-\d+\b", serialized):
             raise AssertionError(f"{relative}: stale permit id references must use live-check wording")
 
-
-def check_mandatory_provisions_candidate_index() -> None:
-    text = read_text("skills/beopsuny/assets/policies/mandatory_provisions.yaml")
-    label = "mandatory_provisions.yaml"
-
-    for required in [
-        "강행규정 후보 인덱스",
-        "issue spotting",
-        "결론 근거가 아니다",
-        "current primary source",
-    ]:
-        assert_contains(text, required, label)
-    assert_not_contains(text, "강행규정 단일 소스", label)
 
 
 def check_source_authority_verified_contract() -> None:
@@ -1856,8 +1635,6 @@ def check_source_authority_verified_contract() -> None:
         assert_not_contains(doc_text, 'source_authority: "[INSUFFICIENT]"', doc_label)
 
     source_authority_docs = {
-        "research-workflow.md": docs["research-workflow.md"],
-        "legal_verification_packet.yaml": read_text("skills/beopsuny/assets/schemas/legal_verification_packet.yaml"),
         "freshness_revalidation.yaml": read_text("skills/beopsuny/assets/schemas/freshness_revalidation.yaml"),
     }
     for doc_label, doc_text in source_authority_docs.items():
@@ -1868,7 +1645,6 @@ def check_source_authority_verified_contract() -> None:
     source_docs = {
         "source-grading.md": text,
         "source_grades.yaml": read_text("skills/beopsuny/assets/policies/source_grades.yaml"),
-        "output-formats.md": docs["output-formats.md"],
         "source-access.md": docs["source-access.md"],
     }
     for doc_label, doc_text in source_docs.items():
@@ -1883,31 +1659,12 @@ def check_source_authority_verified_contract() -> None:
     assert_not_contains(text, "### 예시 1", label)
     assert_not_contains(text, "## 대법원 2023. 1. 12. 선고 2022다12345 판결", label)
 
+    # The citation contract owns source conditions; output examples need only
+    # maintain reachable homes and the axes, not repeat every provenance string.
     output_formats = docs["output-formats.md"]
-    for required in [
-        "소스 인용의 첫 줄 맨 앞",
-        "[출처 권위 라벨] [VERIFIED/UNVERIFIED/INSUFFICIENT/CONTRADICTED/STALE/EDITORIAL]",
-        "로컬 미러 원문 확인",
-        "직접 공식 사이트 확인",
-        "직접 법원 원문 확인",
-        "2차 소스 해설",
-        "원문 확인 불가",
-    ]:
-        assert_contains(output_formats, required, "output-formats.md")
-    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "출력 형식과 예시는 이
-    # 문서를 단일 소스로 삼고" 문장을 통째로 고정하면 "단일 소스로 따른다"
-    # 같은 다듬기가 CI를 깨므로, 문단 스코프 안에서 "출력 형식과 예시는" →
-    # "단일 소스" 순서만 핀다 — 문장 삭제·단일 소스 표현 이탈은 FAIL.
-    single_source_para = re.search(
-        r"^출력 형식과 예시는.*$", output_formats, re.MULTILINE
-    )
-    if not single_source_para:
-        raise AssertionError("output-formats.md: 출력 형식 단일 소스 문단이 없다")
-    assert_ordered_tokens(
-        single_source_para.group(0),
-        ["출력 형식과 예시는", "단일 소스"],
-        "output-formats.md 출력 형식 단일 소스",
-    )
+    for axis in ["source_authority", "verification_status", "provenance", "currency"]:
+        assert_contains(output_formats, axis, "output-formats.md")
+    assert_contains(output_formats, "references/citation-verification-contract.md", "output-formats.md")
 
 
 def check_citation_verification_contract_single_source() -> None:
@@ -2104,167 +1861,19 @@ def check_golden_fixture_common(item: dict[str, Any], label: str, seen_ids: set[
 
 def check_research_workflow_verification_core() -> None:
     text = read_text("skills/beopsuny/references/research-workflow.md")
-    skill_text = read_text("skills/beopsuny/SKILL.md")
-    label = "research-workflow.md"
-
-    for required in [
-        "Legal Verification Core",
-        "assets/schemas/legal_verification_packet.yaml",
-        "Verification packet contract",
-        "issue-to-authority map",
-        "authority packet",
-        "citation ledger",
-        "contradiction scan",
-        "conclusion binding",
-        "self-verification",
-        "결론 후보",
-        "필요한 authority",
-        # packet이 후보·스니펫·stale 자산뿐이면 결론 확정 금지
-        "후보·스니펫·stale 자산",
-        "`citation`",
-        "`pinpoint`",
-        "`source_authority`",
-        "`verification_status`",
-        "`provenance`",
-        "`currency`",
-        "`supports`",
-        "[CONTRADICTED]",
-        "`matter`",
-        "`issue_to_authority_map`",
-        "`authority_packets`",
-        "`citation_ledger`",
-        "`contradiction_scan`",
-        "`conclusion_binding`",
-        "`self_verification`",
-        "`output_allowed: true`가 아닌 ledger 항목",
-        # light tier는 packet 생성 없음 (kernel이 곧 계약)
-        "`light` tier",
-    ]:
-        assert_contains(text, required, label)
-
-    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰/표 구조. 전역 토큰 대신 문단
-    # 스코프로 좁혀 #262 함정을 피한다. "않는다"→"않습니다" 같은 의미 보존
-    # 다듬기는 어간("않")이 살아 있으므로 PASS, 문장 삭제·방향 반전은 FAIL.
-    ledger_line = re.search(r"^ledger에 없는 인용은.*$", text, re.MULTILINE)
-    if not ledger_line:
-        raise AssertionError(f"{label}: ledger 인용 금지 문단이 없다")
-    assert_ordered_tokens(
-        ledger_line.group(0), ["없는 인용은", "출력하지 않"], f"{label} ledger 인용"
-    )
-    assert_contains(ledger_line.group(0), "결론 근거로 쓰지 않", f"{label} ledger 인용")
-
-    scan_line = re.search(r"^같은 결론 후보에 대해.*$", text, re.MULTILINE)
-    if not scan_line:
-        raise AssertionError(f"{label}: contradiction scan 문단이 없다")
-    assert_ordered_tokens(
-        scan_line.group(0), ["서로 다르면", "숨기지 않"], f"{label} contradiction scan"
-    )
-
-    binding_line = re.search(r"^최종 결론의 강도는.*$", text, re.MULTILINE)
-    if not binding_line:
-        raise AssertionError(f"{label}: conclusion binding 문단이 없다")
-    assert_ordered_tokens(
-        binding_line.group(0), ["가장 약한", "필수 authority"], f"{label} conclusion binding"
-    )
-
-    # stale 자산 행은 표 구조로 — 행 삭제·셀 이탈이 FAIL, "stale 자산만 있음"→
-    # "stale 자산만 있을 때" 같은 다듬기는 셀 토큰이 살아 있으므로 PASS.
-    binding_table = parse_markdown_table(text, "| 상태 | 결론 표현 |")
-    stale_rows = [row for row in binding_table if "stale 자산" in row[0]]
-    if len(stale_rows) != 1:
-        raise AssertionError(f"{label}: 결론 binding 표에 stale 자산 행이 정확히 1개여야 한다")
-    assert_contains(stale_rows[0][1], "triage 후보로만", f"{label} stale 자산 행")
-
-    trigger_line = re.search(r"^모든 법률 결론은.*$", text, re.MULTILINE)
-    if not trigger_line:
-        raise AssertionError(f"{label}: verification core 경계 문단이 없다")
-    # 방향 토큰으로 핀한다: "올린다→올립니다" 다듬기는 어간이 음절 합성으로
-    # 리(0xB9AC)/린(0xB9B0)이 갈라져 substring 매치가 불안정하다 — "애매하면"
-    # 뒤에 "`full`로"가 오는지(방향)만 본다. "애매하면 `light`로" 반전은 FAIL.
-    assert_ordered_tokens(
-        trigger_line.group(0), ["애매하면", "`full`로"], f"{label} 트리거 판정"
-    )
-
-    packet_line = re.search(r"^`full` tier 중에서도.*$", text, re.MULTILINE)
-    if not packet_line:
-        raise AssertionError(f"{label}: packet 계약 문단이 없다")
-    assert_ordered_tokens(
-        packet_line.group(0), ["`light` tier에서는", "packet을 만들지 않"], f"{label} light tier"
-    )
-    # 2단 트리거 표(light/full) 셀 구조는 check_research_workflow_tier_table_structure가
-    # 파싱 기반으로 검증한다(issue #182) — 표 헤더/light 행 ledger 필드 열거 문구를
-    # exact-string으로 고정하지 않는다.
-
-    # 적용 강도는 판정 가능한 2단 트리거(light/full)로만 조절한다. 재량형
-    # 적용 표현("축약형으로 적용")이 되살아나면 실행이 run마다 갈리므로 실패시킨다.
-    # 단어 자체가 아니라 재량 구문만 금지한다 (예: "축약형 표기" 같은 무관한 용례 허용).
-    assert_not_contains(text, "축약형으로 적용", label)
-    assert_not_contains(text, "축약해도 되지만", label)
-
-    for required in [
-        "references/research-workflow.md#legal-verification-core",
-        "issue-to-authority map",
-        "authority packet",
-        "citation ledger",
-        "contradiction scan",
-        "conclusion binding",
-        "2단 트리거(light/full)",
-    ]:
-        assert_contains(skill_text, required, "SKILL.md")
+    core = section_body(text, "## Legal Verification Core")
+    for token in ["pinpoint", "출처 권위 라벨", "verification status", "provenance", "currency",
+                  "사건 당시", "경과규정", "조회 실패", "반대근거", "[CONTRADICTED]"]:
+        assert_contains(core, token, "research-workflow.md core")
+    packet = section_body(text, "## Verification packet contract")
+    for token in ["assets/schemas/legal_verification_packet.yaml", "선택", "감사·인계",
+                  "`sources`", "`conclusions.source_ids`", "`conflicts`", "사건"]:
+        assert_contains(packet, token, "research-workflow.md packet")
+    for token in ["references/research-workflow.md#legal-verification-core"]:
+        assert_contains(read_text("skills/beopsuny/SKILL.md"), token, "SKILL.md")
 
 
-LEGAL_VERIFICATION_LEDGER_FIELDS = [
-    "citation",
-    "pinpoint",
-    "source_authority",
-    "verification_status",
-    "provenance",
-    "currency",
-]
 
-
-def check_research_workflow_tier_table_structure() -> None:
-    """Structural (parse-based) check for the light/full verification tier table.
-
-    Replaces exact-string assertions on the table header and the light row's
-    ledger-field prose (issue #182): rewording the light row's descriptive
-    sentence shouldn't break CI, but a missing tier row or a dropped ledger
-    field should.
-    """
-    text = read_text("skills/beopsuny/references/research-workflow.md")
-    label = "research-workflow.md tier table"
-
-    rows = parse_markdown_table(text, "| Tier | 트리거 | 적용 |")
-    expected_row_count = 2
-    if len(rows) != expected_row_count:
-        raise AssertionError(f"{label}: expected {expected_row_count} rows, found {len(rows)}: {rows!r}")
-
-    tiers: dict[str, str] = {}
-    for row in rows:
-        if len(row) != 3:
-            raise AssertionError(f"{label}: row must have exactly 3 cells, got {row!r}")
-        tier_cell, trigger_cell, apply_cell = row
-        tier_match = re.fullmatch(r"`(light|full)`", tier_cell)
-        if not tier_match:
-            raise AssertionError(f"{label}: unexpected tier cell {tier_cell!r}")
-        if not trigger_cell:
-            raise AssertionError(f"{label}: {tier_cell} row has an empty trigger cell")
-        if not apply_cell:
-            raise AssertionError(f"{label}: {tier_cell} row has an empty 적용 cell")
-        tiers[tier_match.group(1)] = apply_cell
-
-    missing_tiers = {"light", "full"} - tiers.keys()
-    if missing_tiers:
-        raise AssertionError(f"{label}: missing tier rows {sorted(missing_tiers)!r}")
-
-    light_cell = tiers["light"]
-    missing_fields = [field for field in LEGAL_VERIFICATION_LEDGER_FIELDS if f"`{field}`" not in light_cell]
-    if missing_fields:
-        raise AssertionError(f"{label}: light row missing ledger fields {missing_fields!r}")
-
-    full_cell = tiers["full"]
-    if "6단계" not in full_cell or "core" not in full_cell:
-        raise AssertionError(f"{label}: full row missing 6-step core reference: {full_cell!r}")
 
 
 def check_current_law_verified_binding_excludes_unconfirmed_practice_material() -> None:
@@ -2305,20 +1914,14 @@ def check_current_law_verified_binding_excludes_unconfirmed_practice_material() 
 
 
 def check_admin_rule_provenance_examples_split_search_and_original_confirmation() -> None:
-    text = read_text("skills/beopsuny/references/output-formats.md")
-    label = "output-formats.md"
-
-    assert_not_contains(text, "**[공식 원문] [VERIFIED]** — 법망 API (type=admrul)", label)
-    for required in [
-        "법망 API 원문 필드 확인 (type=admrul) + law.go.kr 원문 링크 확인",
-        # 검색 결과/메타데이터만으로는 [VERIFIED] 불가
-        "메타데이터만",
-        "`[VERIFIED]`가 아니다",
-        "**[공식 실무자료: 미확정] [INSUFFICIENT]** — 법망 API 검색 결과만 확인",
-        "원문 필드·law.go.kr 본문 미확인",
-    ]:
-        assert_contains(text, required, label)
-
+    """Search/original distinction is a source contract, not an output literal."""
+    contract = read_text("skills/beopsuny/references/citation-verification-contract.md")
+    label = "citation-verification-contract.md"
+    for token in ["법망 API 원문 필드 확인", "법망 API search 결과만 확인",
+                  "law.go.kr 원문 확인", "요약·스니펫", "[VERIFIED]"]:
+        assert_contains(contract, token, label)
+    output = read_text("skills/beopsuny/references/output-formats.md")
+    assert_contains(output, "references/citation-verification-contract.md", "output-formats.md")
 
 def check_litigation_element_fact_template() -> None:
     research = read_text("skills/beopsuny/references/research-workflow.md")
@@ -2363,45 +1966,9 @@ def check_litigation_element_fact_template() -> None:
     # 갈라져 substring 매치가 불안정하다 — 활용형 3종을 OR로 본다.
     if not re.search(r"낮춘다|낮춥니다|낮추", conclusion_cell.group(0)):
         raise AssertionError(f"{research_label}: 결론 강도 하향 동사가 없다")
-    for required in [
-        "**유사점**",
-        "**차이점**",
-        "**적용 한계**",
-        "**distinguishing**",
-        # 판례 provenance 라벨 3종: 미러 라벨 2종 + 하급심 caveat kernel
-        "`공식 원문 기반 로컬 미러`",
-        "`공식 원문 기반 로컬 미러: 하급심`",
-        "**[공식 원문 기반 로컬 미러: 하급심] [VERIFIED]** — precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)",
-    ]:
+    # Keep the comparison axes without requiring duplicate bold list examples.
+    for required in ["유사점", "차이점", "적용 한계", "distinguishing", "상급심 변경 가능성"]:
         assert_contains(output_formats, required, output_label)
-
-    # #110 계약의 구조 앵커: litigation은 도메인 라벨이지 라우터 의도가 아니다.
-
-    # #306: (c) 산문 핀 → 목록 앵커 + 순서 토큰. distinguishing 줄은 두 곳
-    # (판례 비교, 분쟁 템플릿) 모두 "차이로 인해" → "결론이 달라질 수 있"
-    # 순서를 가져야 한다 — "달라질 수 있는지"→"달라질 수 있는가" 다듬기는
-    # PASS, 차이 검증 축 문장 삭제는 FAIL.
-    distinguishing_lines = re.findall(
-        r"^- \*\*distinguishing\*\*.*$", output_formats, re.MULTILINE
-    )
-    if len(distinguishing_lines) < 2:
-        raise AssertionError(f"{output_label}: distinguishing 목록 항목이 2곳이어야 한다")
-    for line in distinguishing_lines:
-        assert_ordered_tokens(
-            line, ["차이로 인해", "결론이 달라질 수 있"], f"{output_label} distinguishing"
-        )
-
-    # 하급심 caveat: "상급심 변경 가능성을 언급한다" 문장을 통째로 고정하면
-    # "언급합니다" 다듬기가 깨진다. 하급심 인용 문단 안에서 "상급심 변경
-    # 가능성" kernel만 핀다 — 문장 삭제·caveat 제거는 FAIL.
-    lower_court_para = re.search(
-        r"^대법원과 하급심 모두 직접 공식 사이트.*$", output_formats, re.MULTILINE
-    )
-    if not lower_court_para:
-        raise AssertionError(f"{output_label}: 하급심 provenance 문단이 없다")
-    assert_contains(
-        lower_court_para.group(0), "상급심 변경 가능성", f"{output_label} 하급심 caveat"
-    )
     assert_not_router_intent(skill_text, "litigation", "#110")
 
     assert_contains(
@@ -2876,94 +2443,25 @@ def check_volatile_data_assets_runtime_contracts() -> None:
 
 def check_freshness_governance_reference() -> None:
     text = read_text("skills/beopsuny/references/freshness-governance.md")
-    label = "freshness-governance.md"
-    registry = freshness_debt_registry()
-
-    for required in [
-        "Freshness Governance",
-        "assets/policies/freshness_debt.yaml",
-        "assets/schemas/freshness_revalidation.yaml",
-        "triage_only",
-        "Runtime Rule",
-        "Verification Before Answering",
-        "Debt Register Contract",
-        "Revalidation Record",
-        "Maintainer Workflow",
-        "Registered Stale Assets",
-        "tests/fixtures/freshness_revalidations",
-        "reference 문서",
-        "treaty/source count",
-        "Retirement Rule",
-        "live legal research",
-        "`source_families_checked`",
-        "`volatile_items_checked`",
-        "`retirement_decision`",
-        "`keep_registered`, `retire`, `partial_refresh`",
-        "`freshness_debt_updated: true`",
-        # 공식 source 없는 retire 결정 금지 (약한 근거 목록 토큰)
-        "사용자 기억",
-        "오래된 뉴스레터",
-        "stale 번들 YAML",
-        "`retire` 결정",
-        "`[STALE]` 또는 `[INSUFFICIENT]`",
-        # 새 stale 예외는 registry 우선 (테스트 코드 직접 추가 금지)
-        "새 stale 예외",
-        "테스트 코드",
-        "issue #101",
-    ]:
-        assert_contains(text, required, label)
-
-    for item in registry.get("assets", []):
-        assert_contains(text, f"`{item['path']}`", label)
+    for token in ["Runtime Rule", "Verification Before Answering", "Maintainer Workflow",
+                  "triage_only", "assets/policies/freshness_debt.yaml",
+                  "assets/schemas/freshness_revalidation.yaml", "remaining_stale_scope",
+                  "partial_refresh", "live legal research", "[INSUFFICIENT]"]:
+        assert_contains(text, token, "freshness-governance.md")
+    # Registry contents and record fields have one machine-readable home; their
+    # completeness, expiration and deletion are checked by registry/record checks.
 
 
 def check_output_contract_right_sizing() -> None:
+    """Short answers retain evidence axes, without mandatory section order."""
     text = read_text("skills/beopsuny/SKILL.md")
-    label = "SKILL.md"
-
-    for required in [
-        "출력 크기 조절",
-        "검토자 메모",
-        "Sources",
-        "Read",
-        "Currency",
-        "Before relying",
-        "compact",
-        "full",
-        "법률 결론",
-        "비법률 운영 응답",
-        "역할별 output mode와 destination별 산출물 계약",
-        "references/output-formats.md",
-    ]:
-        assert_contains(text, required, label)
-    assert_ordered_tokens(text, ROLE_GATE_OUTPUT_SECTION_ORDER, label)
-    assert_not_contains(text, "답변 마지막에는 항상 면책 고지를 붙인다", label)
-
-    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰.
-    # 면책: "답변 성격에 따라 붙인다" 문장을 통째로 고정하면 "붙입니다" 같은
-    # 다듬기가 CI를 깨므로, 문단 스코프 안에서 "면책 고지는"→"답변 성격에
-    # 따라" 순서만 핀다 — 문장 삭제·성격 의존 표현 이탈은 FAIL.
-    disclaimer_para = re.search(r"^면책 고지는.*$", text, re.MULTILINE)
-    if not disclaimer_para:
-        raise AssertionError(f"{label}: 면책 고지 문단이 없다")
-    assert_ordered_tokens(
-        disclaimer_para.group(0),
-        ["면책 고지는", "답변 성격에 따라"],
-        f"{label} 면책 고지",
-    )
-
-    # 지시 금지: "바로 서명·송부·제출하라는 지시는 피한다" 문장 전체를 고정하면
-    # "피합니다" 다듬기가 깨진다. 어간 "지시는 피"로 "피한다/피합니다" 둘 다
-    # 허용하되, "지시는 강조한다" 같은 방향 반전은 FAIL.
-    role_para = re.search(r"^역할별 output mode와 destination별 산출물 계약은.*$", text, re.MULTILINE)
-    if not role_para:
-        raise AssertionError(f"{label}: role/destination 문단이 없다")
-    assert_ordered_tokens(
-        role_para.group(0),
-        ["바로 서명·송부·제출하라는", "지시는 피"],
-        f"{label} 지시 금지",
-    )
-
+    match = re.search(r"### 출력 크기 조절\n(?P<body>.*?)(?=\n## |\Z)", text, flags=re.S)
+    if not match:
+        raise AssertionError("SKILL.md: output sizing contract missing")
+    section = match.group("body")
+    for axis in ["요청", "출처 권위", "verification status", "provenance", "적용 시점", "미확인 범위"]:
+        assert_contains(section, axis, "SKILL.md output sizing")
+    assert_contains(section, "references/output-formats.md", "SKILL.md output sizing")
 
 def check_report_deliverable_contract() -> None:
     text = read_text("skills/beopsuny/references/report-deliverable.md")
@@ -2973,8 +2471,8 @@ def check_report_deliverable_contract() -> None:
         "`internal_legal_memo`",
         "생성일",
         "읽은 범위",
-        "최신성",
-        "면책",
+        "적용 시점",
+        "미확인",
         "외부 리소스",
         "CDN",
         "폰트",
@@ -3006,7 +2504,7 @@ def check_report_deliverable_contract() -> None:
 
     for required in [
         "## R4. Artifact 배포 gate",
-        "법무/변호사 검토 전 대외 사용 금지",
+        "법무/변호사 검토",
         "`external_draft` destination 규칙 + role/destination gate",
         "`assets/schemas/output_contract.yaml#legal_effect_triggers`",
         "`references/output-formats.md#destination-output-contracts`",
@@ -3071,8 +2569,6 @@ def check_bulk_grid_report_template_contract() -> None:
         "생성일",
         "읽은 범위",
         "최신성 한계",
-        "면책 고지",
-        "자가 검증",
         "HTML-escape",
         "quote",
         "location",
@@ -3117,33 +2613,20 @@ def check_bulk_grid_report_template_contract() -> None:
         "조항 인용",
         "why_risky",
         "negotiation_points",
-        "alt_wording_hint",
+        "draft_clause",
         "`internal_legal_memo`",
         "`business_summary`",
-        "destination:internal only",
         "destination:business_summary only",
-        "검토자 메모",
-        "자가 검증",
-        "미확인 내부 노트",
         "decision",
         "action",
-        "counter_draft_forbidden_patterns",
-        "대체 문구 제공이 아니다",
         "HTML-escape",
         "생성일",
         "읽은 범위",
         "최신성 한계",
-        "면책 고지",
         "law.go.kr",
         '<a href="https://www.law.go.kr',
     ]:
         assert_contains(contract_template, required, contract_label)
-
-    for forbidden_literal in ["아래 문구로 교체", "최종 수정안", "이 문구를 사용"]:
-        if forbidden_literal in contract_template:
-            raise AssertionError(
-                f"{contract_label}: counter-draft forbidden pattern literal must not be embedded: {forbidden_literal}"
-            )
 
     for description, pattern in forbidden_resource_patterns.items():
         if re.search(pattern, contract_template, flags=re.IGNORECASE):
@@ -3196,34 +2679,6 @@ def check_changelog_unreleased_entry_density() -> None:
             "변경 요약만 남기고 설계 경위·시행착오·mutation 표는 sprint 파일이나 PR로 "
             f"위임하라: {too_long}"
         )
-
-
-def check_skill_model_floor_disclosure() -> None:
-    """#253. 하위 모델에서 먼저 무너지는 것은 핵심 금지선이 아니라 evidence
-    계약층이다(2026-07-21 플로어 실측: haiku가 판례 날조·무확인 쓰기·직접 송부는
-    거부하나 라벨·상태 태그·공포본 currency는 신뢰 못 할 수준). 사용자는 답을
-    받지만 그 답이 계약을 지켰는지 알 수 없다 — 막을 일이 아니라 밝힐 일이라
-    차단이 아니라 고지로 넣었다(#249 실현 가능성 조사: 모델 자기보고 10/10).
-
-    문안은 모델 세대에 종속되면 안 된다 — 특정 모델 ID를 박으면 #240에서 겪은
-    어휘 잔재가 반복된다. tier 어휘 + fail-open 단서만 토큰으로 고정한다.
-    """
-    text = read_text("skills/beopsuny/SKILL.md")
-    label = "SKILL.md model floor disclosure"
-
-    for required in [
-        "경량 tier",
-        # 무엇이 저하되는지 — 핵심 금지선이 아니라 evidence 계약층이다
-        "evidence 계약층",
-        "출처 권위 라벨·verification status·공포/시행일 판정",
-        # fail-open: 불확실하면 고지하지 않는다 (정상 모델 오경고 방지)
-        "확실히 알 수 없으면 고지하지 않는다",
-    ]:
-        assert_contains(text, required, label)
-
-    # 세대 종속 금지: 특정 모델 ID/제품명을 spine에 박으면 모델이 바뀔 때 썩는다.
-    for forbidden in ["haiku", "Haiku", "sonnet", "Sonnet", "opus", "Opus"]:
-        assert_not_contains(text, forbidden, f"{label} (모델명은 spine에 두지 않는다)")
 
 
 def check_skill_gate_attachment_and_draft_first() -> None:
@@ -3299,7 +2754,7 @@ def check_skill_gate_attachment_and_draft_first() -> None:
     # one-home: 역할별 output mode와 초벌 밀도 기준의 집은 reference다.
     assert_contains(text, "`references/output-formats.md`가 단일 소스", label)
     draft_reference = read_text("skills/beopsuny/references/output-formats.md")
-    for required in ["draft-first", "초벌"]:
+    for required in ["초벌", "요청"]:
         assert_contains(draft_reference, required, "output-formats.md draft-first home")
 
     # 응답 품질 게이트 절이 gate 표를 덮어쓰지 않는지. 이 절이 무조건형으로
@@ -3326,9 +2781,7 @@ def check_skill_quality_contract_router_map() -> None:
         "법률 결론 always-on gate",
         # reference 추가 로딩은 라우팅 원칙 1(Right-sizing) 소관
         "라우팅 원칙 1(Right-sizing)",
-        "issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding",
         "live source 확인 전 `triage_only`",
-        "retirement에는 revalidation record 필요",
         "내부 메모·자가 검증 블록 외부 초안에서 제거",
     ]:
         assert_contains(text, required, label)
@@ -3598,16 +3051,12 @@ def check_readme_quality_contract_map() -> None:
         "pull request",
         ".github/workflows/contract-tests.yml",
         "router guardrail 평가",
-        "assets/policies/` (5 files)",
         "assets/schemas/` (4 files",
         "freshness_metadata.yaml",
         "`freshness_debt.yaml`",
         "`freshness_revalidation.yaml`",
         "`legal_verification_packet.yaml`",
         "`output_contract.yaml`",
-        "authority packet",
-        "citation ledger",
-        "conclusion binding",
         "triage_only",
         "품질 계약 변경 체크리스트",
         "새 법률 기능, 업무 영역, 출력 모드, stale 자산",
@@ -3679,7 +3128,6 @@ def check_readme_asset_inventory_counts() -> None:
         assert_contains(text, f"`{schema_name}`", label)
 
     for policy_name in [
-        "mandatory_provisions.yaml",
         "review_mode.yaml",
         "source_grades.yaml",
         "freshness_debt.yaml",
@@ -4263,6 +3711,9 @@ def check_release_workflow_preflight() -> None:
 
 # 은퇴한 표면 → 그 개념의 현재 집. 재퇴적(파일 복귀)을 하드 실패로 막는다.
 RETIRED_SURFACES = {
+    "skills/beopsuny/assets/policies/mandatory_provisions.yaml": (
+        "retired duplicate index; use clause candidates and official-source review"
+    ),
     # 2026-07-12: GitHub Issues own live work, CHANGELOG owns history.
     "TODOS.md": "use GitHub Issues + CHANGELOG",
     # #248: 런타임 소비자 0. 의도→reference 매핑은 SKILL.md 의도 표가, workflow별
@@ -4338,15 +3789,7 @@ def check_self_verification_guardrails() -> None:
 
     for required in [
         "사용자 전제 검증",
-        "citation ledger",
-        "assets/schemas/legal_verification_packet.yaml",
-        "법적 효과가 큰 답변에서는",
-        "`citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`, `supports`",
-        "issue-to-authority map",
         "conclusion binding",
-        "`conclusion_binding.conclusion_strength`",
-        "`verified`, `qualified`, `insufficient`, `contradicted`, `triage_only`",
-        "contradiction scan",
         "[CONTRADICTED]",
         "Retrieved Content Trust",
         # 규칙의 집은 SKILL.md 안전 경계이고 여기는 포인터 + 처리 절차만 둔다 (#262)
@@ -4357,8 +3800,7 @@ def check_self_verification_guardrails() -> None:
         "references/output-formats.md#role-based-output-modes",
         "references/output-formats.md#destination-output-contracts",
         "데이터 무결성 이슈",
-        "`assets/policies/mandatory_provisions.yaml`",
-        "후보 인덱스",
+        "강행규정·예외·적용 시점",
         "current primary source",
     ]:
         assert_contains(text, required, label)
@@ -4398,107 +3840,34 @@ def check_self_verification_guardrails() -> None:
 
 
 def check_self_verification_metadata_single_home() -> None:
-    """자가 검증 block notation has one home (output-formats.md); self-verification.md keeps a pointer."""
+    """Optional verification summaries have one home; no mandatory badge."""
     self_verification = read_text("skills/beopsuny/references/self-verification.md")
-    output_formats = read_text("skills/beopsuny/references/output-formats.md")
-
-    # canonical home keeps the heading and the exact output literal
-    assert_contains(output_formats, "## 자가 검증 메타데이터", "output-formats.md")
-    assert_contains(output_formats, "`Citation n/a`로 표기한다", "output-formats.md")
-    assert_contains(
-        output_formats,
-        "🔍 **자가 검증**: Citation 3/3 ✓ | Legal Substance ✓ | Client Alignment ✓ | Counter-draft ✓",
-        "output-formats.md",
-    )
-
-    # pointer stays a pointer; the example block must not be restated here
-    assert_contains(
-        self_verification,
-        "output-formats.md#자가-검증-메타데이터",
-        "self-verification.md",
-    )
-    assert_not_contains(self_verification, "🔍 **자가 검증**: Citation 3/3", "self-verification.md")
-
+    output = read_text("skills/beopsuny/references/output-formats.md")
+    assert_contains(self_verification, "output-formats.md#자가-검증-메타데이터", "self-verification.md")
+    assert_contains(output, "## 자가 검증 메타데이터", "output-formats.md")
+    # The observable source checks are enforced by the citation contract and
+    # semantic eval. A decorative checkmark is not verification evidence.
+    check_citation_verification_contract_single_source()
 
 def check_output_reviewer_note_lite() -> None:
+    """Historical check name retained for callers; Lite packaging is retired."""
     text = read_text("skills/beopsuny/references/output-formats.md")
-    label = "output-formats.md"
-
-    for required in [
-        "검토자 메모 Lite",
-        "표준 검토자 메모",
-        "출처 provenance",
-        "legalize-kr 로컬 미러 확인",
-        "직접 공식 사이트 확인 아님",
-        "법망 API 확인",
-        "law.go.kr 원문 확인",
-        "web — verify",
-        "Before relying",
-    ]:
-        assert_contains(text, required, label)
-
+    for home in ["## 검토자 메모", "references/citation-verification-contract.md"]:
+        assert_contains(text, home, "output-formats.md")
 
 def check_output_role_destination_contracts() -> None:
+    """Docs must reach structured gates; roles do not impose section order."""
     text = read_text("skills/beopsuny/references/output-formats.md")
-    label = "output-formats.md"
-
-    for required in [
-        "Role-based output modes",
-        "assets/schemas/output_contract.yaml",
-        "`legal_effect_triggers`",
-        "`non_overrides`",
-        # non_overrides는 output preference로 덮어쓰기 불가
-        "output preference",
-        "덮어쓸 수 없다",
-        "`lawyer`",
-        "`legal_ops`",
-        "`business_user`",
-        "`unknown`",
-        "한 줄 결론",
-        "지금 할 일",
-        "하지 말 것",
-        "확인 필요 정보",
-        "변호사/법무에게 물어볼 질문",
-        "서명·송부·제출·확정 답변을 바로 지시하지 않고",
-        # 쉬운 라벨은 출처 권위 라벨/verification status 대체 불가
-        "쉬운 라벨",
-        "대체하지 않는다",
-        "Destination output contracts",
-        "`internal_legal_memo`",
-        "`business_summary`",
-        "`executive_report`",
-        "`external_draft`",
-        "`agency_or_court_submission`",
-        "계약 playbook이 default destination",
-        # external_draft: 내부 검토자 메모/자가 검증 블록 포함 금지
-        "내부 검토자 메모",
-        "그대로 포함하지 않는다",
-        "보내기 전 법무 검토 필요",
-        "변호사 또는 담당 법무 검토 없이 제출하라고 쓰지 않음",
-    ]:
-        assert_contains(text, required, label)
-
-    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. playbook 우선순위 문단에서
-    # "출력 선호" → "뿐" → "덮어쓰지 못" 순서가 살아 있어야 한다. "출력
-    # 선호일 뿐"→"출력 선호에 불과할 뿐" 다듬기는 "일 뿐" 어미가 갈라져
-    # substring 매치가 불안정하므로 "출력 선호" → "뿐" → "덮어쓰지 못" 순서만
-    # 핀다. "뿐"이 사라지면(playbook이 gate를 덮어쓰는 방향 반전) FAIL.
-    playbook_priority_para = re.search(
-        r"^계약 playbook이 default destination이나.*$", text, re.MULTILINE
-    )
-    if not playbook_priority_para:
-        raise AssertionError(f"{label}: 계약 playbook 우선순위 문단이 없다")
-    assert_ordered_tokens(
-        playbook_priority_para.group(0),
-        ["출력 선호", "뿐", "덮어쓰지 못"],
-        f"{label} playbook 우선순위",
-    )
-    assert_ordered_tokens(
-        playbook_priority_para.group(0),
-        ["현재 사용자 요청과 role/destination gate를", "우선"],
-        f"{label} 사용자 요청 우선",
-    )
-
+    schema = load_yaml("skills/beopsuny/assets/schemas/output_contract.yaml")
+    for pointer in ["assets/schemas/output_contract.yaml", "legal_effect_triggers",
+                    "composition_rule", "non_overrides"]:
+        assert_contains(text, pointer, "output-formats.md")
+    for group, key in [("role_modes", "role"), ("destinations", "destination")]:
+        for entry in schema[group]:
+            assert_contains(text, f"`{entry[key]}`", "output-formats.md")
+    # Values and gate/strip obligations are validated at their schema home.
+    check_output_contract_schema()
+    check_output_contract_composition_rule()
 
 def check_router_scenario_references() -> None:
     data = load_yaml("tests/scenarios/16_router_regression.yaml")
@@ -4568,6 +3937,7 @@ def check_common_rule_layer_audit() -> None:
         "narrowed",
         "moved_to_live",
         "retained_pending_live",
+        "retired",
     }
     for rule, item in audit.items():
         if item.get("class") not in {"a", "b", "c"}:
@@ -4580,6 +3950,7 @@ def check_common_rule_layer_audit() -> None:
         if item.get("class") != "c" and item.get("static_disposition") not in {
             "retained",
             "narrowed",
+            "retired",
         }:
             raise AssertionError(f"{rule}: (a)/(b) rule must stay in the static scorer")
         if item.get("static_disposition") in {"narrowed", "moved_to_live"} and not item.get(
@@ -4592,7 +3963,7 @@ def check_common_rule_layer_audit() -> None:
     retained = {
         rule
         for rule, item in audit.items()
-        if item.get("static_disposition") != "moved_to_live"
+        if item.get("static_disposition") not in {"moved_to_live", "retired"}
     }
     evaluator_rules = evaluator_rule_names()
     if evaluator_rules != retained:
@@ -4627,7 +3998,7 @@ def check_common_rule_layer_audit() -> None:
         ]
         for prompt in load_yaml(path).get("prompts", [])
     }
-    live_backed = moved | {
+    live_backed = {rule for rule in moved if audit[rule].get("static_disposition") != "retired"} | {
         rule
         for rule, item in audit.items()
         if item.get("static_disposition") == "narrowed"
@@ -4641,6 +4012,8 @@ def check_common_rule_layer_audit() -> None:
 
 
 def check_router_fixture_integrity() -> None:
+    from evaluate_scenario_outputs import output_common_rules, output_semantic_rules
+
     scenarios = router_scenarios()
     evaluator_rules = evaluator_rule_names()
     expected_output_ids = router_output_eval_ids()
@@ -4650,19 +4023,9 @@ def check_router_fixture_integrity() -> None:
             "tests/forward_evals/beopsuny_guardrails.yaml"
         ).get("prompts", [])
     }
-    # router-01 has no output_eval block but carries a light verification tier,
-    # which auto-attaches a structural rule. unsafe_outputs may target it.
-    tier_rule_scenario_ids = {
-        scenario_id
-        for scenario_id, scenario in scenarios.items()
-        if scenario.get("expected", {}).get("verification_tier") in VERIFICATION_TIER_AUTO_RULES
-    }
-    # Contract review and legal research scenarios may auto-attach retained
-    # structural/literal rules via expected.primary_intent.
-    intent_rule_scenario_ids = {
-        scenario_id
-        for scenario_id, scenario in scenarios.items()
-        if scenario.get("expected", {}).get("primary_intent") in PRIMARY_INTENT_AUTO_RULES
+    auto_rule_scenario_ids = {
+        scenario_id for scenario_id, scenario in scenarios.items()
+        if output_common_rules(scenario) or output_semantic_rules(scenario)
     }
     expected_guardrail_ids = {
         "router-07",
@@ -4702,7 +4065,8 @@ def check_router_fixture_integrity() -> None:
             for field in scoring_fields
         )
         conditional_source = output_eval.get("conditional_forbidden_from")
-        if not has_list_scoring and not isinstance(conditional_source, str):
+        has_semantic_scoring = bool(output_semantic_rules(scenario))
+        if not has_list_scoring and not isinstance(conditional_source, str) and not has_semantic_scoring:
             raise AssertionError(
                 f"{scenario_id}: output_eval must contain a non-empty scoring field"
             )
@@ -4770,8 +4134,7 @@ def check_router_fixture_integrity() -> None:
         scenario_id = str(item.get("scenario_id", ""))
         if (
             scenario_id not in expected_output_ids
-            and scenario_id not in tier_rule_scenario_ids
-            and scenario_id not in intent_rule_scenario_ids
+            and scenario_id not in auto_rule_scenario_ids
         ):
             raise AssertionError(
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} references "
@@ -4786,23 +4149,12 @@ def check_router_fixture_integrity() -> None:
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} "
                 "must define expected_failure_rules"
             )
-        scenario_rules = {
-            str(rule)
-            for rule in scenarios[scenario_id].get("output_eval", {}).get("common_rules", [])
-        }
-        tier_rule = VERIFICATION_TIER_AUTO_RULES.get(
-            scenarios[scenario_id].get("expected", {}).get("verification_tier")
-        )
-        if tier_rule:
-            scenario_rules.add(tier_rule)
-        intent_rule = PRIMARY_INTENT_AUTO_RULES.get(
-            scenarios[scenario_id].get("expected", {}).get("primary_intent")
-        )
-        if intent_rule:
-            scenario_rules.add(intent_rule)
+        scenario_rules = set(output_common_rules(scenarios[scenario_id]))
+        semantic_rules = set(output_semantic_rules(scenarios[scenario_id]))
+        scenario_rules.update(semantic_rules)
         for rule in expected_failure_rules:
             rule_name = str(rule)
-            if rule_name not in evaluator_rules:
+            if rule_name not in evaluator_rules | semantic_rules:
                 raise AssertionError(
                     f"router_guardrail_outputs.yaml: unsafe output {item_id} "
                     f"expects unknown evaluator rule {rule_name!r}"
@@ -4876,7 +4228,7 @@ def check_forward_eval_prompt_set() -> None:
             "expected_guardrails",
             "forbidden_failures",
         ]:
-            if not prompt.get(required):
+            if required not in prompt or (required != "forbidden_failures" and not prompt[required]):
                 raise AssertionError(f"{label}: prompt missing {required!r}: {prompt!r}")
 
         prompt_id = str(prompt["id"])
@@ -4897,8 +4249,15 @@ def check_forward_eval_prompt_set() -> None:
 
         for field in ["expected_guardrails", "forbidden_failures"]:
             values = prompt[field]
-            if not isinstance(values, list) or len(values) < 2:
-                raise AssertionError(f"{label}: prompt {prompt_id} {field} must have at least two entries")
+            minimum = 2 if field == "expected_guardrails" else 0
+            if not isinstance(values, list) or len(values) < minimum:
+                raise AssertionError(f"{label}: prompt {prompt_id} {field} must be a list with at least {minimum} entries")
+        if not prompt["forbidden_failures"]:
+            from evaluate_scenario_outputs import output_common_rules
+            from forward_eval_harness import forward_semantic_rules
+            scenario = router_scenarios()[scenario_id]
+            if not output_common_rules(scenario) and not forward_semantic_rules(prompt):
+                raise AssertionError(f"{label}: prompt {prompt_id} has no active scoring receiver")
 
         seen_categories.add(str(prompt["guardrail_category"]))
 
@@ -5120,8 +4479,6 @@ CHECK_GROUPS = (
             check_checklist_routing_freshness,
             check_policy_checklist_runtime_contracts,
             check_volatile_policy_literals_require_live_check,
-            check_mandatory_provisions_candidate_index,
-            check_mandatory_provision_notes_are_candidates,
         ),
     ),
     CheckGroup(
@@ -5131,7 +4488,6 @@ CHECK_GROUPS = (
             check_citation_verification_contract_single_source,
             check_golden_citation_fixtures,
             check_research_workflow_verification_core,
-            check_research_workflow_tier_table_structure,
             check_current_law_verified_binding_excludes_unconfirmed_practice_material,
             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
             check_litigation_element_fact_template,
@@ -5161,7 +4517,6 @@ CHECK_GROUPS = (
         "router/loading: quality contract map",
         (
             check_changelog_unreleased_entry_density,
-    check_skill_model_floor_disclosure,
     check_skill_gate_attachment_and_draft_first,
     check_skill_quality_contract_router_map,
             check_skill_router_gate_table_structure,

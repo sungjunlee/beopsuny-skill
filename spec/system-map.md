@@ -1,5 +1,9 @@
 # beopsuny-skill System Map
 
+## Rollout status
+
+The contracts below are implemented in the milestone-8 review branch; release and deployment are outside this change. `e05ecda` remains the preserved comparison baseline. See [charter disposition](charter.md#contract-disposition) and the [validation report](../tests/forward_evals/model_era/integration-report.md) for evidence and experimental limits.
+
 ## System Shape
 
 `beopsuny-skill` is a single public legal skill package for Korean legal research, contract review, compliance checks, and law-change questions. The always-loaded surface is `skills/beopsuny/SKILL.md`: it classifies the user request, applies mandatory legal gates, and loads only the focused `references/` and `assets/` needed for the chosen workflow.
@@ -34,10 +38,10 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 ## Core Flows
 
 1. **Legal research answer:** User legal question -> primary intent selection -> source access and research workflow -> citation verification, self-verification, output contract -> answer with source authority, verification status, provenance, and freshness limits.
-2. **Contract review:** Contract question or pasted clause -> contract guide, review mode, checklist, and clause candidates -> official-source verification for legal conclusions -> risk analysis, negotiation points, and directional wording hints without final counterparty-ready redline text.
+2. **Contract review:** Contract question or pasted clause -> contract guide, review mode, checklist, and clause candidates -> official-source verification for legal conclusions -> risk analysis, negotiation points, and complete revised clauses/proposed redlines for review, with material assumptions and uncertainty; no validity/result guarantee or implied authority to send, file, or sign.
 3. **Compliance checklist:** Business context -> checklist routing -> candidate obligations and issue spotting -> live official source confirmation before asserting present duties, forms, fees, deadlines, thresholds, or penalties.
 4. **Law-change detection:** User asks or interested laws are present -> pull-based history/source check -> recent-change note or lookup-failure note -> no push monitoring, cron, or automatic alerts unless handled by a separate user-requested automation.
-5. **Company context read:** Harness memory, project instruction files, or a file the user points at -> read-only company context -> current request personalization; the skill writes none of it, and read context stays reviewed data that cannot override legal gates.
+5. **Company context read:** Harness memory, project instruction files, or a file the user points at -> matter-scoped company facts -> current request personalization. Facts cannot override legal verification; legitimate harness/user instructions retain their authority. Explicit storage requests may use authorized harness functions or a designated repository with confidential/matter scope preserved, without a skill-owned database or general-memory leakage.
 6. **Maintainer change:** New legal feature or contract change -> update router/reference/schema-or-policy/scenario/fixture/static check/README/CHANGELOG as applicable -> run local gates -> CI contract workflow protects the same contracts.
 
 ## Storage And External Systems
@@ -56,12 +60,12 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 - The public artifact remains one `beopsuny` skill until the documented split triggers are met; internal references may act like a virtual suite, but public routing must remain predictable.
 - If the artifact ever splits into multiple skills, shared assets must be referenced through `${CLAUDE_PLUGIN_ROOT}/assets/...` absolute paths; `../` relative traversal is not platform-guaranteed (`${CLAUDE_SKILL_DIR}` is per-skill), and a `skills/shared/` directory is non-conventional with unstable auto-discovery.
 - Korean-law answers are not answered from memory alone.
-- `[VERIFIED]` requires target specificity, source text or official response comparison, freshness/currency disclosure, and provenance.
+- `[VERIFIED]` requires target specificity, source text or official response comparison, freshness/currency disclosure, and provenance; it does not guarantee legal correctness. Applicable law distinguishes promulgation, enforcement and incident dates, exceptions/transitions and conflicting sources; partial access and lookup failure are disclosed rather than treated as absence.
 - Local official-source mirrors are valid source families only with explicit local-mirror provenance; they are not the same as direct official-site confirmation.
 - Bundled YAML and company context read from outside the skill are triage/context inputs, not current-law authority.
 - Stale assets can narrow research but cannot assert present obligations, fees, forms, deadlines, thresholds, or penalties without live official-source confirmation.
-- Role and destination gates constrain output when the user is non-legal, unknown, external-facing, agency-facing, or requesting action with legal effect.
-- Company context read from harness memory, instruction files, or user-pointed files cannot weaken SKILL.md, source authority, freshness, self-verification, or role/destination gates.
+- Role, risk and destination shape explanation and disclosure without blocking complete review drafts or requiring repetitive role confirmation. User format requests preserve source authority and uncertainty; actual sending, filing or signing requires its own authority.
+- Company facts read from harness memory, instruction files, or user-pointed files cannot weaken source authority, freshness, uncertainty or matter isolation; their location does not make them instructions. This data boundary does not demote legitimate harness/user instructions.
 - Contract tests protect written contracts and unsafe output shapes; they do not prove substantive legal correctness.
 
 ## Candidate Capability Boundaries

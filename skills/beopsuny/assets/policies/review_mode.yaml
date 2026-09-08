@@ -1,203 +1,107 @@
-# ============================================================
-# Review Mode — 계약 리뷰 엄격도 정책 (strict / moderate / loose)
-# ============================================================
-# 계약서 검토 시 사용자의 요청 강도에 따라 리뷰 깊이를 조절하는 정책.
-#
-# 사용 시점:
-#   1. 사용자 발화에서 강도 힌트 감지 (detection.user_utterance_hints)
-#   2. 힌트 없으면 default_mode (moderate) 적용
-#   3. 선택된 모드의 rules 를 Step 4 조항별 검토에 적용
-#
-# 설계 원칙:
-#   - 기본값은 반드시 moderate (하위 호환: 기존 시나리오가 그대로 통과)
-#   - 태그 체계는 변경 없음 (6개 기존 태그만 사용)
-#   - 출처 권위 라벨 정책(assets/policies/source_grades.yaml)과 독립적으로 동작
-# ============================================================
-
-version: "1.1.0"
-last_updated: "2026-04-12"
-
+# 계약 리뷰 깊이 정책. 산출물 종류는 사용자 요청으로 정하며 금지 문자열을 채점하지 않는다.
+version: 1.2.0
+last_updated: '2026-09-08'
 default_mode: moderate
-
-# ─────────────────────────────────────────────────────────
-# 1. 모드별 규칙
-# ─────────────────────────────────────────────────────────
-
 modes:
   strict:
-    label: "엄격 검토 — 보수적 관점, 모든 위험 플래그"
-    description: |
-      모든 위험 조항을 플래그하고 해설/의견 단독 결론을 허용하지 않으며,
+    label: 엄격 검토 — 보수적 관점, 모든 위험 플래그
+    description: '모든 위험 조항을 플래그하고 해설/의견 단독 결론을 허용하지 않으며,
+
       Primary Authority Rule 을 엄격히 적용하는 모드.
+
       Phase 0 횡단 이슈는 트리거 여부와 무관하게 전수 확인한다.
+
+      '
     risk_flagging:
-      threshold: "low"   # low/medium/high 모든 조항 플래그
+      threshold: low
       include_low: true
       include_missing_clauses: true
       include_boilerplate_inconsistency: true
     phase_0:
-      scope: "전수 확인"
-      require_all: true  # 트리거 없어도 국제거래/하도급/약관/표준계약서 모두 체크
+      scope: 전수 확인
+      require_all: true
     source_grading:
-      primary_authority_rule: "strict"   # 해설/의견 단독 결론 금지 — [EDITORIAL] 태그만
-      grade_c_conclusion: "forbidden"
-      require_cross_check: true          # 공식 실무자료 이상이라도 교차검증 요구
+      primary_authority_rule: strict
+      grade_c_conclusion: forbidden
+      require_cross_check: true
     output:
-      verbosity: "high"
-      include_missing_clauses_section: true
-      # Counter-drafting hint 필드별 제어 (v0.2.1~, 3키 분해 — see #22)
-      #   SKILL.md Step 4 필터 표와 1:1 대응. 모든 필드 출력.
-      include_why_risky: true
-      include_negotiation_points: true
-      include_alt_wording_hint: true
-
+      verbosity: high
   moderate:
-    label: "표준 검토 — 실무 균형, 기본값"
-    description: |
-      위험도 상(high) 조항을 우선 플래그하고 공식 실무자료 이상 소스 교차검증을 요구.
-      Phase 0 은 트리거된 항목(해외법인·하도급 관계 등)만 확인한다.
-      기존 법순이 기본 동작과 동일.
+    label: 표준 검토 — 실무 균형, 기본값
+    description: 관련 위험과 누락 조항을 실무 우선순위로 정리한다. 트리거된 횡단 이슈를 확인한다.
     risk_flagging:
-      threshold: "medium"   # medium 이상 플래그
+      threshold: medium
       include_low: false
       include_missing_clauses: true
       include_boilerplate_inconsistency: false
     phase_0:
-      scope: "트리거된 항목만"
+      scope: 트리거된 항목만
       require_all: false
     source_grading:
-      primary_authority_rule: "standard"
-      grade_c_conclusion: "with_editorial_tag"   # [EDITORIAL] 태그 시에만 허용
-      require_cross_check: false                 # 공식 원문 단독 결론 허용
-    output:
-      verbosity: "medium"
-      include_missing_clauses_section: false
-      # Counter-drafting hint 필드별 제어 (v0.2.1~)
-      #   why_risky + negotiation_points 는 출력, alt_wording_hint 만 생략
-      include_why_risky: true
-      include_negotiation_points: true
-      include_alt_wording_hint: false
-
-  loose:
-    label: "간이 검토 — 빠른 요약"
-    description: |
-      위험도 상(high) 조항과 명백한 누락 조항만 보고.
-      Phase 0 횡단 이슈 체크는 생략. 빠른 피드백이 목적.
-    risk_flagging:
-      threshold: "high"   # high 만 플래그
-      include_low: false
-      include_missing_clauses: true   # 누락 조항은 여전히 보고
-      include_boilerplate_inconsistency: false
-    phase_0:
-      scope: "생략"
-      require_all: false
-    source_grading:
-      primary_authority_rule: "standard"
-      grade_c_conclusion: "with_editorial_tag"
+      primary_authority_rule: standard
+      grade_c_conclusion: forbidden
       require_cross_check: false
     output:
-      verbosity: "low"
-      include_missing_clauses_section: false
-      # Counter-drafting hint 필드별 제어 (v0.2.1~)
-      #   why_risky 만 출력, negotiation_points / alt_wording_hint 둘 다 생략
-      include_why_risky: true
-      include_negotiation_points: false
-      include_alt_wording_hint: false
-
-# ─────────────────────────────────────────────────────────
-# 2. 모드 감지 (사용자 발화 → 모드 분기)
-# ─────────────────────────────────────────────────────────
-
+      verbosity: medium
+  loose:
+    label: 간이 검토 — 빠른 요약
+    description: 중요 위험과 명백한 누락을 짧게 보고한다. 관련 강행규정과 횡단 이슈 확인은 생략하지 않는다.
+    risk_flagging:
+      threshold: high
+      include_low: false
+      include_missing_clauses: true
+      include_boilerplate_inconsistency: false
+    phase_0:
+      scope: 트리거된 항목만
+      require_all: false
+    source_grading:
+      primary_authority_rule: standard
+      grade_c_conclusion: forbidden
+      require_cross_check: false
+    output:
+      verbosity: low
 detection:
-  # 사용자 발화에 아래 키워드가 포함되면 해당 모드로 분기
   user_utterance_hints:
     strict:
-      - 엄격하게
-      - 엄격히
-      - 꼼꼼하게
-      - 꼼꼼히
-      - 보수적으로
-      - 리스크 제로
-      - 모든 위험
-      - 전수 검토
-      - 상세 검토
+    - 엄격하게
+    - 엄격히
+    - 꼼꼼하게
+    - 꼼꼼히
+    - 보수적으로
+    - 리스크 제로
+    - 모든 위험
+    - 전수 검토
+    - 상세 검토
     loose:
-      - 간단히
-      - 간단하게
-      - 빠르게
-      - 빨리
-      - 요약만
-      - 요약해
-      - 가볍게
-      - 핵심만
-      - 훑어
-    moderate: []   # 기본값 — 명시적 힌트 필요 없음
-
+    - 간단히
+    - 간단하게
+    - 빠르게
+    - 빨리
+    - 요약만
+    - 요약해
+    - 가볍게
+    - 핵심만
+    - 훑어
+    moderate: []
   resolution_rules:
-    - rule: "strict 와 loose 힌트가 동시에 등장하면 strict 우선"
-      reason: "법률 분야에서 안전 쪽(더 많은 확인)을 기본으로 한다"
-    - rule: "힌트 없으면 default_mode(moderate) 적용"
-      reason: "기존 사용자 경험 유지 (하위 호환)"
-    - rule: "사용자가 명시적으로 `review_mode:` 를 지정하면 힌트보다 우선"
-      reason: "명시 지정 > 추론"
-
-# ─────────────────────────────────────────────────────────
-# 3. 모드별 동작 차이 요약 (SKILL.md 표와 대응)
-# ─────────────────────────────────────────────────────────
-
-mode_matrix:
-  headers: [mode, risk_threshold, phase_0, grade_c_conclusion, verbosity]
-  rows:
-    - [strict,   "low (전부)",   "전수 확인",     "금지 ([EDITORIAL] 태그만)", high]
-    - [moderate, "medium 이상",   "트리거 시만",   "with_editorial_tag",        medium]
-    - [loose,    "high 만",        "생략",          "with_editorial_tag",        low]
-
-# ─────────────────────────────────────────────────────────
-# 4. 태그 체계 (기존 6개만 사용 — 새 태그 없음)
-# ─────────────────────────────────────────────────────────
-
+  - rule: strict 와 loose 힌트가 동시에 등장하면 strict 우선
+    reason: 법률 분야에서 안전 쪽(더 많은 확인)을 기본으로 한다
+  - rule: 힌트 없으면 default_mode(moderate) 적용
+    reason: 기존 사용자 경험 유지 (하위 호환)
+  - rule: 사용자가 명시적으로 `review_mode:` 를 지정하면 힌트보다 우선
+    reason: 명시 지정 > 추론
 tag_policy:
   existing_tags_only: true
   allowed:
-    - "[VERIFIED]"
-    - "[UNVERIFIED]"
-    - "[INSUFFICIENT]"
-    - "[CONTRADICTED]"
-    - "[STALE]"
-    - "[EDITORIAL]"
-  note: |
-    모드별 차이는 "어떤 태그를 언제 강제하느냐"로만 표현한다.
-    예: strict 모드는 해설/의견 결론에 반드시 [EDITORIAL] + 공식 원문 또는 공식 실무자료 보강 요구.
-    새 태그를 도입하지 않는다.
-
-# ─────────────────────────────────────────────────────────
-# 5. Counter-drafting 자동 생성 금지 패턴 (단일 소스)
-# ─────────────────────────────────────────────────────────
-#
-# SKILL.md Dim 4 서브체크 3 (자동 생성 금지선)의 집행 목록.
-# tests/evaluate_scenario_outputs.py 의 contract_counter_draft_boundary 룰이
-# 이 목록을 **통째로 로드해서** primary_intent == contract_review 인 모든
-# 시나리오 출력에 적용한다. 여기만 고치면 집행 범위가 함께 갱신된다.
-#
-# 축: "완성된 수정 문구를 확정 제시하는" 뉘앙스. 방향·원칙(~ 방향, ~ 고려) 은 허용.
-# 확장 시 명령형/확정명사/전환동사 세 축을 고루 커버.
-
-counter_draft_forbidden_patterns:
-  - 아래 문구로 교체
-  - 이 문구를 사용
-  - 다음과 같이 수정
-  - 다음과 같이 변경
-  - 아래와 같이 고치
-  - 아래와 같이 기재
-  - 다음 조항으로 대체
-  - 최종 수정안
-  - "수정안:"
-  - "변경안:"
-  - "개선안:"
-  - 확정안
-  - 권고 문구
-  - 대체 문언
-  - 바꾸어야 합니다
-  - 이렇게 바꿔
-  - 로 바꿔 넣으세요
-  - "수정된 조항: \""
+  - '[VERIFIED]'
+  - '[UNVERIFIED]'
+  - '[INSUFFICIENT]'
+  - '[CONTRADICTED]'
+  - '[STALE]'
+  - '[EDITORIAL]'
+  note: 모드는 설명 밀도를 조절하며 출처 권위와 검증 의무를 완화하지 않는다. 해설/의견은 [EDITORIAL] 보조 자료이고 단독 법률 결론 근거가 아니다.
+request_scope:
+  priority: 사용자의 요청 범위가 모드별 기본 설명 밀도보다 우선한다. 모드는 산출물 종류를 차단하지 않는다.
+  drafting: 수정 조항을 요청하면 완성된 검토용 초안을 제공한다. 분석만 요청하면 전면 redline으로 확대하지 않는다.
+  evidence: 모든 모드에서 공식 원문·강행규정·예외·적용 시점·미확인 전제와 협상 선호를 구별한다.
+  authority: 초안 작성은 법적 유효성·결과 보증 또는 실제 송부·제출·서명의 권한이 아니다.

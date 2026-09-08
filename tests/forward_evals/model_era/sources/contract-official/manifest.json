@@ -1,0 +1,29 @@
+[
+  {
+    "id": "law26",
+    "url": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0026&lsiSeq=270351&urlMode=lsScJoRltInfoR",
+    "captured_at": "2026-09-08T10:51:41.044929+00:00",
+    "http_status": 200,
+    "sha256": "e5c8aaaf908e6261a6eba28b7d34efe5f7380813520a190d89814a0901bf447f",
+    "bytes": 81913,
+    "file": "law26.html"
+  },
+  {
+    "id": "law28_8",
+    "url": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=08&joNo=0028&lsiSeq=270351&urlMode=lsScJoRltInfoR",
+    "captured_at": "2026-09-08T10:51:41.229830+00:00",
+    "http_status": 200,
+    "sha256": "d7e2c9912bd924861d840c31fa25c570961bf27a72bafc60aae2349381bdf249",
+    "bytes": 79664,
+    "file": "law28_8.html"
+  },
+  {
+    "id": "decree28",
+    "url": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0028&lsiSeq=286175&urlMode=lsScJoRltInfoR",
+    "captured_at": "2026-09-08T10:51:42.271614+00:00",
+    "http_status": 200,
+    "sha256": "831f7ab3742c9d4a5ed28e4e7661167480189f2aff07c6e3f3e7e28abf3682ed",
+    "bytes": 72851,
+    "file": "decree28.html"
+  }
+]

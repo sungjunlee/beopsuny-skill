@@ -1,0 +1,16 @@
+{
+  "model": "gpt-5.6-sol",
+  "effort": "medium",
+  "runtime": "e05ecda",
+  "case": "m8-simple-statute-fixed",
+  "status": "completed",
+  "assessment": "unadjudicated",
+  "tokens": null,
+  "elapsed_seconds": null,
+  "cost": null,
+  "unavailable_reason": "native subagent tool does not expose per-call token/time billing",
+  "tools": "only input-file read observed; no external research; capability not physically disabled",
+  "context_isolation": "fresh fork_turns=none; tool definitions/environment still visible",
+  "paired_comparison_limit": "tool-free enforcement weaker than Claude; compare same native conditions within Sol only",
+  "output_sha256": "1b226a71cebc99f3cadc4aaaec76d62b68da21a1ace422371d07393c944969b6"
+}

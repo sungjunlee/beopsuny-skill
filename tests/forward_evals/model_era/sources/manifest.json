@@ -1,0 +1,90 @@
+[
+  {
+    "id": "privacy-2025",
+    "file": "privacy-2025.md",
+    "sha256": "586ee34fba3a6e937a14eaeb987b991c6d7c725c0eddee09731b07073f13ecbb",
+    "captured_at": "2026-09-08T10:39:48.287745+00:00",
+    "mirror_repository": "https://github.com/legalize-kr/legalize-kr",
+    "mirror_commit": "25bca42c727b596118ab0656abd80890bdc17baa",
+    "mirror_path": "kr/개인정보보호법/법률.md",
+    "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+    "provenance": "official-source-based local mirror; no direct official verification in this capture",
+    "effective_date": "2025-10-02",
+    "capture_completeness": "entire mirror file; external annexes not separately fetched",
+    "expert_adjudication": "unadjudicated",
+    "excerpt": {
+      "file": "privacy-2025-excerpt.md",
+      "sha256": "4f426584abd20731a8fbc0b03a2e384b48c267f2485674b71e8d352141e4c963",
+      "raw_line_ranges": [
+        [
+          1,
+          17
+        ],
+        [
+          360,
+          380
+        ],
+        [
+          598,
+          619
+        ],
+        [
+          678,
+          707
+        ],
+        [
+          729,
+          732
+        ],
+        [
+          901,
+          916
+        ]
+      ]
+    }
+  },
+  {
+    "id": "privacy-2026",
+    "file": "privacy-2026.md",
+    "sha256": "2fc9023b9df9aba0b4496ac9d2bca467ee0ae520e71f18d7ce4e286da95b828c",
+    "captured_at": "2026-09-08T10:39:48.325480+00:00",
+    "mirror_repository": "https://github.com/legalize-kr/legalize-kr",
+    "mirror_commit": "df9acf32db2bbc393bc4bd7860c4b1b32f0fead4",
+    "mirror_path": "kr/개인정보보호법/법률.md",
+    "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+    "provenance": "official-source-based local mirror; no direct official verification in this capture",
+    "effective_date": "2026-09-11",
+    "capture_completeness": "entire mirror file; external annexes not separately fetched",
+    "expert_adjudication": "unadjudicated",
+    "excerpt": {
+      "file": "privacy-2026-excerpt.md",
+      "sha256": "a4f68c33953e07a8105ac4a69d6088190321b6a06f5bedfb0b8e321585050df1",
+      "raw_line_ranges": [
+        [
+          1,
+          17
+        ],
+        [
+          360,
+          380
+        ],
+        [
+          598,
+          619
+        ],
+        [
+          678,
+          707
+        ],
+        [
+          729,
+          732
+        ],
+        [
+          912,
+          931
+        ]
+      ]
+    }
+  }
+]

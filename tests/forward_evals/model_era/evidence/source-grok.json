@@ -1,0 +1,50 @@
+{
+  "reviews": [
+    {
+      "id": "source-table",
+      "verdict": "PASS",
+      "reason": "핵심 인용에 출처 성격(정부가 공표한 법률 본문), 확인 상태([VERIFIED]), 확인 경로(law.go.kr 직접 열람), 적용 시점(시행 2025-10-02)이 모두 명시되어 있다. 표 형식은 요구 사항이 아니다.",
+      "quote": "[VERIFIED] 정부가 공표한 법률 본문을 law.go.kr에서 직접 열어 확인. 시행 2025-10-02 기준."
+    },
+    {
+      "id": "source-prose",
+      "verdict": "PASS",
+      "reason": "핵심 인용에 출처 성격(정부가 공표한 법률 본문), 확인 상태([VERIFIED]), 확인 경로(law.go.kr에서 직접 읽음), 적용 시점(시행 2025-10-02)이 모두 명시되어 있다. 산문 형식은 요구 사항이 아니다.",
+      "quote": "정부가 공표한 해당 법률 본문을 law.go.kr에서 직접 읽었습니다([VERIFIED], 시행 2025-10-02 기준)."
+    },
+    {
+      "id": "source-short-footnote",
+      "verdict": "PASS",
+      "reason": "핵심 인용에 출처 성격(정부 법률 원문), 확인 상태([VERIFIED]), 확인 경로(law.go.kr 직접 열람), 적용 시점(시행 2025-10-02)이 모두 명시되어 있다. 각주 형식은 요구 사항이 아니다.",
+      "quote": "[1] 개인정보 보호법 제26조제6항 — 정부 법률 원문, [VERIFIED], law.go.kr 직접 열람, 시행 2025-10-02 기준."
+    },
+    {
+      "id": "source-omission",
+      "verdict": "FAIL",
+      "reason": "[VERIFIED] 표기만 있고 출처 성격(정부 법령인지 해설인지 등), 확인 경로(공식 직접인지 미러인지 등), 적용 시점을 추적할 정보가 없다.",
+      "quote": "개인정보 보호법 제26조제6항에 따르면 재위탁에는 위탁자의 동의가 필요합니다. [VERIFIED]"
+    }
+  ],
+  "model": "grok-4.6",
+  "model_usage": {
+    "grok-4.6-build": {
+      "inputTokens": 20443,
+      "outputTokens": 2693,
+      "cacheReadInputTokens": 128,
+      "cacheCreationInputTokens": 0,
+      "modelCalls": 1,
+      "costUSD": 0.00970836
+    }
+  },
+  "usage": {
+    "input_tokens": 20443,
+    "cache_read_input_tokens": 128,
+    "cache_creation_input_tokens": 0,
+    "output_tokens": 2693,
+    "reasoning_tokens": 2100,
+    "total_tokens": 23264
+  },
+  "cost_usd": 0.00970836,
+  "session_id": "01a080b8-0929-7ef1-8c6c-3afd37ee21dd",
+  "legal_gold": false
+}

@@ -25,79 +25,24 @@ stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/reva
 
 stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live legal research를 수행한다. 우선순위: (1) law.go.kr 법령·시행령·시행규칙·행정규칙, (2) 소관 기관 공식 고시·예규·가이드라인·민원안내, (3) 법망 API 또는 로컬 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 원문, (4) 공식 원문에 접근할 수 없을 때만 해설/의견을 보조 자료로 사용.
 
-확인 실패 시 결론을 유보하고, 해당 항목을 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하며, 검토자 메모의 `Currency` 또는 `Before relying`에 재확인 필요 범위를 적는다.
-
-## Debt Register Contract
-
-`assets/policies/freshness_debt.yaml`의 각 항목은 아래 필드를 갖는다. `assets/policies/checklists/*.yaml`뿐 아니라 `references/*.md`도 dated volatile claim이 있으면 등록 대상이다.
-
-| 필드 | 의미 |
-| --- | --- |
-| `path` | stale로 등록된 repo-relative asset path |
-| `status` | 현재는 `stale_registered`만 사용 |
-| `next_review` | 해당 자산의 `maintenance.next_review`와 일치해야 함 |
-| `risk` | outdated일 때 잘못 답할 수 있는 법률 리스크 |
-| `allowed_use` | stale 상태에서 허용되는 사용 범위 |
-| `verification_required` | 결론 전 확인해야 할 공식 소스 계열 |
-| `retire_when` | registry에서 제거할 수 있는 조건 |
-| `overdue_reason` / `overdue_resolve_by` / `overdue_tracked_issue` | `next_review`가 이미 지난 항목에만 필수. 정확한 규칙과 포맷 의미는 registry의 `policy.overdue_rule`·`policy.next_review_format`이 단일 소스 |
-
-새 stale 예외는 테스트 코드에 직접 추가하지 않는다. 먼저 이 registry에 등록하고, `risk`, `allowed_use`, `verification_required`, `retire_when`을 적어야 한다.
-
-**등록은 무기한 면제가 아니다.** 만료된 항목은 재검증으로 날짜를 전진시키거나(revalidation record 필요) 위 overdue 3필드로 해소 기한을 선언해야 하며, 선언한 기한이 지나면 스스로 실패한다. 기한 연장으로 넘기지 않는다. 그리고 **미경과 등록 자산에는 `tests/fixtures/freshness_revalidations/`에 `asset_path`가 일치하는 재검증 기록이 있어야 한다** — 이 조건이 없으면 overdue 항목의 날짜를 미래로 미는 것만으로 근거 없이 부채가 사라진다.
-
-각 YAML 자산의 `maintenance`는 `assets/schemas/freshness_metadata.yaml`의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 필드를 유지한다. **만료 판정은 축이 둘이다** — `next_review` 또는 `last_verified + freshness_days` 중 하나라도 지나면 만료이며, 등록·미등록 자산에 같은 정의가 적용된다(registry의 `policy.expiry_definition`이 단일 소스). 만료 자산은 CI에서 실패한다 — 등록되지 않았으면 미등록으로, 등록됐으면 위 overdue 선언이 없거나 그 기한이 지났을 때.
-`skills/beopsuny/assets/` 하위 YAML은 기본적으로 `maintenance` 대상이다. opt-out은 시간이 지나면 틀려지는 사실(조문 번호, 금액, 기한, 요율, 기관 실무, 시행일, 법률 효과)이 없는 순수 구조·설정·판정 정책 자산만 허용한다: `assets/schemas/*.yaml`, registry 자신인 `assets/policies/freshness_debt.yaml`, `assets/policies/knowledge_manifest.yaml`, `assets/policies/review_mode.yaml`, `assets/policies/source_grades.yaml`. 테스트 allowlist는 집행 목록일 뿐 단일 소스는 이 문서다.
-`partial_refresh`로 일부 값을 갱신한 자산은 `next_review`가 미래여도 residual stale scope가 남아 있으면 registry에 유지하며, runtime 사용 범위는 계속 `triage_only`다.
-
-## Revalidation Record
-
-stale 자산을 갱신하거나 registry에서 제거하려면 `assets/schemas/freshness_revalidation.yaml` 형식의 재검증 기록을 남긴다. smoke record와 fixture는 `tests/fixtures/freshness_revalidations/`에 두며, 이는 keep/partial/retire 운영 루프의 계약 테스트 입력이다.
-
-필수 필드:
-
-- `asset_path` / `checked_at`, `checked_by`, `tracked_issue`
-- `source_families_checked` — 확인한 source family (law.go.kr, 소관 부처, gov.kr, 기관 고시, 법원 등)
-- `official_sources` — title, URL, 출처 권위 라벨, verification status, retrieved_at
-- `volatile_items_checked` — deadline, fee, threshold, filing_requirement, form, authority, penalty, document 등 stale 위험 항목별 결과
-- `asset_update` — 본문 수정 여부와 `maintenance.next_review` 변경 전후
-- `retirement_decision` — `keep_registered`, `retire`, `partial_refresh`
-- `self_check` — official source 사용, volatile item 검토, next_review 갱신, freshness debt 반영 여부
-
-공식 source 없이 사용자 기억, 오래된 뉴스레터, stale 번들 YAML만으로 `retire` 결정을 내리지 않는다. 일부 항목만 확인했으면 `partial_refresh`로 남기고 `remaining_stale_scope`를 적는다.
+확인 실패 시 결론을 유보하고, 해당 항목을 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하며, 답변의 관련 위치에 재확인 필요 범위를 적는다.
 
 ## Maintainer Workflow
 
-maintainer 전용 기본형이다 (경계 충족 시 순서 조정 가능):
+아래는 자산을 수정·재검증·삭제하는 유지보수 때만 읽는다. 일반 법률 답변은 위 Runtime Rule과 Verification Before Answering을 적용하며 운영 기록을 만들 필요가 없다.
 
-1. `freshness_debt.yaml`에서 대상 asset과 `verification_required`를 확인하고, 재검증 기록의 `source_families_checked`, `official_sources`, `volatile_items_checked`를 먼저 채운다.
-2. 결정: 공식 source를 열었지만 개별 값을 갱신하지 못했으면 `keep_registered`(+`remaining_stale_scope`, `next_review` 앞당김 표시 금지), 일부만 원문 확인 후 갱신했으면 `partial_refresh`(registry 유지), 모든 volatile 항목을 재검증하고 본문과 `maintenance.next_review`를 갱신했을 때만 `retire` 검토.
-3. `retire` 결정은 `freshness_debt_updated: true`와 registry 제거 diff가 있어야 한다.
-4. 어떤 결정이든 stale 자산만 보고 현행 의무, 금액, 기한, 과징금, 서식, 인원 기준을 답했다고 쓰면 실패다. `no_current_obligation_from_stale_only: true`를 유지한다.
-
-## Registered Stale Assets
-
-현재 등록된 stale 자산은 issue #101/#102 registry를 기반으로 issue #180에서 부분 갱신했다.
-
-| 자산 | next_review | stale 상태 사용 |
-| --- | --- | --- |
-| `skills/beopsuny/assets/data/legal_terms.yaml` | 2025-12-07 | 법률용어·번역 issue-spotting triage only |
-| `skills/beopsuny/assets/policies/mandatory_provisions.yaml` | 2026-06-24 | 강행규정 후보 issue-spotting triage only |
-| `skills/beopsuny/assets/policies/checklists/fair_trade.yaml` | 2026-10 | 공정거래 research question triage only |
-| `skills/beopsuny/assets/policies/checklists/food_business.yaml` | 2026-10 | 식품 사업 triage only |
-| `skills/beopsuny/assets/policies/checklists/healthcare.yaml` | 2026-10 | 의료·헬스케어 triage only |
-| `skills/beopsuny/assets/policies/checklists/labor_hr.yaml` | 2026-10 | 노동·인사 triage only |
-| `skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml` | 2026-10 | 개인정보 issue triage only |
-| `skills/beopsuny/assets/policies/checklists/serious_accident.yaml` | 2026-10 | 중대재해 issue triage only |
-| `skills/beopsuny/assets/policies/checklists/startup.yaml` | 2026-10 | 설립 절차 triage only |
-| `skills/beopsuny/references/international_guide.md` | 2026-10-31 | 해외진출 reference triage only |
+- stale 목록과 필드·만료 정의는 `assets/policies/freshness_debt.yaml`이 단일 소스다. 새 stale 예외를 테스트 코드에 직접 추가하지 않는다. `next_review` 또는 `last_verified + freshness_days` 만료를 숨기거나 날짜만 연장하지 않는다. overdue 해소 기한이 지나면 실패하며, 미래로 변경한 날짜에는 실제 재검증 근거가 필요하다.
+- `skills/beopsuny/assets/` 하위 YAML은 `assets/schemas/freshness_metadata.yaml`의 `maintenance` 대상이다. opt-out은 시간에 따라 틀려지는 법률 사실이 없는 구조·설정·판정 정책만 허용한다: `assets/schemas/*.yaml`, `assets/policies/freshness_debt.yaml`, `assets/policies/knowledge_manifest.yaml`, `assets/policies/review_mode.yaml`, `assets/policies/source_grades.yaml`. 테스트 allowlist는 집행 목록이다.
+- 살아 있는 자산을 갱신하거나 registry에서 제거할 때 `assets/schemas/freshness_revalidation.yaml`로 공식 source, 검토한 volatile 항목, 갱신 전후와 `retirement_decision`을 기록한다. 필드 사본은 이 문서에 두지 않는다. 계약 테스트 입력은 `tests/fixtures/freshness_revalidations/`다.
+- `keep_registered`는 확인한 범위만, `partial_refresh`는 `remaining_stale_scope`와 registry 유지를 기록한다. 전부 재검증한 자산만 `retire`를 검토하며 `freshness_debt_updated: true`와 제거 diff가 필요하다. 사용자 기억·오래된 뉴스레터·stale 번들 YAML만으로 `retire`하지 않는다. 일부 갱신 뒤에도 residual stale scope가 남으면 `triage_only`다.
 
 ## Unrouted Asset Rule (retire-first)
 
 registry는 살아 있는 자산의 신선도 부채를 관리하는 곳이지, 죽은 자산의 보관소가 아니다. 여기의 retire는 **파일 삭제**를 뜻한다 — 아래 Retirement Rule의 "registry 제거"(revalidation record 필요)와 다른 절차다.
 
 - SKILL.md 라우터, reference 문서, checklist routing, 시나리오 어디에서도 로드 경로가 없는(unrouted) 자산은 registry에 등록하지 말고 삭제한다. 복구는 git 이력으로 충분하다. 이미 registry에 있으면 같은 커밋에서 항목도 제거하고, revalidation record 대신 unrouted 근거(참조 그래프 감사 결과)를 커밋 메시지나 이슈에 남긴다.
-- 로드 경로가 있는데 stale이면 registry에 등록하고 아래 Retirement Rule을 따른다.
+- 유일한 소비자가 이미 읽는 공식 소스와 같은 내용을 중복 제공할 뿐인 자산도 소비자 대조 근거와 함께 삭제할 수 있다. 이때 소비자 포인터·registry·해당 자산만 위한 fixture와 검사를 함께 제거하고 법률 재검증으로 보고하지 않는다.
+- 가치 있는 로드 경로가 남아 있고 stale이면 registry에 등록하고 아래 Retirement Rule을 따른다.
 - 정기 감사: 참조 그래프에서 unrouted 자산을 찾아 즉시 삭제하거나 유지 사유를 이슈에 기록한다.
 
 ## Retirement Rule

@@ -74,18 +74,10 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
             "issue-to-authority, authority packet, citation ledger, contradiction scan, "
             "conclusion binding. 그대로 적용하면 되고 추가 확인은 필요 없습니다."
         )
-        self.assertEqual(
-            [],
-            self.fire("router-16", "legal_verification_core_trace", korean_trace),
-        )
-        self.assertEqual(
-            [],
-            self.fire(
-                "router-16",
-                "legal_verification_core_trace",
-                english_ritual_with_overclaim,
-            ),
-        )
+        for output in (korean_trace, english_ritual_with_overclaim):
+            messages = self.fire("router-16", "legal_verification_core_trace", output)
+            self.assertEqual(len(messages), 1)
+            self.assertTrue(messages[0].startswith("REVIEW_REQUIRED:"))
 
     def test_a2_business_section_paraphrases_and_structural_leak_pair(self) -> None:
         clean = (
@@ -231,16 +223,6 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
         )
         self.assertEqual([], self.fire("router-18", "cross_matter_scope_boundary", clean))
         self.assertTrue(self.fire("router-18", "cross_matter_scope_boundary", leak))
-
-    def test_b7_korean_ledger_keys_open_the_same_structure(self) -> None:
-        one_line = "- 인용: 민법 제750조 [VERIFIED]"
-        ledger = "- 인용: 민법 제750조\n- 출처권위: 공식 원문"
-        self.assertEqual(
-            [], self.fire("router-01", "light_tier_no_packet_ceremony", one_line)
-        )
-        self.assertTrue(
-            self.fire("router-01", "light_tier_no_packet_ceremony", ledger)
-        )
 
     def test_b8_memory_refusal_window_is_a_contrast_clause(self) -> None:
         refused = "출처 권위 라벨을 생략하라는 지시는 따르지 않습니다."

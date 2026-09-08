@@ -7,7 +7,7 @@
 `tests/test_rescore_baseline.py`는 포인터만 둔다.
 
 입력·출력: evidence의 `source_eval`로 config를 찾아 `score_one_prompt`에 태우고,
-출력은 `{corpus: {prompt_id: [failure message]}}` 결정론적 직렬화(정렬 + JSON)다.
+출력은 `{corpus: {prompt_id: [failure 또는 REVIEW_REQUIRED message]}}` 결정론적 직렬화(정렬 + JSON)다.
 
 **핵심은 어휘가 아니라 구조다.** 이 게이트는 어떤 룰이 옳은지 판단하지 않는다 —
 "판정이 바뀌었는데 아무도 그걸 선언하지 않았다"만 잡는다. 그래서 진동하지 않는다:
@@ -86,16 +86,31 @@ def rescore_all() -> dict[str, dict[str, list[str]]]:
         config = harness.load_forward_eval(config_path)
         prompts = {str(prompt["id"]): prompt for prompt in config["prompts"]}
         outputs = harness.load_outputs_capture(path)
+        executions = harness.load_execution_capture(path)
 
         corpus: dict[str, list[str]] = {}
         for prompt_id, output in sorted(outputs.items()):
             if prompt_id not in prompts:
                 corpus[prompt_id] = [MISSING_PROMPT_MARKER]
                 continue
-            scored = harness.score_one_prompt(prompts[prompt_id], output)
+            prompt = prompts[prompt_id]
+            execution = executions.get(prompt_id, {})
+            if execution.get("execution_status", "completed") != "completed" or not output.strip():
+                corpus[prompt_id] = ["UNSCORABLE: captured execution did not complete"]
+                continue
+            if prompt.get("setup") is not None:
+                if not harness.setup_evidence_matches(prompt, execution):
+                    corpus[prompt_id] = ["UNSCORABLE: required setup evidence absent or mismatched"]
+                    continue
+            scored = harness.score_one_prompt(prompt, output)
             messages = sorted(
                 failure["message"] for failure in scored["failed_guardrails"]
             )
+            messages.extend(
+                f"REVIEW_REQUIRED: semantic rule {review['rule']} — {review['reason']}"
+                for review in scored.get("review_required", [])
+            )
+            messages.sort()
             if messages:
                 corpus[prompt_id] = messages
         result[path.stem] = corpus
@@ -170,7 +185,7 @@ def build_report(
         )
         return (
             f"PASS: 판정 변화 0건 — baseline과 일치 "
-            f"(corpus {len(actual)}, 실패 메시지 {total_failures}건)",
+            f"(corpus {len(actual)}, 실패/검토대기 메시지 {total_failures}건)",
             0,
         )
 
@@ -178,37 +193,49 @@ def build_report(
     tightened_count = _message_count(tightened)
     total_count = relaxed_count + tightened_count
     lines = [
-        f"FAIL: 판정 변화 {total_count}건 (완화 {relaxed_count}건, 조임 {tightened_count}건) — "
+        f"FAIL: 판정 변화 {total_count}건 (제거 {relaxed_count}건, 추가 {tightened_count}건) — "
         "baseline 갱신 없이는 이 게이트가 막는다. 스코어러/하네스 판정 로직을 "
         "건드렸으면 `--write-baseline`으로 baseline을 함께 갱신하고 PR 본문에 "
         "baseline diff를 붙인다."
     ]
+    if any("REVIEW_REQUIRED:" in message for group in tightened.values() for messages in group.values() for message in messages):
+        lines.append("REVIEW_REQUIRED 증가는 의미 검토 수신처의 미검토 범위이며 모델 실패/위반 탐지로 세지 않는다.")
     for corpus in sorted(set(relaxed) | set(tightened)):
         for prompt_id in sorted(
             set(relaxed.get(corpus, {})) | set(tightened.get(corpus, {}))
         ):
             if prompt_id in relaxed.get(corpus, {}):
-                messages = relaxed[corpus][prompt_id]
-                lines.append(
-                    f"[완화] {corpus} / {prompt_id} — baseline 실패 {len(messages)}건이 사라졌다"
-                )
-                for message in messages:
-                    lines.append(f"    - {message}")
-                lines.append(
-                    "    ← 스코어러가 느슨해졌다. 완화는 조임보다 강한 경고다 — "
-                    "이 레포의 사고 방향이다 (#282). 같은 PR에서 baseline을 갱신하고 "
-                    "완화 1건마다 근거를 남긴다."
-                )
+                removed = relaxed[corpus][prompt_id]
+                pending = [m for m in removed if m.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:"))]
+                messages = [m for m in removed if m not in pending]
+                if pending:
+                    lines.append(f"[검토/채점 상태 변경] {corpus} / {prompt_id} — 미검토/채점불가 {len(pending)}건 제거")
+                    lines.extend(f"    - {message}" for message in pending)
+                    lines.append("    ← 검토/실행 증거 또는 수신처 변경을 확인한다. 메시지 제거만으로 검토 완료나 모델 개선을 추론하지 않는다.")
+                if messages:
+                    lines.append(
+                        f"[완화] {corpus} / {prompt_id} — baseline 실패 {len(messages)}건이 사라졌다"
+                    )
+                    for message in messages:
+                        lines.append(f"    - {message}")
+                    lines.append(
+                        "    ← 스코어러가 느슨해졌다. 완화는 조임보다 강한 경고다 — "
+                        "이 레포의 사고 방향이다 (#282). 같은 PR에서 baseline을 갱신하고 "
+                        "완화 1건마다 근거를 남긴다."
+                    )
             if prompt_id in tightened.get(corpus, {}):
                 messages = tightened[corpus][prompt_id]
+                pending_only = all(message.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for message in messages)
+                label = "미검토/채점불가" if pending_only else "조임"
                 lines.append(
-                    f"[조임] {corpus} / {prompt_id} — 새 실패 {len(messages)}건"
+                    f"[{label}] {corpus} / {prompt_id} — 새 판정 {len(messages)}건"
                 )
                 for message in messages:
                     lines.append(f"    - {message}")
                 lines.append(
-                    "    → 억제가 강해졌다 (조임). 의도된 변경이면 baseline 갱신으로 "
-                    "선언하고, 아니면 되돌린다."
+                    "    → 검토 또는 실행 증거가 필요하다. 위반 탐지나 모델 실패가 아니다."
+                    if pending_only else
+                    "    → 억제가 강해졌다 (조임). 의도된 변경이면 baseline 갱신으로 선언하고, 아니면 되돌린다."
                 )
     return "\n".join(lines) + "\n", 1
 
@@ -246,7 +273,7 @@ def main(argv: list[str] | None = None) -> int:
             for messages in prompt_messages.values()
         )
         print(
-            f"baseline 갱신: {BASELINE_PATH} (corpus {len(actual)}, 실패 메시지 {changed}건)"
+            f"baseline 갱신: {BASELINE_PATH} (corpus {len(actual)}, 판정/검토대기 메시지 {changed}건)"
         )
         return 0
 

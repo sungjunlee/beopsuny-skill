@@ -1,0 +1,101 @@
+[
+  {
+    "provider": "claude",
+    "account_label": "authenticated CLI; label unavailable",
+    "captured_at": "2026-09-08T11:34:23Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "windows": [
+      {
+        "window": "primary",
+        "minutes": 300,
+        "used_percent": 62,
+        "remaining_percent": 38,
+        "reset": null
+      },
+      {
+        "window": "secondary",
+        "minutes": 10080,
+        "used_percent": 62,
+        "remaining_percent": 38,
+        "reset": null
+      },
+      {
+        "window": "tertiary",
+        "state": "unknown",
+        "used_percent": null,
+        "remaining_percent": null
+      }
+    ],
+    "pace": null,
+    "note": "Only this task/native/delegate calls budgeted together; missing windows are unknown, not exhausted or zero. Grok primary duration not reported; do not relabel as 5h."
+  },
+  {
+    "provider": "codex",
+    "account_label": "pro",
+    "captured_at": "2026-09-08T11:33:48Z",
+    "source": "oauth",
+    "dataConfidence": "exact",
+    "windows": [
+      {
+        "window": "primary",
+        "state": "unknown",
+        "used_percent": null,
+        "remaining_percent": null
+      },
+      {
+        "window": "secondary",
+        "minutes": 10080,
+        "used_percent": 12,
+        "remaining_percent": 88,
+        "reset": "2026-09-15T10:56:38Z"
+      },
+      {
+        "window": "tertiary",
+        "state": "unknown",
+        "used_percent": null,
+        "remaining_percent": null
+      }
+    ],
+    "pace": null,
+    "note": "Only this task/native/delegate calls budgeted together; missing windows are unknown, not exhausted or zero. Grok primary duration not reported; do not relabel as 5h."
+  },
+  {
+    "provider": "grok",
+    "account_label": "SuperGrok Heavy",
+    "captured_at": "2026-09-08T11:37:53Z",
+    "source": "grok-cli-proxy",
+    "dataConfidence": "unknown",
+    "windows": [
+      {
+        "window": "primary",
+        "minutes": null,
+        "used_percent": 18,
+        "remaining_percent": 82,
+        "reset": "2026-09-13T15:42:04Z"
+      },
+      {
+        "window": "secondary",
+        "state": "unknown",
+        "used_percent": null,
+        "remaining_percent": null
+      },
+      {
+        "window": "tertiary",
+        "state": "unknown",
+        "used_percent": null,
+        "remaining_percent": null
+      }
+    ],
+    "pace": {
+      "primary": {
+        "summary": "8% in reserve | Expected 26% used | Lasts until reset",
+        "deltaPercent": -8,
+        "stage": "behind",
+        "expectedUsedPercent": 26,
+        "willLastToReset": true
+      }
+    },
+    "note": "Only this task/native/delegate calls budgeted together; missing windows are unknown, not exhausted or zero. Grok primary duration not reported; do not relabel as 5h."
+  }
+]

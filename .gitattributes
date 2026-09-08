@@ -1,0 +1,3 @@
+# Captured source/response bytes are SHA256 evidence, not authored whitespace.
+tests/forward_evals/model_era/sources/** -text -whitespace
+tests/forward_evals/model_era/evidence/*.txt -text -whitespace

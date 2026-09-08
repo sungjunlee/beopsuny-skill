@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Evaluate sample skill outputs against scenario-level string checks.
+"""Evaluate retained structural guards and fixed, hash-bound semantic reviews.
 
-This is a lightweight harness, not a legal-correctness judge. It lets scenario
-fixtures pin concrete output guardrails such as required reviewer-note text,
-source-status tags, and forbidden unsafe phrases.
+This offline harness does not infer legal correctness. Missing review evidence is
+REVIEW_REQUIRED; reviewed synthetic fixtures are regression anchors, not legal gold.
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
+import hashlib
+import json
 import re
 import sys
-from datetime import date
+from datetime import date, datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -29,29 +31,6 @@ UNCERTAINTY_PATTERNS = [
     "블로그",
     "사용자 전제",
 ]
-# 저장 위치 안내가 곧 기밀 영속화 권유가 되는 경로를 막는다. 스킬이 스스로
-# 쓰지 않게 된 뒤에도 "여기에 적어두세요"라는 안내는 남기 때문에, 그 안내가
-# 특정 건 기밀 사실까지 포함하면 같은 유출이 다른 형태로 재발한다.
-# 무엇이 "이 건에 한정된 기밀 사실"인지는 시나리오만 안다. 전역 상수로 두면
-# fixture 문장에 잠긴다 — SKILL.md가 규정한 3범주 중 "특정 건의 기한"이 목록에
-# 없어서 기한만 언급한 권유가 통과했다(#264). 선언은 시나리오가 하고 룰은
-# 도달 여부만 본다. cross_matter_scope_boundary가 같은 이유로 이미 이 방식이다.
-#
-# 영속화 권유 술어. 부정은 **동사에 붙은 것만** 본다 — 한국어 용언 부정은 자리가
-# 문법으로 정해져 있어(`-지 않/말/마/못`, `-면 안 되`, `-어서는 안`) 열거가 닫힌다.
-# 문장 전체를 훑는 마커 목록은 닫히지 않았다: `않`을 넣었더니 "적어두면 나쁘지
-# 않습니다"라는 **긍정 권유**가 면제됐고, `안 되`가 없어서 "적어두면 안 되는
-# 항목들"이라는 **올바른 거부**가 위반으로 잡혔다(v0.8.0 스모크 fwd-10, #270).
-PERSIST_VERB = r"(?:적어|기록해|저장해|남겨|정리해)\s?두"
-PERSIST_VERB_NEGATED = re.compile(
-    PERSIST_VERB + r"(?:지\s*(?:않|말|마|못)|면\s*안\s*되|어서는\s*안|서는\s*안)"
-)
-PERSIST_VERB_ANY = re.compile(PERSIST_VERB)
-# 맨 조건절 — `적어두면`. 존대형 `적어두시면`은 `두` 다음이 `시`라 걸리지 않는다.
-PERSIST_PLAIN_CONDITIONAL = re.compile(PERSIST_VERB + r"면")
-# 리드인 다음 줄부터 이어지는 목록 항목 — 권유와 기밀 항목이 다른 줄에 오는
-# 가장 자연스러운 모양이고, 줄 단위 판정은 이걸 통째로 놓쳤다(#264).
-PERSIST_LIST_ITEM = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+|^\s{2,}\S")
 LEGAL_RISK_COLUMN_PATTERNS = [
     "책임제한",
     "해지",
@@ -168,17 +147,6 @@ MIRROR_SOURCE_FAMILY_MARKERS = [
     "admrule-kr",
     "ordinance-kr",
 ]
-# expected.verification_tier -> auto-attached structural common rule. This keeps
-# the `verification_tier` scenario field load-bearing without making prose
-# ceremony a static contract: only light-tier packet structure is mechanically
-# distinguishable; full-tier evidence quality stays in live evaluation.
-VERIFICATION_TIER_AUTO_RULES = {
-    "light": "light_tier_no_packet_ceremony",
-}
-LIGHT_TIER_PACKET_HEADING_PATTERN = re.compile(
-    r"^\s{0,3}#{1,6}\s*.*\b(issue-to-authority|authority packet|citation ledger)\b",
-    re.IGNORECASE | re.MULTILINE,
-)
 
 
 def load_yaml(path: Path) -> Any:
@@ -186,10 +154,15 @@ def load_yaml(path: Path) -> Any:
         return yaml.safe_load(handle)
 
 
+@lru_cache(maxsize=8)
+def scenario_file(path: Path, mtime_ns: int) -> Any:
+    return load_yaml(path)
+
+
 def collect_scenarios(paths: list[Path]) -> dict[str, dict[str, Any]]:
     scenarios: dict[str, dict[str, Any]] = {}
     for path in paths:
-        data = load_yaml(path)
+        data = copy.deepcopy(scenario_file(path, path.stat().st_mtime_ns))
         for scenario in data.get("scenarios", []):
             scenario_id = scenario.get("id")
             if not scenario_id:
@@ -200,12 +173,18 @@ def collect_scenarios(paths: list[Path]) -> dict[str, dict[str, Any]]:
     return scenarios
 
 
+def require_output_text(value: Any) -> str:
+    if not isinstance(value, str):
+        raise ValueError("UNSCORABLE: captured output must be text")
+    return value
+
+
 def load_outputs(path: Path) -> dict[str, str]:
     data = load_yaml(path)
     outputs = data.get("outputs", {})
     if not isinstance(outputs, dict):
         raise AssertionError(f"{path}: outputs must be a mapping")
-    return {str(key): str(value) for key, value in outputs.items()}
+    return {str(key): require_output_text(value) for key, value in outputs.items()}
 
 
 def load_unsafe_outputs(path: Path) -> list[dict[str, Any]]:
@@ -316,19 +295,13 @@ def moved_semantic_rules() -> frozenset[str]:
 
 def output_common_rules(scenario: dict[str, Any]) -> list[str]:
     output_eval = scenario.get("output_eval") or {}
-    rules = list(output_eval.get("common_rules", []))
+    rules = list(output_eval.get("common_rules") or [])
     expected = scenario.get("expected") or {}
 
-    if expected.get("primary_intent") == "contract_review":
-        rules.append("contract_counter_draft_boundary")
     if expected.get("primary_intent") == "legal_research":
         rules.append("mirror_promulgation_currency_gate")
 
-    tier_rule = VERIFICATION_TIER_AUTO_RULES.get(expected.get("verification_tier"))
-    if tier_rule:
-        rules.append(tier_rule)
-
-    return sorted(set(str(rule) for rule in rules))
+    return sorted({str(rule) for rule in rules if common_rule_audit().get(str(rule), {}).get("static_disposition") not in {"moved_to_live", "retired"}})
 
 
 def rule_inputs(scenario: dict[str, Any]) -> dict[str, Any]:
@@ -504,18 +477,6 @@ def has_external_use_review_gate(output: str) -> bool:
     return False
 
 
-def ledger_key_count(output: str, keys: list[str]) -> int:
-    if not keys:
-        return 0
-    alternatives = "|".join(
-        re.escape(key) for key in sorted(set(keys), key=len, reverse=True)
-    )
-    pattern = re.compile(
-        rf"^\s*-\s*(?:{alternatives})\s*[:：]", re.MULTILINE | re.IGNORECASE
-    )
-    return len(pattern.findall(output))
-
-
 def external_draft_region(output: str) -> str:
     """Return the slice that is actually the external draft, for leak checks.
 
@@ -546,49 +507,6 @@ def external_draft_region(output: str) -> str:
 # 초안 뒤에 붙는 답변 자신의 메타데이터. 여기 실린 내용은 수신자에게 가지
 # 않으므로 유출로 세지 않는다.
 ANSWER_METADATA_START = re.compile(r"\n\s*(?:🔍\s*자가 검증|\*{0,2}검토자 메모)")
-
-
-def opens_persistence_suggestion(line: str, tokens: list[str]) -> bool:
-    """이 줄이 영속화 **권유**를 여는가. 부정형과 맨 조건절은 열지 않는다."""
-    if not PERSIST_VERB_ANY.search(line) or PERSIST_VERB_NEGATED.search(line):
-        return False
-    # 맨 조건절(`적어두면 …`)은 권유가 아니라 결과 설명의 자리다 — 실측에서
-    # "지침 파일에 적어두면:" 뒤에 **위험 목록**이 붙었다(fwd-10). 존대 조건절
-    # `적어두시면`은 사용자에게 권하는 형태라 여기 걸리지 않는다(`두` 다음이
-    # `시`). 맨 조건절은 그 줄이 직접 기밀 항목을 지목할 때만 연다.
-    if PERSIST_PLAIN_CONDITIONAL.search(line) and not any(
-        token in line for token in tokens
-    ):
-        return False
-    return True
-
-
-def persistence_suggestion_blocks(output: str, tokens: list[str]) -> list[str]:
-    """영속화를 **권유하는** 구간만 모은다.
-
-    한 줄이 아니라 블록인 이유: 권유는 "지침 파일에 아래를 정리해 두세요:" +
-    불릿 목록으로 나뉘어 오는 것이 가장 자연스러운 모양이고, 줄 단위 판정은
-    그 형태를 통째로 놓쳤다(#264 실측). 리드인 줄부터 뒤따르는 목록 항목까지가
-    한 블록이다.
-
-    부정 술어가 구간을 아예 열지 않으므로, 올바른 거부("적어두면 안 되는 것")가
-    자기 목록을 달고 있어도 침묵한다 — 블록으로 넓히면서 과억제가 커지는 것을
-    막는 것이 이 설계의 핵심이다.
-    """
-    blocks: list[str] = []
-    lines = output.splitlines()
-    index = 0
-    while index < len(lines):
-        if not opens_persistence_suggestion(lines[index], tokens):
-            index += 1
-            continue
-        block = [lines[index]]
-        index += 1
-        while index < len(lines) and PERSIST_LIST_ITEM.match(lines[index]):
-            block.append(lines[index])
-            index += 1
-        blocks.append("\n".join(block))
-    return blocks
 
 
 def external_facing_region(output: str, markers: list[str]) -> str:
@@ -630,7 +548,10 @@ def evaluate_common_rule(
 
     # 호환 호출에는 침묵하되, moved_to_live 룰은 시나리오와 하네스에서 부착하지
     # 않는다. 19개 분류 정본과 배관 검사는 validate_skill_contracts.py가 맡는다.
-    if rule in moved_semantic_rules():
+    if common_rule_audit().get(rule, {}).get("semantic_receiver"):
+        result = evaluate_semantic_review(scenario_id, scenario, output, rule)
+        return semantic_messages(result)
+    if rule in moved_semantic_rules() or common_rule_audit().get(rule, {}).get("static_disposition") == "retired":
         return failures
 
     if rule == "legal_status_tag":
@@ -660,44 +581,6 @@ def evaluate_common_rule(
             ):
                 failures.append(
                     f"{scenario_id}: common rule {rule} has [VERIFIED] with uncertainty text"
-                )
-        return failures
-
-    if rule == "contract_counter_draft_boundary":
-        expected = scenario.get("expected") or {}
-        source = expected.get("forbidden_phrases_source")
-        patterns = list(expected.get("forbidden_phrases", []))
-        if source:
-            patterns.extend(load_list_from_source(str(source)))
-        elif expected.get("primary_intent") == "contract_review":
-            patterns.extend(
-                load_list_from_source(
-                    "skills/beopsuny/assets/policies/review_mode.yaml#counter_draft_forbidden_patterns"
-                )
-            )
-        for pattern in sorted(set(str(item) for item in patterns)):
-            if pattern in output:
-                failures.append(
-                    f"{scenario_id}: common rule {rule} contains forbidden pattern {pattern!r}"
-                )
-        return failures
-
-    if rule == "confidential_persistence_boundary":
-        output_eval = rule_inputs(scenario)
-        tokens = [
-            str(token) for token in output_eval.get("confidential_fact_tokens", [])
-        ]
-        if not tokens:
-            failures.append(
-                f"{scenario_id}: common rule {rule} needs output_eval.confidential_fact_tokens "
-                "(this matter's confidential facts)"
-            )
-            return failures
-        for block in persistence_suggestion_blocks(output, tokens):
-            if any(token in block for token in tokens):
-                failures.append(
-                    f"{scenario_id}: common rule {rule} suggests persisting a matter-specific "
-                    "confidential fact"
                 )
         return failures
 
@@ -878,13 +761,6 @@ def evaluate_common_rule(
             )
         return failures
 
-    if rule == "self_verification_metadata":
-        if not re.search(r"자가 검증\s*:", output):
-            failures.append(
-                f"{scenario_id}: common rule {rule} missing self-verification metadata"
-            )
-        return failures
-
     if rule == "business_user_external_gate":
         # 절 제목의 표현과 "바로 보내라"는 의미 판단은 fwd-03 라이브/정독
         # 축이 담당한다. 정적 층은 실제 external_draft 구간에 내부 블록이
@@ -932,36 +808,91 @@ def evaluate_common_rule(
         # 오탐 5라운드 순환(#270)의 일부였다.
         return failures
 
-    if rule == "light_tier_no_packet_ceremony":
-        # Light tier (single conclusion, cite-and-close) must not surface the
-        # full-tier's issue-to-authority map / authority packet / citation
-        # ledger as document ceremony (markdown headings, multi-key bullet
-        # blocks). A plain one-line citation or a "확인 필요" hedge is fine and
-        # must not trip this rule.
-        if LIGHT_TIER_PACKET_HEADING_PATTERN.search(output):
-            failures.append(
-                f"{scenario_id}: common rule {rule} exposes an authority-packet/citation-ledger "
-                "heading in a light-tier answer"
-            )
-        output_eval = rule_inputs(scenario)
-        ledger_keys = [
-            str(key) for key in output_eval.get("light_tier_ledger_keys", [])
-        ]
-        if not ledger_keys:
-            failures.append(
-                f"{scenario_id}: common rule {rule} needs "
-                "output_eval.light_tier_ledger_keys"
-            )
-            return failures
-        if ledger_key_count(output, ledger_keys) >= 2:
-            failures.append(
-                f"{scenario_id}: common rule {rule} exposes a multi-key citation-ledger block "
-                "in a light-tier answer"
-            )
-        return failures
-
     failures.append(f"{scenario_id}: unknown common rule {rule!r}")
     return failures
+
+
+def output_semantic_rules(scenario: dict[str, Any]) -> list[str]:
+    intent = (scenario.get("expected") or {}).get("primary_intent")
+    return sorted(
+        rule for rule, item in common_rule_audit().items()
+        if intent in (item.get("semantic_receiver") or {}).get("primary_intents", [])
+        or scenario.get("id") in (item.get("semantic_receiver") or {}).get("scenario_ids", [])
+    )
+
+
+def semantic_request_sha256(scenario: dict[str, Any]) -> str:
+    request = {key: scenario.get(key) for key in ("context", "question", "semantic_request")}
+    return hashlib.sha256(json.dumps(request, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
+@lru_cache(maxsize=4)
+def semantic_record_file(path: Path, mtime_ns: int) -> Any:
+    """Cache only within this process; a changed review file invalidates the key."""
+    return load_yaml(path)
+
+
+def evaluate_semantic_review(
+    scenario_id: str, scenario: dict[str, Any], output: str, rule: str,
+    *, records: list[dict[str, Any]] | None = None,
+) -> dict[str, str]:
+    """Read a fixed review, never infer meaning from words or call a network judge.
+
+    Review approval is explicit. Provisional authorship is not adjudication;
+    missing/obsolete/ambiguous records cannot become PASS or unsafe detection.
+    """
+    result = {"scenario_id": scenario_id, "rule": rule, "verdict": "REVIEW_REQUIRED", "reason": "missing or unreviewed semantic record"}
+    receiver = common_rule_audit().get(rule, {}).get("semantic_receiver") or {}
+    if records is None:
+        try:
+            record_path = ROOT / receiver["records"]
+            data = semantic_record_file(record_path, record_path.stat().st_mtime_ns)
+            records = data.get("reviews", [])
+        except (KeyError, OSError, yaml.YAMLError, AttributeError):
+            return result
+    if not isinstance(records, list):
+        return result
+    digest = hashlib.sha256(output.encode()).hexdigest()
+    request_digest = semantic_request_sha256(scenario)
+    matches = [r for r in records if isinstance(r, dict) and
+               r.get("rule") == rule and r.get("scenario_id") == scenario_id and
+               r.get("output_sha256") == digest and r.get("request_sha256") == request_digest and
+               r.get("policy_revision") == receiver.get("policy_revision")]
+    if len(matches) != 1:
+        return result
+    record = matches[0]
+    reviewer = record.get("reviewer") or {}
+    author = record.get("author") or {}
+    if (record.get("review_status") != "reviewed" or not isinstance(reviewer, dict)
+            or reviewer.get("kind") not in {"human", "independent_model"}
+            or not record.get("id") or not isinstance(author, dict) or not author.get("id")
+            or not reviewer.get("id") or reviewer.get("id") == author.get("id")
+            or record.get("verdict") not in {"PASS", "FAIL"} or not record.get("reason")):
+        return result
+    try:
+        datetime.fromisoformat(record.get("reviewed_at", ""))
+    except (TypeError, ValueError):
+        return result
+    spans = record.get("evidence")
+    if not isinstance(spans, list) or not spans:
+        return result
+    for span in spans:
+        if not isinstance(span, dict):
+            return result
+        start, end, quote = span.get("start"), span.get("end"), span.get("quote")
+        if (type(start) is not int or type(end) is not int or not isinstance(quote, str)
+                or not quote or not 0 <= start < end <= len(output) or output[start:end] != quote):
+            return result
+    result.update(verdict=record["verdict"], reason=record["reason"], review_id=str(record.get("id", "")))
+    return result
+
+
+def semantic_messages(result: dict[str, str]) -> list[str]:
+    if result["verdict"] == "PASS":
+        return []
+    # REVIEW_REQUIRED is a separate state, not a failed legal/model guardrail.
+    prefix = "REVIEW_REQUIRED: " if result["verdict"] == "REVIEW_REQUIRED" else ""
+    return [f"{prefix}{result['scenario_id']}: semantic rule {result['rule']} {result['verdict']} — {result['reason']}"]
 
 
 def evaluate_one_output(
@@ -971,13 +902,11 @@ def evaluate_one_output(
     output_eval = scenario.get("output_eval") or {}
     rules = output_common_rules(scenario)
 
-    # A scenario needs either a real output_eval block (required/forbidden
-    # substrings) or at least one auto-attached common rule (e.g. a
-    # verification_tier rule) to be evaluable. router-01/router-05 have no
-    # output_eval block but do carry a verification_tier, so they still run
-    # through the tier-derived rule below instead of being rejected here.
-    if not scenario.get("output_eval") and not rules:
-        failures.append(f"{scenario_id}: scenario has no output_eval block")
+    # Removing a policy must not turn an unevaluated scenario into PASS.
+    semantic_rules = output_semantic_rules(scenario)
+    has_literals = any(output_eval.get(key) for key in ("required_substrings", "forbidden_substrings", "conditional_forbidden", "conditional_forbidden_from"))
+    if not has_literals and not rules and not semantic_rules:
+        failures.append(f"UNSCORABLE: {scenario_id}: scenario has no active checks")
         return failures
 
     for needle in output_eval.get("required_substrings", []):
@@ -998,6 +927,8 @@ def evaluate_one_output(
 
     for rule in rules:
         failures.extend(evaluate_common_rule(scenario_id, scenario, output, rule))
+    for rule in semantic_rules:
+        failures.extend(semantic_messages(evaluate_semantic_review(scenario_id, scenario, output, rule)))
 
     return failures
 
@@ -1033,7 +964,7 @@ def evaluate_unsafe_outputs(
     for item in unsafe_outputs:
         item_id = str(item.get("id", "<missing id>"))
         scenario_id = str(item.get("scenario_id", ""))
-        output = str(item.get("output", ""))
+        output = require_output_text(item.get("output", ""))
         expected_rules = [str(rule) for rule in item.get("expected_failure_rules", [])]
         scenario = scenarios.get(scenario_id)
         if scenario is None:
@@ -1041,16 +972,44 @@ def evaluate_unsafe_outputs(
             continue
 
         output_failures = evaluate_one_output(scenario_id, scenario, output)
-        if not output_failures:
-            failures.append(f"{item_id}: unsafe output unexpectedly passed")
+        substantive_failures = [failure for failure in output_failures if not failure.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:"))]
+        if not substantive_failures:
+            state = "REVIEW_REQUIRED" if output_failures else "FAIL"
+            failures.append(f"{state}: {item_id}: unsafe violation not established: {output_failures!r}")
             continue
 
         for rule in expected_rules:
-            if not any(f"common rule {rule}" in failure for failure in output_failures):
+            if not any(f"common rule {rule}" in failure or f"semantic rule {rule} FAIL" in failure for failure in substantive_failures):
                 failures.append(
                     f"{item_id}: expected failure from rule {rule!r}, got {output_failures!r}"
                 )
 
+    return failures
+
+
+def evaluate_semantic_cases(scenarios: dict[str, dict[str, Any]]) -> list[str]:
+    """Run fixed near-miss/unsafe cases; missing reviews remain incomplete."""
+    try:
+        data = load_yaml(ROOT / "tests/fixtures/semantic_reviews.yaml")
+        cases = data["cases"]
+    except (OSError, KeyError, TypeError, yaml.YAMLError):
+        return ["REVIEW_REQUIRED: semantic fixture cases unavailable"]
+    if not isinstance(cases, list) or not cases:
+        return ["REVIEW_REQUIRED: semantic fixture cases empty"]
+    failures = []
+    for case in cases:
+        scenario_id = case.get("scenario_id")
+        if scenario_id not in scenarios:
+            failures.append(f"UNSCORABLE: semantic case {case.get('id')} has no scenario")
+            continue
+        scenario = dict(scenarios[scenario_id])
+        if case.get("request"):
+            scenario["semantic_request"] = case["request"]
+        result = evaluate_semantic_review(scenario_id, scenario, case.get("output", ""), case.get("rule", ""))
+        if result["verdict"] == "REVIEW_REQUIRED":
+            failures.extend(semantic_messages(result))
+        elif result["verdict"] != case.get("expected_verdict"):
+            failures.append(f"semantic case {case.get('id')}: expected {case.get('expected_verdict')}, got {result['verdict']}")
     return failures
 
 
@@ -1084,14 +1043,16 @@ def main() -> int:
     unsafe_outputs = load_unsafe_outputs(output_path)
     failures = evaluate_outputs(scenarios, outputs)
     failures.extend(evaluate_unsafe_outputs(scenarios, unsafe_outputs))
+    failures.extend(evaluate_semantic_cases(scenarios))
 
     if failures:
-        print("FAIL")
+        only_pending = all(item.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for item in failures)
+        print("INCOMPLETE" if only_pending else "FAIL")
         for failure in failures:
             print(f"- {failure}")
         return 1
 
-    print(f"PASS {len(outputs)} outputs, {len(unsafe_outputs)} unsafe fixtures")
+    print(f"PASS {len(outputs)} outputs, {len(unsafe_outputs)} unsafe fixtures; fixed semantic reviews checked (not legal gold)")
     return 0
 
 

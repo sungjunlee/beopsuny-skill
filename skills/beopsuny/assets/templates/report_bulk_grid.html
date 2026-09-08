@@ -77,8 +77,6 @@
       color: var(--muted);
       margin-top: 8px;
     }
-
-    .reviewer-note,
     .legend,
     .table-panel,
     .report-footer {
@@ -87,30 +85,14 @@
       border-radius: 8px;
       box-shadow: 0 1px 2px rgba(31, 41, 51, 0.06);
     }
-
-    .reviewer-note,
     .legend {
       padding: 14px 16px;
       margin-bottom: 14px;
     }
-
-    .reviewer-note dl,
     .footer-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
-    }
-
-    dt {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    dd {
-      margin: 3px 0 0;
-      overflow-wrap: anywhere;
     }
 
     .toolbar {
@@ -154,7 +136,7 @@
 
     .legend-list {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin: 0;
       padding: 0;
@@ -320,16 +302,6 @@
       border-top: 4px solid var(--line-strong);
     }
 
-    .footer-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .self-check {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--line);
-    }
-
     [hidden] {
       display: none !important;
     }
@@ -348,8 +320,6 @@
       noscript {
         width: min(100% - 20px, 1280px);
       }
-
-      .reviewer-note dl,
       .legend-list,
       .footer-grid {
         grid-template-columns: 1fr;
@@ -384,8 +354,6 @@
       .table-panel[hidden] {
         display: block !important;
       }
-
-      .reviewer-note,
       .legend,
       .table-panel,
       .report-footer {
@@ -409,28 +377,6 @@
   <noscript>JavaScript 미동작 환경에서는 values table과 sources table이 모두 표시됩니다.</noscript>
 
   <main>
-    <section class="reviewer-note" aria-labelledby="reviewer-note-title">
-      <h2 id="reviewer-note-title">검토자 메모</h2>
-      <dl>
-        <div>
-          <dt>Sources</dt>
-          <dd><!-- PLACEHOLDER: reviewer_sources_escaped -->사용자 제공 문서 및 확인한 공식 source<!-- /PLACEHOLDER --></dd>
-        </div>
-        <div>
-          <dt>Read</dt>
-          <dd><!-- PLACEHOLDER: reviewer_read_scope_escaped -->읽은 문서, 페이지, 조항, 별첨 범위<!-- /PLACEHOLDER --></dd>
-        </div>
-        <div>
-          <dt>Currency</dt>
-          <dd><!-- PLACEHOLDER: reviewer_currency_escaped -->현행성 확인 기준일 및 최신성 한계<!-- /PLACEHOLDER --></dd>
-        </div>
-        <div>
-          <dt>Before relying</dt>
-          <dd><!-- PLACEHOLDER: reviewer_before_relying_escaped -->sources table의 quote/location 또는 source_authority 확인<!-- /PLACEHOLDER --></dd>
-        </div>
-      </dl>
-    </section>
-
     <section class="legend" aria-labelledby="state-legend-title">
       <h2 id="state-legend-title">Cell State</h2>
       <ul class="legend-list">
@@ -571,7 +517,8 @@
     </section>
   </main>
 
-  <footer class="report-footer" aria-label="리포트 하단 고정 블록">
+  <!-- Omit this footer when its relevant information is already present in the report. -->
+  <footer class="report-footer" aria-label="읽은 범위와 최신성 한계">
     <div class="footer-grid">
       <section>
         <h3>생성일</h3>
@@ -585,18 +532,7 @@
         <h3>최신성 한계</h3>
         <p><!-- PLACEHOLDER: currency_limits_escaped -->현행성 확인 기준일, 조회 실패, 미확인 source, stale source 여부<!-- /PLACEHOLDER --></p>
       </section>
-      <section>
-        <h3>면책 고지</h3>
-        <p><!-- PLACEHOLDER: disclaimer_escaped -->이 정보는 일반적인 법률 정보 제공 목적이며, 구체적인 법률 문제는 변호사와 상담하시기 바랍니다.<!-- /PLACEHOLDER --></p>
-      </section>
     </div>
-    <section class="self-check">
-      <h3>자가 검증</h3>
-      <!-- PLACEHOLDER: internal_self_verification_block_html_escaped.
-           Include only when destination permits internal blocks, such as internal_legal_memo.
-           For business_summary, executive_report, external_draft, or agency_or_court_submission, remove this section. -->
-      <p>Citation n/a | Legal Substance ⚠ | Client Alignment ✓ | Counter-draft n/a</p>
-    </section>
   </footer>
 
   <script>

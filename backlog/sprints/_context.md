@@ -2,6 +2,8 @@
 
 dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린트를 넘어 재발견 비용이 큰 것만 남긴다.
 
+- **고급 모델 스킬 재정렬 계획 승인** (2026-09-08, 마일스톤 8): 실행·공통 인계는 [2026-09-model-era-refresh.md](2026-09-model-era-refresh.md), 작업 정의와 Agent Brief는 GitHub Issues가 정본이다. 검토용 완성 초안 지원과 불필요 제약·자산 제거는 승인된 목표 상태이며 runtime 구현 전이다. 아래의 과거 hint-only/출력·저장 관련 결정은 당시 상태로 읽고, 현행 계약과 후속 #318/#323/#272에서 변경 여부를 확인한다.
+
 - **회사 맥락은 읽기 전용이다** (#259 은퇴, 2026-07-26 — 에픽 #95의 profile/matter workspace 계약을 대체): 스킬은 회사 맥락을 저장하지 않는다. 하네스 메모리·프로젝트 지침 파일·사용자가 지목한 파일에서 **읽기만** 하고, `~/.beopsuny/`는 설정(`config.yaml`)·법령 미러(`data/`)·요청 시 리포트(`reports/`)만 소유한다. 근거는 실측 — 몇 달 dogfood 후 `projects/` 0개, `practices/` 없음, `*.jsonl` 0개, 유일한 `profile.yaml`은 비어 있고 자기 스펙의 canonical shape를 위반. capability는 `company-context-trust`, 트러스트 경계의 집은 `SKILL.md` 안전 경계다(#262 — 회사 맥락만이 아니라 조회·인용·전달받은 내용 전부, 인용-only 답변 포함).
 - **workflow map 은퇴** (#109 landed → #248 retired, 2026-07-25): `references/workflow-map.md`(7개 workflow × 기존 의도·reference 매핑)는 라우팅 원칙 7(#242)로 마지막 런타임 경로가 사라져 삭제했다. 대체 집 — 의도→reference 매핑은 `SKILL.md` 의도 표, "새 의도 아님" 결정은 라우팅 원칙 4(cross-border)·7(수사·조사)과 `research-workflow.md` 분쟁 판단 구조 섹션, split 경계는 DESIGN §6. `check_workflow_map_structure` 삭제, 의도 집합 동등성·라벨 비승격은 `assert_not_router_intent()` 헬퍼로 재앵커링(#110/#112 짝 check가 호출), 재퇴적은 `check_retired_meta_surfaces_stay_retired`의 `RETIRED_SURFACES`가 차단.
 - **contract-review capability landed** (2026-07-07 grill): spec-grill로 마지막 잔여 후보 결정화 → system-map Candidate Boundaries 잔여 0. HC1=counter-drafting bright line(완성 redline 금지), HC2=mode/playbook을 검증 약화 채널로 못 씀. 계약 검토 기존 동작을 명문화한 것이라 구현 스프린트 불요.
@@ -42,3 +44,13 @@ dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린
 - **대조 연결어미 목록은 안전하게 실패한다 — 거부 어휘 목록과 다르다** (같은 이슈): `-지만`·`-으나`·`-되`를 빠뜨리면 오늘과 같은 억제로 남을 뿐 올바른 거부를 벌하는 방향으로 틀리지 않는다. 반면 거부 어휘 목록은 빠뜨리면 즉시 과억제였다. **목록 문제라도 실패 방향이 안전하면 판단이 달라진다** — "어휘 수정은 수렴하지 않는다"를 기계적으로 적용하지 말 것.
 - **면제 상수의 집도 1곳이다** (같은 이슈, mutation이 잡음): `NOT_ALLOWED_STEMS`를 하네스와 스코어러 양쪽에 두었더니 한쪽만 되돌리는 mutation이 **둘 다 통과**했다 — 두 층의 면제 기준이 갈려도 아무 검사가 울지 않는다는 뜻이다. 스코어러에 두고 하네스가 import하도록 고치자 mutation 4/4가 잡혔다.
 - **pi-lens autofix는 pristine-HEAD 워크플로와 충돌한다** (2026-08): 턴 종료 deferred 포맷(ruff·markdownlint)이 세션 편집 파일을 재포맷해 매 턴 diff를 재생성했다 — "의미 변경만 커밋" 정책 때문에 HEAD가 ruff 기본 포맷(line-length 88, import 정렬 등)과 달라 autofix가 항상 고칠 것을 찾는다. `.pi-lens.json`의 project mutation control(`format.enabled:false`, `autofix.enabled:false`)로 파일 변이 경로를 차단했다 — 진단·LSP·read-guard는 유지되고 리포트만 남는다. pre-existing lint 리포트(ruff 80건 등)는 계속 올라오니 드라이브바이 금지 대상으로 취급한다.
+
+
+## 2026-09 model-era 실행 인계
+
+- 현재 트랙: `2026-09-model-era-refresh.md`, 검토 브랜치 `codex/milestone-8-model-era-refresh`. e05ecda runtime과 과거 capture/human judgment는 보존했다.
+- core 구현·삭제와 통합 검증은 완료했다. 남은 #272(fwd-11 직접 변형 독립 검토 미판정), #323(미제공 별첨→부재 단정 회귀), #325(privacy 순서 실험 실행 불충분)는 닫지 않는다. 모델 비용·법률 정확도·활용성·안전을 혼합한 GO는 없다. 최신 결과는 `tests/forward_evals/model_era/integration-report.md`.
+- 의미 검토는 요청·출력 hash와 정확한 근거 구간으로 바인딩한다. 미판정은 REVIEW_REQUIRED, setup 누락은 UNSCORABLE. 병렬 CLI도 pending-only이면 비0 종료한다. 실패·검토대기의 분모는 서로 겹치지 않는다.
+- 다음 세션은 최신 이슈/댓글·quota를 다시 읽는다. 원문이 target에 제공되지 않았는데 judge에만 있었던 근거로 target의 누락을 판정하지 않는다. gold 없는 judge의 오판도 사람 검토 큐에 남긴다.
+
+- **PR #327 추가 리뷰**: Sol·Grok·Opus의 독립 리뷰→최소 수정→LGTM 완료. false PASS 경로와 고정 템플릿/자산 잔재를 수정했다. 최신 인계는 `tests/forward_evals/model_era/review-cycle.md`; #272/#323/#325의 남은 AC는 유지한다.

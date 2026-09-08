@@ -16,7 +16,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HELPER_PATH = ROOT / "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py"
 POLICY_PATH = ROOT / "skills/beopsuny/assets/policies/knowledge_manifest.yaml"
-KNOWLEDGE_ROOT = Path("/Users/sjlee/workspace/active/legal-stack/beopsuny-knowledge")
 
 
 def load_helper():
@@ -51,6 +50,8 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
                 "privacy/assets/taxonomy.yaml",
                 "schema_version: 1\nasset_type: taxonomy\nusage_mode: issue_framing_only\n",
             )
+            # Exercise the local-checkout override without a personal checkout.
+            taxonomy["url"] = "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/privacy/assets/taxonomy.yaml"
             retrieval = self.write_asset(
                 root,
                 "privacy/assets/retrieval-hints.yaml",
@@ -100,6 +101,8 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
                         str(POLICY_PATH),
                         "--manifest-file",
                         str(manifest_path),
+                        "--knowledge-root",
+                        str(root),
                         "--max-asset-chars",
                         "400",
                     ]
@@ -149,30 +152,6 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
                     "post_search_audit_only",
                     {"1"},
                 )
-
-    @unittest.skipUnless(KNOWLEDGE_ROOT.exists(), "local beopsuny-knowledge checkout not available")
-    def test_local_stable_manifest_validates_assets_and_builds_packet(self) -> None:
-        helper = load_helper()
-        manifest = KNOWLEDGE_ROOT / "_system/manifests/stable.json"
-
-        packet = helper.build_packet(
-            helper.parse_args(
-                [
-                    "--policy",
-                    str(POLICY_PATH),
-                    "--manifest-file",
-                    str(manifest),
-                    "--knowledge-root",
-                    str(KNOWLEDGE_ROOT),
-                    "--max-asset-chars",
-                    "400",
-                ]
-            )
-        )
-
-        self.assertEqual(packet["status"], "ready")
-        self.assertEqual(packet["vertical"], "privacy")
-        self.assertEqual(len(packet["assets"]), 5)
 
     def test_private_raw_failure_degrades_to_skipped_packet(self) -> None:
         helper = load_helper()

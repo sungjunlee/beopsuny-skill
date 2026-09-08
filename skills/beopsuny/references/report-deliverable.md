@@ -24,9 +24,9 @@ HTML 리포트는 법률 결론을 새로 만드는 workflow가 아니라, 기�
 | 임원 보고 | `executive_report` |
 | 상대방·고객·기관 등 외부 공유 | `external_draft` 또는 `agency_or_court_submission` |
 
-`output-formats.md`와 `assets/schemas/output_contract.yaml`의 `non_overrides`는 리포트에서도 그대로 유효하다. 출처 권위 라벨, verification status, Legal Verification Core, Freshness Governance, Role / Destination Gate, 변호사/법무 검토 필요 조건, 면책 고지는 리포트 스타일이나 시각적 축약으로 생략할 수 없다.
+`output-formats.md`와 `assets/schemas/output_contract.yaml`의 `non_overrides`는 리포트에서도 그대로 유효하다. 출처 성격·verification status·실제 확인 경로·적용 시점과 미확인 범위는 리포트에서도 인용과 연결한다. 표·각주·본문 어디에 표시해도 되며 같은 내용을 반복하지 않는다. 검토 상태와 필요한 전문 검토·외부 행동 전 확인 사항은 관련 위치에서 한 번 알린다.
 
-계약 검토 리포트에도 `assets/policies/review_mode.yaml#counter_draft_forbidden_patterns`가 그대로 적용된다. `alt_wording_hint`는 협상·검토 방향을 보존하기 위한 힌트 필드일 뿐이며, "아래 문구로 교체", "최종 수정안", "이 문구를 사용" 같은 대체 문구 제공으로 렌더링하지 않는다.
+계약 검토 리포트는 `references/contract_review_guide.md`의 요청 범위를 따른다. 수정 요청에는 `draft_clause`로 검토용 완성 문구를 제공할 수 있으며 이유·전제·미확인 사항을 함께 둔다. `alt_wording_hint`는 기존 후보 입력과의 호환 필드일 뿐 힌트형 출력만 허용하는 제한이 아니다. 무근거 적법성 보증·미확인 사실 확정·무권한 송부는 허용하지 않는다.
 
 ## R2. 파일 규격
 
@@ -47,18 +47,9 @@ HTML 리포트는 법률 결론을 새로 만드는 workflow가 아니라, 기�
 
 `{slug}`가 matter 이름을 담고 본문이 그 건의 사실을 담으므로, 이 디렉터리는 건을 식별하는 산출물이 전역에 쌓이는 자리다. 스킬은 리포트를 자동으로 지우지 않는다 — 보존과 삭제는 사용자 책임이므로, 저장 경로를 처음 안내할 때 그 점과 `BEOPSUNY_DATA_ROOT`로 보관 위치를 건별·클라이언트별로 분리할 수 있다는 점을 함께 밝힌다. 이 디렉터리에 이미 있는 다른 건의 리포트는 사용자가 그 리포트와 건을 지명하지 않는 한 읽지 않는다 — 현재 건 답변을 만들면서 자동으로 참조하지 않는다. 지명 요청으로 읽어 비교한 결과가 대외 destination으로 나갈 때는 다른 건 식별 사실을 다시 제외한다. 근거 규칙은 SKILL.md `## 회사 맥락`의 matter 범위 제약과 `references/output-formats.md`의 destination 계약이다.
 
-### 하단 고정 블록
+### 확인 범위와 생성 정보
 
-계약 문장: 모든 리포트 하단에는 고정 metadata/footer block을 둔다.
-
-| 필수 요소 | 내용 |
-| --- | --- |
-| 생성일 | 리포트 생성일과 가능한 경우 생성 시각 |
-| 읽은 범위 | 읽은 문서, 페이지, 조항, 별첨, 조문 목록과 제외 범위 |
-| 최신성 한계 | 현행성 확인 기준일, 조회 실패, 미확인 source, stale source 여부 |
-| 면책 고지 | 법률 자문이 아니며 일반적인 법률 정보 제공 목적이고, 구체적 사안은 변호사와 상담해야 한다는 취지 |
-
-destination이 `internal_legal_memo`처럼 내부용이고 내부 block 허용 destination이면 하단에 자가 검증 블록을 포함한다. destination이 `business_summary`, `executive_report`, `external_draft`, `agency_or_court_submission`처럼 외부 또는 비내부용이면 내부 검토자 메모, 자가 검증 블록, internal scratchpad를 그대로 포함하지 않는다.
+생성일, 실제 읽은 범위와 제외 범위, 적용 시점·조회 실패·미확인 source가 결론에 미치는 영향을 문서에서 확인할 수 있게 한다. 본문이나 각주에 이미 있으면 고정 footer로 반복하지 않는다. 별도 내부 검토자 메모나 자가 검증 배지는 요청된 검토 기록에 유용할 때만 제공한다. 외부·비내부용 destination에는 내부 검토자 메모, 자가 검증 블록, internal scratchpad를 그대로 포함하지 않는다.
 
 ## R3. 전달 채널
 
@@ -70,7 +61,7 @@ destination이 `internal_legal_memo`처럼 내부용이고 내부 block 허용 d
 | Claude Code Artifact | Artifact 도구가 현재 세션에 있고 사용자가 Artifact/URL 배포를 명시적으로 요청했을 때 | 같은 self-contained HTML을 Artifact로 제공할 수 있다. 배포 시점부터 공유 가능 산출물로 취급하고 R4. Artifact 배포 gate를 적용한다 |
 | Chat 탭 Artifacts | 파일 영속성이 없는 환경 | 같은 HTML 내용을 Chat 탭 Artifact로 표시한다. 영속 저장이 아님을 텍스트 답변에 표시한다 |
 
-Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하지 않는다. 리포트는 텍스트 답변의 파생물이며, 출처 권위 라벨과 검증 상태를 숨기는 대체 출력이 아니다.
+리포트 요청에는 파일 위치와 중요한 확인 한계를 짧게 안내하면 된다. 같은 법률 답변 전체를 채팅에 반복하지 않는다. 리포트 자체의 출처 성격과 확인 상태는 유지한다.
 
 ## R4. Artifact 배포 gate
 
@@ -78,7 +69,7 @@ Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하
 
 | 항목 | 계약 |
 | --- | --- |
-| 공유 가정 구성 강제 | Artifact로 배포하는 리포트는 기존 destination이 무엇이었든 배포본에서 내부 검토자 메모, 자가 검증 블록, 미확인 내부 노트를 제외한다. 면책 고지를 포함하고, 리포트 상단에 `법무/변호사 검토 전 대외 사용 금지` 배너를 명시한다 |
+| 공유 가정 구성 강제 | Artifact로 배포하는 리포트는 기존 destination이 무엇이었든 배포본에서 내부 검토자 메모, 자가 검증 블록, 미확인 내부 노트를 제외한다. 검토용 초안 상태와 대외 사용 전 필요한 법무/변호사 검토를 배포본의 안내에서 명확히 표시한다. 고정 배너나 중복 면책은 요구하지 않는다 |
 | 명시 요청 시에만 배포 | 사용자가 "Artifact", "URL", "공유 링크"처럼 배포를 명시적으로 요청할 때만 Artifact로 배포한다. 자동 배포 금지. 로컬 파일 저장은 기본 경로를 그대로 사용한다 |
 | 재배포 고지 | 같은 파일 경로 재배포는 같은 URL 갱신일 수 있다. 이전 버전을 본 사람이 새 버전을 보게 되고, 배포 이력이 남을 수 있음을 사용자에게 알린다 |
 | 승급 경로 | 배포 요청이 "상대방에게 보여줄", "고객에게 보낼", "기관에 제출할" 같은 외부 송부·공유·제출 맥락이면 단순 Artifact gate로 처리하지 않는다. `assets/schemas/output_contract.yaml#legal_effect_triggers`에 해당하는 요청으로 보아 `references/output-formats.md#destination-output-contracts`의 `external_draft` destination 규칙 + role/destination gate로 승급한다. 기관·법원 제출 맥락이면 같은 destination 표의 `agency_or_court_submission` 계약도 함께 확인한다 |
@@ -94,4 +85,4 @@ Artifact나 Chat 탭 Artifacts가 가능해도 기본 법률 답변은 생략하
 | "문서로 정리해줘" | destination을 추정하거나 필요 시 확인하고 report deliverable 생성 |
 | "팀에 공유할 문서로" | `business_summary` 등 공유 목적 destination gate 적용 |
 
-리포트 요청이 있어도 텍스트 답변을 대체하지 않는다. 항상 텍스트 답변과 함께 리포트 위치, 적용 destination, 읽은 범위, 최신성 한계를 짧게 표시한다.
+리포트 위치와 적용 destination, 사용에 영향을 주는 확인 한계를 짧게 안내한다. 리포트 본문을 채팅에 중복 출력하지 않는다.

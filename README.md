@@ -29,16 +29,14 @@ You: "이 계약서 검토해줘"
 - **계약서 검토** — 유형별 체크리스트 + 조항 위험 분석 + 강행규정 충돌 탐지
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
 - **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력 추적 (`git log` + 법망 API)
-- **자가 검증 태그** — 답변마다 `[VERIFIED]`/`[UNVERIFIED]`/`[STALE]` 등 6종 태그 + 출처 권위 라벨 → 환각 방지
-- **Legal verification core** — 결론 후보별 authority mapping, citation ledger, contradiction scan, conclusion binding
+- **근거와 확인 범위** — 핵심 인용에 출처 성격·실제 확인 경로·상태·적용 시점을 표시. `[VERIFIED]`는 원문 대조 표시이며 법률 정답 보증이 아님
+- **Legal verification core** — 결론별 인용·근거 대응, 반대근거 검토와 결론 강도 조정
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
 - **Role / destination output gate** — 비법무 사용자·외부 송부·기관 제출 문안은 법무 검토 전 단계와 실제 외부 행동을 분리
 - **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
-- **회사 맥락 반영 (읽기 전용)** — 하네스 메모리·프로젝트 지침 파일에 적어둔 회사 사실을 답변에 반영. 스킬은 저장하지 않는다
-
-> **권장 모델**: sonnet급 이상. haiku급 하위 모델은 핵심 금지선(판례 날조 거부, 무확인 쓰기 거부, 직접 송부 지시 회피)은 대체로 지키지만, 출처 권위 라벨·verification status 표시와 시행 전 공포본 currency 판정을 신뢰할 수 없는 수준으로 떨어뜨린다 — 2026-07-21 플로어 실측 guardrails 3/11·o4 4/8, v0.5.1 baseline A/B로 스킬 경량화 인과 아님 확인 (`tests/forward_evals/evidence/*haiku45-20260721*.yaml`의 human_judgment 참조).
+- **회사 맥락과 사건 격리** — 필요한 회사 사실을 읽고, 명시적인 저장 요청은 현재 하네스 권한과 지정 사건 범위에 따른다. 회사 데이터베이스는 만들지 않는다
 
 ## 데이터 소스
 
@@ -136,10 +134,14 @@ BEOPSUNY_INSTALLED_SKILL_PATH=~/.agents/skills/beopsuny PYTHONPATH=.test-deps $P
 | Freshness governance | `skills/beopsuny/references/freshness-governance.md`, `skills/beopsuny/assets/policies/freshness_debt.yaml`, `skills/beopsuny/assets/schemas/freshness_metadata.yaml`, `skills/beopsuny/assets/schemas/freshness_revalidation.yaml`, `skills/beopsuny/references/source-access.md#freshness-gate` | `check_freshness_metadata_schema`, `check_freshness_debt_registry`, `check_freshness_revalidation_records`, `router-15` |
 | Output role/destination gate | `skills/beopsuny/references/output-formats.md`, `skills/beopsuny/assets/schemas/output_contract.yaml`, `skills/beopsuny/references/self-verification.md#role--destination-gate`, `skills/beopsuny/references/report-deliverable.md`, `skills/beopsuny/assets/templates/report_bulk_grid.html`, `skills/beopsuny/assets/templates/report_contract_review.html` | `check_output_role_destination_contracts`, `check_report_deliverable_contract`, `check_bulk_grid_report_template_contract`, `router-14` |
 | Contract review | `skills/beopsuny/references/contract_review_guide.md`, `skills/beopsuny/assets/policies/review_mode.yaml`, `skills/beopsuny/assets/data/clause_references.yaml` | `check_contract_review_guide`, `router-09`, `router-11` |
-| Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 읽기 전용·트러스트 경계·matter 범위 제약 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `check_cross_matter_scope_boundary_has_a_home`, `check_confidential_fact_categories_reach_the_scorer`, `tests/test_cross_matter_scope_rule.py`, `tests/test_confidential_persistence_rule.py`, `router-10`, `router-13`, `router-18` |
+| Company context trust | `skills/beopsuny/SKILL.md` (`## 회사 맥락` — 지시/사실 권한·저장 권한·matter 범위 제약 소유), `skills/beopsuny/references/self-verification.md#retrieved-content-trust` | `check_skill_company_context_read_only_and_trust_boundary`, `check_cross_matter_scope_boundary_has_a_home`, `check_confidential_fact_categories_reach_the_scorer`, `tests/test_cross_matter_scope_rule.py`, `tests/test_semantic_reviews.py`, `router-10`, `router-13`, `router-18` |
 | Bulk evidence grid | `skills/beopsuny/references/bulk-tabular-review.md` | `check_bulk_tabular_review_reference`, `router-12` |
 | Changelog gate | README 품질 계약 변경 체크리스트 7단계 · `CHANGELOG.md` | `check_changelog_pr_gate_workflow_step`, `tests/check_changelog_gate.py` |
 | 차등 재채점 gate | `tests/forward_evals/rescore_baseline.json` (계약의 집: `tests/check_rescore_baseline.py` docstring) | `tests/check_rescore_baseline.py` · `tests/test_rescore_baseline.py` |
+
+검토용 완성 조항 초안과 수정 제안을 지원하며, 위험 분석만 요청한 작업을 전면 redline으로 확대하지 않는다. 초안 작성은 법적 유효성 보증이나 실제 송부·제출·서명 권한과 구별한다. 출력 길이·형식은 요청에 맞추고 evidence packet은 감사·인계가 필요할 때만 사용한다.
+
+마일스톤 8의 기준선·법률 근거·활용성·비용 관측과 미측정 범위는 [평가 기록](tests/forward_evals/model_era/README.md)에 있다. 변경은 검토 중이며 법률 정확도 향상이나 배포 완료를 뜻하지 않는다.
 
 `tests/evaluate_scenario_outputs.py`는 법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트다. 샘플 출력은 법률 결론의 정답이 아니라, 금지해야 할 실패모드와 반드시 드러내야 할 메타데이터를 고정한다.
 
@@ -175,9 +177,10 @@ PYTHONPATH=.test-deps $PYTHON tests/forward_eval_harness.py --mode sample --evid
 PYTHONPATH=.test-deps $PYTHON tests/check_rescore_baseline.py
 PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_forward_eval_harness.py \
+  tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_cross_matter_scope_rule.py \
-  tests/test_confidential_persistence_rule.py \
+  tests/test_semantic_reviews.py \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py \
@@ -190,9 +193,10 @@ $PYTHON -m py_compile \
   tests/check_rescore_baseline.py \
   skills/beopsuny/assets/tools/knowledge_manifest_ingest.py \
   tests/test_forward_eval_harness.py \
+  tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_cross_matter_scope_rule.py \
-  tests/test_confidential_persistence_rule.py \
+  tests/test_semantic_reviews.py \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py \
@@ -251,7 +255,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
                           │
  ② 데이터 (후보·용어) ───┼──► ③ 정책 (판정 로직) ──► 공식 소스 확인 ──► 검토 출력 ──► ⑤ 리포트 템플릿·도구 (렌더·인제스트)
                           │
- ④ 회사 맥락 (읽기 전용) ─┘       (하네스·지침 파일에서 읽음)
+ ④ 회사 맥락 (사건 범위) ─┘       (하네스·지침 파일에서 읽음)
 ```
 
 ### ① 체크리스트 — `assets/policies/checklists/` (11종)
@@ -281,13 +285,12 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `clause_references.yaml` | 계약 조항 → 관련 법령 후보 매핑 (`triage_only`, live source 확인 전 결론 근거 아님) |
 | `legal_terms.yaml` | 영한 법률용어 사전 |
 
-### ③ 정책 — `assets/policies/` (5 files)
+### ③ 정책 — `assets/policies/` (4 files)
 
 "어느 조항을 강행규정 위반으로 볼지", "어느 출처를 결론 근거로 받아들일지" 같은 **판정 로직**. 데이터와 분리돼 있어 독립적으로 갱신 가능.
 
 | 파일 | 용도 |
 |------|------|
-| `mandatory_provisions.yaml` | 한국 강행규정 후보 인덱스 (약관규제법·민법·개인정보보호법·공정거래법·하도급법·근로기준법) |
 | `review_mode.yaml` | 계약 검토 모드(`strict`/`moderate`/`loose`) 출력 스키마 |
 | `source_grades.yaml` | 인용 소스의 출처 권위 라벨과 사용 가능성 기준 |
 | `freshness_debt.yaml` | stale 번들 자산 registry. 등록 자산은 live source 확인 전 `triage_only` |
@@ -297,11 +300,11 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 
 결론의 근거 요건과 출력 형식을 규정하므로 환경과 무관하게 그대로 적용된다. 로컬 미러 다운로드 여부와도 무관하다.
 
-회사 프로필·과거 검토 이력을 담던 저장 스키마 6종은 은퇴했다(#259). 스킬은 회사 맥락을 저장하지 않고 하네스 메모리·프로젝트 지침 파일에서 읽기만 한다.
+회사 프로필·과거 검토 이력을 담던 저장 스키마 6종은 은퇴했다(#259). 스킬 자체의 회사 저장 형식은 복원하지 않는다. 명시적인 저장 요청은 하네스의 현재 권한·지정 저장소·사건 범위에 따라 처리한다.
 
 | 파일 | 용도 |
 |------|------|
-| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
+| `legal_verification_packet.yaml` | 선택적 감사·인계 packet: sources, conclusions.source_ids, conflicts |
 | `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
@@ -313,7 +316,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | 파일 | 용도 |
 |------|------|
 | `report_bulk_grid.html` | 대량 증거 격자 리포트 템플릿 (self-contained, `references/bulk-tabular-review.md` 참조) |
-| `report_contract_review.html` | 계약 검토 리포트 템플릿 (검토자 메모·자가 검증·destination gate 부착, `references/contract_review_guide.md` 참조) |
+| `report_contract_review.html` | 계약 검토 리포트 템플릿 (완성 조항·전제·확인 사항과 destination 경계, `references/contract_review_guide.md` 참조) |
 | `knowledge_manifest_ingest.py` | `beopsuny-knowledge` privacy manifest ingest 도구 (`--strict`, sha256·usage_mode 검증, 실패 시 knowledge injection skip 후 live legal research 계속) |
 
 ## Acknowledgments

@@ -1,0 +1,177 @@
+name: model-era-refresh
+baseline_commit: e05ecdacefe64e003160c913f995a6bf31b5e57a
+evaluation_date: '2026-09-08'
+tasks:
+- id: m8-simple-statute-fixed
+  task_type: simple-statute
+  split: smoke
+  source_mode: fixed
+  input_file: inputs/simple-statute.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-simple-statute-live
+  task_type: simple-statute
+  split: smoke
+  source_mode: live
+  input_file: inputs/simple-statute.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-complex-contract-fixed
+  task_type: complex-contract
+  split: development
+  source_mode: fixed
+  input_file: inputs/complex-contract.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-complex-contract-live
+  task_type: complex-contract
+  split: development
+  source_mode: live
+  input_file: inputs/complex-contract.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-future-effective-fixed
+  task_type: future-effective
+  split: smoke
+  source_mode: fixed
+  input_file: inputs/future-effective.txt
+  fixed_sources:
+  - privacy-2025
+  - privacy-2026
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-future-effective-live
+  task_type: future-effective
+  split: smoke
+  source_mode: live
+  input_file: inputs/future-effective.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-fabricated-case-fixed
+  task_type: fabricated-case
+  split: development
+  source_mode: fixed
+  input_file: inputs/fabricated-case.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-fabricated-case-live
+  task_type: fabricated-case
+  split: development
+  source_mode: live
+  input_file: inputs/fabricated-case.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-missing-annex-fixed
+  task_type: missing-annex
+  split: holdout
+  source_mode: fixed
+  input_file: inputs/missing-annex.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-missing-annex-live
+  task_type: missing-annex
+  split: holdout
+  source_mode: live
+  input_file: inputs/missing-annex.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-conflicting-grounds-fixed
+  task_type: conflicting-grounds
+  split: development
+  source_mode: fixed
+  input_file: inputs/conflicting-grounds.txt
+  fixed_sources:
+  - privacy-2025
+  - privacy-2026
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-conflicting-grounds-live
+  task_type: conflicting-grounds
+  split: development
+  source_mode: live
+  input_file: inputs/conflicting-grounds.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-external-instruction-fixed
+  task_type: external-instruction
+  split: development
+  source_mode: fixed
+  input_file: inputs/external-instruction.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-external-instruction-live
+  task_type: external-instruction
+  split: development
+  source_mode: live
+  input_file: inputs/external-instruction.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-case-isolation-fixed
+  task_type: case-isolation
+  split: holdout
+  source_mode: fixed
+  input_file: inputs/case-isolation.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-case-isolation-live
+  task_type: case-isolation
+  split: holdout
+  source_mode: live
+  input_file: inputs/case-isolation.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-external-draft-fixed
+  task_type: external-draft
+  split: development
+  source_mode: fixed
+  input_file: inputs/external-draft.txt
+  fixed_sources:
+  - privacy-2025
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated
+- id: m8-external-draft-live
+  task_type: external-draft
+  split: development
+  source_mode: live
+  input_file: inputs/external-draft.txt
+  fixed_sources: []
+  source_reference_policy: same runtime SKILL plus source-access and citation-verification-contract;
+    evaluator-only rubric excluded
+  adjudication: unadjudicated

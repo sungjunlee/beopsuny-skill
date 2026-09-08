@@ -58,7 +58,7 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 ### O4 세트 라이브 실행 (`run_claude_live.sh`)
 
-O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`일 때는 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 Lite 환경을 시뮬레이션한다. output 파일 디렉토리로 cd해서 이 repo 트리가 모드 판별을 오염시키지 않게 한다.
+O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`일 때는 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 Lite 환경을 시뮬레이션한다. 하네스의 임시 workspace에서 실행하며 setup 본문과 SHA256, runtime context SHA256, 실행 상태와 정리 여부를 기록한다. `--runtime-root`로 보존한 runtime을 선택할 수 있다. 준비 실패·오류·미실행은 총분모에 남고 `UNSCORABLE`로 표시되며 모델 PASS/FAIL과 구별된다.
 
 ```bash
 PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
@@ -74,7 +74,7 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 ### 병렬 라이브 드라이버 (`run_live_parallel.sh`)
 
-한 명령으로 template → 병렬 라이브 실행 → capture 조립 → score까지 돌린다. foreground에서 실행하고, 완료된 prompt는 스킵해서 중단 후 재개할 수 있다.
+한 명령으로 template → 병렬 라이브 실행 → capture 조립 → score까지 돌린다. foreground에서 실행하고, 매번 새 격리 workspace에서 실행한다. 기존 nonempty 출력은 setup 적용 증거가 아니므로 재사용하지 않는다.
 
 ```bash
 # guardrails 세트
@@ -111,3 +111,10 @@ $PYTHON -m pip install --no-input --disable-pip-version-check --target .test-dep
 PYTHONPATH=.test-deps $PYTHON tests/validate_skill_contracts.py
 PYTHONPATH=.test-deps $PYTHON tests/evaluate_scenario_outputs.py
 ```
+
+
+## 마일스톤 8: 실행 상태와 의미 검토
+
+`model_era/`는 e05ecda 고정 자료 비교·privacy 검색 순서 실험·교차 계열 검토 증거를 모은다. [통합 보고서](model_era/integration-report.md)를 먼저 읽는다. 실행하지 않은 18개 과제 정의를 성능 결과로 세지 않는다.
+
+`tests/fixtures/semantic_reviews.yaml`의 기록은 요청·출력 hash, 정책 revision, 정확한 근거 구간, reviewer와 검토 상태에 결속된다. 고정 fixture는 독립 모델 검토이며 법률 gold가 아니다. 새 출력은 담당자가 실제 출력과 요청을 검토하고 명시 기록을 추가하기 전 `REVIEW_REQUIRED`다. 기존 기록의 label을 복사해 새 출력을 통과시키지 않는다. 애매하면 미판정을 유지하고 사람 검토에 넘긴다. setup 미주입/실행 오류/미실행은 별도 상태이며 실패한 법률 능력이나 PASS가 아니다. `check_rescore_baseline.py`는 이런 상태까지 비교하며, 과거 capture와 human_judgment를 변경하지 않는다.

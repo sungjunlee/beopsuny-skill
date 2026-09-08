@@ -1,0 +1,633 @@
+{
+  "outcome": "INCONCLUSIVE",
+  "runtime_changed": false,
+  "records": [
+    {
+      "case": "privacy-saas",
+      "arm": "blind-first",
+      "model": "grok-4.6",
+      "effort": "high",
+      "elapsed_seconds": 80.264,
+      "returncode": -15,
+      "status": "execution_error",
+      "fresh_session": true,
+      "order_enforcement": "instructed; verify actual tool trace before claiming measured",
+      "run": "privacy-privacy-saas-blind-first",
+      "tool_calls": [
+        {
+          "sequence": 1,
+          "tool": "read_file",
+          "input": {
+            "target_file": "SKILL.md"
+          }
+        },
+        {
+          "sequence": 2,
+          "tool": "read_file",
+          "input": {
+            "target_file": "taxonomy.txt"
+          }
+        },
+        {
+          "sequence": 3,
+          "tool": "read_file",
+          "input": {
+            "target_file": "privacy-saas.txt"
+          }
+        },
+        {
+          "sequence": 4,
+          "tool": "read_file",
+          "input": {
+            "target_file": "source-access.md"
+          }
+        },
+        {
+          "sequence": 5,
+          "tool": "read_file",
+          "input": {
+            "target_file": "research-workflow.md"
+          }
+        },
+        {
+          "sequence": 6,
+          "tool": "read_file",
+          "input": {
+            "target_file": "knowledge-injection.md"
+          }
+        },
+        {
+          "sequence": 7,
+          "tool": "read_file",
+          "input": {
+            "target_file": "source-grading.md"
+          }
+        },
+        {
+          "sequence": 8,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 9,
+          "tool": "read_file",
+          "input": {
+            "target_file": "citation-verification-contract.md"
+          }
+        },
+        {
+          "sequence": 10,
+          "tool": "read_file",
+          "input": {
+            "target_file": "output-formats.md"
+          }
+        },
+        {
+          "sequence": 11,
+          "tool": "search_tool",
+          "input": {
+            "query": "law search beopmang korean law"
+          }
+        },
+        {
+          "sequence": 12,
+          "tool": "read_file",
+          "input": {
+            "target_file": "법률.md"
+          }
+        },
+        {
+          "sequence": 13,
+          "tool": "grep",
+          "input": {}
+        },
+        {
+          "sequence": 14,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 15,
+          "tool": "read_file",
+          "input": {
+            "target_file": "self-verification.md"
+          }
+        },
+        {
+          "sequence": 16,
+          "tool": "read_file",
+          "input": {
+            "target_file": "contract_review_guide.md"
+          }
+        },
+        {
+          "sequence": 17,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 18,
+          "tool": "grep",
+          "input": {}
+        }
+      ],
+      "call_counts": {
+        "read_file": 12,
+        "run_terminal_command": 3,
+        "search_tool": 1,
+        "grep": 2
+      },
+      "raw_trace_sha256": "56fd6813e7aac4503153e14ee637659c1705787787e5aef06186727147e467a5",
+      "legal_performance": "unjudgeable: no completed valid paired response",
+      "tokens": null,
+      "cost": null,
+      "metrics_limitation": "No completed aggregate usage/billing result. Partial message usage is not whole-run total. Private tool output/stage text not republished."
+    },
+    {
+      "case": "privacy-saas",
+      "arm": "blind-first",
+      "model": "grok-4.6",
+      "effort": "high",
+      "elapsed_seconds": 2.513,
+      "returncode": 1,
+      "status": "execution_error",
+      "fresh_session": true,
+      "order_enforcement": "instructed; verify actual tool trace before claiming measured",
+      "run": "privacy-v2-privacy-saas-blind-first",
+      "tool_calls": [],
+      "call_counts": {},
+      "raw_trace_sha256": "316449a9b78ad99e27cfac4d5ddc8ae2d91c6145d4693293e180464dac44bb68",
+      "legal_performance": "unjudgeable: no completed valid paired response",
+      "tokens": null,
+      "cost": null,
+      "metrics_limitation": "No completed aggregate usage/billing result. Partial message usage is not whole-run total. Private tool output/stage text not republished."
+    },
+    {
+      "case": "privacy-saas",
+      "arm": "blind-first",
+      "model": "grok-4.6",
+      "effort": "high",
+      "elapsed_seconds": 191.917,
+      "returncode": 1,
+      "status": "execution_error",
+      "fresh_session": true,
+      "order_enforcement": "instructed; verify actual tool trace before claiming measured",
+      "run": "privacy-v3-privacy-saas-blind-first",
+      "tool_calls": [
+        {
+          "sequence": 1,
+          "tool": "read_file",
+          "input": {
+            "target_file": "taxonomy.txt"
+          }
+        },
+        {
+          "sequence": 2,
+          "tool": "read_file",
+          "input": {
+            "target_file": "privacy-saas.txt"
+          }
+        },
+        {
+          "sequence": 3,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 4,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 5,
+          "tool": "read_file",
+          "input": {
+            "target_file": "법률.md"
+          }
+        },
+        {
+          "sequence": 6,
+          "tool": "read_file",
+          "input": {
+            "target_file": "시행령.md"
+          }
+        },
+        {
+          "sequence": 7,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 8,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 9,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 10,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 11,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 12,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 13,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 14,
+          "tool": "read_file",
+          "input": {
+            "target_file": "시행령.md"
+          }
+        },
+        {
+          "sequence": 15,
+          "tool": "read_file",
+          "input": {
+            "target_file": "시행령.md"
+          }
+        },
+        {
+          "sequence": 16,
+          "tool": "read_file",
+          "input": {
+            "target_file": "시행령.md"
+          }
+        },
+        {
+          "sequence": 17,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 18,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.law.go.kr/법령/개인정보보호법/제28조의8"
+          }
+        },
+        {
+          "sequence": 19,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.law.go.kr/법령/개인정보보호법/제26조"
+          }
+        },
+        {
+          "sequence": 20,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000230332"
+          }
+        },
+        {
+          "sequence": 21,
+          "tool": "Web search:",
+          "input": {}
+        },
+        {
+          "sequence": 22,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 23,
+          "tool": "run_terminal_command",
+          "input": {}
+        },
+        {
+          "sequence": 24,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsInfoP.do?efYd=20251002&lsiSeq=270351"
+          }
+        },
+        {
+          "sequence": 25,
+          "tool": "read_file",
+          "input": {
+            "target_file": "hints.txt"
+          }
+        },
+        {
+          "sequence": 26,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS074&mCode=C020010000&nttId=11133"
+          }
+        },
+        {
+          "sequence": 27,
+          "tool": "web_fetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsLawLinkInfo.do?chrClsCd=010202&lsJoLnkSeq=900078586&print=print"
+          }
+        }
+      ],
+      "call_counts": {
+        "read_file": 8,
+        "run_terminal_command": 12,
+        "web_fetch": 6,
+        "Web search:": 1
+      },
+      "raw_trace_sha256": "22282765476886de73794cd232033c6182c49c99b0f289d3978fd568045e67d1",
+      "legal_performance": "unjudgeable: no completed valid paired response",
+      "tokens": null,
+      "cost": null,
+      "metrics_limitation": "No completed aggregate usage/billing result. Partial message usage is not whole-run total. Private tool output/stage text not republished."
+    },
+    {
+      "case": "privacy-saas",
+      "arm": "blind-first",
+      "model": "claude-opus-5",
+      "effort": "high",
+      "elapsed_seconds": 305.9372586660029,
+      "returncode": 124,
+      "status": "execution_error",
+      "order_enforcement": "instructed; actual trace review required",
+      "tools": [
+        "Read",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "run": "privacy-claude-privacy-saas-blind-first",
+      "tool_calls": [
+        {
+          "sequence": 1,
+          "tool": "Read",
+          "input": {
+            "file_path": "privacy-saas.txt"
+          }
+        },
+        {
+          "sequence": 2,
+          "tool": "Read",
+          "input": {
+            "file_path": "taxonomy.txt"
+          }
+        },
+        {
+          "sequence": 3,
+          "tool": "WebSearch",
+          "input": {
+            "malformed_input": true
+          }
+        },
+        {
+          "sequence": 4,
+          "tool": "WebSearch",
+          "input": {
+            "malformed_input": true
+          }
+        },
+        {
+          "sequence": 5,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 제28조의8 국외 이전 요건 현행 조문"
+          }
+        },
+        {
+          "sequence": 6,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 제26조 업무위탁 재위탁 제18조 목적 외 이용 조문"
+          }
+        },
+        {
+          "sequence": 7,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%20%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C28%EC%A1%B0%EC%9D%988"
+          }
+        },
+        {
+          "sequence": 8,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%20%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C26%EC%A1%B0"
+          }
+        },
+        {
+          "sequence": 9,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=011357&ancYnChk=0"
+          }
+        },
+        {
+          "sequence": 10,
+          "tool": "Read",
+          "input": {
+            "file_path": "hints.txt"
+          }
+        },
+        {
+          "sequence": 11,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1029334953"
+          }
+        },
+        {
+          "sequence": 12,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보보호위원회 개인정보 국외이전 안내서 별도 동의 고지사항 처리위탁 보관 계약 특례"
+          }
+        },
+        {
+          "sequence": 13,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW//lsLawLinkInfo.do?lsJoLnkSeq=900079061&lsId=011357&chrClsCd=010202&print=print"
+          }
+        },
+        {
+          "sequence": 14,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 제28조의8 제2항 국외 이전 동의 고지 사항 이전받는 자 이용목적 보유기간 거부 제3항 보호조치"
+          }
+        },
+        {
+          "sequence": 15,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW//lsLinkCommonInfo.do?lspttninfSeq=182205&chrClsCd=010202"
+          }
+        },
+        {
+          "sequence": 16,
+          "tool": "Read",
+          "input": {
+            "file_path": "audit-core.txt"
+          }
+        },
+        {
+          "sequence": 17,
+          "tool": "Read",
+          "input": {
+            "file_path": "audit-overlay.txt"
+          }
+        }
+      ],
+      "call_counts": {
+        "Read": 5,
+        "WebSearch": 6,
+        "WebFetch": 6
+      },
+      "raw_trace_sha256": "cdd1119ba1be06da4c2e85cf9add6ac35d3f168753a7e0b2ade9864a1f9877c8",
+      "legal_performance": "unjudgeable: no completed valid paired response",
+      "tokens": null,
+      "cost": null,
+      "metrics_limitation": "No completed aggregate usage/billing result. Partial message usage is not whole-run total. Private tool output/stage text not republished."
+    },
+    {
+      "case": "privacy-saas",
+      "arm": "hints-first",
+      "model": "claude-opus-5",
+      "effort": "high",
+      "elapsed_seconds": 306.73983008299547,
+      "returncode": 124,
+      "status": "execution_error",
+      "order_enforcement": "instructed; actual trace review required",
+      "tools": [
+        "Read",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "run": "privacy-claude-privacy-saas-hints-first",
+      "tool_calls": [
+        {
+          "sequence": 1,
+          "tool": "Read",
+          "input": {
+            "file_path": "privacy-saas.txt"
+          }
+        },
+        {
+          "sequence": 2,
+          "tool": "Read",
+          "input": {
+            "file_path": "taxonomy.txt"
+          }
+        },
+        {
+          "sequence": 3,
+          "tool": "Read",
+          "input": {
+            "file_path": "hints.txt"
+          }
+        },
+        {
+          "sequence": 4,
+          "tool": "WebSearch",
+          "input": {
+            "malformed_input": true
+          }
+        },
+        {
+          "sequence": 5,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 2026년 시행 개정 위탁 제26조 국외이전 개인정보보호위원회"
+          }
+        },
+        {
+          "sequence": 6,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/법령/개인정보보호법/제28조의8"
+          }
+        },
+        {
+          "sequence": 7,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsId=011357&ancYnChk=0"
+          }
+        },
+        {
+          "sequence": 8,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 일부개정 2026년 9월 11일 시행 내용"
+          }
+        },
+        {
+          "sequence": 9,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/lsInfoP.do?lsiSeq=283839"
+          }
+        },
+        {
+          "sequence": 10,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsRvsRsnListP.do?lsId=011357&chrClsCd=010102"
+          }
+        },
+        {
+          "sequence": 11,
+          "tool": "WebSearch",
+          "input": {
+            "query": "개인정보 보호법 제28조의8 제1항 각 호 국외 이전 별도 동의 계약 인증 조문 print"
+          }
+        },
+        {
+          "sequence": 12,
+          "tool": "WebFetch",
+          "input": {
+            "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=270351&joNo=0028&joBrNo=08&docCls=jo&urlMode=lsScJoRltInfoR"
+          }
+        },
+        {
+          "sequence": 13,
+          "tool": "Read",
+          "input": {
+            "file_path": "audit-core.txt"
+          }
+        },
+        {
+          "sequence": 14,
+          "tool": "Read",
+          "input": {
+            "file_path": "audit-overlay.txt"
+          }
+        }
+      ],
+      "call_counts": {
+        "Read": 5,
+        "WebSearch": 4,
+        "WebFetch": 5
+      },
+      "raw_trace_sha256": "4b8fba1b512dc493aa59f9b81dc0344c237ffd89aa44a4fe77ffc28e70a7af7d",
+      "legal_performance": "unjudgeable: no completed valid paired response",
+      "tokens": null,
+      "cost": null,
+      "metrics_limitation": "No completed aggregate usage/billing result. Partial message usage is not whole-run total. Private tool output/stage text not republished."
+    }
+  ],
+  "unexecuted": [
+    "privacy-tags pair",
+    "repeat pairs",
+    "incident holdout"
+  ],
+  "reason": "Initial Grok contamination, tool-registration failure and turn limit; matched Claude pair timed out before final responses. No valid benefit or harm conclusion."
+}

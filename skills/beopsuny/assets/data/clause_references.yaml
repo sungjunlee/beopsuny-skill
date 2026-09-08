@@ -14,14 +14,10 @@
 #   - 법령: 조문 번호 매핑 (API로 최신 내용 조회)
 #   - 판례: 검색 키워드만 제공 (판례는 변경될 수 있음)
 #
-# 조항별 counter-drafting 힌트 (현재 정책 — 확장 계획은 Epic/Issue 참조):
+# 조항별 후보 입력 (출력 범위는 contract_review_guide.md와 사용자 요청을 따른다):
 #   - why_risky: 왜 위험한지 — 한국 강행규정·실무 기준 요약 (3줄 이내)
 #   - negotiation_points.gap / .eul: 갑/을 관점 협상 포인트 2–3개씩
-#   - alt_wording_hint: 대체 문구의 방향·원칙 (완성된 수정안 아님)
-#
-# `party_position.per_clause_override` 에서 참조하는 contract key 목록 —
-# 이 파일의 top-level `clauses.*` ID 전체 = 유효 clause ID. 일치하지 않는
-# override key 는 graceful skip (SKILL.md Step 4 항목 5 "`{조항key}` 계약" 참조).
+#   - alt_wording_hint: 조사·초안 작성에 참고할 방향 후보; 검토용 완성 초안을 제한하지 않음
 #
 # gap / eul 축 정의 (v0.2.1~, 조항 전반 공통):
 #   - gap = 계약 상위 당사자 (발주자·위탁자·사용자·수요자)
@@ -31,13 +27,6 @@
 #   당사자 위치 판단은 회사 맥락의 갑/을 위치를 기본값으로 사용한다.
 #   값이 없거나 빈 값이면 양쪽 관점을 모두 노출한다.
 #
-# 경계 (v0.2.0 유지 — `references/contract_review_guide.md` "법순이가 하지 않는 것" 섹션 원칙):
-#   - 힌트(hint) = 방향·원칙 서술 → ✓ 허용
-#   - 자동 생성 = 완성된 수정 문구 확정 → ✗ 사용자 몫
-#   - 출력 경로·모드별 필터는 `assets/policies/review_mode.yaml` 참조
-#     v0.2.1~ 3키 분해 (`include_why_risky` / `include_negotiation_points` /
-#     `include_alt_wording_hint`) — SKILL.md Step 4 표와 1:1 대응
-#     strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만
 # ============================================================
 
 version: "1.2.1"
@@ -831,7 +820,6 @@ clauses:
     category: ip_data
     description: |
       개인정보 처리 위탁 관계에서 수탁자 의무 + SaaS 계약의 국외이전을 정하는 조항.
-      SKILL.md Step 4 "Data Processing → 개인정보보호법 제26·28조의8" 과 정합.
       순수 수집/이용 관점은 `data_privacy` 키 참조.
     common_terms:
       en: ["data processor", "data controller", "processing", "sub-processor", "cross-border transfer"]
