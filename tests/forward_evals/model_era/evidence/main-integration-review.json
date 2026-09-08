@@ -1,0 +1,20 @@
+{
+  "scope": "main integration only; not legal-quality or release GO",
+  "reviews": [
+    {
+      "returncode": 0,
+      "seconds": 252.5701778329967,
+      "model": "grok-4.6",
+      "effort": "high",
+      "text": "**LGTM.** 이 통합 델타에서 머지를 막을 코드 결함은 없다. 법률 품질 인증이 아니다.\n\n## 통합 계약 대조\n\n**Corpus / 하네스 분리.** 라이브 evidence 재채점은 하네스에서 빠지고, 흡수 스템 7개가 파일·`rescore_all()` 스캔·baseline에 남는지와 하네스 텍스트로 되돌아오지 않는지를 mutation으로 잠근다. 전체 메시지 equality는 기존 baseline 검사에 그대로 둔다.\n\n**고정 문구 PASS/FAIL 앵커.** 옛 corpus all-pass 루프와 authority-label 정확 FAIL은 제거됐다. 대신 fwd-08/fwd-11은 `REVIEW_REQUIRED:` 접두, july09 fwd-02는 정적 `forbidden failure phrase` 잔존, 프롬프트 rubric 존재(fwd-08 쓰기·fwd-10 기밀)만 본다. 해시 바인딩 없는 과거 캡처를 PASS나 모델 FAIL로 재사용하지 않는다.\n\n**knowledge `audit_only`.** 사일런트 리맵이 빠졌다. 주석·synthetic pass/fail·`skipUnless` 로컬 체크아웃 테스트가 그 거부를 명시한다. sibling 용어를 흡수하거나 스킵으로 가리지 않았고, sibling repo 변경도 없다. 로컬 118 pass / 1 error는 이 델타가 숨기지 않는 노출이다.\n\n**plugin 메타.** `plugin.json`을 집으로 description·keywords 드리프트 검사가 추가됐고, 기존 version sync는 유지된다.\n\n**mandatory_provisions.** 이 패치 조각에는 fixture 삭제가 없다. 브리핑대로 main에서 빠졌다면 이 델타의 책임 밖이고, 여기서 되살린 흔적도 없다.\n\n## 의도적으로 열어 둔 것\n\n- 격리 아카이브는 sibling 테스트를 건너뛰고 synthetic ready/legacy-reject만 돌린다.\n- `test_legacy_audit_only_usage_fails`의 4번째 인자는 `post_search_audit_only`다. 거부는 에셋 본문 `usage_mode: audit_only` 쪽이 담당하는 형태로 읽힌다. manifest 인자 경로의 리맵 제거는 주석과 로컬 checkout 실패가 잠근다. 가림이 아니다.\n\n머지해도 된다."
+    },
+    {
+      "returncode": 0,
+      "seconds": 58.40508195801522,
+      "model": "grok-4.6",
+      "effort": "high",
+      "text": "**LGTM.** 이 범위에서 막을 P1은 없습니다.\n\n삭제된 partial-refresh fixture는 이미 은퇴한 `mandatory_provisions.yaml`을 가리키므로 O1이 깨지는 게 정상입니다. 재검증 기록을 테스트 픽스처로 남기지 않고 git 이력에 두는 선택이 맞습니다.\n\n절대경로 `KNOWLEDGE_ROOT` 테스트 제거도 맞습니다. `skipUnless(exists())`는 경로가 없으면 skip이지만, 경로가 있으면 레거시 checkout과 현재 계약이 어긋난 채로 실행되어 깨집니다. CI가 원래 skip하던 maintainer-only 경로를 정리하는 것과 같고, 실제 관측된 usage mismatch는 #272/#323/#325의 외부 readiness 한계로 두는 게 이 PR 범위입니다.\n\nSol이 지적한 `--knowledge-root` URL remapping 공백은 기존 5-asset roundtrip 한 건만 HTTPS로 바꾸고 `--knowledge-root`를 tempdir에 넘기는 방식으로 메워졌습니다. 나머지 `file://`와 로컬 override가 한 fixture에서 같이 돌고, remapping이 실패하면 기존 `ready`/5-asset 단언이 깨지므로 별도 테스트나 runtime 변경 없이 충분합니다. focused 5 + 선행 118 PASS와도 맞습니다.\n\nP2로 적을 것도 사실상 없습니다. HTTPS 한 건이 주석에 묶여 있어 이후 “URL 통일” 정리에 취약할 수는 있지만, 지금  integraton을 막을 수준은 아닙니다. #272/#323/#325는 이 리뷰 범위 밖입니다."
+    }
+  ],
+  "correction": "First reviewer had stale assumptions about the absolute-path test; follow-up reviewed actual removal and retained portable URL remapping coverage."
+}

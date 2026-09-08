@@ -45,3 +45,13 @@ Opus 후속 지적 중 과거 합집합 hash와 신규 과제별 hash의 시제�
 개인 절대 경로의 sibling knowledge checkout을 읽는 테스트는 제거했다. 임시 자산 5개로 실제 build_packet을 검증하는 기존 검사와 현행 usage 수용/구형 usage 거부 검사는 유지한다. 제거 전 실제 로컬 통합은 `audit_only`와 `post_search_audit_only` 불일치로 실패했다. 외부 지식 자산의 호환성은 해결되지 않았고 ready로 보고하지 않는다.
 
 통합 후 118 unittest, O1, O2(11 outputs/13 unsafe), 19 corpus 재채점(66 메시지, 변화 0), diff whitespace 검사가 통과했다. 소스 도달성은 WARN(OK 2/WARN 3/FAIL 0/미설치 2): 두 로컬 미러 upstream 불일치, 법망 공지 중단, law.go.kr 두 링크 HTTP 200. HTTP 성공은 조문 내용·적용 시점 검증이 아니다. #272/#323/#325 및 릴리즈 스모크의 남은 검증은 유지한다.
+
+
+추가 인계: Sol 독립 검토가 개인 체크아웃 검사 삭제로 생기는 `--knowledge-root` URL 재매핑 검증 공백을 지적해, 기존 5자산 임시 manifest 검사에서 한 자산을 raw URL+임시 root로 읽도록 바꿨다(나머지는 file URL). 해당 5 tests PASS. 외부 지식 자산을 수정하거나 불일치를 통과시키지 않았다.
+
+`a0ce843`의 불변 runtime으로 #323 고정 계약 입력을 재준비했으나 Opus 5 high가 4.336초에 세션 한도를 반환해 답변 없이 종료했다. reset은 2026-09-09 01:30 KST이며 자동 재시도하지 않았다. `evidence/merged-contract-execution.json`의 판정·비용은 null/미측정이다. #272 직접 변형을 Sol이 읽기 전용 검토한 결과 원본·산문·짧은 답변 일부에서 실제 출처 경로가 복원되지 않아 AC1은 유지한다. 원본을 실패 대조군으로 보존하고 교정 변형을 따로 검증해야 하며 역사적 법률 사실을 현재법 검증으로 쓰지 않는다.
+
+Quota 관측: 2026-09-08 13:05:21Z Grok SuperGrok Heavy primary used 20%/잔여 80%, reset 2026-09-13 15:42:04Z, pace reset까지 유지(source grok-cli-proxy, confidence 미제공; 창 길이 미제공, 다른 창 unknown). Codex Pro 주간 used 46%/잔여 54%, reset 2026-09-15 10:56:38Z(app API, 다른 창·pace unknown). all-provider와 Claude quota 조회는 45초 timeout으로 unknown이며, 이후 실제 Claude 호출에서 세션 한도 도달이 확인됐다. 잔여율을 추정하지 않는다.
+
+
+최종 통합 리뷰: Grok 4.6 high가 통합 및 마지막 개인 경로 제거/URL 재매핑 보완 모두 LGTM으로 판정했다(`evidence/main-integration-review.json`). `bec1ac1`의 실제 GitHub Contract Tests가 PASS했다([run](https://github.com/sungjunlee/beopsuny-skill/actions/runs/34230436637)). CodeRabbit 성공 상태는 manual review required로 자동 검토를 건너뛴 것이므로 독립 코드 리뷰 근거로 세지 않는다. CHANGELOG PR gate와 Python compile도 PASS. 사용자가 PR #327 머지를 명시 승인했으며, v0.9.0 발행은 남은 AC와 태깅 커밋 스모크가 충족될 때까지 보류한다.
