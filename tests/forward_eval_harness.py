@@ -39,6 +39,7 @@ from evaluate_scenario_outputs import (
     evaluate_common_rule,
     evaluate_semantic_review,
     split_sentences,
+    require_output_text,
 )
 from evaluate_scenario_outputs import (
     conditional_forbidden_hits as declared_conditional_forbidden_hits,
@@ -849,6 +850,23 @@ def load_yaml(path: Path) -> Any:
         return yaml.safe_load(handle)
 
 
+def validate_prompt_id(prompt_id: str) -> None:
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", prompt_id) is None:
+        raise AssertionError(f"unsafe prompt id: {prompt_id!r}")
+
+
+def setup_evidence_matches(prompt: dict[str, Any], execution: dict[str, Any]) -> bool:
+    """Bind setup to its captured runtime, which may differ from today's runtime."""
+    setup = execution.get("setup") or {}
+    context_hash = execution.get("context_sha256")
+    return (isinstance(setup, dict)
+            and setup.get("status") == "applied"
+            and setup.get("sha256") == sha256_text(str(prompt["setup"]))
+            and isinstance(context_hash, str)
+            and re.fullmatch(r"[0-9a-f]{64}", context_hash) is not None
+            and setup.get("context_sha256") == context_hash)
+
+
 def load_forward_eval(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     data = load_yaml(path)
     if not isinstance(data, dict):
@@ -873,6 +891,7 @@ def load_forward_eval(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if not isinstance(prompt.get("forbidden_failures"), list):
             raise AssertionError(f"{path}: forbidden_failures must be a list (may be empty for semantic axes)")
         prompt_id = str(prompt["id"])
+        validate_prompt_id(prompt_id)
         if prompt_id in seen_ids:
             raise AssertionError(f"{path}: duplicate prompt id {prompt_id!r}")
         seen_ids.add(prompt_id)
@@ -1235,19 +1254,17 @@ def score_forward_outputs(
     source_eval: str = "tests/forward_evals/beopsuny_guardrails.yaml",
     executions: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    prompt_ids = {str(prompt["id"]) for prompt in config["prompts"]}
+    unknown_ids = sorted(set(outputs) - prompt_ids)
+    if not prompt_ids or unknown_ids:
+        raise ValueError(f"UNSCORABLE: no configured prompts or unknown output ids: {unknown_ids!r}")
     results = []
     for prompt in config["prompts"]:
         prompt_id = str(prompt["id"])
         execution = (executions or {}).get(prompt_id, {})
         status = execution.get("execution_status", "completed")
-        setup = execution.get("setup", {})
         if mode != "sample" and prompt.get("setup") is not None:
-            expected_hash = sha256_text(str(prompt["setup"]))
-            if (
-                setup.get("status") != "applied"
-                or setup.get("sha256") != expected_hash
-                or not setup.get("context_sha256")
-            ):
+            if not setup_evidence_matches(prompt, execution):
                 status = "unscorable" if status == "completed" else status
         if mode != "sample" and not outputs.get(prompt_id, "").strip():
             status = "not_executed" if status == "completed" else status
@@ -1265,15 +1282,10 @@ def score_forward_outputs(
             }
         result["execution_status"] = "synthetic" if mode == "sample" else status
         result["execution"] = execution
-        if status == "completed":
-            result["verdict"] = result.get("verdict", "FAIL" if result["failed_guardrails"] else "PASS")
-        else:
+        if status != "completed":
             result["verdict"] = "UNSCORABLE"
         results.append(result)
     failed_count = sum(result["verdict"] == "FAIL" for result in results)
-    unmatched_output_ids = sorted(
-        set(outputs) - {str(prompt["id"]) for prompt in config["prompts"]}
-    )
     summary = {
         "total": len(results),
         "passed": sum(result["verdict"] == "PASS" for result in results),
@@ -1287,8 +1299,6 @@ def score_forward_outputs(
         summary["execution_errors"] = sum(
             result["execution_status"] == "execution_error" for result in results
         )
-    if unmatched_output_ids:
-        summary["unmatched_outputs"] = len(unmatched_output_ids)
 
     evidence: dict[str, Any] = {
         "name": str(config["name"]),
@@ -1298,7 +1308,7 @@ def score_forward_outputs(
         "run_at": run_at,
         "generated_by": "tests/forward_eval_harness.py",
         "summary": summary,
-        "unmatched_output_ids": unmatched_output_ids,
+        "unmatched_output_ids": [],
         "results": results,
     }
     if command:
@@ -1316,31 +1326,21 @@ def load_outputs_capture(path: Path) -> dict[str, str]:
     if not isinstance(data, dict):
         raise AssertionError(f"{path}: expected mapping")
     if isinstance(data.get("outputs"), dict):
-        return {
-            canonical_prompt_id(str(key)): str(value)
-            for key, value in data["outputs"].items()
-        }
-    if isinstance(data.get("results"), list):
-        outputs: dict[str, str] = {}
-        for item in data["results"]:
-            if not isinstance(item, dict) or not item.get("prompt_id"):
-                raise AssertionError(f"{path}: result item missing prompt_id")
-            outputs[canonical_prompt_id(str(item["prompt_id"]))] = str(
-                item.get("output", "")
-            )
-        return outputs
-    if isinstance(data.get("prompts"), list):
-        outputs = {}
-        for item in data["prompts"]:
-            if not isinstance(item, dict) or not item.get("prompt_id"):
-                raise AssertionError(f"{path}: prompt item missing prompt_id")
-            outputs[canonical_prompt_id(str(item["prompt_id"]))] = str(
-                item.get("output", "")
-            )
-        return outputs
-    raise AssertionError(
-        f"{path}: expected outputs mapping, results list, or prompts list"
-    )
+        entries = data["outputs"].items()
+    else:
+        rows = data.get("results", data.get("prompts"))
+        if not isinstance(rows, list):
+            raise AssertionError(f"{path}: expected outputs mapping, results list, or prompts list")
+        if any(not isinstance(item, dict) or not item.get("prompt_id") for item in rows):
+            raise AssertionError(f"{path}: capture item missing prompt_id")
+        entries = [(item["prompt_id"], item.get("output", "")) for item in rows]
+    outputs: dict[str, str] = {}
+    for key, value in entries:
+        prompt_id = canonical_prompt_id(str(key))
+        if prompt_id in outputs:
+            raise ValueError(f"UNSCORABLE: duplicate captured prompt id: {prompt_id!r}")
+        outputs[prompt_id] = require_output_text(value)
+    return outputs
 
 
 def build_capture_template(
@@ -1378,6 +1378,7 @@ def write_prompt_packets(config: dict[str, Any], packet_dir: Path) -> None:
     packet_dir.mkdir(parents=True, exist_ok=True)
     for prompt in config["prompts"]:
         prompt_id = str(prompt["id"])
+        validate_prompt_id(prompt_id)
         prompt_dir = packet_dir / prompt_id
         prompt_dir.mkdir(parents=True, exist_ok=True)
         (prompt_dir / "context.md").write_text(
@@ -1410,6 +1411,7 @@ def run_command_outputs(
         )
     for prompt in config["prompts"]:
         prompt_id = str(prompt["id"])
+        validate_prompt_id(prompt_id)
         record: dict[str, Any] = {
             "prompt_id": prompt_id,
             "execution_status": "execution_error",
@@ -1524,7 +1526,7 @@ def load_execution_capture(path: Path) -> dict[str, dict[str, Any]]:
     data = load_yaml(path)
     entries = data.get("results", data.get("prompts", []))
     return {
-        canonical_prompt_id(str(item["prompt_id"])): item.get("execution", {})
+        canonical_prompt_id(str(item["prompt_id"])): (item.get("execution") or {})
         for item in entries
         if isinstance(item, dict) and item.get("prompt_id")
     }

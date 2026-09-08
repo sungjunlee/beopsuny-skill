@@ -69,6 +69,7 @@ def main() -> None:
         prompts.append(prompt)
         records.append({'task_id': task_id, 'arm': args.arm, 'split': task['split'],
                         'source_mode': task['source_mode'], 'source_ids': task['fixed_sources'],
+                        'task_runtime_inputs': {p: digest(runtime / p) for p in ['skills/beopsuny/SKILL.md', *task_references]},
                         'execution_status': 'not_measured', 'legal_adjudication': 'unadjudicated',
                         'assessment': None, 'model_id': None, 'effort': None, 'elapsed_seconds': None,
                         'tokens': None, 'cost': None, 'unavailable_reason': 'not executed',

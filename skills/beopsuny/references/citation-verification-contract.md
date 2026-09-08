@@ -56,7 +56,7 @@ local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 �
 
 ## Output Binding
 
-각 핵심 citation의 `source_authority`, `verification_status`, `provenance`, `currency`와 지지하는 결론(`supports`)을 답변에서 식별할 수 있어야 한다. 별도 citation ledger 작성은 요구하지 않는다. 표의 근거 열·연결된 각주·인접한 산문 모두 허용하며 라벨 순서를 고정하지 않는다. 같은 근거를 여러 위치에 반복할 필요는 없지만 어느 인용에 적용되는지 명확해야 한다.
+각 핵심 citation의 `source_authority`, `verification_status`, `provenance`, `currency`와 지지하는 결론을 답변에서 식별할 수 있어야 한다. 별도 citation ledger 작성은 요구하지 않는다. 표의 근거 열·연결된 각주·인접한 산문 모두 허용하며 라벨 순서를 고정하지 않는다. 같은 근거를 여러 위치에 반복할 필요는 없지만 어느 인용에 적용되는지 명확해야 한다.
 
 출처 성격과 이번 확인 상태는 구별한다. `확인된 1차 근거`라는 말이나 `[VERIFIED]`만으로 실제 출처가 공식 원문인지 로컬 미러인지, 무엇을 읽었는지 복원할 수 없으면 불충분하다. 쉬운 설명으로 표시해도 이 정보와 적용 시점은 유지한다. 표 행에서 원문 경로가 누락되었다면 표 형식의 자유로 면제하지 않는다.
 

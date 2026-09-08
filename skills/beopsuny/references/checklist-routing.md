@@ -67,7 +67,7 @@
 
 ## Freshness Routing
 
-체크리스트 특수 처리 요지: 파일의 `maintenance.next_review`가 지났거나 금액·기한·인원 기준·과징금·서식·구비서류처럼 변동성 높은 값이 있으면 `references/source-access.md#freshness-gate`를 적용한다 — stale 체크리스트는 상황을 좁히는 후보로만 쓰고, 결론에 들어가는 법령명·조문·시행일·threshold·금액·기한·구비서류는 live legal research로 재확인하며, 실패 시 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하고 stale 상태를 검토자 메모의 `Currency`에 짧게 남긴다. 일반 원칙(triage_only, 승격 금지)과 등록 자산 목록은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`이 단일 소스다.
+체크리스트 특수 처리 요지: 파일의 `maintenance.next_review`가 지났거나 금액·기한·인원 기준·과징금·서식·구비서류처럼 변동성 높은 값이 있으면 `references/source-access.md#freshness-gate`를 적용한다 — stale 체크리스트는 상황을 좁히는 후보로만 쓰고, 결론에 들어가는 법령명·조문·시행일·threshold·금액·기한·구비서류는 live legal research로 재확인하며, 실패 시 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하고 stale 상태와 재확인 범위를 관련 결론에 짧게 남긴다. 일반 원칙(triage_only, 승격 금지)과 등록 자산 목록은 `references/freshness-governance.md`와 `assets/policies/freshness_debt.yaml`이 단일 소스다.
 
 ## Company Context
 

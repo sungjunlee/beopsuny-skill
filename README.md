@@ -30,15 +30,13 @@ You: "이 계약서 검토해줘"
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
 - **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력 추적 (`git log` + 법망 API)
 - **근거와 확인 범위** — 핵심 인용에 출처 성격·실제 확인 경로·상태·적용 시점을 표시. `[VERIFIED]`는 원문 대조 표시이며 법률 정답 보증이 아님
-- **Legal verification core** — 결론 후보별 authority mapping, citation ledger, contradiction scan, conclusion binding
+- **Legal verification core** — 결론별 인용·근거 대응, 반대근거 검토와 결론 강도 조정
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
 - **Role / destination output gate** — 비법무 사용자·외부 송부·기관 제출 문안은 법무 검토 전 단계와 실제 외부 행동을 분리
 - **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
 - **회사 맥락과 사건 격리** — 필요한 회사 사실을 읽고, 명시적인 저장 요청은 현재 하네스 권한과 지정 사건 범위에 따른다. 회사 데이터베이스는 만들지 않는다
-
-> **권장 모델**: sonnet급 이상. haiku급 하위 모델은 핵심 금지선(판례 날조 거부, 무확인 쓰기 거부, 직접 송부 지시 회피)은 대체로 지키지만, 출처 권위 라벨·verification status 표시와 시행 전 공포본 currency 판정을 신뢰할 수 없는 수준으로 떨어뜨린다 — 2026-07-21 플로어 실측 guardrails 3/11·o4 4/8, v0.5.1 baseline A/B로 스킬 경량화 인과 아님 확인 (`tests/forward_evals/evidence/*haiku45-20260721*.yaml`의 human_judgment 참조).
 
 ## 데이터 소스
 
@@ -306,7 +304,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 
 | 파일 | 용도 |
 |------|------|
-| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
+| `legal_verification_packet.yaml` | 선택적 감사·인계 packet: sources, conclusions.source_ids, conflicts |
 | `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |

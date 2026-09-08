@@ -19,9 +19,6 @@
 #   - negotiation_points.gap / .eul: 갑/을 관점 협상 포인트 2–3개씩
 #   - alt_wording_hint: 조사·초안 작성에 참고할 방향 후보; 검토용 완성 초안을 제한하지 않음
 #
-# `party_position.per_clause_override` 에서 참조하는 contract key 목록 —
-# 이 파일의 top-level `clauses.*` ID 전체 = 유효 clause ID. 일치하지 않는
-#
 # gap / eul 축 정의 (v0.2.1~, 조항 전반 공통):
 #   - gap = 계약 상위 당사자 (발주자·위탁자·사용자·수요자)
 #   - eul = 계약 하위 당사자 (공급자·수탁자·근로자·수행자)
@@ -30,12 +27,6 @@
 #   당사자 위치 판단은 회사 맥락의 갑/을 위치를 기본값으로 사용한다.
 #   값이 없거나 빈 값이면 양쪽 관점을 모두 노출한다.
 #
-# 경계 (v0.2.0 유지 — `references/contract_review_guide.md` "법순이가 하지 않는 것" 섹션 원칙):
-#   - 힌트(hint) = 방향·원칙 서술 → ✓ 허용
-#   - 자동 생성 = 완성된 수정 문구 확정 → ✗ 사용자 몫
-#   - 출력 경로·모드별 필터는 `assets/policies/review_mode.yaml` 참조
-#     v0.2.1~ 3키 분해 (`include_why_risky` / `include_negotiation_points` /
-#     strict: 3 필드 모두 / moderate: why+negotiation / loose: why_risky 만
 # ============================================================
 
 version: "1.2.1"

@@ -1,6 +1,6 @@
 # 계약서 검토 보조 가이드
 
-계약 검토는 조항별 한국법 이슈·근거를 확인하고, 요청하면 검토용 완성 조항 초안과 수정 제안을 제공한다. 작성은 법적 유효성 보증이나 실제 송부·제출·서명이 아니다. 공통 출처 권위 라벨, verification status, 자가 검증, 면책 고지는 `SKILL.md`, `references/source-grading.md`, `references/self-verification.md`, `references/output-formats.md`를 따른다.
+계약 검토는 조항별 한국법 이슈·근거를 확인하고, 요청하면 검토용 완성 조항 초안과 수정 제안을 제공한다. 작성은 법적 유효성 보증이나 실제 송부·제출·서명이 아니다. 공통 출처 권위 라벨, verification status, 자가 검증과 출력은 `SKILL.md`, `references/source-grading.md`, `references/self-verification.md`, `references/output-formats.md`를 따른다.
 
 ## 범위
 
@@ -155,7 +155,3 @@
 | Warranty / Representation | 보증과 진술의 효과 차이를 조항 맥락에서 설명한다 |
 | Work for Hire | 저작권법 제9조 요건과 외주 개발 관행 차이를 확인한다 |
 | Moral Rights | 저작인격권은 일신전속성이 있어 양도 문구 효력이 제한된다 |
-
-## 면책 고지
-
-계약 검토는 법률 판단이 포함되므로 `SKILL.md`의 공통 면책 고지를 붙인다. 이 reference 안에서 별도 문구를 새로 만들지 않는다.

@@ -24,7 +24,7 @@ Mutation discipline:
 **In-scope:**
 - Source family map, per-family local-mirror availability, and graceful-degradation fallback semantics.
 - Source authority labels, verification status tags, provenance strings, and `[VERIFIED]` minimum conditions.
-- Citation ledger binding for legal conclusions, including pinpoint, currency, supports, contradiction, and downgrade behavior.
+- Citation-to-conclusion binding, including pinpoint, currency, supporting and opposing grounds, and downgrade behavior.
 - Golden citation fixtures and static/router checks that protect source-label and provenance drift.
 
 **Out-of-scope:**
@@ -36,7 +36,7 @@ Mutation discipline:
 ### Expected Behaviors
 - Every exposed legal citation that supports a conclusion has a target-specific citation or pinpoint, `source_authority`, `verification_status`, `provenance`, and currency/freshness state; if any required element is missing, the conclusion is downgraded instead of marked `[VERIFIED]`.
 - When a source family, source label, or local-mirror provenance rule changes, the source-access docs, source-grading policy, citation-verification contract, golden fixtures, and static checks are updated together or the non-applicable surfaces are explicitly justified.
-- `[VERIFIED]` records source verification, not a guarantee of substantive correctness. Applicable dates distinguish promulgation, enforcement and incident time; exceptions, transitions, opposing authority, partial access and failed lookup remain visible when material. Legal conclusions are bound to ledgered authority entries whose `supports` field covers the conclusion; unledgered, unsupported, contradictory, or output-disallowed authority entries do not become conclusion support.
+- `[VERIFIED]` records source verification, not a guarantee of substantive correctness. Applicable dates distinguish promulgation, enforcement and incident time; exceptions, transitions, opposing authority, partial access and failed lookup remain visible when material. Legal conclusions identify supporting sources and material opposing grounds; unsupported or output-disallowed sources do not become conclusion support. An optional audit packet links conclusions through `source_ids`.
 
 ### Hard Constraints
 - This capability never permits `[VERIFIED]` from search snippets, API titles, bundled YAML candidates, stored user memory, or user-provided citation text alone.
@@ -60,12 +60,12 @@ Mutation discipline:
 
 **In-scope:**
 - Stale asset registry, freshness metadata, revalidation records, and retirement decisions for bundled YAML and dated reference claims.
-- Runtime downgrade behavior for stale or volatile values, including `triage_only`, `[STALE]`, `[INSUFFICIENT]`, reviewer-note `Currency`, and `Before relying` requirements.
+- Runtime downgrade behavior for stale or volatile values, including `triage_only`, `[STALE]`, `[INSUFFICIENT]`, material currency limits and outstanding checks.
 - Freshness gates for checklist routing, source access, bulk review cells, and stale registered references.
 - Static checks, router fixtures, and revalidation fixtures that protect stale assets from becoming current-law conclusions.
 
 **Out-of-scope:**
-- Source family authority labels, citation ledger binding, provenance strings, and `[VERIFIED]` minimum conditions; those belong to `source-citation`.
+- Source family authority labels, citation-to-conclusion binding, provenance strings, and `[VERIFIED]` minimum conditions; those belong to `source-citation`.
 - Role, destination, report rendering, and external-facing packaging rules; those belong to `output-role-destination`.
 - Contract-specific issue spotting, review mode, negotiation points, and counter-drafting boundaries; those belong to `contract-review`.
 - Substantive legal correctness after a live source has been checked; this capability only owns freshness and stale-asset handling.

@@ -14,6 +14,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECK_PATH = ROOT / "tests/check_rescore_baseline.py"
@@ -52,6 +53,17 @@ class RescoreBaselineTests(unittest.TestCase):
                 f"baseline 파일을 읽지 못했다 — --write-baseline으로 생성해야 한다: {exc}"
             )
         self.assertEqual(serialized, baseline_text)
+
+    def test_empty_capture_is_unscorable_without_model_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "empty.yaml"
+            path.write_text(json.dumps({
+                "source_eval": "tests/forward_evals/beopsuny_guardrails.yaml",
+                "outputs": {"fwd-03-business-user-external-reply": ""}}))
+            with patch.object(self.check, "EVIDENCE_DIR", Path(directory)):
+                result = self.check.rescore_all()
+            self.assertEqual(result["empty"]["fwd-03-business-user-external-reply"],
+                             ["UNSCORABLE: captured execution did not complete"])
 
     def test_serialization_is_byte_stable(self) -> None:
         self.assertEqual(
@@ -115,6 +127,16 @@ class RescoreBaselineTests(unittest.TestCase):
         self.assertIn("[미검토/채점불가]", report)
         self.assertNotIn("[조임]", report)
         self.assertIn("모델 실패가 아니다", report)
+
+    def test_removed_pending_is_not_relaxation(self) -> None:
+        for pending in ("REVIEW_REQUIRED: missing", "UNSCORABLE: setup missing"):
+            report, code = self.check.build_report({"c": {}}, {"c": {"p": [pending]}})
+            self.assertEqual(code, 1)
+            self.assertIn("[검토/채점 상태 변경]", report)
+            self.assertNotIn("[완화]", report)
+            report, code = self.check.build_report({"c": {}}, {"c": {"p": [pending, "real failure"]}})
+            self.assertIn("baseline 실패 1건", report)
+            self.assertIn("[완화]", report)
 
     def test_build_report_passes_when_identical(self) -> None:
         report, exit_code = self.check.build_report(self.actual, self.actual)

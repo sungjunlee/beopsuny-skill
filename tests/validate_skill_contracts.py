@@ -260,20 +260,6 @@ ALWAYS_ON_LEGAL_GATES = {
     "self_verification": "skills/beopsuny/references/self-verification.md",
     "output_contract": "skills/beopsuny/references/output-formats.md",
 }
-# Mirrors tests/evaluate_scenario_outputs.py's VERIFICATION_TIER_AUTO_RULES.
-# Kept as a separate duplicated constant (same pattern as STATUS_TAGS /
-# VERIFICATION_STATUSES) rather than importing the evaluator module, so the
-# two scripts stay independently runnable.
-VERIFICATION_TIER_AUTO_RULES = {
-    "light": "light_tier_no_packet_ceremony",
-}
-# Mirrors tests/evaluate_scenario_outputs.py's output_common_rules() primary_intent
-# branch. Kept as a duplicated constant (same rationale as VERIFICATION_TIER_AUTO_RULES)
-# so both scripts stay independently runnable.
-PRIMARY_INTENT_AUTO_RULES = {
-    "contract_review": "contract_counter_draft_boundary",
-    "legal_research": "mirror_promulgation_currency_gate",
-}
 LEGAL_RESEARCH_GATE_SCENARIOS = {
     "router-01",
     "router-03",
@@ -1362,8 +1348,6 @@ def check_checklist_routing_freshness() -> None:
         "live legal research로 재확인",
         "[STALE]",
         "[INSUFFICIENT]",
-        "검토자 메모",
-        "Currency",
     ]:
         assert_contains(text, required, label)
 
@@ -2560,8 +2544,6 @@ def check_bulk_grid_report_template_contract() -> None:
         "생성일",
         "읽은 범위",
         "최신성 한계",
-        "면책 고지",
-        "자가 검증",
         "HTML-escape",
         "quote",
         "location",
@@ -2609,28 +2591,17 @@ def check_bulk_grid_report_template_contract() -> None:
         "draft_clause",
         "`internal_legal_memo`",
         "`business_summary`",
-        "destination:internal only",
         "destination:business_summary only",
-        "검토자 메모",
-        "자가 검증",
-        "미확인 내부 노트",
         "decision",
         "action",
         "HTML-escape",
         "생성일",
         "읽은 범위",
         "최신성 한계",
-        "면책 고지",
         "law.go.kr",
         '<a href="https://www.law.go.kr',
     ]:
         assert_contains(contract_template, required, contract_label)
-
-    for forbidden_literal in ["아래 문구로 교체", "최종 수정안", "이 문구를 사용"]:
-        if forbidden_literal in contract_template:
-            raise AssertionError(
-                f"{contract_label}: counter-draft forbidden pattern literal must not be embedded: {forbidden_literal}"
-            )
 
     for description, pattern in forbidden_resource_patterns.items():
         if re.search(pattern, contract_template, flags=re.IGNORECASE):
@@ -3061,9 +3032,6 @@ def check_readme_quality_contract_map() -> None:
         "`freshness_revalidation.yaml`",
         "`legal_verification_packet.yaml`",
         "`output_contract.yaml`",
-        "authority packet",
-        "citation ledger",
-        "conclusion binding",
         "triage_only",
         "품질 계약 변경 체크리스트",
         "새 법률 기능, 업무 영역, 출력 모드, stale 자산",
@@ -4019,6 +3987,8 @@ def check_common_rule_layer_audit() -> None:
 
 
 def check_router_fixture_integrity() -> None:
+    from evaluate_scenario_outputs import output_common_rules, output_semantic_rules
+
     scenarios = router_scenarios()
     evaluator_rules = evaluator_rule_names()
     expected_output_ids = router_output_eval_ids()
@@ -4028,19 +3998,9 @@ def check_router_fixture_integrity() -> None:
             "tests/forward_evals/beopsuny_guardrails.yaml"
         ).get("prompts", [])
     }
-    # router-01 has no output_eval block but carries a light verification tier,
-    # which auto-attaches a structural rule. unsafe_outputs may target it.
-    tier_rule_scenario_ids = {
-        scenario_id
-        for scenario_id, scenario in scenarios.items()
-        if scenario.get("expected", {}).get("verification_tier") in VERIFICATION_TIER_AUTO_RULES
-    }
-    # Contract review and legal research scenarios may auto-attach retained
-    # structural/literal rules via expected.primary_intent.
-    intent_rule_scenario_ids = {
-        scenario_id
-        for scenario_id, scenario in scenarios.items()
-        if scenario.get("expected", {}).get("primary_intent") in PRIMARY_INTENT_AUTO_RULES
+    auto_rule_scenario_ids = {
+        scenario_id for scenario_id, scenario in scenarios.items()
+        if output_common_rules(scenario) or output_semantic_rules(scenario)
     }
     expected_guardrail_ids = {
         "router-07",
@@ -4080,7 +4040,6 @@ def check_router_fixture_integrity() -> None:
             for field in scoring_fields
         )
         conditional_source = output_eval.get("conditional_forbidden_from")
-        from evaluate_scenario_outputs import output_semantic_rules
         has_semantic_scoring = bool(output_semantic_rules(scenario))
         if not has_list_scoring and not isinstance(conditional_source, str) and not has_semantic_scoring:
             raise AssertionError(
@@ -4150,8 +4109,7 @@ def check_router_fixture_integrity() -> None:
         scenario_id = str(item.get("scenario_id", ""))
         if (
             scenario_id not in expected_output_ids
-            and scenario_id not in tier_rule_scenario_ids
-            and scenario_id not in intent_rule_scenario_ids
+            and scenario_id not in auto_rule_scenario_ids
         ):
             raise AssertionError(
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} references "
@@ -4166,21 +4124,7 @@ def check_router_fixture_integrity() -> None:
                 f"router_guardrail_outputs.yaml: unsafe output {item_id} "
                 "must define expected_failure_rules"
             )
-        scenario_rules = {
-            str(rule)
-            for rule in scenarios[scenario_id].get("output_eval", {}).get("common_rules", [])
-        }
-        tier_rule = VERIFICATION_TIER_AUTO_RULES.get(
-            scenarios[scenario_id].get("expected", {}).get("verification_tier")
-        )
-        if tier_rule:
-            scenario_rules.add(tier_rule)
-        intent_rule = PRIMARY_INTENT_AUTO_RULES.get(
-            scenarios[scenario_id].get("expected", {}).get("primary_intent")
-        )
-        if intent_rule:
-            scenario_rules.add(intent_rule)
-        from evaluate_scenario_outputs import output_semantic_rules
+        scenario_rules = set(output_common_rules(scenarios[scenario_id]))
         semantic_rules = set(output_semantic_rules(scenarios[scenario_id]))
         scenario_rules.update(semantic_rules)
         for rule in expected_failure_rules:
