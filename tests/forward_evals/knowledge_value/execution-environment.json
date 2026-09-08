@@ -1,0 +1,20 @@
+{
+  "observed_after_start": "2026-09-08",
+  "cli_versions": {
+    "codex": "codex-cli 0.152.1",
+    "claude": "2.1.259 (Claude Code)",
+    "grok": "grok 1.0.13 (5e9a58528b76) [stable]"
+  },
+  "grok_environment": {
+    "project_root": null,
+    "global_instruction_sha256": "767182b917ca167e9c3dbcb410523b68b497395a41e122065378adb5538540a3",
+    "global_instruction_audit": "Korean/code/delegation/review guidance only; no privacy knowledge, gold answers, or other-arm outputs",
+    "mcp_exposed": [
+      "context7"
+    ],
+    "tool_observation": "built-in tools allowlist empty; web and subagents disabled; each completed evaluation reports modelCalls1, no observed tool use. MCP absence is not claimed.",
+    "hooks": "Orca status hooks reported not executed due missing ORCA_PANE_KEY; preserved as environment warnings, not model failure"
+  },
+  "cross_family_limit": "Provider built-in system prompts and token accounting differ; do not pool models or normalize raw cache fields by assumptions.",
+  "execution_policy": "No resumed sessions; no global config edits; fixed input prefix and packet bytes verified per cell."
+}

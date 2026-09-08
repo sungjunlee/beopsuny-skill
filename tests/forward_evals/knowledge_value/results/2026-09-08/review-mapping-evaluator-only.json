@@ -1,0 +1,16 @@
+{
+  "R01": "v1-gpt-C-ai-lifecycle",
+  "R02": "v1-grok-B-ai-lifecycle",
+  "R03": "v1-grok-C-ai-lifecycle",
+  "R04": "v1-grok-C-sdk-withdrawal",
+  "R05": "v1-claude-C-sdk-withdrawal",
+  "R06": "v1-claude-B-ai-lifecycle",
+  "R07": "v2-gpt-A-ai-lifecycle",
+  "R08": "v2-gpt-A-sdk-withdrawal",
+  "R09": "v1-grok-B-sdk-withdrawal",
+  "R10": "v2-grok-A-ai-lifecycle",
+  "R11": "v1-gpt-B-ai-lifecycle",
+  "R12": "v1-gpt-C-sdk-withdrawal",
+  "R13": "v2-grok-A-sdk-withdrawal",
+  "R14": "v1-gpt-B-sdk-withdrawal"
+}

@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "model_requested": "gpt-5.6-sol",
+  "effort": "medium",
+  "model_reported": null,
+  "cost_usd": null,
+  "elapsed_s": 167.84,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 64083,
+    "cached_input_tokens": 10624,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4469,
+    "reasoning_output_tokens": 1411
+  },
+  "tool_events": [],
+  "source_mode": "fixed",
+  "input_sha256": "198d80ff820bfe69ad587b7c7d6429bd8c6343d494ce9886e070ec53900f125d",
+  "command": [
+    "codex",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--json",
+    "-m",
+    "gpt-5.6-sol",
+    "-c",
+    "model_reasoning_effort=\"medium\"",
+    "--output-last-message",
+    "/tmp/beopsuny-kv-frozen-v2-20260908/executions/gpt/A-sdk-withdrawal/answer.md"
+  ],
+  "answer_sha256": "9d41dcf5bda439afb48165b93671430460e60311ce2ac4f7b068fd34de744483",
+  "legal_adjudication": "unadjudicated",
+  "ambient_context": "fresh CLI in empty cwd; user config ignored for Codex; Claude setting sources empty, skills and all tools disabled. Provider built-in system prompts differ. GPT tools instructed unused, not physically disabled.",
+  "record_id": "v2-gpt-A-sdk-withdrawal",
+  "epoch": "v2",
+  "selection_status": "balanced_comparison",
+  "source_completion_verified": true,
+  "source_receipt_sha256": "31deb929143b081dfcb3213ae5604087b3c971a64ef0c00ce7f888b39d18bf13"
+}

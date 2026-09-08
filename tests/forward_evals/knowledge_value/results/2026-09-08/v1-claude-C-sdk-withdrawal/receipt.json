@@ -1,0 +1,101 @@
+{
+  "status": "completed",
+  "model_requested": "claude-opus-5",
+  "effort": "high",
+  "model_reported": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 73132,
+      "outputTokens": 35,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.073307,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 18427,
+      "cacheReadInputTokens": 3200,
+      "cacheCreationInputTokens": 77341,
+      "webSearchRequests": 0,
+      "costUSD": 1.2356949999999998,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 10001,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "elapsed_s": 308.01,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 77341,
+    "cache_read_input_tokens": 3200,
+    "output_tokens": 18427,
+    "output_tokens_details": {
+      "thinking_tokens": 10001
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 77341,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 18427,
+        "cache_read_input_tokens": 3200,
+        "cache_creation_input_tokens": 77341,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 77341
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "tool_events": [],
+  "source_mode": "fixed",
+  "input_sha256": "d97a33367f567c52d4cc3f55c34329419146c22bb703e79496bc827ba9c49aab",
+  "command": [
+    "claude",
+    "-p",
+    "--model",
+    "claude-opus-5",
+    "--effort",
+    "high",
+    "--tools",
+    "",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--setting-sources",
+    "",
+    "--no-session-persistence",
+    "--output-format",
+    "json"
+  ],
+  "answer_sha256": "a92059608d9b1a420ce8cbd5d62d2f76af508d207f021cdf1a5f5cda09e54d2e",
+  "legal_adjudication": "unadjudicated",
+  "ambient_context": "fresh CLI in empty cwd; user config ignored for Codex; Claude setting sources empty, skills and all tools disabled. Provider built-in system prompts differ. GPT tools instructed unused, not physically disabled.",
+  "record_id": "v1-claude-C-sdk-withdrawal",
+  "epoch": "v1",
+  "selection_status": "supplemental_unpaired",
+  "cost_usd": 1.3090019999999998,
+  "source_completion_verified": true,
+  "source_receipt_sha256": "20602544b743f5a43cfed3b813fe0fd6a595551fa3ff53be5529aafc104a0050"
+}

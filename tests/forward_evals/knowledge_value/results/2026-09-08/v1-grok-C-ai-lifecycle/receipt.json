@@ -1,0 +1,53 @@
+{
+  "status": "completed",
+  "model_requested": "grok-4.6",
+  "effort": "high",
+  "model_reported": {
+    "grok-4.6-build": {
+      "inputTokens": 70313,
+      "outputTokens": 11615,
+      "cacheReadInputTokens": 2432,
+      "cacheCreationInputTokens": 0,
+      "modelCalls": 1,
+      "costUSD": 0.03596044
+    }
+  },
+  "cost_usd": 0.03596044,
+  "elapsed_s": 233.11,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 70313,
+    "cache_read_input_tokens": 2432,
+    "cache_creation_input_tokens": 0,
+    "output_tokens": 11615,
+    "reasoning_tokens": 6367,
+    "total_tokens": 84360
+  },
+  "tool_events": [],
+  "source_mode": "fixed",
+  "input_sha256": "787794b8852dad027e0eb16b5249836fa343445fef2f66c70ee53beadc4f774b",
+  "command": [
+    "grok",
+    "--always-approve",
+    "-m",
+    "grok-4.6",
+    "--effort",
+    "high",
+    "--tools",
+    "",
+    "--disable-web-search",
+    "--no-subagents",
+    "--verbatim",
+    "--output-format",
+    "json",
+    "-p"
+  ],
+  "answer_sha256": "0d809b81ab9b09a7234ba85a6753f11b35ac936ba3d9686e9f0a4baca02a458f",
+  "legal_adjudication": "unadjudicated",
+  "ambient_context": "Grok 1.0.13, no project root, general global Agents.md audited without privacy knowledge; built-ins allowlist empty, web/subagents disabled, context7 exposed but no tool use observed (one model call). Orca status hooks reported not executed. Not a claim of identical provider system prompts.",
+  "record_id": "v1-grok-C-ai-lifecycle",
+  "epoch": "v1",
+  "selection_status": "balanced_comparison",
+  "source_completion_verified": true,
+  "source_receipt_sha256": "ccdfae345bb4fef6dfb1f0d4d5bc020de1312bfcd1d3b47431fafe6853ca6f94"
+}

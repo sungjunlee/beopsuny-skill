@@ -1,0 +1,28 @@
+{
+  "access_mode": "fixed",
+  "captured_at": "2026-09-08",
+  "scope": "Selected official historical texts; no live-access performance claim. Same bundle in every arm and family.",
+  "sources": [
+    {
+      "id": "ai-guide-excerpts",
+      "file": "ai-guide-excerpts.md",
+      "sha256": "910c4168531a44d465b55f53ceb4a80d6689f0f4f2a8bedb60546823787cfcc8",
+      "official_url": "https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=G010030000&nttId=11439",
+      "captured_at": "2026-09-08"
+    },
+    {
+      "id": "sdk-policy-excerpts",
+      "file": "sdk-policy-excerpts.md",
+      "sha256": "bc3a44ed4a2c259f0a2423b9213240ace6f356971ef4e1e7de9cbe34baaf9bf9",
+      "official_url": "https://pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS074&mCode=C020010000&nttId=9888",
+      "captured_at": "2026-09-08"
+    },
+    {
+      "id": "privacy-law-snapshot",
+      "file": "privacy-law-snapshot.md",
+      "sha256": "bfecd2decd7d47859e1e52d417bf17a528dd6ae71b51854784ed11ae80153f29",
+      "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+      "captured_at": "2026-09-08"
+    }
+  ]
+}
