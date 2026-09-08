@@ -50,6 +50,8 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
                 "privacy/assets/taxonomy.yaml",
                 "schema_version: 1\nasset_type: taxonomy\nusage_mode: issue_framing_only\n",
             )
+            # Exercise the local-checkout override without a personal checkout.
+            taxonomy["url"] = "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/privacy/assets/taxonomy.yaml"
             retrieval = self.write_asset(
                 root,
                 "privacy/assets/retrieval-hints.yaml",
@@ -99,6 +101,8 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
                         str(POLICY_PATH),
                         "--manifest-file",
                         str(manifest_path),
+                        "--knowledge-root",
+                        str(root),
                         "--max-asset-chars",
                         "400",
                     ]
