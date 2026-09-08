@@ -1,0 +1,100 @@
+{
+  "task_id": "m8-complex-contract-fixed",
+  "arm": "B",
+  "split": "development",
+  "source_mode": "fixed",
+  "source_ids": [
+    "privacy-2025"
+  ],
+  "execution_status": "completed",
+  "legal_adjudication": "unadjudicated",
+  "assessment": null,
+  "model_id": "claude-opus-5",
+  "effort": "high",
+  "elapsed_seconds": 225.98,
+  "tokens": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 47390,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 14947,
+    "output_tokens_details": {
+      "thinking_tokens": 3591
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 47390,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 14947,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 47390,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 47390
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "cost": {
+    "usd": 0.847585,
+    "basis": "CLI list-price estimate, not account debit"
+  },
+  "unavailable_reason": null,
+  "tools": "none required; executor must enforce no tools",
+  "access_log": [],
+  "scorer_false_positives": null,
+  "context_sha256": "74b835215efe7fce86572a198925ddce19b2eac9e1fd71fe8d0aa0b657ce7610",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "tool_policy": "--tools empty; strict empty MCP; fresh no persistence",
+  "session_id": "9f939476-d8f4-4da1-bc64-b2e6691e78cb",
+  "model_usage": {
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 14947,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 47390,
+      "webSearchRequests": 0,
+      "costUSD": 0.847585,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 3591,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "raw_capture_sha256": "a0d101d89321ee87f8cbe5245ff997619f8a2701f3ce7bb94cb275ea2000d22b",
+  "output_file": "candidate-claude-contract.txt",
+  "output_sha256": "146624f551671d875116037ff669f8e31c86100716789149b407dae830c3a079",
+  "performance_conclusion": "provisional; see paired review and integration report",
+  "preparation": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/private/tmp/beopsuny-m8/final-runtime",
+    "harness_sha256": "476bef6a0c75dcd34dfcba510cf975600a3a5e4107534c328d7fa3e0eeb3f762",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+      "skills/beopsuny/references/source-access.md": "5e99ff2a8ed1a31663b0eecf83f269e842af54d00bd01b3772b7732f48908b60",
+      "skills/beopsuny/references/citation-verification-contract.md": "526eabe48d8a7e55ad1015752801b7a71431026c0e2a584633b1ac1f3ceab7a8",
+      "skills/beopsuny/references/contract_review_guide.md": "87a45804c46ff09bd118f5478b371a43ec0ad38174a0f5a53ec50f51e68feca7",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/references/self-verification.md": "23932d317b0020deb8c7a4669641278c18c9d57bffa069f02661ff07feb036e6",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "58e9b2879d5b5651fb4a544193c8fc03e6ff0edec9adc4d57ca0089e28c3c81d"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "manifest_amendment": "Loaded contract reference hashes added after preparation; context/prompt files unchanged."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "initial": {
+    "model": "grok-4.6",
+    "effort": "high",
+    "seconds": 673.0392332089978,
+    "returncode": 0
+  },
+  "initial_findings": "../review-findings.md",
+  "followup": {
+    "model": "grok-4.6",
+    "effort": "high",
+    "seconds": 300.0624357080087,
+    "returncode": 124
+  },
+  "followup_status": "execution_error/timeout; no verdict; not approval",
+  "root_validation": "verification.json"
+}

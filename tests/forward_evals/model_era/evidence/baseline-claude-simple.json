@@ -1,0 +1,93 @@
+{
+  "task_id": "m8-simple-statute-fixed",
+  "arm": "A",
+  "split": "smoke",
+  "source_mode": "fixed",
+  "source_ids": [
+    "privacy-2025"
+  ],
+  "execution_status": "completed",
+  "legal_adjudication": "unadjudicated",
+  "assessment": null,
+  "model_id": "claude-opus-5",
+  "effort": "high",
+  "elapsed_seconds": 70.735,
+  "tokens": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 31580,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 4332,
+    "output_tokens_details": {
+      "thinking_tokens": 1759
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 31580,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 4332,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 31580,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 31580
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "cost": {
+    "usd": 0.42411
+  },
+  "unavailable_reason": null,
+  "tools": "none required; executor must enforce no tools",
+  "access_log": [],
+  "scorer_false_positives": null,
+  "context_sha256": "9ed891e0108221370648316cec25695dd0ebf572f5c3dff358c210a421db131e",
+  "prompt_sha256": "c5b8ca3459d8bec6da071df2775d731399463531237eab912abac710a1a0482d",
+  "tool_policy": "--tools empty; strict empty MCP; fresh no persistence",
+  "session_id": "7e493709-ff58-4341-b8ff-13f9ba6e32e2",
+  "model_usage": {
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 4332,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 31580,
+      "webSearchRequests": 0,
+      "costUSD": 0.42411,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 1759,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "raw_capture_sha256": "33fd2f20c581a41b04a8e10871915578b0e42e871fe61d93af5d19f42694c573",
+  "output_file": "baseline-claude-simple.txt",
+  "output_sha256": "5a94eb3834a650c4b9af8ec66d61b6ab5742fb7c5e5ae24970b8886de0f270b4",
+  "performance_conclusion": "none; execution-only baseline smoke; B not measured",
+  "preparation": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "A",
+    "runtime_root": "/private/tmp/beopsuny-m8/baseline",
+    "harness_sha256": "1203da3bc6d45c0382048dcc6b9f10055e50bb97b38db61b44cb78a18f7da408",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "11c330834e3effa823d237201d16d01cd1aa72c21527776fed76df8258fac882",
+      "skills/beopsuny/references/source-access.md": "294c2e4b8ca01b668e85a89392277c60ab4449233bc91568a35e069b8b7d8797",
+      "skills/beopsuny/references/citation-verification-contract.md": "9b6e05d12b42161eac404474ebfdfd236727f24a03cca026f59a741b4033c008"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08"
+  }
+}

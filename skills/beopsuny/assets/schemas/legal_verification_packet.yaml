@@ -1,68 +1,45 @@
 # Legal Verification Core packet template
-# Runtime use: internal scratchpad or persisted review artifact when the user explicitly asks.
-# This schema fixes the minimum evidence shape; it is not a required user-facing output.
+# Optional audit/handoff evidence; not a required user-facing output or scratchpad.
+# Use when review records are requested or another reviewer needs retrievable
+# evidence across multiple conclusions/conflicts. Reuse an existing evidence table.
+# Sources are recorded once. Conclusions refer to source_ids, not copied ledgers.
+# Save/share only within the user's request, harness permissions, and matter scope.
 
 matter:
   question: ""
+  scope: ""                    # 현재 사건/읽은 자료 범위. 다른 사건 사실을 결론에 섞지 않는다.
   jurisdiction:
     primary: "KR"
-    secondary: []              # 해외법은 한국법 결론과 분리해 별도 packet 또는 section으로 둔다
-  user_role: ""                # lawyer | legal_ops | business_user | unknown | ""
-  destination: ""              # internal_legal_memo | business_summary | executive_report | external_draft | agency_or_court_submission | ""
+    secondary: []              # 해외법은 한국법 결론과 분리
+  user_role: ""
+  destination: ""
 
-issue_to_authority_map:
-  - issue_id: ""               # stable local id, e.g. issue-1
-    conclusion_candidate: ""
-    required_authority:
-      - "statute"              # statute | decree | regulation | guidance | precedent | form | fee_schedule | official_notice | other
-    legal_effect: ""           # none | internal_reliance | external_send | filing | signing | litigation_position
-    must_not_conclude_without: []
+sources:
+  - source_id: ""              # 이 기록 안에서 재참조 가능한 id
+    citation: ""               # 법령명+조/항/호, 판례 선고일+사건번호, 규칙명+기관
+    pinpoint: ""               # 실제 읽은 조문/판시사항/문서 위치
+    source_authority: ""       # citation-verification-contract.md의 출처 권위 라벨
+    verification_status: ""    # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
+    provenance: ""             # 이번에 실제 확인한 경로. 조회 실패/부분 열람도 구별
+    currency: ""               # 원문의 공포/시행일과 현행/시행 예정/사건 당시 적용 상태
+    retrieved_at: ""
+    limitations: ""            # 후보·스니펫·미확인 원문은 확인된 결론 근거로 쓰지 않는다
 
-authority_packets:
-  - issue_id: ""
-    authorities:
-      - authority_id: ""       # stable local id, e.g. auth-1
-        type: ""               # statute | decree | regulation | guidance | precedent | form | fee_schedule | official_notice | other
-        citation: ""
-        pinpoint: ""
-        source_authority: ""       # 공식 원문 | 공식 원문: 하급심 | 공식 원문 기반 로컬 미러 | 공식 원문 기반 로컬 미러: 하급심 | 공식 실무자료 | 공식 실무자료: 미확정 | 해설/의견 | 참고 제외
-        verification_status: "" # [VERIFIED] | [UNVERIFIED] | [INSUFFICIENT] | [CONTRADICTED] | [STALE] | [EDITORIAL]
-        provenance: ""         # 이번 응답에서 실제 확인한 경로
-        currency: ""           # 현행 | 시행 예정 | 미시행 | 조회 실패 | 검토일
-        retrieved_at: ""
-        supports: []           # issue_id or conclusion ids
-        limitations: ""
-
-citation_ledger:
-  - citation_id: ""            # stable local id, e.g. cite-1
-    authority_id: ""
-    citation: ""
-    pinpoint: ""
-    source_authority: ""
-    verification_status: ""
-    provenance: ""
-    currency: ""
-    supports: []
-    output_allowed: false      # true인 경우에만 사용자 답변의 인용으로 노출
-
-contradiction_scan:
-  checked: false
-  conflicts:
-    - issue_id: ""
-      authorities: []
-      conflict_type: ""        # stale_vs_current | hierarchy | precedent_split | official_guidance_gap | user_fact_gap | other
-      treatment: ""            # downgrade | separate | ask_user | withhold_conclusion | other
-
-conclusion_binding:
-  - issue_id: ""
+conclusions:
+  - conclusion_id: ""
+    issue: ""
+    conclusion: ""
+    source_ids: []             # sources 참조. 핵심 결론에 필요한 근거가 없으면 결론을 한정/유보
+    applicable_at: ""          # 사건 시점과 적용 기준일
+    exceptions_and_transitions: "" # 관련 예외·단서·적용 제외·경과규정의 확인 결과/한계
+    fact_basis: ""             # 확인된 사건 사실과 사용자 전제·가정을 구별
+    unresolved_facts: []
     conclusion_strength: ""    # verified | qualified | insufficient | contradicted | triage_only
-    binding_reason: ""
+    limitations: ""            # 가장 약한 필수 근거·미확인 사실이 미치는 영향
     required_next_check: ""
 
-self_verification:
-  source_authority_applied: false
-  ledger_covers_output_citations: false
-  freshness_gate_checked: false
-  role_destination_gate_checked: false
-  no_unledgered_citation_in_output: false
-  unresolved_limits: []
+conflicts:                     # 충돌이 없으면 빈 목록. checked boolean은 검증 증거가 아니다.
+  - conclusion_ids: []
+    source_ids: []
+    discrepancy: ""            # 시점/규범 위계/사실관계/공식 안내와 원문 차이 등
+    treatment: ""              # 대조 결과, 결론 한정·유보 또는 미해결 영향

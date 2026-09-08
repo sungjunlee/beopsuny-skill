@@ -1,0 +1,46 @@
+{
+  "O1": {
+    "output": "PASS\n",
+    "status": "PASS"
+  },
+  "O2": {
+    "output": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n",
+    "status": "PASS"
+  },
+  "unit": {
+    "output": ".................................................................................................................\n----------------------------------------------------------------------\nRan 113 tests in 27.409s\n\nOK\n",
+    "status": "PASS"
+  },
+  "rescore": {
+    "output": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 66건)",
+    "status": "PASS"
+  },
+  "review_fixes": {
+    "output": ".................\n----------------------------------------------------------------------\nRan 17 tests in 4.493s\n\nOK\n",
+    "status": "PASS"
+  },
+  "compile": {
+    "status": "PASS",
+    "count": 17,
+    "files": [
+      "tests/test_common_rule_layers.py",
+      "tests/test_semantic_reviews.py",
+      "tests/test_forward_eval_execution.py",
+      "tests/test_rescore_baseline.py",
+      "tests/test_knowledge_manifest_ingest.py",
+      "tests/evaluate_scenario_outputs.py",
+      "tests/test_forward_eval_harness.py",
+      "tests/test_source_reachability_outage.py",
+      "tests/check_rescore_baseline.py",
+      "tests/test_cross_matter_scope_rule.py",
+      "tests/check_source_reachability.py",
+      "tests/check_changelog_gate.py",
+      "tests/test_suppression_window_limits.py",
+      "tests/validate_skill_contracts.py",
+      "tests/forward_eval_harness.py",
+      "tests/forward_evals/model_era/prepare_packets.py",
+      "tests/forward_evals/model_era/prepare_knowledge.py"
+    ]
+  },
+  "scope": "Static/runner regression checks, not legal/model quality PASS"
+}

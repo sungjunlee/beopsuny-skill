@@ -1,99 +1,30 @@
 # 법률 조사 워크플로우
 
-법률 질문을 받으면 질문 난이도에 맞게 필요한 단계만 수행한다. 짧은 조문 확인에 모든 단계를 적용하지 않는다.
-
-## Default Flow
-
-기본형 흐름: 질문 intent·관할 확인 -> 현재 적용 법령·시행일 확인 -> 하위법령/행정규칙 필요성 판단 -> 판례/해석례/정책 동향 필요성 판단 -> 출처 권위 라벨·verification status 부여 -> 실무 적용 범위·caveat 정리. 아래 Legal Verification Core의 evidence 경계를 충족하면 단계 구성은 질문에 맞게 조정한다.
+질문에서 필요한 결론과 그 결론을 좌우하는 사실·근거를 확인한다. 조사 깊이는 쟁점과 불확실성에 맞추며, 정해진 단계 수나 내부 양식 작성으로 검증 완료를 대신하지 않는다.
 
 ## Legal Verification Core
 
-모든 법률 결론은 답변 직전에 verification core를 통과한다. 경계(조정 불가): 노출하는 모든 인용은 citation ledger 계약 필드를 충족한다, 모순은 숨기지 않고 표면화한다, 결론 강도는 conclusion binding 규칙을 따른다, light/full 트리거를 유지한다. light에서도 인용 없는 결론 금지, 상태 태그 downgrade, 출처 권위 라벨 규칙은 동일하게 적용된다. 트리거는 라우팅 시점에 질문 형태로 판정하고, 애매하면 `full`로 올린다.
+모든 법률 결론은 확인한 원문과 적용 범위에 연결한다. 답변에 쓰는 인용마다 citation·pinpoint, 출처 권위 라벨, verification status, 실제 확인 경로(provenance), 적용 시점(currency)을 식별할 수 있어야 한다. 어느 결론을 뒷받침하는지도 드러낸다. 이 정보는 인용 줄과 인접한 설명에 담으면 충분하며 별도 map·packet·ledger에 반복 입력하지 않는다. `[VERIFIED]`의 조건은 `references/citation-verification-contract.md`를 따른다.
 
-| Tier | 트리거 | 적용 |
-| --- | --- | --- |
-| `light` | 결론 후보가 1개이고 조문·시행일·공식 링크의 원문 확인으로 종결되는 질문 | 별도 map·packet·ledger 문서를 만들지 않는다. 출력 citation 줄이 한 줄 ledger 항목으로서 `citation`, `pinpoint`, `source_authority`, `verification_status`, `provenance`, `currency`를 직접 담고, `supports`는 유일한 결론에 귀속된 것으로 본다. contradiction scan은 확인한 원문이 사용자 전제와 다를 때만 수행한다. |
-| `full` | 결론 후보 2개 이상, 또는 금액·기한·과징금·서식·구비서류, 또는 계약 검토 결론, 또는 외부 송부·기관 제출·소송/분쟁 포지션 | 아래 6단계 core 전체를 적용한다. |
+- 사용자 전제인 조문·사건번호·금액·기한도 독립적으로 확인한다. 원문에서 확인한 내용과 제공받은 사실·가정을 구별한다.
+- 공포일과 시행일, 사건 당시 적용법, 예외·단서·적용 제외·경과규정을 확인한다. 결론에 필요한 하위법령·행정규칙·판례가 없으면 확인한 범위로 결론을 제한한다.
+- 조회 실패를 부존재나 변경 없음으로 해석하지 않는다. 후보·스니펫·stale 자산만으로 결론을 확정하지 않는다.
+- 같은 결론에 관해 확인된 반대근거나 자료 간 차이를 숨기지 않는다. 해소되지 않은 충돌·미확인 사실은 답변의 결론 강도와 다음 확인 항목에 반영한다.
 
-`assets/schemas/legal_verification_packet.yaml`은 이 과정을 재사용 가능한 evidence shape로 고정한 템플릿이다 — 기본은 내부 scratchpad이며, 사용자가 검토 기록이나 handoff artifact를 요청한 경우에만 노출한다. `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 따른다.
+### 조사 범위 선택
 
-아래 6단계 체인은 기본형이다 — 위 evidence 경계를 충족하면 단계 구성·순서는 질문에 맞게 조정할 수 있다.
+단순 금액·기한 확인은 해당 공식 원문과 산정 기준·기산점·대상·예외·적용 시점을 확인하고 결론에 연결하면 된다. 금액이나 기한이 나온다는 이유로 다중 양식이나 전체 절차로 자동 승격하지 않는다. 다만 산식이 여러 규정에 걸치거나 기산점·대상에 다툼이 있으면 그 쟁점을 추가 조사한다.
 
-```text
-issue-to-authority map 작성
-  -> authority packet 구성
-  -> citation ledger 작성
-  -> contradiction scan
-  -> conclusion binding
-  -> self-verification
-```
+복합 계약·과징금·외부 송부·기관 제출·소송/분쟁 포지션에서는 결론을 좌우하는 쟁점별 근거와 미확인 사실을 구분하고, 관련 예외와 반대근거를 대조한다. 위험이 큰 만큼 확인 범위는 넓힐 수 있지만 양식 개수나 `light`/`full` 명칭이 조사 깊이를 결정하지 않는다. 불확실성이 크면 근거를 더 확인하거나 결론을 한정한다. 내부 추론 과정 공개를 요구하지 않는다.
 
-### 1. Issue-to-authority map
+### 상충 근거 처리
 
-사용자 질문을 결론 후보 단위로 나누고, 각 결론 후보에 필요한 authority type을 붙인다.
-
-| 결론 후보 | 필요한 authority |
-| --- | --- |
-| 조문 자체 | 법률 원문 + 시행일 |
-| 예외·단서 적용 | 법률 원문 + 시행령/시행규칙 |
-| 과징금·수수료·서식·처리기간 | 법률 원문 + 행정규칙/고시/기관 안내 |
-| 유효/무효/위법 판단 | 법률 원문 + 관련 판례 또는 해석례 |
-| 정책·집행 동향 | 현행 법령 결론과 분리된 공식 보도자료/가이드/처분례 |
-
-authority가 부족한 결론 후보는 결론에서 분리하고 `[INSUFFICIENT]` 또는 추가 확인 항목으로 둔다.
-
-### 2. Authority packet
-
-각 결론 후보마다 실제로 확인한 source를 packet으로 묶는다.
-
-```yaml
-issue: "개인정보 국외이전 동의 필요 여부"
-authorities:
-  - type: "statute"
-    citation: "개인정보 보호법 제28조의8"
-    source_authority: "공식 원문"
-    verification_status: "[VERIFIED]"
-    provenance: "law.go.kr 원문 확인"
-    currency: "현행 원문 기준"
-  - type: "guidance"
-    citation: "개인정보보호위원회 가이드라인"
-    source_authority: "공식 실무자료"
-    verification_status: "[UNVERIFIED]"
-    provenance: "web — verify"
-    currency: "원문 미확인"
-```
-
-packet 안의 source가 모두 후보·스니펫·stale 자산이면 결론을 확정하지 않는다.
-
-### 3. Citation ledger
-
-답변에 노출할 모든 법령·판례·행정규칙 인용은 내부 citation ledger에 한 번씩 들어간다. 필수 필드:
-
-| 필드 | 의미 |
-| --- | --- |
-| `citation` | 법령명+조/항/호, 판례 선고일+사건번호, 행정규칙명+발령기관 |
-| `pinpoint` | 인용한 조/항/호, 판시사항, 조문 위치 |
-| `source_authority` | 공식 원문 / 공식 원문: 하급심 / 공식 원문 기반 로컬 미러 / 공식 원문 기반 로컬 미러: 하급심 / 공식 실무자료 / 공식 실무자료: 미확정 / 해설/의견 / 참고 제외 |
-| `verification_status` | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]`, `[CONTRADICTED]`, `[STALE]`, `[EDITORIAL]` |
-| `provenance` | 이번 응답에서 실제 확인한 경로 |
-| `currency` | 현행/시행 예정/미시행/조회 실패/검토일 |
-| `supports` | 답변의 어느 결론을 뒷받침하는지 |
-
-ledger에 없는 인용은 출력하지 않는다. `supports`가 없는 source는 배경 자료로만 표시하고 결론 근거로 쓰지 않는다.
-
-### 4. Contradiction scan
-
-같은 결론 후보에 대해 source가 서로 다르면 숨기지 않는다.
-
-- 상위 규범과 하위 규범이 충돌해 보이면 상위 규범을 우선하고 하위 규범의 적용 범위를 확인한다.
-- 현행 법령과 과거 뉴스레터·체크리스트가 다르면 과거 자료를 `[STALE]` 또는 `[EDITORIAL]`로 낮춘다.
-- **로펌 해설·뉴스레터는 "발행일 기준 스냅샷"이다.** "개정 예정", "후속 입법 과제", "검토 중" 같은 진행형 표현은 발행일 이후 입법이 완료됐을 수 있다. 결론에 쓰기 전에 1차 소스(법령 원문·미러 diff·공식 발표)로 **현재 상태를 반드시 재확인**한다. 해설의 발행일을 명시하고, 입법 완료 여부가 다르면 `[STALE]`로 낮춘다.
-- 대법원 판례와 하급심 판례가 다르면 대법원을 우선하고 하급심은 변경 가능성을 표시한다.
+- 상위 규범과 하위 규범이 충돌해 보이면 위임 근거와 각각의 적용 범위를 확인한다.
+- 현행 법령과 과거 해설·체크리스트가 다르면 과거 자료를 `[STALE]` 또는 `[EDITORIAL]`로 낮춘다. 해설의 발행일 이후 입법이 완료됐을 수 있으므로 현재 상태는 1차 소스로 재확인한다.
+- 대법원 판례와 하급심 판례가 다르면 판결 시점·사실관계·쟁점의 차이를 확인하고 하급심의 변경 가능성을 표시한다.
 - 공식 기관 안내와 법령 원문 해석이 다르면 `[CONTRADICTED]`를 표시하고 결론 강도를 낮춘다.
 
-모순이 해소되지 않으면 단정 결론을 내지 않고, 어떤 source가 어떤 방향인지 나눠서 보여준다.
-
-### 5. Conclusion binding
+### Conclusion binding
 
 최종 결론의 강도는 가장 약한 필수 authority에 맞춘다.
 
@@ -106,35 +37,27 @@ ledger에 없는 인용은 출력하지 않는다. `supports`가 없는 source�
 | source 간 충돌 | `[CONTRADICTED]` 표시 + 결론 강도 낮춤 |
 | stale 자산만 있음 | triage 후보로만 제시 |
 
-### 6. Verification packet contract
+## Verification packet contract
 
-`full` tier 중에서도 복합 결론, 외부 송부, 기관 제출, 소송·분쟁 포지션, 과징금·신고기한·서식처럼 법적 효과가 큰 답변에서는 내부적으로 `legal_verification_packet.yaml`의 최소 shape를 채운다고 가정한다. `light` tier에서는 packet을 만들지 않는다. 어느 tier든 출력 인용은 citation ledger 계약을 통과해야 한다 — `light`의 ledger는 출력 citation 줄 그 자체다.
+`assets/schemas/legal_verification_packet.yaml`은 선택 가능한 감사·인계용 evidence artifact다. 사용자가 검토 기록을 요청하거나, 여러 결론·상충 근거를 다른 검토자가 재조회해야 하는 인계가 필요할 때 사용한다. 짧은 답변에서 근거 대응이 충분하면 만들지 않는다. 동일 목적의 기존 증거표가 있으면 재사용하며, 검증한 것처럼 보이는 빈 양식이나 완료 체크만 채우지 않는다. 기록의 저장·공유는 사용자 요청과 현재 하네스의 권한·사건 범위를 따른다.
 
-필수 블록:
+packet을 쓰는 경우에도 근거는 `sources`에 한 번만 적고 `conclusions.source_ids`로 참조한다. `matter`에는 사건 범위와 관할을, 각 결론에는 필요한 적용 시점·예외·미확인 사실·다음 확인 사항을 남긴다. 상충 근거는 `conflicts`에 source id와 처리·미해결 영향을 기록한다. 별도 issue-to-authority map, authority packet, citation ledger 또는 내부 self-verification 완료표는 요구하지 않는다.
 
-- `matter` — 질문, 관할, 사용자 역할, destination
-- `issue_to_authority_map` — 결론 후보, 필요한 authority, 법적 효과, 빠지면 결론 금지할 source
-- `authority_packets` — 실제 확인 source와 출처 권위 라벨, verification status, provenance, currency
-- `citation_ledger` — 답변에 노출할 인용의 허용 여부와 결론 연결
-- `contradiction_scan` — stale/current, 상하위 규범, 판례 분기, 공식 안내와 원문 해석 차이
-- `conclusion_binding` — 결론 강도와 다음 확인 필요 항목
-- `self_verification` — 출처 권위 라벨, freshness, role/destination, unledgered citation 여부
-
-이 packet은 법률 조언을 자동 확정하는 양식이 아니다. source가 약하거나 모순되면 결론을 `qualified`, `insufficient`, `contradicted`, `triage_only`로 낮춘다. `output_allowed: true`가 아닌 ledger 항목은 사용자 답변의 인용으로 노출하지 않는다.
+이 양식은 법률 결론을 확정하는 승인서가 아니다. 미확인 source는 상태와 한계를 붙여 후보로 표시할 수 있지만 확인된 결론의 근거로 쓸 수 없다. `output_allowed` 같은 boolean으로 원문 대조를 대신하지 않는다. 다른 사건의 사실은 현재 결론의 근거에 넣지 않는다.
 
 ## 분쟁 판단 구조 (요건·사실·증거 분리)
 
-분쟁 쟁점, 판례, 소송·기관 제출 전 법리 검토처럼 요건과 사실을 나눠 볼 필요가 있는 질문에서 사용한다. 새 router intent를 만들지 않고 주 의도는 `legal_research`로 유지한다. 이 구조는 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다.
+분쟁 쟁점이나 소송·기관 제출 전 검토에는 아래 구분이 유용하다. 새 router intent를 만들지 않고 `legal_research`로 다룬다. 판단 얼개를 제공하며 형량·승패·소송 결과를 예측하지 않는다.
 
-| 필드 | 의미 | Legal Verification Core 연결 |
-| --- | --- | --- |
-| **요건사실** | 주장이 성립하려면 충족돼야 하는 법률요건. 각 요건은 근거 조문 또는 판례와 연결한다. | issue-to-authority map의 결론 후보와 필요한 authority로 연결 |
-| **인정사실** | 자료와 사용자 전제상 다툼 없이 확인된 사실. | authority packet 또는 citation ledger의 `supports`가 있는 자료로만 결론 근거화 |
-| **미확인 사실** | 자료로 확인되지 않은 사실. 추정하지 않고 확인 필요로 표시한다. | conclusion binding에서 `[INSUFFICIENT]` 또는 결론 유보 사유로 반영 |
-| **증거** | 각 사실을 뒷받침하는 자료·문서·원문. 없으면 공백으로 둔다. | citation ledger의 provenance, source_authority, verification_status와 연결 |
-| **잠정 결론** | 요건사실·인정사실·미확인 사실·증거를 종합한 잠정 판단. 미확인 사실이 있으면 결론 강도를 낮춘다. | conclusion binding과 verification packet의 `conclusion_binding`으로 강도 고정 |
+| 구분 | 결론과 근거 대응 |
+| --- | --- |
+| **요건사실** | 주장이 성립하는 법률요건을 근거 조문·판례와 연결한다. |
+| **인정사실** | 제공 자료에서 확인된 사실과 사용자 전제를 구별한다. |
+| **미확인 사실** | 자료로 확인되지 않은 사실은 추정하지 않고 확인 필요로 표시한다. |
+| **증거** | 해당 사실을 뒷받침하는 문서·원문의 위치와 읽은 범위를 남긴다. 없으면 공백으로 둔다. |
+| **잠정 결론** | 미확인 사실이 있으면 결론 강도를 낮춘다. Legal Verification Core의 conclusion binding을 따른다. |
 
-이 표는 Legal Verification Core를 대체하지 않는다. `full` tier가 필요한 분쟁 포지션이면 위 필드를 정리한 뒤 기존 verification packet contract와 citation ledger를 통과한 근거만 출력 결론에 연결한다.
+이 구분은 별도 표 작성을 강제하지 않는다. verification packet이 필요한 경우 같은 내용을 중복 작성하지 않고 결론별 근거·한계에 연결한다.
 
 ## Investigation Matrix
 

@@ -1,0 +1,46 @@
+{
+  "task_id": "m8-simple-statute-fixed",
+  "arm": "B",
+  "split": "smoke",
+  "source_mode": "fixed",
+  "source_ids": [
+    "privacy-2025"
+  ],
+  "execution_status": "completed",
+  "legal_adjudication": "unadjudicated",
+  "assessment": null,
+  "model_id": "gpt-5.6-sol",
+  "effort": "medium",
+  "elapsed_seconds": null,
+  "tokens": null,
+  "cost": null,
+  "unavailable_reason": "native tool provides no per-call billing/token/time metrics",
+  "tools": "Only input-file read observed; tools not physically disabled",
+  "access_log": [],
+  "scorer_false_positives": null,
+  "context_sha256": "a4aa1853a62627c58c2c014b989b3f1a8e2350a5789690852d06aec7907b2c49",
+  "prompt_sha256": "c5b8ca3459d8bec6da071df2775d731399463531237eab912abac710a1a0482d",
+  "context_isolation": "fresh fork_turns=none; environment/tool definitions still visible",
+  "output_file": "candidate-sol-simple.txt",
+  "output_sha256": "96266221c6f7558cc05c4d997350cf93ba0d7b784273cd16046a11e20ca2ed48",
+  "preparation": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/private/tmp/beopsuny-m8/final-runtime",
+    "harness_sha256": "476bef6a0c75dcd34dfcba510cf975600a3a5e4107534c328d7fa3e0eeb3f762",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+      "skills/beopsuny/references/source-access.md": "5e99ff2a8ed1a31663b0eecf83f269e842af54d00bd01b3772b7732f48908b60",
+      "skills/beopsuny/references/citation-verification-contract.md": "526eabe48d8a7e55ad1015752801b7a71431026c0e2a584633b1ac1f3ceab7a8",
+      "skills/beopsuny/references/contract_review_guide.md": "87a45804c46ff09bd118f5478b371a43ec0ad38174a0f5a53ec50f51e68feca7",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/references/self-verification.md": "23932d317b0020deb8c7a4669641278c18c9d57bffa069f02661ff07feb036e6",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "58e9b2879d5b5651fb4a544193c8fc03e6ff0edec9adc4d57ca0089e28c3c81d"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "manifest_amendment": "Loaded contract reference hashes added after preparation; context/prompt files unchanged."
+  }
+}

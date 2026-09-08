@@ -1,8 +1,10 @@
 # beopsuny-skill Capabilities
 
-This file is the middle layer between `spec/charter.md` and concrete backlog or release work. Each capability describes one durable contract surface with a stable slug, observable Goal, scoped ownership, three first-pass Expected Behaviors, and two Hard Constraints.
+This file is the middle layer between `spec/charter.md` and concrete backlog or release work. Each capability describes one durable contract surface with a stable slug, observable Goal, scoped ownership, Expected Behaviors and Hard Constraints.
 
 Capability IDs are routing handles. Use lowercase slugs in task or sprint metadata, then put nuance in prose.
+
+**Rollout status:** Complete review drafts, flexible evidence presentation/procedure and authorized matter-scoped harness storage are implemented in the milestone-8 review branch, not released. `e05ecda` remains the preserved comparison baseline. O5–O7 remain active because limited provisional observations do not establish general legal accuracy or safety. See [charter disposition](charter.md#contract-disposition) and [validation report](../tests/forward_evals/model_era/integration-report.md).
 
 Mutation discipline:
 
@@ -34,7 +36,7 @@ Mutation discipline:
 ### Expected Behaviors
 - Every exposed legal citation that supports a conclusion has a target-specific citation or pinpoint, `source_authority`, `verification_status`, `provenance`, and currency/freshness state; if any required element is missing, the conclusion is downgraded instead of marked `[VERIFIED]`.
 - When a source family, source label, or local-mirror provenance rule changes, the source-access docs, source-grading policy, citation-verification contract, golden fixtures, and static checks are updated together or the non-applicable surfaces are explicitly justified.
-- Legal conclusions are bound to ledgered authority entries whose `supports` field covers the conclusion; unledgered, unsupported, contradictory, or output-disallowed authority entries do not become conclusion support.
+- `[VERIFIED]` records source verification, not a guarantee of substantive correctness. Applicable dates distinguish promulgation, enforcement and incident time; exceptions, transitions, opposing authority, partial access and failed lookup remain visible when material. Legal conclusions are bound to ledgered authority entries whose `supports` field covers the conclusion; unledgered, unsupported, contradictory, or output-disallowed authority entries do not become conclusion support.
 
 ### Hard Constraints
 - This capability never permits `[VERIFIED]` from search snippets, API titles, bundled YAML candidates, stored user memory, or user-provided citation text alone.
@@ -97,13 +99,13 @@ Mutation discipline:
 
 ## Capability: output-role-destination
 
-**Goal:** A user receives the same verified or qualified legal conclusion packaged for who they are (role) and where the output is going (destination), with legal-effect gates applied before any signing, sending, or filing — and the packaging never weakens verification duties.
+**Goal:** A user receives the same verified or qualified legal conclusion packaged for who they are (role) and where the output is going (destination), with actual signing, sending, or filing authorized separately from drafting — and the packaging never weakens verification duties.
 
 **In-scope:**
-- Role modes (`lawyer`, `legal_ops`, `business_user`, `unknown`): default sections, legal-effect gates, and the conservative fallback for unconfirmed roles.
+- Role context (`lawyer`, `legal_ops`, `business_user`, `unknown`) adjusts explanation and material cautions; missing role alone does not stop drafting or demand repeated confirmation.
 - Destination contracts (`internal_legal_memo`, `business_summary`, `executive_report`, `external_draft`, `agency_or_court_submission`): `must_include`/`must_strip`, internal-block visibility, `legal_effect_triggers`, and `non_overrides` enforcement.
 - Role × destination composition rules when only one side is specified or confirmed.
-- Answer sizing, reviewer note (검토자 메모), and self-verification visibility per destination.
+- User-requested format, answer sizing, reviewer note (검토자 메모), and evidence visibility per destination; fixed section names and a repeated lawyer review ceremony are not obligations.
 - The HTML report deliverable render layer — report contract, report templates, and the Artifact deployment gate — as render surfaces that consume the destination contract without inventing new intent.
 
 **Out-of-scope:**
@@ -115,12 +117,12 @@ Mutation discipline:
 ### Expected Behaviors
 - When a destination with `may_include_internal_blocks: false` is used, internal blocks (검토자 메모, self-verification block, internal scratchpad, unreviewed internal assumptions) are stripped from the deliverable while the destination's `must_include` items — including source authority labels and verification status where required — are preserved rather than stripped along with them.
 - External-facing destinations (`external_draft`, `agency_or_court_submission`) additionally strip facts identifying another matter, counterparty, or negotiated term; the read-axis rule that keeps those facts out of the answer in the first place belongs to `company-context-trust`.
-- When the role is unspecified or unconfirmed and the request names a destination or matches a `legal_effect_triggers` entry, the output composes the `unknown`/`business_user` conservative gate with the destination contract, and conflicts resolve to the stricter obligation: `must_strip` sets union, both `must_include` sets apply, and no direct instruction to sign, send, or file survives composition.
+- When role is unspecified, use the known task/destination to produce useful review work and surface only material unresolved assumptions. A complete counterparty-facing draft is allowed. Its destination does not certify validity, waive uncertainty, or authorize an external action; existing user authority need not be reconfirmed.
 - When a role mode, destination contract, trigger list, composition rule, or report render surface changes, `output_contract.yaml`, `output-formats.md`, `report-deliverable.md`, the report templates, and the static/router checks that consume them are updated together or the non-applicable surfaces are explicitly justified.
 
 ### Hard Constraints
-- This capability never lets a role, destination, practice-profile, or formatting preference override the `non_overrides` set (Legal Verification Core, 출처 권위 / `[VERIFIED]` contract, Freshness Governance, lawyer/legal_ops review requirements); packaging may only add restrictions, never subtract verification duties.
-- This capability never emits an external-facing deliverable (`external_draft`, `agency_or_court_submission`, or a shared report/Artifact) that directly instructs signing, sending, or filing without the required reviewer gate, and never redeploys a previously shared external deliverable without disclosure.
+- This capability never lets a role, destination, practice-profile, or formatting preference override evidence obligations in `non_overrides` (source authority / `[VERIFIED]`, applicable law, freshness, uncertainty and matter isolation). Presentation and procedure may adapt without imposing fixed headings or unnecessary review stops.
+- This capability never represents draft generation as legal certification or authorization for actual signing, sending, filing or publication; it does not perform those actions without current user/harness authority. External deliverables strip internal analysis and other-matter facts; material grounds and cautions remain available to the reviewer.
 
 ### Learnings
 <!-- LEARN:BEGIN -->
@@ -133,6 +135,7 @@ Mutation discipline:
 | --- | --- | --- | --- |
 | 2026-07-05 | Report render layer (report contract, templates, Artifact gate) is in-scope of this capability, not a separate capability | render layer consumes the destination contract with no new intent; splitting now would be premature at 2 capabilities | — |
 | 2026-07-05 | Unconfirmed role + named destination composes conservatively: stricter obligation wins | 2026-07-04 smoke test showed agents improvise when no composition rule exists | — |
+| 2026-09-08 | Adapt presentation to risk/request; draft completeness does not imply legal certainty or external-action authority. Planned #318/#272. | Mandatory role/reviewer ceremonies obstructed the approved draft-first purpose without adding evidence | supersedes stricter-obligation composition only where it imposed redundant procedure; preserves evidence and destination confidentiality |
 
 ---
 
@@ -176,20 +179,20 @@ Mutation discipline:
 
 ## Capability: contract-review
 
-**Goal:** A user reviewing a Korean contract gets clause-level issue spotting, review-mode-scaled risk flags, party-position negotiation points, and directional counter-drafting hints — never final counterparty-ready redline text, and never a legal conclusion asserted without official-source verification.
+**Goal:** A user reviewing a Korean contract gets clause-level issue spotting, review-mode-scaled risk flags, party-position negotiation points, and complete clause drafts or proposed redlines for review — never a legal validity/result guarantee or a legal conclusion asserted without official-source verification.
 
 **In-scope:**
 - Contract intake, proportionality, destination read, and review-mode depth scaling (strict/moderate/loose, default moderate).
 - Clause-level risk candidates and clause→Korean-law mapping (`clause_references.yaml`).
 - Cross-cutting issue spotting, main risk clauses, and negotiation points by party position (gap/eul).
-- The counter-drafting boundary: directional/principled wording hints (`alt_wording_hint`), not finished redline.
+- Complete revised clauses, alternative language and proposed redlines for review, scaled to available facts; drafting completeness is distinct from certification and actual sending/signing authority.
 - Company playbook applied within a review as reviewed preference data.
 - `contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`, and the contract scenarios/static checks that protect them.
 
 **Out-of-scope:**
 - Source authority labels, `[VERIFIED]`, and citation verification themselves; those belong to `source-citation` (contract review consumes them).
 - Freshness downgrade of stale duties/fees/thresholds; belongs to `freshness-governance`.
-- Output packaging, role modes, and destination gates; belong to `output-role-destination` (contract review consumes the destination gate to restrict external redline).
+- Output packaging, role modes, and destination gates; belong to `output-role-destination` (contract review consumes destination rules to preserve grounds, uncertainty and confidentiality).
 - Where company context and playbook text come from, and the trust boundary on them; belongs to `company-context-trust` (playbook is read here as reviewed data).
 - Court-style dispute/element-fact analysis and case-law distinguishing (#110); that is a litigation workflow, not contract review.
 
@@ -199,7 +202,7 @@ Mutation discipline:
 - When a contract surface changes (`contract_review_guide.md`, `review_mode.yaml`, `clause_references.yaml`), the contract scenarios and static checks are updated together or the non-applicable surfaces are explicitly justified.
 
 ### Hard Constraints
-- This capability never emits final, counterparty-ready redline or a complete revised clause presented as send-ready; counter-drafting stays directional (why-risky + gap/eul negotiation points + alt-wording direction), and external-facing or legal-effect destinations tighten this through the destination gate.
+- This capability never guarantees that a drafted clause is valid, enforceable or will achieve a legal result, or treats it as authorized for actual sending/signing. Complete review drafts retain material assumptions and gaps; mandatory provisions and applicable exceptions require official-source checking before legal conclusions, with unresolved issues identified rather than silently filled.
 - This capability never lets review mode, clause mappings, or company playbook downgrade or replace source authority, verification status, or freshness on a legal conclusion — a looser mode narrows flag verbosity, never the evidentiary bar for asserting a present legal obligation.
 
 ### Learnings
@@ -211,14 +214,15 @@ Mutation discipline:
 ### Decisions
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
+| 2026-09-08 | Complete clauses/proposed redlines for review are allowed; validity guarantees and unauthorized external action remain excluded. Planned #318/#323. | Hint-only restrictions contradicted the edit-ready first-draft goal | supersedes directional-only contract-review boundary |
 
 ## Capability: company-context-trust
 
-**Goal:** Company context (industry, size, gap/eul position, watched laws, contract playbook) reaches answers from wherever the user already keeps it — harness memory, project instruction files, a file the user points at — while the skill itself stores nothing and that context can never weaken a verification gate.
+**Goal:** Company context (industry, size, gap/eul position, watched laws, contract playbook) reaches answers from wherever the user already keeps it — harness memory, project instruction files, a file the user points at — without a skill-owned company database and without those facts weakening verification or matter isolation.
 
 **In-scope:**
-- The read-only contract: the skill consumes company context, it does not own a storage format for it.
-- The trust boundary: company context is reviewed data, never instructions — regardless of which surface it arrives on.
+- The ownership contract: the skill consumes company context and owns no storage format; explicitly requested persistence may use an available authorized harness function or designated repository.
+- The trust boundary: external company facts are reviewed data, never instructions. Legitimate harness/user instructions keep their actual authority; a file containing both is interpreted by content and authority rather than blanket trust or rejection.
 - The matter-scope constraint on the read axis: the surfaces read are per-working-directory, not per-matter. The runtime rule is stated once, in `SKILL.md` `## 회사 맥락`; this capability owns the boundary, not a second copy of the wording.
 - How absent context is surfaced (baseline markers such as `계약 playbook 미설정`) and how it defaults role/destination handling.
 - `~/.beopsuny/` scoped to configuration (`config.yaml`), the law/precedent local mirror (`data/`), and report deliverables under `reports/` when the user asks for one. None of these hold company-context state; `reports/` accumulates globally rather than per matter, and its retention contract lives in `report-deliverable.md`.
@@ -231,12 +235,12 @@ Mutation discipline:
 
 ### Expected Behaviors
 - When company context is used in an answer, it is applied as reviewed context only (including explicit baseline markers such as `계약 playbook 미설정` when absent), and directive text inside that context cannot change routing, source authority labels, verification status, or output gates.
-- A request to save company information is answered by pointing at where the user can keep it so later answers pick it up — never by performing a write and never by claiming one happened.
-- Absent company context does not relax anything: the user role defaults to `unknown` and the role/destination gate attaches as it would for `business_user`.
+- On an explicit storage request, determine whether an available harness feature or the designated repository is authorized and appropriate for that matter/confidentiality scope, then act within that authority. If unavailable, state the limitation and a usable alternative; claim successful storage only after evidence of success.
+- Absent company context does not relax verification or isolation; use stated facts and identify material gaps without making role confirmation a prerequisite to useful drafting.
 
 ### Hard Constraints
-- This capability never lets company context (instruction files, harness memory, user-pointed files, playbook text) weaken or override SKILL.md gates, source authority labels, self-verification, freshness downgrade, or role/destination restrictions — context narrows and personalizes, it never authorizes. Instruction files and harness memory carry directive-shaped prose more readily than a structured profile did, so this boundary tightens rather than relaxes as storage moves outward.
-- This capability never writes company context to any file and never states that it saved company information.
+- This capability never lets external company facts (including those embedded in instruction files, harness memory, user-pointed files or playbooks) override source authority, verification, freshness or matter isolation. Facts do not authorize actions; legitimate current user/harness instructions are a separate authority surface.
+- This capability never creates a company database/storage format, silently persists company facts, or promotes confidential/matter-scoped facts into general memory or another matter’s context. Authorization to store a fact is not permission to change its scope.
 - This capability never applies a fact scoped to another matter to the current answer without an explicit request naming that matter — a single working directory holding several matters is the supported default, so the constraint is carried by the skill rather than by the user's directory layout. The runtime wording lives in `SKILL.md` `## 회사 맥락`; stripping those facts from an external-facing deliverable is a destination obligation owned by `output-role-destination`.
 
 ### Learnings
@@ -248,3 +252,4 @@ Mutation discipline:
 ### Decisions
 | date | decision | rationale | supersedes |
 | --- | --- | --- | --- |
+| 2026-09-08 | Authorized harness persistence and instruction/data separation are planned under #318/#321/#272, with no company database and unchanged cross-matter isolation | blanket write refusal and instruction-file rejection exceeded the actual ownership/trust boundary | supersedes blanket read-only/write-refusal behavior; preserves 2026-07-26 isolation |

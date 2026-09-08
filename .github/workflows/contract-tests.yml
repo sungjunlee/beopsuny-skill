@@ -42,9 +42,10 @@ jobs:
         run: >-
           python -m unittest
           tests/test_forward_eval_harness.py
+          tests/test_forward_eval_execution.py
           tests/test_knowledge_manifest_ingest.py
           tests/test_cross_matter_scope_rule.py
-          tests/test_confidential_persistence_rule.py
+          tests/test_semantic_reviews.py
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
@@ -66,9 +67,10 @@ jobs:
           tests/check_rescore_baseline.py
           skills/beopsuny/assets/tools/knowledge_manifest_ingest.py
           tests/test_forward_eval_harness.py
+          tests/test_forward_eval_execution.py
           tests/test_knowledge_manifest_ingest.py
           tests/test_cross_matter_scope_rule.py
-          tests/test_confidential_persistence_rule.py
+          tests/test_semantic_reviews.py
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py

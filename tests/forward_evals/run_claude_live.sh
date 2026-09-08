@@ -33,6 +33,7 @@ case "$PROMPT_ID" in
   *o4-05*)
     BEOPSUNY_DATA_ROOT="$(mktemp -d)"
     export BEOPSUNY_DATA_ROOT
+    trap 'rm -rf -- "$BEOPSUNY_DATA_ROOT"' EXIT
     # An empty data root alone was not enough: the model discovered the real
     # ~/.beopsuny outside this run and honestly reported the conflict, so the
     # pure no-mirror behavior went unexercised. State the simulation premise
@@ -47,7 +48,7 @@ esac
 
 # Run from the output file's directory so the model's Bash tool does not inspect
 # this repo's own tree (which would pollute mode detection / source lookups).
-cd "$(dirname "$OUTPUT_FILE")"
+cd "${BEOPSUNY_EVAL_WORKSPACE:-$(dirname "$OUTPUT_FILE")}"
 
 # --allowedTools is variadic and would swallow a following positional prompt
 # argument, so the prompt goes in via stdin instead.

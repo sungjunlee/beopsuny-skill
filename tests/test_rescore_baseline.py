@@ -100,14 +100,21 @@ class RescoreBaselineTests(unittest.TestCase):
         actual = {"c1": {}, "c2": {"p2": ["kept", "new-failure"]}}
         report, exit_code = self.check.build_report(actual, baseline)
         self.assertEqual(exit_code, 1)
-        self.assertIn("완화 1건", report)
-        self.assertIn("조임 1건", report)
+        self.assertIn("제거 1건", report)
+        self.assertIn("추가 1건", report)
         self.assertIn("[완화]", report)
         self.assertIn("[조임]", report)
         # 완화는 조임보다 강한 문구 — 이 레포의 사고 방향 (#282).
         relaxation_block = report.split("[완화]")[1].split("[조임]")[0]
         self.assertIn("느슨해졌다", relaxation_block)
         self.assertIn("근거를 남긴다", relaxation_block)
+
+    def test_pending_report_is_not_model_failure_or_tightening(self) -> None:
+        report, exit_code = self.check.build_report({"c": {"p": ["REVIEW_REQUIRED: missing review"]}}, {"c": {}})
+        self.assertEqual(exit_code, 1)
+        self.assertIn("[미검토/채점불가]", report)
+        self.assertNotIn("[조임]", report)
+        self.assertIn("모델 실패가 아니다", report)
 
     def test_build_report_passes_when_identical(self) -> None:
         report, exit_code = self.check.build_report(self.actual, self.actual)

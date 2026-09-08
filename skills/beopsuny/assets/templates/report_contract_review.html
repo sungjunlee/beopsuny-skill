@@ -8,7 +8,7 @@
   <!-- Render after selecting exactly one destination from report-deliverable.md and output-formats.md. -->
   <!-- Destination rules: `internal_legal_memo` is default and keeps blocks labeled "destination:internal only". -->
   <!-- Destination rules: `business_summary` keeps "destination:business_summary only" blocks and removes internal legal reasoning, reviewer notes, self-check blocks, and 미확인 내부 노트. -->
-  <!-- Counter-draft rule: review_mode.yaml#counter_draft_forbidden_patterns applies to reports too. alt_wording_hint is directional guidance only; 대체 문구 제공이 아니다. Do not embed any forbidden-pattern literal in this file or in generated reports — see the policy file for the pattern list. -->
+  <!-- Drafting: render requested complete review text in draft_clause, with reasons, assumptions and unresolved checks. Text completeness does not certify validity or authorize sending, filing or signing. -->
   <!-- HTML-escape every dynamic insertion before rendering: &, <, >, ", and '. Dynamic HTML fragments must be assembled only from escaped text. -->
   <!-- Citation link rule: 근거/verification 필드에 조문·판례 인용이 있으면 official law.go.kr link를 `<a href>`로 포함한다. 계약 원문 발췌 등 법령·판례 인용이 아닌 근거에는 공식 링크를 만들지 않는다. A hyperlink is content, not an external resource load, so it does not conflict with the self-contained rule — see report-deliverable.md#r2-파일-규격. Link URL format follows output-formats.md's 링크 생성 규칙. -->
   <style>
@@ -421,7 +421,7 @@
         </section>
         <section>
           <h3>법무 확인</h3>
-          <p><!-- PLACEHOLDER: business_legal_review_gate_escaped -->대외 송부·서명 전 담당 법무 또는 변호사 검토 필요.<!-- /PLACEHOLDER --></p>
+          <p><!-- PLACEHOLDER: business_legal_review_gate_escaped -->실제 송부·서명 권한과 미해결 검토 사항 확인.<!-- /PLACEHOLDER --></p>
         </section>
       </div>
     </section>
@@ -453,12 +453,12 @@
     <section class="section-panel" aria-labelledby="clause-risk-title">
       <div class="section-head">
         <h2 id="clause-risk-title">조항별 위험</h2>
-        <p class="panel-note">조항 인용, why_risky, negotiation_points, alt_wording_hint 순서</p>
+        <p class="panel-note">요청 범위에 맞는 위험·근거·수정 제안</p>
       </div>
       <div class="risk-list">
         <!-- PLACEHOLDER: clause_risks_html_escaped.
-             Escape clause name, quotation, why_risky, negotiation_points, alt_wording_hint, source text.
-             alt_wording_hint must stay directional; remove the field if it contains counter_draft_forbidden_patterns.
+             Escape clause name, quotation, why_risky, negotiation_points, draft_clause, assumptions, open_checks, source text.
+             Include draft_clause only when requested. Preserve material qualifications; assess meaning rather than headings or quoted words.
              근거/verification의 조문·판례 인용에는 official law.go.kr link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙). -->
         <article class="risk-card">
           <div class="risk-head">
@@ -486,8 +486,12 @@
               </ul>
             </section>
             <section class="risk-field">
-              <h3>alt_wording_hint</h3>
-              <p><!-- PLACEHOLDER: alt_wording_hint_escaped -->면책 예외 범위를 고의·중과실, 법령상 제한 불가 책임, 개인정보 사고 책임 중심으로 좁히는 방향을 검토.<!-- /PLACEHOLDER --></p>
+              <h3>검토용 수정 조항</h3>
+              <p><!-- PLACEHOLDER: draft_clause_escaped -->[요청한 조항의 완성 초안 — 확인되지 않은 사실·금액은 빈칸 또는 명시된 가정으로 남김]<!-- /PLACEHOLDER --></p>
+            </section>
+            <section class="risk-field full">
+              <h3>수정 이유 · 전제 · 확인 사항</h3>
+              <p><!-- PLACEHOLDER: draft_basis_and_open_checks_escaped -->[법적 의무와 협상 선호를 구별하고 미확인 사실·예외·적용 시점 표시]<!-- /PLACEHOLDER --></p>
             </section>
             <section class="risk-field">
               <h3>근거 / verification</h3>

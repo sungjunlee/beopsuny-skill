@@ -1,6 +1,9 @@
 # Role and destination output contract template
 # Runtime use: reference contract for choosing answer shape and legal-effect gates.
-# This schema does not reduce legal verification duties; it only controls how a verified or qualified conclusion is packaged.
+# Field names, role/destination ids and state values are consumer-compatible.
+# default_sections are optional suggestions, never a required order or full wrapper.
+# must_include entries describe information when applicable, not literal badges/headings.
+# Length follows the user request. Avoid repeated disclaimers or internal metadata.
 
 role_modes:
   - role: "lawyer"
@@ -68,7 +71,7 @@ destinations:
     may_include_internal_blocks: true
     required_gate: "show assumptions, source limits, and conclusion strength"
     must_include:
-      - "검토자 메모"
+      - "source limits when relevant"
       - "출처 권위 라벨"
       - "verification status"
     must_strip: []
@@ -89,10 +92,10 @@ destinations:
       - "options"
       - "owner"
     must_strip:
-      - "raw citation ledger unless requested"
+      - "raw evidence artifact unless requested"
   - destination: "external_draft"
     may_include_internal_blocks: false
-    required_gate: "mark as draft and require legal review before sending"
+    required_gate: "identify review draft and sending prerequisites in accompanying internal explanation; keep recipient text clean"
     must_include:
       - "외부 공유용 초안"
       - "보내기 전 법무 검토 필요"
