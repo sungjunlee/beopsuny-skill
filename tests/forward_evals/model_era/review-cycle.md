@@ -15,11 +15,11 @@
 | 출력·명세 | unknown-role 확인 ceremony, ledger/supports 필드, 고정 메모·면책·자가검증 잔존 | schema 키는 유지하며 적용 범위를 좁힘. 템플릿 블록·죽은 CSS·문자열 고정 검사 삭제. 실제 한계는 관련 위치에 표시 |
 | 중복 코드 | retired tier 자동 부착과 validator의 별도 intent map | 기존 평가기 부착 함수를 재사용하고 죽은 분기 삭제 |
 
-Sol high의 코드/계약 독립 리뷰는 각각 위 문제를 수정한 뒤 **LGTM**. 코드 리뷰어는 관련31개 테스트 및 shell 구문을 확인했다. Grok4.6 high의 첫 리뷰도 unknown/0개 PASS·혼합 상태·setup 결합 누락을 독립 재현했다. Grok은 round2에서 빠진 문서 diff를 요청했고, round3에서 삭제한 계약·템플릿과 의미 수신처를 함께 확인한 뒤 **LGTM**. Opus는 수치·hash 무결성을 확인했고, 중간 runtime과 과제별 metadata의 보고 범위를 재검토 중이다.
+Sol high의 코드/계약 독립 리뷰는 각각 위 문제를 수정한 뒤 **LGTM**. 코드 리뷰어는 관련31개 테스트 및 shell 구문을 확인했다. Grok4.6 high의 첫 리뷰도 unknown/0개 PASS·혼합 상태·setup 결합 누락을 독립 재현했다. Grok은 round2에서 빠진 문서 diff를 요청했고, round3에서 삭제한 계약·템플릿과 의미 수신처를 함께 확인한 뒤 **LGTM**. Opus는 수치·hash 무결성을 확인하고, 보고 시제·재현 범위·과제별 metadata 지적 해소 후 마지막 CHANGELOG 구조 수정까지 round4에서 확인해 **LGTM**.
 
 ## 검증
 
-전체119개 unit PASS 후 마지막 빈-output rescore 정렬 및 회귀를 포함한 focused21개 PASS. 최종 O1/O2 PASS(11 outputs/13 unsafe), 변경 Python8파일 compile, diff whitespace 검사 통과. 기존19개 corpus 판정은 rescore 기록으로 확인한다. 새 문자열 금지나 고정 메모 형식 테스트를 추가하지 않았다. 회귀 테스트는 잘못된 입력·false PASS·증거/상태 결합을 직접 검사한다.
+전체119개 unit PASS 후 마지막 빈-output rescore 정렬 및 회귀를 포함한 focused21개 PASS. 통합 O1/O2 PASS(11 outputs/13 unsafe), 변경 Python8파일 compile, diff whitespace 검사 통과. 기존19개 corpus 판정은 rescore 기록으로 확인한다. 새 문자열 금지나 고정 메모 형식 테스트를 추가하지 않았다. 회귀 테스트는 잘못된 입력·false PASS·증거/상태 결합을 직접 검사한다.
 
 과거 모델 응답·원문·평가 baseline은 덮어쓰지 않는다. 현재 runtime 수정으로 옛 paired 응답이 최종 runtime의 재실행 결과가 되지는 않는다. 원격 CI와 모델/전문가 법률 검증은 로컬 코드 테스트와 별개다.
 
@@ -32,3 +32,7 @@ Sol high의 코드/계약 독립 리뷰는 각각 위 문제를 수정한 뒤 **
 - Grok SuperGrok Heavy, 12:26:05Z, duration 미제공 창19%/81%, reset 09-13 15:42:04Z, lasts until reset. source grok-cli-proxy, confidence unknown. 주간·월간으로 임의 재명명하지 않음.
 
 Opus 후속 지적 중 과거 합집합 hash와 신규 과제별 hash의 시제를 명확히 구별했고, 신규 필드명은 `task_runtime_inputs`로 정리했다. builder는 항상 SKILL과 해당 iteration의 source_references를 읽는다. 기존 builder를 바꾸거나 별도 추적 체계를 추가하지 않고 두 과제 실제 context의3/8개 입력·hash를 준비 probe로 대조했다. `per_clause_override`는 현행 runtime에 없는 퇴역 키여서 고아 주석을 복원하지 않았다. 중간 working-tree 변경은 root가 독립 리뷰 지적을 통합하던 승인된 수정이며 자동 오염이 아니었다.
+
+최종 승인: Sol 코드/계약 두 범위, Grok 코드·계약, Opus 증거·보고 모두 LGTM. Grok이 언급한 잘린 주석은 이미 삭제된 부분이며 복원하지 않았다. 비차단 문장·푸터 열/CSS·죽은 토큰은 정리했다. Opus가 발견한 CHANGELOG Added 누락/Changed 중복은 항목 내용 보존 후 병합했고, 섹션 순서·유일성 assert PASS. 구현 commit `b97c5e2` 후 인계 변경은 CHANGELOG 구조와 검토 기록·sprint뿐이다. 원격 Contract Tests 실행은 여전히 확인되지 않았으며 CodeRabbit 상태만 SUCCESS다.
+
+최종 quota 재조회(12:48:22Z): Codex Pro 주간42% 사용/58% 잔여, reset 09-15 10:56:38Z, OAuth/exact, pace·ETA 및 다른 창 unknown. Claude/Grok 재조회는45초 timeout으로 unknown이며 마지막 성공 snapshot을 소진으로 바꾸지 않는다. 모델 리뷰 호출은 모두 정상 완료했고 개인별 소비량으로 quota 차이를 귀속하지 않는다.
