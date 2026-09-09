@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -548,26 +549,18 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
 
     def test_private_raw_failure_degrades_to_skipped_packet(self) -> None:
         helper = load_helper()
-        with tempfile.TemporaryDirectory() as tmpdir:
-            manifest_path = Path(tmpdir) / "missing.json"
-            args = helper.parse_args(
-                [
-                    "--policy",
-                    str(POLICY_PATH),
-                    "--manifest-file",
-                    str(manifest_path),
-                ]
-            )
-            try:
-                helper.build_packet(args)
-            except Exception as exc:  # noqa: BLE001 - helper converts this at CLI boundary.
-                packet = helper.skipped_packet(str(exc))
-            else:
-                self.fail("missing manifest should not build a ready packet")
-
-        self.assertEqual(packet["status"], "skipped")
-        self.assertTrue(packet["continue_live_legal_research"])
-        self.assertIsNone(packet["injection_packet"])
+        url = "https://raw.githubusercontent.com/sungjunlee/beopsuny-knowledge/main/_system/manifests/stable.json"
+        for strict, expected in ((False, 0), (True, 1)):
+            error = helper.urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+            output = io.StringIO()
+            with patch.object(helper.urllib.request, "urlopen", side_effect=error), redirect_stdout(output):
+                result = helper.main(["--manifest-url", url] + (["--strict"] if strict else []))
+            packet = json.loads(output.getvalue())
+            self.assertEqual(result, expected)
+            self.assertEqual(packet["status"], "skipped")
+            self.assertTrue(packet["continue_live_legal_research"])
+            self.assertIsNone(packet["injection_packet"])
+            self.assertEqual(packet["delivery"]["status"], "failed_before_delivery")
 
     def test_cli_returns_zero_for_fail_open_skip(self) -> None:
         helper = load_helper()
