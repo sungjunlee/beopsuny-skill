@@ -39,8 +39,11 @@ python3 tests/forward_evals/model_era/prepare_packets.py \
 ```bash
 python3 tests/forward_evals/model_era/prepare_knowledge.py \
   --knowledge-root /tmp/beopsuny-m8/knowledge-snapshot \
-  --output /tmp/beopsuny-m8/privacy-stages
+  --output /tmp/beopsuny-m8/privacy-stages \
+  --max-asset-chars 9812
 ```
+
+위 9,812자 상한은 고정 자산 전문 비교용 명시적 override다. 기본 운영 1,800자와 구분하며, 운영 재현에도 같은 override를 적용해야 한다. 기본 상한에서 필수 섹션이 생략되면 준비는 실패한다.
 
 `privacy-saas.txt`, `privacy-tags.txt`는 양군 공통이다. 양군 모두 taxonomy를 먼저 받으며, blind-first는 첫 독립 검색을 마친 뒤 hints를 받고 hints-first는 첫 검색 전에 받는다. authority map audit은 양군 모두 검색 후다. 원본 hints의 usage 표시는 보존하며 실험 supervisor가 hints-first 조건에 한해서 사전 사용을 명시한다. 이를 production 권한 변경으로 해석하지 않는다. 같은 current runtime·모델·법률 source 조건을 쓰고 실제 hints 수신 시점/첫 검색 순서를 로그로 입증한다. 소스가 이미 전부 prompt에 주어진 tool-free 비교만으로 검색 순서 개선을 측정했다고 부르지 않는다.
 

@@ -314,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
         packet = build_packet(args)
-        exit_code = 0
+        exit_code = 1 if args.strict and packet["status"] == "skipped" else 0
     except Exception as exc:  # noqa: BLE001 - fail-open boundary is the contract.
         packet = skipped_packet(str(exc), max_asset_chars=args.max_asset_chars)
         exit_code = 1 if args.strict else 0

@@ -505,6 +505,22 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
             self.assertEqual(section["delivered_sha256"], section["output_sha256"])
         self.assertIn("LATE_CONDITION", staged_contents["taxonomy"])
 
+    def test_strict_rejects_complete_omission_but_default_stays_fail_open(self):
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest, _, _ = self.write_fixture(root)
+            args = ["--manifest-file", str(manifest), "--knowledge-root", str(root), "--max-asset-chars", "0"]
+            for strict, expected in ((False, 0), (True, 1)):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    result = helper.main(args + (["--strict"] if strict else []))
+                self.assertEqual(result, expected)
+                packet = json.loads(output.getvalue())
+                self.assertEqual(packet["status"], "skipped")
+                self.assertEqual(len(packet["delivery"]["receipt"]), 5)
+                self.assertTrue(all(item["status"] == "omitted" for item in packet["delivery"]["receipt"]))
+
     def test_post_search_audit_only_usage_passes(self) -> None:
         helper = load_helper()
         content = "schema_version: 1\nasset_type: authority_map_core\nusage_mode: post_search_audit_only\n"
