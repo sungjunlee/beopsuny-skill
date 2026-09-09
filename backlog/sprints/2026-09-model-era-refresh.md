@@ -131,3 +131,9 @@ https://github.com/sungjunlee/beopsuny-skill/milestone/8
 ### GitHub 실행 인계 확인
 
 Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `45d7ac6`. 15개 이슈 본문·상태를 갱신하고 readback으로 확인했다. 실행 이슈 #318/#271/#319/#320/#321/#284/#322/#324/#326과 에픽 #277은 CLOSED, #272/#323/#325 및 에픽 #316/#317은 OPEN이다. 마일스톤·sprint는 완료 처리하지 않았다. 최종 문서 반영 후 O1 PASS. 원격 Contract Tests 실행은 확인되지 않았으며 로컬 검증과 구별한다.
+
+### 추가 독립 리뷰 완료
+
+사용자 후속 요청에 따라 Sol의 코드/계약 독립 리뷰와 Grok·Opus 교차 리뷰를 병렬 수행하고 root가 최소 수정을 통합했다. false PASS·setup 결합·상태 표시 오류와 hint-only/고정 메모 잔재를 제거했으며 각 범위 재리뷰는 LGTM. 구현 `b97c5e2`, 상세 검토·재현은 `tests/forward_evals/model_era/review-cycle.md`. 전체119개 unit 후 최종 수정 대상21개 회귀, O1/O2·19 corpus rescore·CHANGELOG gate 통과. #272/#323/#325와 에픽 #316/#317은 여전히 OPEN이며 실험 GO/출시로 해석하지 않는다.
+
+- 2026-09-08 추가 인계: 사용자 PR #327 머지 승인. main `909f206` 통합 충돌 해소, Sol 지적 보완·Grok 교차 LGTM 및 실제 Contract Tests PASS. #272 직접 변형 출처 경로 누락은 미완료 유지; #323 최종 runtime Opus 재실행은 세션 한도(01:30 KST reset)로 답변 없이 실패, 품질 미측정. #325도 미판정 유지. 외부 knowledge legacy usage 불일치·미러 upstream WARN 및 릴리즈 대상 스모크가 남아 v0.9.0은 아직 발행하지 않는다. 증거: `tests/forward_evals/model_era/review-cycle.md`.

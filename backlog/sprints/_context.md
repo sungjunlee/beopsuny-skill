@@ -52,3 +52,5 @@ dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린
 - core 구현·삭제와 통합 검증은 완료했다. 남은 #272(fwd-11 직접 변형 독립 검토 미판정), #323(미제공 별첨→부재 단정 회귀), #325(privacy 순서 실험 실행 불충분)는 닫지 않는다. 모델 비용·법률 정확도·활용성·안전을 혼합한 GO는 없다. 최신 결과는 `tests/forward_evals/model_era/integration-report.md`.
 - 의미 검토는 요청·출력 hash와 정확한 근거 구간으로 바인딩한다. 미판정은 REVIEW_REQUIRED, setup 누락은 UNSCORABLE. 병렬 CLI도 pending-only이면 비0 종료한다. 실패·검토대기의 분모는 서로 겹치지 않는다.
 - 다음 세션은 최신 이슈/댓글·quota를 다시 읽는다. 원문이 target에 제공되지 않았는데 judge에만 있었던 근거로 target의 누락을 판정하지 않는다. gold 없는 judge의 오판도 사람 검토 큐에 남긴다.
+
+- **PR #327 추가 리뷰**: Sol·Grok·Opus의 독립 리뷰→최소 수정→LGTM 완료. false PASS 경로와 고정 템플릿/자산 잔재를 수정했다. 최신 인계는 `tests/forward_evals/model_era/review-cycle.md`; #272/#323/#325의 남은 AC는 유지한다.

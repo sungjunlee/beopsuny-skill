@@ -10,7 +10,7 @@
 | 특정 법령 변경 | `git log` -> SHA -> `git show` | 법망 API `law?action=history&law_id=...` 또는 `law?action=diff&law_id=...` |
 | 관심 법령 일괄 | 회사 맥락의 관심 법령 순회 | 동일, 가능한 소스로 조회 |
 
-## Full Mode Commands
+## Local Mirror Commands
 
 일반 미러 탐색·clone·동기화 명령은 `references/source-access.md`가 단일 소스다. 여기는 변경 감지 특수 사용법만 둔다. 공통 prefix는 `DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`, 한국어 경로가 깨지지 않도록 `--name-only`에는 `-c core.quotePath=false`를 붙인다.
 
@@ -74,17 +74,7 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 
 ## Interested Laws Append
 
-회사 맥락의 관심 법령이 비어 있지 않고, 본문 답변 후 관심 법령 개정 정보가 있으면 아래 순서로 붙인다.
-
-```text
-본문
----
-🔍 자가 검증: ...
-💡 최근 개정: {법령1} (YYYY-MM-DD), ...
-면책 고지
-```
-
-모든 관심 법령이 개정 없음이고 조회 실패도 없으면 `💡`를 생략한다. 조회 실패가 있으면 `💡 조회 실패: ...`로 표시한다.
+관심 법령에 개정 정보가 있으면 본문 뒤에 법령명·개정일·출처를 덧붙인다. 개정이 없고 조회 실패도 없으면 생략한다. 조회 실패는 개정 없음과 구별해 표시한다.
 
 ## Failure Handling
 

@@ -52,6 +52,9 @@ class SemanticReviewTests(unittest.TestCase):
         case = self.data['cases'][0]
         reviewed = self.approved_double(case)
         for records in ([], [reviewed, reviewed], [{**reviewed, 'review_status': 'provisional'}],
+                        [{**reviewed, 'author': None}], [{**reviewed, 'id': ''}],
+                        [{**reviewed, 'reviewed_at': 'not-a-date'}],
+                        [{**reviewed, 'reviewer': {**reviewed['reviewer'], 'id': reviewed['author']['id']}}],
                         [{**reviewed, 'verdict': 'UNJUDGEABLE'}], [{**reviewed, 'reviewer': None}]):
             with self.subTest(records=records):
                 self.assertEqual(self.assess(case, records)['verdict'], 'REVIEW_REQUIRED')
@@ -105,6 +108,16 @@ class SemanticReviewTests(unittest.TestCase):
         self.assertEqual(evidence['summary']['passed'], 0)
         self.assertEqual(evidence['summary']['failed'], 0)
         self.assertEqual(evidence['summary']['review_required'], 1)
+
+    def test_scorer_cli_reports_fail_before_pending(self):
+        for failures, expected in ((["REVIEW_REQUIRED: pending"], "INCOMPLETE"),
+                                   (["real failure", "REVIEW_REQUIRED: pending"], "FAIL")):
+            with self.subTest(failures=failures), patch.object(scorer, "evaluate_outputs", return_value=failures), \
+                    patch.object(scorer, "evaluate_unsafe_outputs", return_value=[]), \
+                    patch.object(scorer, "evaluate_semantic_cases", return_value=[]), \
+                    patch.object(sys, "argv", ["scorer"]), contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(scorer.main(), 1)
+                self.assertEqual(out.getvalue().splitlines()[0], expected)
 
     def test_mixed_failure_and_pending_have_disjoint_totals(self):
         full = harness.load_forward_eval(harness.DEFAULT_CONFIG)

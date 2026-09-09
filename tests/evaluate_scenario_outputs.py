@@ -13,7 +13,7 @@ import hashlib
 import json
 import re
 import sys
-from datetime import date
+from datetime import date, datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -147,8 +147,6 @@ MIRROR_SOURCE_FAMILY_MARKERS = [
     "admrule-kr",
     "ordinance-kr",
 ]
-# Verification records are optional; their presentation is not a scoring rule.
-VERIFICATION_TIER_AUTO_RULES: dict[str, str] = {}
 
 
 def load_yaml(path: Path) -> Any:
@@ -175,12 +173,18 @@ def collect_scenarios(paths: list[Path]) -> dict[str, dict[str, Any]]:
     return scenarios
 
 
+def require_output_text(value: Any) -> str:
+    if not isinstance(value, str):
+        raise ValueError("UNSCORABLE: captured output must be text")
+    return value
+
+
 def load_outputs(path: Path) -> dict[str, str]:
     data = load_yaml(path)
     outputs = data.get("outputs", {})
     if not isinstance(outputs, dict):
         raise AssertionError(f"{path}: outputs must be a mapping")
-    return {str(key): str(value) for key, value in outputs.items()}
+    return {str(key): require_output_text(value) for key, value in outputs.items()}
 
 
 def load_unsafe_outputs(path: Path) -> list[dict[str, Any]]:
@@ -296,10 +300,6 @@ def output_common_rules(scenario: dict[str, Any]) -> list[str]:
 
     if expected.get("primary_intent") == "legal_research":
         rules.append("mirror_promulgation_currency_gate")
-
-    tier_rule = VERIFICATION_TIER_AUTO_RULES.get(expected.get("verification_tier"))
-    if tier_rule:
-        rules.append(tier_rule)
 
     return sorted({str(rule) for rule in rules if common_rule_audit().get(str(rule), {}).get("static_disposition") not in {"moved_to_live", "retired"}})
 
@@ -862,10 +862,16 @@ def evaluate_semantic_review(
         return result
     record = matches[0]
     reviewer = record.get("reviewer") or {}
+    author = record.get("author") or {}
     if (record.get("review_status") != "reviewed" or not isinstance(reviewer, dict)
             or reviewer.get("kind") not in {"human", "independent_model"}
-            or not reviewer.get("id") or not record.get("reviewed_at")
+            or not record.get("id") or not isinstance(author, dict) or not author.get("id")
+            or not reviewer.get("id") or reviewer.get("id") == author.get("id")
             or record.get("verdict") not in {"PASS", "FAIL"} or not record.get("reason")):
+        return result
+    try:
+        datetime.fromisoformat(record.get("reviewed_at", ""))
+    except (TypeError, ValueError):
         return result
     spans = record.get("evidence")
     if not isinstance(spans, list) or not spans:
@@ -958,7 +964,7 @@ def evaluate_unsafe_outputs(
     for item in unsafe_outputs:
         item_id = str(item.get("id", "<missing id>"))
         scenario_id = str(item.get("scenario_id", ""))
-        output = str(item.get("output", ""))
+        output = require_output_text(item.get("output", ""))
         expected_rules = [str(rule) for rule in item.get("expected_failure_rules", [])]
         scenario = scenarios.get(scenario_id)
         if scenario is None:
@@ -1040,8 +1046,8 @@ def main() -> int:
     failures.extend(evaluate_semantic_cases(scenarios))
 
     if failures:
-        pending = any(item.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for item in failures)
-        print("INCOMPLETE" if pending else "FAIL")
+        only_pending = all(item.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for item in failures)
+        print("INCOMPLETE" if only_pending else "FAIL")
         for failure in failures:
             print(f"- {failure}")
         return 1

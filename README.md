@@ -30,15 +30,13 @@ You: "이 계약서 검토해줘"
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
 - **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력 추적 (`git log` + 법망 API)
 - **근거와 확인 범위** — 핵심 인용에 출처 성격·실제 확인 경로·상태·적용 시점을 표시. `[VERIFIED]`는 원문 대조 표시이며 법률 정답 보증이 아님
-- **Legal verification core** — 결론 후보별 authority mapping, citation ledger, contradiction scan, conclusion binding
+- **Legal verification core** — 결론별 인용·근거 대응, 반대근거 검토와 결론 강도 조정
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
 - **Role / destination output gate** — 비법무 사용자·외부 송부·기관 제출 문안은 법무 검토 전 단계와 실제 외부 행동을 분리
 - **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
 - **회사 맥락과 사건 격리** — 필요한 회사 사실을 읽고, 명시적인 저장 요청은 현재 하네스 권한과 지정 사건 범위에 따른다. 회사 데이터베이스는 만들지 않는다
-
-> **권장 모델**: sonnet급 이상. haiku급 하위 모델은 핵심 금지선(판례 날조 거부, 무확인 쓰기 거부, 직접 송부 지시 회피)은 대체로 지키지만, 출처 권위 라벨·verification status 표시와 시행 전 공포본 currency 판정을 신뢰할 수 없는 수준으로 떨어뜨린다 — 2026-07-21 플로어 실측 guardrails 3/11·o4 4/8, v0.5.1 baseline A/B로 스킬 경량화 인과 아님 확인 (`tests/forward_evals/evidence/*haiku45-20260721*.yaml`의 human_judgment 참조).
 
 ## 데이터 소스
 
@@ -216,7 +214,7 @@ git diff --check
 2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage, 미러 설치됨)에서** 로컬 미러 staleness / 법망 API / law.go.kr 링크 3축을 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 3축의 기준이다 — 주간 CI(`--dns-links`)가 실제로 감지하는 것은 law.go.kr DNS 1축뿐이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
 3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
 4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
-5. plugin 버전 범프: `.claude-plugin/plugin.json`과 `.claude-plugin/marketplace.json`의 version을 태그 버전과 일치시킨다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
+5. plugin 버전 범프: 정본은 `.claude-plugin/plugin.json` 하나다 — version·description·keywords를 여기만 고치고, `.claude-plugin/marketplace.json` plugins[0]의 복사본을 일치시킨다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 세 필드 모두의 drift를 잡는다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
 6. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
 
 ### 로컬 미러 셋업 (권장)
@@ -308,7 +306,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 
 | 파일 | 용도 |
 |------|------|
-| `legal_verification_packet.yaml` | Legal Verification Core의 authority packet, citation ledger, contradiction scan, conclusion binding 구조 |
+| `legal_verification_packet.yaml` | 선택적 감사·인계 packet: sources, conclusions.source_ids, conflicts |
 | `output_contract.yaml` | 역할별 output mode와 destination별 법적 효과 gate 구조 |
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |

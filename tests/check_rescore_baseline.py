@@ -29,6 +29,9 @@ corpus의 prompt가 현재 config에 없으면(은퇴·rename 누락) `["<prompt
 current config>"]` 마커로 기록한다. 매핑되지 않은 rename은 `RENAMED_PROMPT_IDS`에
 없으면 KeyError로 "채점 불가"가 되는데, 그 상태를 "계약이 바뀌어 실패"로 착각하지
 않도록 마커가 명시적으로 드러낸다 (PR #261 선례).
+
+커밋된 corpus를 다시 채점하던 하네스 테스트는 이 스캔이 대체한다 (#303).
+합성 프로브·런처 구조는 `tests/test_forward_eval_harness.py`가 남긴다.
 """
 
 from __future__ import annotations
@@ -92,14 +95,11 @@ def rescore_all() -> dict[str, dict[str, list[str]]]:
                 continue
             prompt = prompts[prompt_id]
             execution = executions.get(prompt_id, {})
-            if execution.get("execution_status", "completed") != "completed":
+            if execution.get("execution_status", "completed") != "completed" or not output.strip():
                 corpus[prompt_id] = ["UNSCORABLE: captured execution did not complete"]
                 continue
             if prompt.get("setup") is not None:
-                setup = execution.get("setup") or {}
-                if (setup.get("status") != "applied"
-                        or setup.get("sha256") != harness.sha256_text(str(prompt["setup"]))
-                        or not setup.get("context_sha256")):
+                if not harness.setup_evidence_matches(prompt, execution):
                     corpus[prompt_id] = ["UNSCORABLE: required setup evidence absent or mismatched"]
                     continue
             scored = harness.score_one_prompt(prompt, output)
@@ -205,17 +205,24 @@ def build_report(
             set(relaxed.get(corpus, {})) | set(tightened.get(corpus, {}))
         ):
             if prompt_id in relaxed.get(corpus, {}):
-                messages = relaxed[corpus][prompt_id]
-                lines.append(
-                    f"[완화] {corpus} / {prompt_id} — baseline 실패 {len(messages)}건이 사라졌다"
-                )
-                for message in messages:
-                    lines.append(f"    - {message}")
-                lines.append(
-                    "    ← 스코어러가 느슨해졌다. 완화는 조임보다 강한 경고다 — "
-                    "이 레포의 사고 방향이다 (#282). 같은 PR에서 baseline을 갱신하고 "
-                    "완화 1건마다 근거를 남긴다."
-                )
+                removed = relaxed[corpus][prompt_id]
+                pending = [m for m in removed if m.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:"))]
+                messages = [m for m in removed if m not in pending]
+                if pending:
+                    lines.append(f"[검토/채점 상태 변경] {corpus} / {prompt_id} — 미검토/채점불가 {len(pending)}건 제거")
+                    lines.extend(f"    - {message}" for message in pending)
+                    lines.append("    ← 검토/실행 증거 또는 수신처 변경을 확인한다. 메시지 제거만으로 검토 완료나 모델 개선을 추론하지 않는다.")
+                if messages:
+                    lines.append(
+                        f"[완화] {corpus} / {prompt_id} — baseline 실패 {len(messages)}건이 사라졌다"
+                    )
+                    for message in messages:
+                        lines.append(f"    - {message}")
+                    lines.append(
+                        "    ← 스코어러가 느슨해졌다. 완화는 조임보다 강한 경고다 — "
+                        "이 레포의 사고 방향이다 (#282). 같은 PR에서 baseline을 갱신하고 "
+                        "완화 1건마다 근거를 남긴다."
+                    )
             if prompt_id in tightened.get(corpus, {}):
                 messages = tightened[corpus][prompt_id]
                 pending_only = all(message.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for message in messages)

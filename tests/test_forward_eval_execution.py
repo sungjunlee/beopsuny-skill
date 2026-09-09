@@ -90,11 +90,73 @@ class ForwardExecutionTests(unittest.TestCase):
                     "passed": 0,
                     "failed": 0,
                     "review_required": 0,
-                "unscorable": 1,
+                    "unscorable": 1,
                     "execution_errors": 0,
                 },
             )
             self.assertEqual(report["results"][0]["output"], outputs[self.prompt["id"]])
+
+    def test_setup_context_hash_must_match_captured_execution(self):
+        outputs, records = self.run_stub(harness.SAMPLE_OUTPUTS[self.prompt["id"]])
+        records[0]["setup"]["context_sha256"] = "0" * 64
+        self.assertEqual(self.score(outputs, records)["summary"]["unscorable"], 1)
+        self.assertFalse(harness.setup_evidence_matches(self.prompt, records[0]))
+
+    def test_packet_and_config_reject_path_escape_ids(self):
+        for prompt_id in ("../escape", "/tmp/escape", "..", "a/b", "a\\b"):
+            with self.subTest(prompt_id=prompt_id), tempfile.TemporaryDirectory() as directory:
+                config = copy.deepcopy(self.config)
+                config["prompts"][0]["id"] = prompt_id
+                path = Path(directory) / "config.yaml"
+                path.write_text(yaml.safe_dump(config))
+                with self.assertRaisesRegex(AssertionError, "unsafe prompt id"):
+                    harness.load_forward_eval(path)
+                with self.assertRaisesRegex(AssertionError, "unsafe prompt id"):
+                    harness.write_prompt_packets(config, Path(directory) / "packets")
+
+    def test_capture_rejects_nontext_and_duplicate_outputs(self):
+        import evaluate_scenario_outputs as scorer
+        for value in (None, 42, [], {}):
+            for shape in ("outputs", "results", "prompts"):
+                with self.subTest(value=value, shape=shape), tempfile.TemporaryDirectory() as directory:
+                    payload = ({"outputs": {self.prompt["id"]: value}} if shape == "outputs"
+                               else {shape: [{"prompt_id": self.prompt["id"], "output": value}]})
+                    path = Path(directory) / "capture.yaml"
+                    path.write_text(yaml.safe_dump(payload))
+                    with self.assertRaisesRegex(ValueError, "UNSCORABLE"):
+                        harness.load_outputs_capture(path)
+                    if shape == "outputs":
+                        with self.assertRaisesRegex(ValueError, "UNSCORABLE"):
+                            scorer.load_outputs(path)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.yaml"
+            path.write_text(yaml.safe_dump({"results": [
+                {"prompt_id": self.prompt["id"], "output": "bad"},
+                {"prompt_id": self.prompt["id"], "output": "good"}]}))
+            with self.assertRaisesRegex(ValueError, "duplicate captured"):
+                harness.load_outputs_capture(path)
+
+    def test_captured_only_rejects_unknown_or_empty_capture(self):
+        for known in (False, True):
+            with self.subTest(known=known), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                outputs = {"typo-prompt-id": "unmatched"}
+                if known:
+                    outputs[self.prompt["id"]] = harness.SAMPLE_OUTPUTS[self.prompt["id"]]
+                capture = root / "capture.yaml"
+                capture.write_text(yaml.safe_dump({"outputs": outputs}))
+                result = harness.subprocess.run(
+                    [sys.executable, str(harness.ROOT / "tests/forward_eval_harness.py"),
+                     "--mode", "score", "--captured-only", "--outputs", str(capture),
+                     "--evidence", str(root / "evidence.yaml")],
+                    capture_output=True, text=True,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("UNSCORABLE", result.stderr)
+                self.assertNotIn("PASS", result.stdout)
+        with self.assertRaisesRegex(ValueError, "UNSCORABLE"):
+            harness.score_forward_outputs({"name": "empty", "prompts": []}, {},
+                                          mode="score", model="stub", run_at="test")
 
     def test_setup_failure_never_executes_command_and_cleans_workspace(self):
         self.config = copy.deepcopy(self.config)

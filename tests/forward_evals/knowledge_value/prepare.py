@@ -32,7 +32,8 @@ COMMON_REFERENCES = (
     "skills/beopsuny/assets/data/clause_references.yaml",
 )
 KNOWLEDGE_INJECTION = "skills/beopsuny/references/knowledge-injection.md"
-CANDIDATE_MEMO_DIRECTORY = "privacy/research/memos"
+CANDIDATE_MEMO_DIRECTORY = "research/privacy/memos"
+LEGACY_CANDIDATE_MEMO_DIRECTORY = "privacy/research/memos"
 STAGED_SECTIONS = {
     "taxonomy": "taxonomy.txt",
     "retrieval_hints": "hints.txt",
@@ -130,6 +131,9 @@ def extract_evaluation_candidate(memo: Path) -> str:
 def discover_evaluation_candidate_memos(knowledge_root: Path) -> list[Path]:
     """Require the frozen snapshot to identify exactly the two C inputs."""
     directory = knowledge_root / CANDIDATE_MEMO_DIRECTORY
+    # Historical frozen checkouts retain their original layout and input receipts.
+    if not directory.is_dir():
+        directory = knowledge_root / LEGACY_CANDIDATE_MEMO_DIRECTORY
     if not directory.is_dir():
         raise FileNotFoundError(f"candidate memo directory is missing: {directory}")
     candidates = [

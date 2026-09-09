@@ -9,7 +9,7 @@
 | 삭제 | 만료 `mandatory_provisions` 인덱스 14 seed와 registry 항목·소비자·전용 검사 | 중복이던 clause 후보는 유지. 법령 제26조·제28조의8 직접 원문 대조와 [대표 초안](contract-example.md)으로 재위탁·국외이전 누락 탐지 확인. 삭제를 재검증이라고 부르거나 만료 날짜를 연장하지 않음 |
 | 삭제 | law-clerk cron, HOME override, 개인 환경 운영 지침, 중복 흐름·날짜 고정 법률 예시·registry 사본 | 실제 source family 가용성·미러 provenance·파싱 실패/폐지 stub·시행 예정/사건 시점 검증은 source-access에 존치. 실제 law-change 소비자가 있는 사용자 요청 sync는 유지 |
 | 축소 | 고정 6단계, full 강제, 중복 ledger·완료 boolean, 고정 첫줄/메모/배지/면책/섹션 | 선택형 evidence packet에 sources/conclusions/conflicts 및 적용 시점·예외·반대근거·누락 사실을 유지. 원문 확인 정보는 표·산문·각주로 추적 가능해야 함 |
-| 삭제·정렬 | mode별 출력 suppression·금지 문자열·hint-only 초안 제한 | 요청한 완성 수정안과 이유·전제·미확인 사항을 제공. `alt_wording_hint`는 실제 후보 입력 8개에서 사용하므로 유지, optional `draft_clause`가 출력 소비자 |
+| 삭제·정렬 | mode별 초안 필드 출력 suppression·금지 문자열·hint-only 초안 제한 | 요청한 완성 수정안과 이유·전제·미확인 사항을 제공. `alt_wording_hint`는 실제 후보 입력 8개에서 사용하므로 유지, optional `draft_clause`가 출력 소비자 |
 | 유지 | output schema의 role/destination/high-risk/non_overrides와 상태 값 | 대외 문안에서 다른 사건 식별정보 제외, 출처 성격과 확인 상태 구별, 작성 권한과 실제 송부/제출/서명 권한 구별 |
 | 의미 평가로 이관 | counter-draft·기밀 일반 메모리 확장·출처 정보 추적 | 기존 scorer가 출력·요청 hash, 정책 revision, 정확한 quote span과 명시 독립 검토 기록을 소비. 기록 없음/미판정은 REVIEW_REQUIRED. 네트워크 judge는 CI 필수가 아님 |
 | 실제 삭제 | obsolete ceremony 검사의 branch·trigger·unsafe fixture와 기밀 저장 어휘 전용 unit | retained/moved/retired 정본 및 차등 rescore로 설명. 0 checks, setup 누락, 실행 실패를 PASS로 만들지 않음 |
@@ -17,9 +17,13 @@
 
 회사 DB·새 공개 skill·별도 mode·새 저장 체계는 만들지 않았다. 개인 설치본·법령 미러·설정을 삭제하거나 업데이트하지 않았다. 설치 패키지는 기존 단일 `skills/beopsuny`와 manifest 경로를 사용한다. 설치본 동기화·출시는 별도 작업이다.
 
+모델 등급 자기고지 문장과 전용 검사는 의도적으로 제거했다. README의 일반 모델 등급 권장 배너도 제거했으며, 과거 [Haiku guardrail 실측](../evidence/guardrails-live-haiku45-20260721-v060.yaml)과 [O4 실측](../evidence/o4-live-haiku45-20260721-v060.yaml)은 그대로 보존한다. 과거 특정 모델·버전 관측을 현재 모델 전반의 권장 기준으로 확대하지 않는다. 과거 하위 모델 관측은 원본 evidence에 보존하지만 모델의 자기보고를 출력 의무나 품질 검증으로 사용하지 않는다. `review_mode.yaml`의 표준·간이 모드는 해설만으로 법률 결론을 확정하지 않도록 `grade_c_conclusion: forbidden`으로 좁혔고, 간이 검토도 관련 횡단 이슈를 생략하지 않도록 `phase_0.scope`를 트리거 항목으로 바꿨다. 이는 단순 YAML 정리가 아닌 정책 변경이며 개선 성능이 실증됐다는 뜻은 아니다.
+
 ## 비교 조건과 재현
 
-`evidence/baseline-manifest.json`의 42개 runtime hash와 e05ecda detached worktree로 기준선을 보존했다. 초기 user 계획 변경도 보존했다. 기존 `forward_eval_harness.py`의 context/packet 빌더를 사용하며 양군에 동일한 수정 runner를 적용했다. 각 evidence JSON에 실제 context/prompt/source/runtime hash, 모델·effort·도구 조건·실행 상태와 관측 비용을 기록했다.
+`evidence/baseline-manifest.json`의 42개 runtime hash와 e05ecda detached worktree로 기준선을 보존했다. 초기 user 계획 변경도 보존했다. 계약 B1/B2 runtime hash는 커밋되지 않은 중간 작업본을 가리켜 커밋만으로 byte 재현할 수 없다. 기존 capture 파일은 수정하지 않았다. 당시 임시 입력은 보존했지만 영구 보존된 전체 runtime snapshot은 아니므로 해시만으로 재구성 가능하다고 주장하지 않는다. basic packet은 당시 e05ecda/cfd24a9에서 재현했으며 후속 runtime 수정 이후 HEAD와는 구별한다. 과거 metadata의 최상위 `runtime_inputs`는 준비 invocation의 모든 과제 합집합이다. 신규 준비는 record별 `task_runtime_inputs` hash도 기록한다.
+
+기존 `forward_eval_harness.py`의 context/packet 빌더를 사용하며 양군에 동일한 수정 runner를 적용했다. 각 evidence JSON에 실제 context/prompt/source/runtime hash, 모델·effort·도구 조건·실행 상태와 관측 비용을 기록했다.
 
 - Sol medium: fresh native fork, 해당 context/prompt 두 파일 읽기만 관측. 환경·도구 정의는 보이며 도구를 물리 차단한 실행은 아니다. 개별 토큰·시간·비용은 제공되지 않아 null이다.
 - Claude Opus 5 high: 새 CLI 세션, 도구 빈 목록·빈 MCP, fixed 원문. CLI 비용은 list-price 추정이며 실제 계정 차감액이 아니다.
@@ -44,7 +48,7 @@
 | Claude Opus 5 high / contract | 56,046 → 47,392 | 13,600 → 14,947 | 204.137 → 225.980 | .900450 → .847585 | 변경판의 편집 가능한 조항·별첨 양식은 유용하나 미제공 별첨을 ‘부존재’로 서술하는 결함 |
 | Sol medium / simple·future | 개별 계측 미제공 | 미제공 | 미제공 | 미제공 | 두 판 모두 핵심 조문·미래 시행일을 구별. 변경판은 간결하나 일부 실무 제한 설명이 줄어 일관된 우위는 불명확 |
 
-입력 토큰은 input+cache creation+cache read의 실제 CLI 관측 합계다. 전체 reference가 항상 로드된다고 가정하지 않았다. 이 고정 평가에서 실제 전달한 문서는 basic 3개(SKILL+source-access+citation contract), contract 8개이며 각 입력 hash를 기록했다. 자연스러운 live 검색의 동적 로딩 효율까지 검증한 것은 아니다. 토큰이 줄어도 출력과 지연이 늘 수 있다. 모델·cache 차이가 있으므로 모델 간 비용 우열이나 계정의 실제 청구액으로 일반화하지 않는다.
+입력 토큰은 input+cache creation+cache read의 실제 CLI 관측 합계다. 전체 reference가 항상 로드된다고 가정하지 않았다. 이 고정 평가에서 실제 전달한 문서는 basic 3개(SKILL+source-access+citation contract), contract 8개다. 커밋된 과거 evidence의 파일 hash는 준비 invocation의 합집합이며, 과제별 목록은 당시 context로 확인했다. 과제별 `task_runtime_inputs` hash는 신규 준비부터 별도로 기록한다. 자연스러운 live 검색의 동적 로딩 효율까지 검증한 것은 아니다. 토큰이 줄어도 출력과 지연이 늘 수 있다. 모델·cache 차이가 있으므로 모델 간 비용 우열이나 계정의 실제 청구액으로 일반화하지 않는다.
 
 독립 [Grok 비교](evidence/paired-grok.json)는 법률 근거와 활용성을 분리했지만, judge에게 두 버전을 공통 제공한 탓에 2025본만 받은 계약 응답에 미래본 누락을 지적했다. 그 지적은 입력 조건상 무효다. judge가 놓친 B1의 ‘별첨 A 부존재’는 root가 사용자 제공 사실(미제공)과 대조해 발견했다. judge의 label 자체를 법률 gold로 쓰지 않는다.
 
@@ -94,3 +98,7 @@ Draft PR [#327](https://github.com/sungjunlee/beopsuny-skill/pull/327), 구현 c
 #272 AC1은 미완료다. 독립 검토된 별도 표·산문·각주 의미 fixture와 실제 누락 사례는 보유하지만, 기존 fwd-11 원본과 그 직접 변형을 동일한 완료 증거로 대체할 수 없다. [원본 변형 입력](evidence/fwd11-variants-input.json)을 준비했으나 Grok4.6 독립 검토는 180초 timeout, 판정 없음([실행 상태](evidence/fwd11-variants-review.json)). 이는 평가 실행 실패이며 모델의 법률 실패가 아니다. 원본의 인용 확인 경로를 대조하고 변형별 추적 가능성을 검토한 뒤 AC1을 닫는다. 고정 라벨 의무를 복원하거나 과거 법률 주장을 현재 법률 검증으로 취급하지 않는다.
 
 잔여 실행 이슈는 #272, #323, #325이며 에픽 #316/#317과 마일스톤8은 열린 상태로 인계한다. #326 완료는 한계를 포함한 통합 보고·도입 판단 산출물 완료이며 잔여 AC나 출시 승인을 대신하지 않는다.
+
+## 추가 독립 리뷰 사이클
+
+후속 사용자 요청으로 수행한 코드·계약·증거 리뷰와 최소 수정은 [리뷰 사이클 기록](review-cycle.md)에 별도로 기록한다. 위 113개 테스트와 모델 비교는 최초 인계 당시 증거이며 후속 수정의 검증 결과·승인 범위는 해당 기록을 따른다. #272/#323/#325의 미완료 AC는 코드 LGTM으로 대체하지 않는다.

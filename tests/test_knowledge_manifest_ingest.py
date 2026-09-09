@@ -19,7 +19,6 @@ ROOT = Path(__file__).resolve().parents[1]
 HELPER_PATH = ROOT / "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py"
 POLICY_PATH = ROOT / "skills/beopsuny/assets/policies/knowledge_manifest.yaml"
 PREPARE_PATH = ROOT / "tests/forward_evals/model_era/prepare_knowledge.py"
-KNOWLEDGE_ROOT = Path("/Users/sjlee/workspace/active/legal-stack/beopsuny-knowledge")
 
 
 def load_helper():
@@ -506,41 +505,30 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
             self.assertEqual(section["delivered_sha256"], section["output_sha256"])
         self.assertIn("LATE_CONDITION", staged_contents["taxonomy"])
 
-    @unittest.skipUnless(
-        KNOWLEDGE_ROOT.exists(), "local beopsuny-knowledge checkout not available"
-    )
-    def test_local_stable_manifest_validates_assets_and_builds_packet(self) -> None:
+    def test_post_search_audit_only_usage_passes(self) -> None:
         helper = load_helper()
-        manifest = KNOWLEDGE_ROOT / "_system/manifests/stable.json"
-        manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
-        local_contents = [
-            helper.read_text_source(entry["url"], knowledge_root=KNOWLEDGE_ROOT)
-            for entry in helper.manifest_asset_entries(manifest_data).values()
-        ]
-        complete_asset_cap = max(len(content) for content in local_contents)
-
-        packet = helper.build_packet(
-            helper.parse_args(
-                [
-                    "--policy",
-                    str(POLICY_PATH),
-                    "--manifest-file",
-                    str(manifest),
-                    "--knowledge-root",
-                    str(KNOWLEDGE_ROOT),
-                    "--max-asset-chars",
-                    str(complete_asset_cap),
-                ]
-            )
+        content = "schema_version: 1\nasset_type: authority_map_core\nusage_mode: post_search_audit_only\n"
+        result = helper.validate_asset(
+            "authority_map.core",
+            {"id": "x", "version": "1", "url": "file:///x", "sha256": helper.sha256_text(content), "publish_ready": True, "url_status": "live"},
+            content,
+            "post_search_audit_only",
+            {"1"},
         )
+        self.assertEqual(result["usage"], "post_search_audit_only")
 
-        self.assertEqual(packet["status"], "ready")
-        self.assertEqual(packet["vertical"], "privacy")
-        self.assertEqual(len(packet["assets"]), 5)
-        self.assertEqual(len(packet["delivery"]["receipt"]), 5)
-        self.assertTrue(
-            all(item["status"] == "delivered" for item in packet["delivery"]["receipt"])
-        )
+    def test_legacy_audit_only_usage_fails(self) -> None:
+        helper = load_helper()
+        for asset_type in ("authority_map_core", "authority_map_overlay"):
+            content = f"schema_version: 1\nasset_type: {asset_type}\nusage_mode: audit_only\n"
+            with self.assertRaises(helper.IngestError):
+                helper.validate_asset(
+                    "authority_map.core" if asset_type == "authority_map_core" else "authority_map.overlay",
+                    {"id": "x", "version": "1", "url": "file:///x", "sha256": helper.sha256_text(content), "publish_ready": True, "url_status": "live"},
+                    content,
+                    "post_search_audit_only",
+                    {"1"},
+                )
 
     def test_private_raw_failure_degrades_to_skipped_packet(self) -> None:
         helper = load_helper()

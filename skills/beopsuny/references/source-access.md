@@ -106,7 +106,7 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 | `precedent-kr` | `find .../precedent-kr -name "*2022다12345*"`; 사건번호가 없으면 먼저 법망 API로 discovery |
 | `ordinance-kr` | `{광역}/{기초 또는 _본청 또는 _교육청}/{자치법규종류}/{자치법규명}/본문.md`; 지역을 먼저 좁힌 뒤 탐색 |
 
-`admrule-kr`와 `ordinance-kr`의 frontmatter는 citation ledger 후보로 쓴다. 핵심 필드는 식별자, 명칭, 종류, 발령·공포기관, 발령·공포일자, 시행일자, `본문출처`, `출처`, `첨부파일`이다. `본문출처: parsing-failed`이면 metadata와 첨부 링크만으로 결론을 확정하지 말고 law.go.kr 원문 또는 첨부 파일을 다시 확인한다.
+`admrule-kr`와 `ordinance-kr`의 frontmatter는 인용·근거 기록 후보로 쓴다. 핵심 필드는 식별자, 명칭, 종류, 발령·공포기관, 발령·공포일자, 시행일자, `본문출처`, `출처`, `첨부파일`이다. `본문출처: parsing-failed`이면 metadata와 첨부 링크만으로 결론을 확정하지 말고 law.go.kr 원문 또는 첨부 파일을 다시 확인한다.
 
 ## 미러 시행일 확인 (공포본 vs 현행본)
 

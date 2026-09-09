@@ -34,6 +34,20 @@ class PreparationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'evaluator-only'):
                 prepare.extract_evaluation_candidate(memo)
 
+    def test_candidate_discovery_supports_current_and_frozen_layouts(self):
+        for layout in (prepare.CANDIDATE_MEMO_DIRECTORY, prepare.LEGACY_CANDIDATE_MEMO_DIRECTORY):
+            with self.subTest(layout=layout), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                memos = root / layout
+                memos.mkdir(parents=True)
+                for name in ("a.md", "b.md"):
+                    (memos / name).write_text("## Evaluation Candidate\nConditional knowledge.\n")
+                found = prepare.discover_evaluation_candidate_memos(root)
+                self.assertEqual([memos / "a.md", memos / "b.md"], found)
+                (memos / "c.md").write_text("## Evaluation Candidate\nUnexpected candidate.\n")
+                with self.assertRaisesRegex(ValueError, "exactly two"):
+                    prepare.discover_evaluation_candidate_memos(root)
+
     def test_source_bundle_rejects_changed_content(self):
         with tempfile.TemporaryDirectory() as directory:
             bundle = Path(directory)
