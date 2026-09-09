@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "model_requested": "gpt-5.6-sol",
+  "effort": "medium",
+  "model_reported": null,
+  "elapsed_s": 153.37,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 77741,
+    "cached_input_tokens": 10624,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4555,
+    "reasoning_output_tokens": 911
+  },
+  "tool_events": [],
+  "source_mode": "fixed",
+  "input_sha256": "c2ea08ecd7eef78047548e3129442c63d35bbfbd78e6e868cb99bd1b53731c89",
+  "command": [
+    "codex",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--json",
+    "-m",
+    "gpt-5.6-sol",
+    "-c",
+    "model_reasoning_effort=\"medium\"",
+    "--output-last-message",
+    "/tmp/beopsuny-kv-frozen-20260908/executions/gpt/B-ai-lifecycle/answer.md"
+  ],
+  "answer_sha256": "03f625d2df370352fc3f270f507a4e063c21354e075fc3575a8ac0cb79df8902",
+  "legal_adjudication": "unadjudicated",
+  "ambient_context": "fresh CLI in empty cwd; user config ignored for Codex; Claude setting sources empty, skills and all tools disabled. Provider built-in system prompts differ. GPT tools instructed unused, not physically disabled.",
+  "record_id": "v1-gpt-B-ai-lifecycle",
+  "epoch": "v1",
+  "selection_status": "balanced_comparison",
+  "cost_usd": null,
+  "source_completion_verified": true,
+  "source_receipt_sha256": "284c79fe68e0483b8267a15c5c28c30d48f5b9582ac785d6faad7db4ba41466d"
+}

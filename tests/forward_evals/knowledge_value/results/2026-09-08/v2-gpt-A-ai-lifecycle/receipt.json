@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "model_requested": "gpt-5.6-sol",
+  "effort": "medium",
+  "model_reported": null,
+  "cost_usd": null,
+  "elapsed_s": 179.34,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 64100,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 5262,
+    "reasoning_output_tokens": 1552
+  },
+  "tool_events": [],
+  "source_mode": "fixed",
+  "input_sha256": "d2a2b9dbcfe3dc056e58abcceed708e48069dc7be417dc9606604178111b5863",
+  "command": [
+    "codex",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--json",
+    "-m",
+    "gpt-5.6-sol",
+    "-c",
+    "model_reasoning_effort=\"medium\"",
+    "--output-last-message",
+    "/tmp/beopsuny-kv-frozen-v2-20260908/executions/gpt/A-ai-lifecycle/answer.md"
+  ],
+  "answer_sha256": "2fc908dbb3b317eda00368f94d37eff50d067e425a0e70d4701d73dff519a96c",
+  "legal_adjudication": "unadjudicated",
+  "ambient_context": "fresh CLI in empty cwd; user config ignored for Codex; Claude setting sources empty, skills and all tools disabled. Provider built-in system prompts differ. GPT tools instructed unused, not physically disabled.",
+  "record_id": "v2-gpt-A-ai-lifecycle",
+  "epoch": "v2",
+  "selection_status": "balanced_comparison",
+  "source_completion_verified": true,
+  "source_receipt_sha256": "e539f196562d5e80928e139b78ecacb5e412311b120fb2928d4f22c4181d0b8f"
+}

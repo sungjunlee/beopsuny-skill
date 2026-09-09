@@ -1,0 +1,41 @@
+--- baseline/skills/beopsuny/SKILL.md
++++ variant-A/skills/beopsuny/SKILL.md
+@@ -46,7 +46,6 @@
+ | `law_change_detection` | 최근 개정, 법령 변경 내역, 관심 법령 변경 | `references/law-change-detection.md`, `references/source-access.md` |
+ | `legal_terms` | 영한 법률용어, 계약 용어 뜻 | `assets/data/legal_terms.yaml` |
+ | `company_context` | 회사 정보 저장·설정 요청, 회사 맥락을 어디에 둘지 | 추가 로딩 없음 — 아래 `## 회사 맥락`이 단일 소스 |
+-| `privacy_knowledge_layer` | 개인정보 쟁점이 복잡하고 누락 검색어/audit 보강이 유용한 경우 | `references/knowledge-injection.md` |
+ 
+ 법률 결론 always-on gate는 의도별 workflow reference와 별도로 항상 적용한다 — 라우팅이 아니라 답변이 실제로 만드는 것이 부착을 정한다. 각 gate가 언제 붙는지는 아래 `적용 범위`가 단일 소스다. Freshness는 트리거가 보일 때만 함께 적용하는 조건부 gate다.
+ 
+@@ -65,7 +64,7 @@
+ 
+ 라우팅 원칙:
+ 
+-1. Right-sizing — 짧은 조문·시행일·링크 확인은 `legal_research`만 수행하고 계약/체크리스트/지식 레이어를 끌어오지 않는다. 개인정보 질문이라도 단순 조문 확인이면 `privacy_knowledge_layer`를 생략한다. 지식 자산은 결론 근거가 아니라 회상/점검 보조다. 이 원칙이 과잉 라우팅·과잉 gate 적용 판단의 단일 기준이다.
++1. Right-sizing — 짧은 조문·시행일·링크 확인은 `legal_research`만 수행하고 계약/체크리스트를 끌어오지 않는다. 이 원칙이 과잉 라우팅·과잉 gate 적용 판단의 단일 기준이다.
+ 2. 계약 검토와 체크리스트는 공통 법률 조사 엔진을 사용할 수 있다. 반대로 일반 법률 조사가 계약 검토 로직을 자동으로 호출하지는 않는다.
+ 3. 변경 감지는 pull 방식이다. 사용자가 자동화 생성을 명시하지 않으면 알림, 크론, 모니터링 약속을 하지 않는다.
+ 4. 해외진출 관련 한국법 쟁점은 새 의도로 분리하지 않는다. 해외직접투자, 전략물자, 국제조세, 개인정보 국외이전은 `legal_research` 또는 `compliance_checklist`로 처리하고 필요할 때만 `references/international_guide.md`를 인덱스로 읽는다.
+@@ -182,21 +181,6 @@
+ - 조회 실패는 "개정 없음"이 아니다. 실패 원인과 재확인 필요성을 표시한다.
+ - 관련 개정이나 조회 실패는 본문 또는 짧은 후속 메모에 적용 시점·미확인 범위와 함께 알린다.
+ 
+-## 개인정보 보조 지식 레이어
+-
+-`beopsuny-knowledge`는 개인정보 활성 영역에서만 선택적으로 사용한다. 실시간 법률 조사를 대체하지 않는다.
+-사용 조건:
+-- 개인정보 쟁점이 실질적이고, 검색어 확장 또는 권위 자료 점검(authority audit)이 유용한 경우
+-- 먼저 검색어 힌트 없이 실시간 법률 조사를 한 뒤 회상/점검 보강이 필요한 경우
+-
+-이 축이 결론을 강제하지 않는다. 개인정보 쟁점이 없는 질문에는 적용하지 않는다.
+-금지:
+-- 지식 자산을 최초 경로, 결론 근거, 포괄 체크리스트처럼 사용
+-- 개인정보 외 영역 메모를 분류 체계, 검색 힌트, 권위 자료 지도처럼 주입
+-- 매니페스트 실패를 이유로 기본 법률 답변을 중단
+-
+-기본 점검 축 목록과 상세 경계는 `references/knowledge-injection.md`를 읽는다.
+-
+ ## 시각화
+ 
+ 환경이 Mermaid/표/타임라인/HTML Artifact를 지원하거나 사용자가 요청한 경우 절차와 판단 구조를 보조할 수 있다. HTML 리포트 요청은 새 의도가 아니라 기존 의도 결과에 렌더 레이어를 얹으며 `references/report-deliverable.md`를 읽는다. 시각화는 텍스트 법적 근거를 대체하지 않는다.

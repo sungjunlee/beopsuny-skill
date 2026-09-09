@@ -82,7 +82,9 @@ blind live search 우선은 경계다(Hard rule) — knowledge asset은 최초 �
 
 ## Manifest 검증
 
-검증 조건의 구현 단일 소스는 `assets/tools/knowledge_manifest_ingest.py`다. helper는 stable manifest와 required asset을 fetch한 뒤 `publication.publish_ready`/`publication.url_status` 게이트, 각 asset의 `sha256`, `schema_version`, `usage_mode`(없으면 `asset_type`·`vertical`·manifest key 기준 허용 사용 범위)를 검증하고, 성공하면 answer 근거가 아닌 보조 `injection_packet`을 만든다. private raw URL은 `BEOPSUNY_KNOWLEDGE_TOKEN` 또는 `GITHUB_TOKEN`이 있을 때만 인증 헤더를 붙인다. 어떤 실패든 기본은 fail-open이다 — `status: skipped`, `continue_live_legal_research: true`로 knowledge injection을 건너뛰고 live legal research만 수행한다. 배포 gate나 fixture 검증에서 실패를 잡고 싶을 때만 `--strict`를 쓴다.
+검증 조건의 구현 단일 소스는 `assets/tools/knowledge_manifest_ingest.py`다. helper는 stable manifest와 required asset을 fetch한 뒤 `publication.publish_ready`/`publication.url_status` 게이트, 각 asset의 `sha256`, `schema_version`, `usage_mode`(없으면 `asset_type`·`vertical`·manifest key 기준 허용 사용 범위)를 모두 검증한다. 검증된 YAML asset 하나가 최소 전달 단위다. 기본 `--max-asset-chars=1800`을 넘는 asset은 중간 절단하지 않고 전문을 생략하며, `delivery.receipt`에 key, 원문·전달 문자수와 SHA-256, `delivered`/`omitted` 상태와 이유를 남긴다. `delivery.profile`은 기본값과 `nondefault_override`를 구분한다. 전부 전달한 패킷만 `ready`, 일부만 전달하면 `partial`, 전달 섹션이 없으면 `skipped`이고 live legal research를 계속한다. private raw URL은 `BEOPSUNY_KNOWLEDGE_TOKEN` 또는 `GITHUB_TOKEN`이 있을 때만 인증 헤더를 붙인다. fetch·인증·schema·checksum·usage 검증 실패도 기본은 fail-open이다 — `status: skipped`, `continue_live_legal_research: true`로 knowledge injection을 건너뛰고 live legal research만 수행한다. 배포 gate나 fixture 검증에서 실패를 잡고 싶을 때만 `--strict`를 쓴다.
+
+평가 준비도 helper 기본 상한을 그대로 사용한다. 완전한 asset 비교에 더 큰 상한이 필요하면 운영 재현과 평가 준비에 같은 `--max-asset-chars`를 명시하고 `nondefault_override`로 기록한다. 이 결과를 기본 운영 성능으로 해석하지 않는다.
 
 현재 manifest asset key와 허용 usage:
 

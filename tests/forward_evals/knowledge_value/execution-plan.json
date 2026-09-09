@@ -1,0 +1,57 @@
+{
+  "frozen_packets": "/tmp/beopsuny-kv-frozen-20260908",
+  "frozen_metadata_sha256": "635a2fb8a1f53aa26391b17d8a50e2cd190a085205a597ce1c3a1bf492b42ae1",
+  "model_routes": {
+    "gpt": "gpt-5.6-sol / medium",
+    "claude": "claude-opus-5 / high",
+    "grok": "grok-4.6 / high (reported grok-4.6-build)"
+  },
+  "order": {
+    "gpt": [
+      "A:ai-lifecycle",
+      "B:sdk-withdrawal",
+      "C:ai-lifecycle",
+      "A:sdk-withdrawal",
+      "B:ai-lifecycle",
+      "C:sdk-withdrawal"
+    ],
+    "claude": [
+      "A:ai-lifecycle",
+      "C:sdk-withdrawal",
+      "B:ai-lifecycle",
+      "A:sdk-withdrawal",
+      "C:ai-lifecycle",
+      "B:sdk-withdrawal"
+    ],
+    "grok": [
+      "B:ai-lifecycle",
+      "A:sdk-withdrawal",
+      "C:ai-lifecycle",
+      "B:sdk-withdrawal",
+      "A:ai-lifecycle",
+      "C:sdk-withdrawal"
+    ]
+  },
+  "order_registered": "after READY probes and first A launch, before inspecting any answer",
+  "native_fallback_reason": "native follow-up hit agent thread limit; clean CLI probe passed, no model answer retries or global configuration changes",
+  "input_boundary": "only frozen context.md + prompt.txt; evaluator material excluded",
+  "tool_boundary": "Claude built-in tools empty and MCP/skills disabled; Codex tools instructed unused, any observed tool use invalidates cell",
+  "upkeep_boundary": "two frozen source PDFs re-fetched once, warm run, no cadence extrapolation",
+  "adoption": "initial 12 development cells are provisional. Positive signal requires repeat/holdout under shared M8 rubric; no expert or live accuracy claim.",
+  "model_scope": "These routes test Sol and Opus 5 only; Astra/Fable remain unmeasured and no result transfers to them automatically.",
+  "fallback_amendment": {
+    "reason": "Claude 5-hour window reached 100% after two completed responses; existing in-flight B retained, no new Claude cells launched. Replace entire second-family matrix, never mix Grok into individual Claude cells.",
+    "scope": "six Grok cells in addition to the originally proposed 12 slots; total model execution attempts at most 15 when remaining three Claude cells stay unattempted. Probes excluded.",
+    "decision": "Protocol amendment for family availability; not a benefit-driven repeat/holdout. Report deviation from initial 12-call proposal separately; no adoption GO without shared rubric requirements.",
+    "registered_before": "first Grok task answer; READY probe only",
+    "quota": "SuperGrok Heavy, observed primary used20/rem80, reset2026-09-14T00:42:04+09:00, window duration/dataConfidence unknown, source grok-cli-proxy; pace lasts until reset"
+  },
+  "control_repair": {
+    "reason": "v1 A removed entire right-sizing paragraph as it contained privacy_knowledge_layer; v2 restores common product sizing, removes knowledge-only sentences.",
+    "v1_A_status": "invalid_control, preserved and excluded; not a model failure",
+    "v2_freeze": "/tmp/beopsuny-kv-frozen-v2-20260908",
+    "BC_reuse": "context and prompt hashes identical for both questions in both B/C; existing B/C valid within same fixed-source captured date",
+    "reruns": "only A for GPT and Grok, each two questions, total4. Claude A remains invalid/unrepeated after quota saturation.",
+    "execution_count": "at most19 attempts including invalid controls, below36 proposed expanded ceiling; not benefit-driven repeat/holdout and not adoption evidence by itself"
+  }
+}

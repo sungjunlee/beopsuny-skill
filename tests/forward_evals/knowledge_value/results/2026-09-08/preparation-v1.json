@@ -1,0 +1,521 @@
+{
+  "status": "prepared_not_measured",
+  "experiment": {
+    "path": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill-knowledge-value/tests/forward_evals/knowledge_value/experiment.json",
+    "sha256": "c77f57fe38611ea9d9a18164ec3098c386fab66ee9f571fd617a7fe5b1dccfa2",
+    "rubric": "tests/forward_evals/model_era/rubric.json (#320/#326)"
+  },
+  "runtime": {
+    "root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill-knowledge-value",
+    "git_commit": "cfd24a908acca3affe1ea54498b05b2a92ff0421",
+    "git_status_porcelain": "M skills/beopsuny/assets/tools/knowledge_manifest_ingest.py\n M skills/beopsuny/references/knowledge-injection.md\n M tests/forward_evals/model_era/prepare_knowledge.py\n M tests/test_knowledge_manifest_ingest.py\n?? tests/forward_evals/knowledge_value/",
+    "baseline_skill_sha256": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+    "harness_sha256": "25e53992c94edd1d48b73b697d4b46a1d86aea872805d010274204ebcb38940e"
+  },
+  "knowledge": {
+    "root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-knowledge",
+    "max_asset_chars": 9812,
+    "loader_stage": "/private/tmp/beopsuny-kv-frozen-20260908/loader-stage/B",
+    "loader_metadata": {
+      "status": "prepared_not_measured",
+      "packet_status": "ready",
+      "delivery_profile": "nondefault_override",
+      "max_asset_chars": 9812,
+      "missing_staged_sections": [],
+      "sections": {
+        "taxonomy": {
+          "delivered_chars": 5843,
+          "delivered_sha256": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637",
+          "key": "taxonomy",
+          "reason": "within_max_asset_chars",
+          "source_chars": 5843,
+          "source_sha256": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637",
+          "status": "delivered",
+          "output_file": "taxonomy.txt",
+          "output_sha256": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637"
+        },
+        "retrieval_hints": {
+          "delivered_chars": 9812,
+          "delivered_sha256": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca",
+          "key": "retrieval_hints",
+          "reason": "within_max_asset_chars",
+          "source_chars": 9812,
+          "source_sha256": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca",
+          "status": "delivered",
+          "output_file": "hints.txt",
+          "output_sha256": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca"
+        },
+        "authority_map.core": {
+          "delivered_chars": 2712,
+          "delivered_sha256": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc",
+          "key": "authority_map.core",
+          "reason": "within_max_asset_chars",
+          "source_chars": 2712,
+          "source_sha256": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc",
+          "status": "delivered",
+          "output_file": "audit-core.txt",
+          "output_sha256": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc"
+        },
+        "authority_map.overlay": {
+          "delivered_chars": 9221,
+          "delivered_sha256": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45",
+          "key": "authority_map.overlay",
+          "reason": "within_max_asset_chars",
+          "source_chars": 9221,
+          "source_sha256": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45",
+          "status": "delivered",
+          "output_file": "audit-overlay.txt",
+          "output_sha256": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45"
+        },
+        "session_schema": {
+          "delivered_chars": 2158,
+          "delivered_sha256": "da21135789d73310c8da2215262edd5d463e24efc643985bbe4751dbe63166f7",
+          "key": "session_schema",
+          "reason": "within_max_asset_chars",
+          "source_chars": 2158,
+          "source_sha256": "da21135789d73310c8da2215262edd5d463e24efc643985bbe4751dbe63166f7",
+          "status": "delivered",
+          "output_file": null,
+          "output_sha256": null
+        }
+      },
+      "assets": [
+        {
+          "asset_type": "taxonomy",
+          "chars": 5843,
+          "id": "privacy-taxonomy",
+          "key": "taxonomy",
+          "sha256": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637",
+          "usage": "issue_framing_only",
+          "version": "2026.04.20.1"
+        },
+        {
+          "asset_type": "retrieval_hints",
+          "chars": 9812,
+          "id": "privacy-retrieval-hints",
+          "key": "retrieval_hints",
+          "sha256": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca",
+          "usage": "expansion_after_blind_search",
+          "version": "2026.05.04.1"
+        },
+        {
+          "asset_type": "authority_map_core",
+          "chars": 2712,
+          "id": "privacy-authority-map-core",
+          "key": "authority_map.core",
+          "sha256": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc",
+          "usage": "post_search_audit_only",
+          "version": "2026.05.02.1"
+        },
+        {
+          "asset_type": "authority_map_overlay",
+          "chars": 9221,
+          "id": "privacy-authority-map-overlay",
+          "key": "authority_map.overlay",
+          "sha256": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45",
+          "usage": "post_search_audit_only",
+          "version": "2026.04.24-overlay.18"
+        },
+        {
+          "asset_type": "session_schema",
+          "chars": 2158,
+          "id": "exploration-session-schema",
+          "key": "session_schema",
+          "sha256": "da21135789d73310c8da2215262edd5d463e24efc643985bbe4751dbe63166f7",
+          "usage": "validation_reference_only",
+          "version": "2026.04.19"
+        }
+      ],
+      "snapshot": null,
+      "files": {
+        "hints.txt": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca",
+        "audit-overlay.txt": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45",
+        "privacy-tags.txt": "5cd49d294b9e3934a9d9dd29f314232ec3e63ccfdc689e68555f6971fc9584c7",
+        "taxonomy.txt": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637",
+        "privacy-saas.txt": "0b970ff33a557c92475203af047bd773326fe651767ac6c523177e2ee33907a2",
+        "audit-core.txt": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc"
+      },
+      "note": "The loader delivery receipt is authoritative for actual section receipt. A nondefault override must be applied to both operational reproduction and evaluation and cannot be generalized as default operation."
+    },
+    "rendered_receipt_authority": "S1 loader metadata delivery.receipt"
+  },
+  "source_bundle": {
+    "root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill-knowledge-value/tests/forward_evals/knowledge_value/sources",
+    "manifest_sha256": "f3b327691f7666d309ec7cc8597a19bd9f5495d482c8d670bf9b7a110b8ee1f0",
+    "manifest": {
+      "access_mode": "fixed",
+      "captured_at": "2026-09-08",
+      "scope": "Selected official historical texts; no live-access performance claim. Same bundle in every arm and family.",
+      "sources": [
+        {
+          "id": "ai-guide-excerpts",
+          "file": "ai-guide-excerpts.md",
+          "sha256": "910c4168531a44d465b55f53ceb4a80d6689f0f4f2a8bedb60546823787cfcc8",
+          "official_url": "https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=G010030000&nttId=11439",
+          "captured_at": "2026-09-08"
+        },
+        {
+          "id": "sdk-policy-excerpts",
+          "file": "sdk-policy-excerpts.md",
+          "sha256": "bc3a44ed4a2c259f0a2423b9213240ace6f356971ef4e1e7de9cbe34baaf9bf9",
+          "official_url": "https://pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS074&mCode=C020010000&nttId=9888",
+          "captured_at": "2026-09-08"
+        },
+        {
+          "id": "privacy-law-snapshot",
+          "file": "privacy-law-snapshot.md",
+          "sha256": "bfecd2decd7d47859e1e52d417bf17a528dd6ae71b51854784ed11ae80153f29",
+          "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+          "captured_at": "2026-09-08"
+        }
+      ]
+    },
+    "receipts": [
+      {
+        "id": "ai-guide-excerpts",
+        "file": "ai-guide-excerpts.md",
+        "sha256": "910c4168531a44d465b55f53ceb4a80d6689f0f4f2a8bedb60546823787cfcc8",
+        "chars": 9218,
+        "official_url": "https://www.pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS217&mCode=G010030000&nttId=11439",
+        "captured_at": "2026-09-08"
+      },
+      {
+        "id": "sdk-policy-excerpts",
+        "file": "sdk-policy-excerpts.md",
+        "sha256": "bc3a44ed4a2c259f0a2423b9213240ace6f356971ef4e1e7de9cbe34baaf9bf9",
+        "chars": 5493,
+        "official_url": "https://pipc.go.kr/np/cop/bbs/selectBoardArticle.do?bbsId=BS074&mCode=C020010000&nttId=9888",
+        "captured_at": "2026-09-08"
+      },
+      {
+        "id": "privacy-law-snapshot",
+        "file": "privacy-law-snapshot.md",
+        "sha256": "bfecd2decd7d47859e1e52d417bf17a528dd6ae71b51854784ed11ae80153f29",
+        "chars": 5166,
+        "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+        "captured_at": "2026-09-08"
+      }
+    ],
+    "common_source_hashes": {
+      "ai-guide-excerpts": "910c4168531a44d465b55f53ceb4a80d6689f0f4f2a8bedb60546823787cfcc8",
+      "sdk-policy-excerpts": "bc3a44ed4a2c259f0a2423b9213240ace6f356971ef4e1e7de9cbe34baaf9bf9",
+      "privacy-law-snapshot": "bfecd2decd7d47859e1e52d417bf17a528dd6ae71b51854784ed11ae80153f29"
+    },
+    "mode": "fixed",
+    "live_access": "not_prepared; no live performance claim"
+  },
+  "questions": [
+    {
+      "id": "ai-lifecycle",
+      "text": "2026년 9월 8일 기준, 제공 자료에 한정하여 제품팀에 전달할 출시 검토 메모 초안을 한국어로 작성해주세요. 확인된 사실과 추가 확인할 사실을 구분하고, 지금 판단할 수 있는 부분은 판단해주세요.\n\n한국 커머스 회사가 고객 상담 티켓을 외부 기업용 AI API로 요약하려 합니다. 계약서에는 “고객 콘텐츠를 모델 학습에 사용하지 않는다”는 문구가 있습니다. 이름과 전화번호는 송신 전에 가립니다. 자유기재 상담 본문과 주문 식별자는 남습니다. 회사는 요약 결과를 상담원 화면에 표시하며 내부 QA팀이 일부 결과와 평가 버튼 기록을 내려받을 수 있습니다. API의 보관 설정, 안전성 모니터링, 지원 인력 접근 국가에 관한 별첨은 아직 제공되지 않았습니다. 개발팀은 학습 미사용 문구가 있으므로 개인정보 검토는 끝났다고 합니다. 회사가 별도 학습을 수행한다는 사실은 확인되지 않았습니다.\n\n별도 데모 환경은 실존 고객과 연결할 수 없는 합성 문장만 로컬 모델에서 처리하며, 외부 송신·원격 접근·로그가 없다는 테스트 결과가 제공됐습니다. 이 데모도 위 외부 API 서비스와 동일한 벤더·국외이전 확인 절차를 반드시 거쳐야 하는지 함께 검토해주세요. 법정 의무와 실무상 권고를 구분하고 없는 계약 내용이나 처리 사실을 만들어 쓰지 마세요.",
+      "sha256": "4af77b4e87126a5007d6fbd7741f65491a8e8766b0480d63cc053ca18f04eb44"
+    },
+    {
+      "id": "sdk-withdrawal",
+      "text": "2026년 9월 8일 기준, 제공 자료에 한정하여 앱팀과 개인정보 담당자가 사용할 SDK 교체 검토 메모 초안을 한국어로 작성해주세요. 현재 증거로 가능한 판단, 남은 확인, 출시 전후 조치를 설명해주세요.\n\n광고 SDK를 교체하는 커머스 앱입니다. 사용자가 맞춤형 광고를 끄면 화면에는 철회 완료가 표시되고 신규 SDK의 광고 설정도 꺼집니다. 서버의 기존 이벤트 수신기는 구매 이벤트를 새 벤더로 전송할 수 있지만, 이번 점검에서는 실제 전송 로그를 받지 못했습니다. 벤더는 “suppression 적용 완료”라고 회신했으나 그 대상 식별자와 목적, 적용 시각은 적지 않았습니다. 계약상 벤더의 독자적인 광고 최적화 허용 여부는 확인되지 않았습니다. 제품팀은 화면과 회신만으로 충분하다고 하고, 다른 담당자는 모든 이벤트와 모든 보존 데이터를 즉시 삭제해야 한다고 합니다.\n\n동시에 운영하는 성능 계측은 개인·기기 식별자 없이 재식별할 수 없는 집계값만 내부 시스템에서 처리하며 외부 벤더 전송은 없다는 사실이 확인됐습니다. 광고 철회와 이 집계 계측을 어떻게 구별할지도 설명해주세요. 안내서의 권고를 고정된 법정 점검 주기·필수 양식으로 바꾸지 마세요.",
+      "sha256": "d1b54009a1e8b39c616b822b5a1cfc05bfe7fd2df56fdc25426505bdbb1b56e9"
+    }
+  ],
+  "variants": {
+    "A": {
+      "runtime_root": "/private/tmp/beopsuny-kv-frozen-20260908/variants/A",
+      "runtime_files": {
+        "skills/beopsuny/SKILL.md": "d6348cc13f6ca349036193c5370162056c31fb7dad79c86bee5f4f759f471ed3",
+        "skills/beopsuny/assets/data/clause_references.yaml": "208cb1a5b0fce98a13963cef0235174b3a7dbc5076f8cc1499fa782698147a33",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml": "8437bb85df2c004fab81bcae69374e63eda0e306d3d9dafdd5adbd739d522324",
+        "skills/beopsuny/references/citation-verification-contract.md": "526eabe48d8a7e55ad1015752801b7a71431026c0e2a584633b1ac1f3ceab7a8",
+        "skills/beopsuny/references/source-access.md": "5e99ff2a8ed1a31663b0eecf83f269e842af54d00bd01b3772b7732f48908b60"
+      },
+      "variant_sha256": "09e06c6c78de6cf4630084ba29e5eb10fbe35ff2add255323f0334f3a29bebbf",
+      "skill_sha256": "d6348cc13f6ca349036193c5370162056c31fb7dad79c86bee5f4f759f471ed3",
+      "skill_diff": "/private/tmp/beopsuny-kv-frozen-20260908/evaluator-only/variant-diffs/A-SKILL.md.diff",
+      "skill_diff_sha256": "e3f5130d3b577d0b79edae5ee83e0eb6bc070848e80159c50b73b1fdaa2711d3",
+      "candidate_receipts": [],
+      "source_references": [
+        "skills/beopsuny/references/source-access.md",
+        "skills/beopsuny/references/citation-verification-contract.md",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml",
+        "skills/beopsuny/assets/data/clause_references.yaml"
+      ]
+    },
+    "B": {
+      "runtime_root": "/private/tmp/beopsuny-kv-frozen-20260908/variants/B",
+      "runtime_files": {
+        "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+        "skills/beopsuny/assets/data/clause_references.yaml": "208cb1a5b0fce98a13963cef0235174b3a7dbc5076f8cc1499fa782698147a33",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml": "8437bb85df2c004fab81bcae69374e63eda0e306d3d9dafdd5adbd739d522324",
+        "skills/beopsuny/references/citation-verification-contract.md": "526eabe48d8a7e55ad1015752801b7a71431026c0e2a584633b1ac1f3ceab7a8",
+        "skills/beopsuny/references/knowledge-injection.md": "c02d16c1eed7d49b99b086a8aa47c4a4968566ca00368700e3e1e821841cadb3",
+        "skills/beopsuny/references/rendered-knowledge/audit-core.txt": "19344043d9f6ca0a7e30ff3e58dde7ccea9ebbf674ec744c7362a27a02f1fcdc",
+        "skills/beopsuny/references/rendered-knowledge/audit-overlay.txt": "26d831e82690f738b97a9a20dba0f264183c87e1ced2414943a824ef4655aa45",
+        "skills/beopsuny/references/rendered-knowledge/hints.txt": "229bddd6036403688e6acbce3873d08e1cda1b7e2902b1ff31b549dcb70965ca",
+        "skills/beopsuny/references/rendered-knowledge/taxonomy.txt": "057e71e939b46cad3193f50de0303bce43844707f2ad9c4695819c6ce4e8e637",
+        "skills/beopsuny/references/source-access.md": "5e99ff2a8ed1a31663b0eecf83f269e842af54d00bd01b3772b7732f48908b60"
+      },
+      "variant_sha256": "d1f47655e0f27eb370e13fb158f6367128f5fea6c10ad1a470e036a61c8986a5",
+      "skill_sha256": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+      "skill_diff": "/private/tmp/beopsuny-kv-frozen-20260908/evaluator-only/variant-diffs/B-SKILL.md.diff",
+      "skill_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_receipts": [],
+      "source_references": [
+        "skills/beopsuny/references/source-access.md",
+        "skills/beopsuny/references/citation-verification-contract.md",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml",
+        "skills/beopsuny/assets/data/clause_references.yaml",
+        "skills/beopsuny/references/knowledge-injection.md",
+        "skills/beopsuny/references/rendered-knowledge/taxonomy.txt",
+        "skills/beopsuny/references/rendered-knowledge/hints.txt",
+        "skills/beopsuny/references/rendered-knowledge/audit-core.txt",
+        "skills/beopsuny/references/rendered-knowledge/audit-overlay.txt"
+      ]
+    },
+    "C": {
+      "runtime_root": "/private/tmp/beopsuny-kv-frozen-20260908/variants/C",
+      "runtime_files": {
+        "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+        "skills/beopsuny/assets/data/clause_references.yaml": "208cb1a5b0fce98a13963cef0235174b3a7dbc5076f8cc1499fa782698147a33",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml": "8437bb85df2c004fab81bcae69374e63eda0e306d3d9dafdd5adbd739d522324",
+        "skills/beopsuny/references/citation-verification-contract.md": "526eabe48d8a7e55ad1015752801b7a71431026c0e2a584633b1ac1f3ceab7a8",
+        "skills/beopsuny/references/evaluation-candidates/2026-09-08-ai-lifecycle-pilot.md": "1d3c2f2a10fdd6124812db179eb517d673474e34dc5a98ffa86f169dadfd76cd",
+        "skills/beopsuny/references/evaluation-candidates/2026-09-08-sdk-withdrawal-pilot.md": "e438c4c06264fc3081b2dc16d7456946fcb2aaded6394e12d0aeec8f04b335e2",
+        "skills/beopsuny/references/knowledge-injection.md": "c91aadcece4ddf56abe9ac95ac17f9dc8fcbc561cdecf45593c46027dcefbe12",
+        "skills/beopsuny/references/source-access.md": "5e99ff2a8ed1a31663b0eecf83f269e842af54d00bd01b3772b7732f48908b60"
+      },
+      "variant_sha256": "0b4512622624f0ccf96429b0f2166f1fea03e90becdbec780050e670029c1a3a",
+      "skill_sha256": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+      "skill_diff": "/private/tmp/beopsuny-kv-frozen-20260908/evaluator-only/variant-diffs/C-SKILL.md.diff",
+      "skill_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_receipts": [
+        {
+          "memo": "privacy/research/memos/2026-09-08-ai-lifecycle-pilot.md",
+          "memo_sha256": "f1733fae650e0abc3f5b2fe04c433f071699f7927156b81bdba7a987fdb1e227",
+          "candidate_sha256": "1d3c2f2a10fdd6124812db179eb517d673474e34dc5a98ffa86f169dadfd76cd"
+        },
+        {
+          "memo": "privacy/research/memos/2026-09-08-sdk-withdrawal-pilot.md",
+          "memo_sha256": "39a038ef05132596b2c367a6f8a1d887648feda72e2bbada2b81d82f32e4ece7",
+          "candidate_sha256": "e438c4c06264fc3081b2dc16d7456946fcb2aaded6394e12d0aeec8f04b335e2"
+        }
+      ],
+      "source_references": [
+        "skills/beopsuny/references/source-access.md",
+        "skills/beopsuny/references/citation-verification-contract.md",
+        "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml",
+        "skills/beopsuny/assets/data/clause_references.yaml",
+        "skills/beopsuny/references/knowledge-injection.md",
+        "skills/beopsuny/references/evaluation-candidates/2026-09-08-ai-lifecycle-pilot.md",
+        "skills/beopsuny/references/evaluation-candidates/2026-09-08-sdk-withdrawal-pilot.md"
+      ]
+    }
+  },
+  "packets": {
+    "A": [
+      {
+        "question_id": "ai-lifecycle",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/A/ai-lifecycle/context.md",
+        "context_sha256": "403970a99e355f26a625167a4d3331eb5ecc3ad2292e7b3e2aa9406b11ed3e3e",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/A/ai-lifecycle/prompt.txt",
+        "prompt_sha256": "6c4e8eae7284cc277cc9e74fa18fed8c7a92e3a2599c133607dc9de1340d12a1"
+      },
+      {
+        "question_id": "sdk-withdrawal",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/A/sdk-withdrawal/context.md",
+        "context_sha256": "403970a99e355f26a625167a4d3331eb5ecc3ad2292e7b3e2aa9406b11ed3e3e",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/A/sdk-withdrawal/prompt.txt",
+        "prompt_sha256": "b1e0217eb212c9ebd883ec2b28e32a6513b4db16318337778a0ef467a6c035ce"
+      }
+    ],
+    "B": [
+      {
+        "question_id": "ai-lifecycle",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/B/ai-lifecycle/context.md",
+        "context_sha256": "ab475e60099583d8029c9db03982dc6e4fccff6ab8c6380ed13b6aba1d5810c6",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/B/ai-lifecycle/prompt.txt",
+        "prompt_sha256": "6c4e8eae7284cc277cc9e74fa18fed8c7a92e3a2599c133607dc9de1340d12a1"
+      },
+      {
+        "question_id": "sdk-withdrawal",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/B/sdk-withdrawal/context.md",
+        "context_sha256": "ab475e60099583d8029c9db03982dc6e4fccff6ab8c6380ed13b6aba1d5810c6",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/B/sdk-withdrawal/prompt.txt",
+        "prompt_sha256": "b1e0217eb212c9ebd883ec2b28e32a6513b4db16318337778a0ef467a6c035ce"
+      }
+    ],
+    "C": [
+      {
+        "question_id": "ai-lifecycle",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/C/ai-lifecycle/context.md",
+        "context_sha256": "f86727a6235fcbc20e5f767f741eb0a54c65d8d19558e7ea125f1768824034aa",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/C/ai-lifecycle/prompt.txt",
+        "prompt_sha256": "6c4e8eae7284cc277cc9e74fa18fed8c7a92e3a2599c133607dc9de1340d12a1"
+      },
+      {
+        "question_id": "sdk-withdrawal",
+        "context": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/C/sdk-withdrawal/context.md",
+        "context_sha256": "f86727a6235fcbc20e5f767f741eb0a54c65d8d19558e7ea125f1768824034aa",
+        "prompt": "/private/tmp/beopsuny-kv-frozen-20260908/model-inputs/C/sdk-withdrawal/prompt.txt",
+        "prompt_sha256": "b1e0217eb212c9ebd883ec2b28e32a6513b4db16318337778a0ef467a6c035ce"
+      }
+    ]
+  },
+  "cells": [
+    {
+      "cell_id": "ai-lifecycle:A:family-1",
+      "question_id": "ai-lifecycle",
+      "arm": "A",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "ai-lifecycle:A:family-2",
+      "question_id": "ai-lifecycle",
+      "arm": "A",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "ai-lifecycle:B:family-1",
+      "question_id": "ai-lifecycle",
+      "arm": "B",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "ai-lifecycle:B:family-2",
+      "question_id": "ai-lifecycle",
+      "arm": "B",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "ai-lifecycle:C:family-1",
+      "question_id": "ai-lifecycle",
+      "arm": "C",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "ai-lifecycle:C:family-2",
+      "question_id": "ai-lifecycle",
+      "arm": "C",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:A:family-1",
+      "question_id": "sdk-withdrawal",
+      "arm": "A",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:A:family-2",
+      "question_id": "sdk-withdrawal",
+      "arm": "A",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:B:family-1",
+      "question_id": "sdk-withdrawal",
+      "arm": "B",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:B:family-2",
+      "question_id": "sdk-withdrawal",
+      "arm": "B",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:C:family-1",
+      "question_id": "sdk-withdrawal",
+      "arm": "C",
+      "model_family_slot": 1,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    },
+    {
+      "cell_id": "sdk-withdrawal:C:family-2",
+      "question_id": "sdk-withdrawal",
+      "arm": "C",
+      "model_family_slot": 2,
+      "execution_status": "not_measured",
+      "assessment": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "source_mode": "fixed",
+      "live_performance_claim": false,
+      "unavailable_reason": "preparation only; no model execution was requested"
+    }
+  ],
+  "model_input_exclusions": [
+    "candidate metadata",
+    "hypotheses",
+    "examples",
+    "expected answers",
+    "rubric or scorer rules",
+    "other-arm outputs",
+    "evaluator metadata"
+  ],
+  "limitations": [
+    "No model, judge, repeat, holdout, or live-access run occurred.",
+    "Preparation success, loader receipt, and matching hashes are not performance results.",
+    "Unadjudicated cells are provisional metadata only and are not expert legal gold or production validation."
+  ]
+}

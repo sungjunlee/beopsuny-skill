@@ -1,0 +1,38 @@
+{
+  "experiment_id": "knowledge-value-abc-preparation",
+  "status": "preregistered_preparation_only",
+  "reuses": {
+    "packet_harness": "tests/forward_eval_harness.py: write_prompt_packets, build_skill_context",
+    "rubric": "tests/forward_evals/model_era/rubric.json (#320)",
+    "decision_contract": "tests/forward_evals/model_era/rubric.json#adoption (#326)"
+  },
+  "arms": {
+    "A": "Baseline product skill and four common product references; excludes beopsuny-knowledge routing, knowledge-injection, and rendered knowledge assets.",
+    "B": "Current product skill, complete knowledge-injection reference, and S1 loader-rendered stable sections.",
+    "C": "Current product skill, knowledge-injection consumption boundaries without its embedded seven-axis summary, and only the two frozen Evaluation Candidate memo sections."
+  },
+  "common_references": [
+    "skills/beopsuny/references/source-access.md",
+    "skills/beopsuny/references/citation-verification-contract.md",
+    "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml",
+    "skills/beopsuny/assets/data/clause_references.yaml"
+  ],
+  "smoke_proposal": {
+    "questions": 2,
+    "arms": 3,
+    "model_families": 2,
+    "cell_cap": 12,
+    "expansion_cap": 36,
+    "repeat_or_holdout": "not prepared; requires a root decision after results and quota review"
+  },
+  "model_input_exclusions": [
+    "candidate metadata",
+    "hypotheses",
+    "examples",
+    "expected answers",
+    "rubric or scorer rules",
+    "other-arm outputs",
+    "evaluator metadata"
+  ],
+  "measurement_boundary": "Preparation writes only not_measured cells. It does not invoke a model, produce a judge result, claim live performance, or establish expert legal accuracy."
+}
