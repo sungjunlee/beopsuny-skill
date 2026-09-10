@@ -112,7 +112,7 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 
 `legalize-kr`·`admrule-kr`·`ordinance-kr` 미러는 최신 공포본을 담으며, 아직 시행되지 않은 개정본일 수 있다. 미러 파일을 읽을 때는 frontmatter `시행일자`를 확인한다. `시행일자`가 오늘보다 미래면 그 본문은 현행이 아니라 시행 전 공포본이다.
 
-이 경우 provenance/currency에 `시행 전 공포본 (시행일 YYYY-MM-DD)`을 표시하고, `[VERIFIED]`는 공포본 기준으로 현행성을 한정한다. 현행 조문 확인은 law.go.kr 현행본으로 별도 확인한다.
+이 경우 시행 전 공포본이라는 점과 시행일을 밝히고, `[VERIFIED]`는 읽은 공포본의 내용으로 한정한다. 현행 조문은 law.go.kr 현행본으로 별도 확인하며, 확인하지 못하면 현행 법률 번호·현재 의무도 단정하지 않는다.
 
 사건 당시 법률이 필요한 요청은 오늘의 현행본과 사건 적용본도 구별한다. 벌칙·과태료의 대상 조항 목록, 별표, 수치·금액·기한과 경과규정까지 적용 시점이 맞는지 확인한다. 이 항목이 판단을 좌우하면 미러만으로 확정하지 않고 law.go.kr의 해당 시점 원문과 대조한다.
 
@@ -185,6 +185,8 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 | 의안 | `https://likms.assembly.go.kr/bill/billDetail.do?billId={의안ID}` |
 
 주의: LSW `lsInfoP.do` URL은 해당 법령 **전체 본문**을 반환한다(조문 하나만이 아님). 추출 결과가 잘렸으면 사용 가능한 원문/캐시의 해당 구간을 더 읽고, 필요한 조문을 끝내 열지 못하면 부분 열람 범위를 밝힌다. `lsiSeq`는 현행 법령 버전마다 다르므로, 아무 조문이나 한 번 열어 화면에 노출된 lsiSeq 값을 사용한다.
+
+공식 화면이 제목만 반환하면 사용 가능한 공동활용 API 권한으로 [법령 목록](https://open.law.go.kr/LSO/openApi/guideResult.do?htmlName=lsNwListGuide)에서 식별자·공포일·시행일을 확인하고, [본문 API](https://open.law.go.kr/LSO/openApi/guideResult.do?htmlName=lsNwInfoGuide)의 해당 `MST`와 `JO`로 필요한 조문을 조회할 수 있다. `JO`는 조번호 4자리와 가지번호 2자리이며, API의 현행법령(공포일) 명칭만 믿지 않고 실제 시행일과 조문 내용을 확인한다. `OC`는 신청한 인증값을 사용하며 목록 응답만으로 본문 확인을 대신하지 않는다.
 
 ## 데이터 초기화
 

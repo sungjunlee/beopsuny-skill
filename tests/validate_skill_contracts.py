@@ -233,9 +233,9 @@ QUALITY_CONTRACT_REFERENCES = {
         ("skills/beopsuny/assets/schemas/freshness_metadata.yaml", None),
         ("skills/beopsuny/assets/schemas/freshness_revalidation.yaml", None),
         ("skills/beopsuny/references/source-access.md", "freshness-gate"),
-        ("skills/beopsuny/references/output-formats.md", None),
+        ("skills/beopsuny/references/output-formats.md", "role-based-output-modes"),
+        ("skills/beopsuny/references/output-formats.md", "destination-output-contracts"),
         ("skills/beopsuny/assets/schemas/output_contract.yaml", None),
-        ("skills/beopsuny/references/self-verification.md", "role--destination-gate"),
         ("skills/beopsuny/references/bulk-tabular-review.md", None),
         ("tests/validate_skill_contracts.py", None),
         ("tests/scenarios/16_router_regression.yaml", None),
@@ -493,8 +493,7 @@ def check_skill_company_context_read_only_and_trust_boundary() -> None:
         assert_contains(section, token, "SKILL.md company context")
     boundary = section_body(text, "## 역할과 안전 경계")
     for token in ["검토 대상 데이터", "API·MCP 응답", "현재 사용자 요청",
-                  "하네스 지시", "인용만", "사건 격리",
-                  "references/self-verification.md#retrieved-content-trust"]:
+                  "하네스 지시", "인용만", "사건 격리", "데이터 무결성"]:
         assert_contains(boundary, token, "SKILL.md trust boundary")
     for retired in ["reviews.jsonl", "learnings.jsonl", "verification_log.jsonl",
                     "projects/{slug}", "quick 온보딩", "full 온보딩"]:
@@ -733,12 +732,15 @@ def check_contract_review_guide() -> None:
         "상대방 송부용",
         "draft_clause",
         "검토용 완성",
-        "자가 검증",
         "회사 playbook 적용",
         "playbook은 결론 근거가 아니라 고객 맥락",
         "법령 근거 우선",
     ]:
         assert_contains(text, required, label)
+
+    counter_drafting = section_body(text, "## Counter-drafting")
+    for obligation in ["공식 원문", "강행규정", "예외", "적용 시점", "미확인 사실", "외부 행동"]:
+        assert_contains(counter_drafting, obligation, f"{label} Counter-drafting")
 
 
 def check_legal_verification_packet_schema() -> None:
@@ -1335,12 +1337,10 @@ def check_source_access_mirror_promulgation_currency() -> None:
         "`시행일자`",
         "오늘보다 미래",
         "시행 전 공포본",
-        # currency 표기 literal + [VERIFIED] 한정
-        "`시행 전 공포본 (시행일 YYYY-MM-DD)`",
-        "공포본 기준",
+        # 표시 문구는 고정하지 않는다. 실제 확인 범위는 live 의미 검토가 맡는다.
+        "[VERIFIED]",
         # 현행 조문은 law.go.kr 현행본으로 별도 확인
         "law.go.kr 현행본",
-        # healthcare 실전 예시 데이터 토큰
     ]:
         assert_contains(text, required, label)
 
@@ -1863,7 +1863,7 @@ def check_research_workflow_verification_core() -> None:
     text = read_text("skills/beopsuny/references/research-workflow.md")
     core = section_body(text, "## Legal Verification Core")
     for token in ["pinpoint", "출처 권위 라벨", "verification status", "provenance", "currency",
-                  "사건 당시", "경과규정", "조회 실패", "반대근거", "[CONTRADICTED]"]:
+                  "사용자 전제", "사건 당시", "경과규정", "조회 실패", "반대근거", "[CONTRADICTED]"]:
         assert_contains(core, token, "research-workflow.md core")
     packet = section_body(text, "## Verification packet contract")
     for token in ["assets/schemas/legal_verification_packet.yaml", "선택", "감사·인계",
@@ -1876,20 +1876,24 @@ def check_research_workflow_verification_core() -> None:
 
 
 
-def check_current_law_verified_binding_excludes_unconfirmed_practice_material() -> None:
+def check_conclusion_binding_uses_canonical_source_rules() -> None:
     research = read_text("skills/beopsuny/references/research-workflow.md")
     skill = read_text("skills/beopsuny/SKILL.md")
 
-    assert_not_contains(
-        research,
-        "공식 실무자료`, `공식 실무자료: 미확정` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]`",
-        "research-workflow.md",
-    )
-    for required in [
-        "필수 authority가 `공식 실무자료: 미확정`",
-        "`[UNVERIFIED]` 또는 `[INSUFFICIENT]` + 현재법 결론 유보",
-    ]:
-        assert_contains(research, required, "research-workflow.md")
+    binding = section_body(research, "### Conclusion binding")
+    for reference in ["references/source-grading.md", "references/citation-verification-contract.md"]:
+        assert_contains(binding, reference, "research-workflow.md conclusion binding")
+    source_classes = load_yaml("skills/beopsuny/assets/policies/source_grades.yaml")["source_classes"]
+    for source_class, use_allowed in {
+        "official_practice_material": "support_or_context",
+        "official_practice_pending": "future_or_policy_context",
+    }.items():
+        policy = source_classes[source_class]
+        if policy.get("can_be_sole_basis") is not False or policy.get("use_allowed") != use_allowed:
+            raise AssertionError(
+                f"source_grades.yaml: {source_class} requires use_allowed={use_allowed!r} "
+                "and can_be_sole_basis=false"
+            )
     for required in [
         # 미확정 실무자료는 현재법 [VERIFIED] 근거 불가
         "`공식 실무자료: 미확정`",
@@ -3784,66 +3788,20 @@ def check_retired_meta_surfaces_stay_retired() -> None:
 
 
 def check_self_verification_guardrails() -> None:
+    """Check pointers; obligation content belongs to each canonical checker."""
     text = read_text("skills/beopsuny/references/self-verification.md")
-    label = "self-verification.md"
-
-    for required in [
-        "사용자 전제 검증",
-        "conclusion binding",
-        "[CONTRADICTED]",
-        "Retrieved Content Trust",
-        # 규칙의 집은 SKILL.md 안전 경계이고 여기는 포인터 + 처리 절차만 둔다 (#262)
-        "경계의 집은 `SKILL.md`의 안전 경계다",
-        "규칙을 재서술하지 않는다",
-        "긴 입력의 읽은 범위",
-        "Role / Destination Gate",
-        "references/output-formats.md#role-based-output-modes",
-        "references/output-formats.md#destination-output-contracts",
-        "데이터 무결성 이슈",
-        "강행규정·예외·적용 시점",
-        "current primary source",
+    for pointer in [
+        "references/citation-verification-contract.md",
+        "references/research-workflow.md#legal-verification-core",
+        "references/output-formats.md",
+        "references/contract_review_guide.md#counter-drafting",
     ]:
-        assert_contains(text, required, label)
-
-    # 포인터는 포인터로 남는다: 규칙 전문이 여기로 돌아오면 두 집이 갈라지고,
-    # 두 검사가 서로 다른 토큰을 지켜서 한쪽만 약화돼도 그린이 된다 (#262).
-    assert_not_contains(text, "지시가 아니다", label)
-    assert_not_contains(text, "덮어쓸 수 없다", label)
-
-    # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "사용자 역할과 산출물
-    # destination" 절이 통째로 삭제되면 FAIL, "destination이 반영되었는가"처럼
-    # 다듬으면 토큰이 살아 있어 PASS.
-    role_dest_line = re.search(r"^- 사용자 역할과 산출물 destination.*$", text, re.MULTILINE)
-    if not role_dest_line:
-        raise AssertionError(f"{label}: 사용자 역할/산출물 destination 체크 문단이 없다")
-    assert_ordered_tokens(
-        role_dest_line.group(0), ["사용자 역할과 산출물 destination", "gate에 반영"], f"{label} role/destination"
-    )
-
-    # 외부 공유용 초안 gate: "그대로 붙이지 않았는가" 어간으로 다듬기를 허용하되,
-    # 초안 내부 메모 포함 금지 문장 삭제는 FAIL.
-    external_draft_line = re.search(r"^- 외부 공유용 초안에.*$", text, re.MULTILINE)
-    if not external_draft_line:
-        raise AssertionError(f"{label}: 외부 공유용 초안 체크 문단이 없다")
-    assert_ordered_tokens(
-        external_draft_line.group(0), ["외부 공유용 초안에", "그대로 붙이지 않"], f"{label} external draft"
-    )
-
-    # 법무 검토 전 단계 분리: "분리했는가"→"분리했는지" 다듬기 허용, 분리 축
-    # 문장 삭제는 FAIL.
-    lawyer_review_line = re.search(r"^- 법무/변호사 검토 전 단계와.*$", text, re.MULTILINE)
-    if not lawyer_review_line:
-        raise AssertionError(f"{label}: 법무 검토 단계 분리 문단이 없다")
-    assert_ordered_tokens(
-        lawyer_review_line.group(0), ["법무/변호사 검토 전 단계와", "분리"], f"{label} lawyer review"
-    )
+        assert_contains(text, pointer, "self-verification.md")
 
 
 def check_self_verification_metadata_single_home() -> None:
     """Optional verification summaries have one home; no mandatory badge."""
-    self_verification = read_text("skills/beopsuny/references/self-verification.md")
     output = read_text("skills/beopsuny/references/output-formats.md")
-    assert_contains(self_verification, "output-formats.md#자가-검증-메타데이터", "self-verification.md")
     assert_contains(output, "## 자가 검증 메타데이터", "output-formats.md")
     # The observable source checks are enforced by the citation contract and
     # semantic eval. A decorative checkmark is not verification evidence.
@@ -3854,6 +3812,9 @@ def check_output_reviewer_note_lite() -> None:
     text = read_text("skills/beopsuny/references/output-formats.md")
     for home in ["## 검토자 메모", "references/citation-verification-contract.md"]:
         assert_contains(text, home, "output-formats.md")
+    notes = section_body(text, "## 검토자 메모")
+    for axis in ["읽은 범위", "제외 범위", "결론 영향"]:
+        assert_contains(notes, axis, "output-formats.md read scope")
 
 def check_output_role_destination_contracts() -> None:
     """Docs must reach structured gates; roles do not impose section order."""
@@ -4488,7 +4449,7 @@ CHECK_GROUPS = (
             check_citation_verification_contract_single_source,
             check_golden_citation_fixtures,
             check_research_workflow_verification_core,
-            check_current_law_verified_binding_excludes_unconfirmed_practice_material,
+            check_conclusion_binding_uses_canonical_source_rules,
             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
             check_litigation_element_fact_template,
             check_enforcement_response_workflow,
