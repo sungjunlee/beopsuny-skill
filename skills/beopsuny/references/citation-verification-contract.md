@@ -49,7 +49,7 @@ local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 �
 
 - 요약·스니펫, 검색 결과 title, 링크 미리보기만 확인했다.
 - `assets/data/*.yaml`, checklist, mandatory provision 후보, verification log 같은 번들 또는 저장 데이터만 봤다.
-- 사용자가 제공한 조문번호, 사건번호, 금액, 기한을 독립 확인하지 않았다.
+- 사용자가 제공한 조문번호, 사건번호, 법정 금액·기한 등 법률 근거를 독립 확인하지 않았다.
 - 법령 ID, 인허가 요건, 공식 서식, 법정 기한을 official source 확인 없이 기억이나 후보 데이터로 처리했다.
 - 링크 패턴이 맞아 보인다는 이유만으로 law.go.kr 원문 확인을 했다고 표시했다.
 - API timeout, 5xx, `service_maintenance`, 빈 응답을 검색 0건이나 개정 없음으로 해석했다.
