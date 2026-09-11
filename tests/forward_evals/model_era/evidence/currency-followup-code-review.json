@@ -1,0 +1,51 @@
+{
+  "verdict": "LGTM for code/contract scope only",
+  "writer": "GPT/root",
+  "reviewer": "grok-4.6 high",
+  "files": {
+    "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+    "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+    "tests/forward_eval_harness.py": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "tests/common_rule_layers.yaml": "acff890977d5a6461c563147579b283dbce8858a79603be173c9c9042cdce119",
+    "tests/validate_skill_contracts.py": "811a8372b205736d835b54cad1cc31f487599852ab75383da1c28936587f16b7",
+    "tests/test_semantic_reviews.py": "d0bcb5a0a1881d82c319b9aa3109161c5573cda6562ae41878388f6dbcb64327",
+    "tests/forward_evals/README.md": "6c87ede3947513148e3e5e619fa023150d2a2752080dd8ef713f33818cc62641"
+  },
+  "reviews": [
+    {
+      "text": "**범위 한정 LGTM.** 런타임 두 문장 교체, o4 forward의 형식/금지어 검사 제거, 기존 `legal_verification_core_trace` 재사용 배선은 서로 맞다. 모델 판정·법률 결론은 이 디프로 인증하지 않는다. 스모크 미완도 결함이 아니라 미검증이다.\n\n## 이 디프가 지키는 경계\n\n- **과잉 단정 금지**는 표시 문구가 아니라 확인 범위다. `SKILL.md`는 미확인을 요약·결론·초안에 올리지 말라고 바꾸고, `source-access.md`는 미래 미러만으로 현행 번호·현재 의무를 못 단정한다고 바꾼다.\n- **오탐 두 개만** 걷는다. `provenance_labeled_as_fallback`와 `mirror_promulgation_currency_gate`. 라우터의 시행 전 공포본 규칙(`시행일자`, 오늘보다 미래, `시행 전 공포본`, `[VERIFIED]`, `law.go.kr 현행본`)은 남긴다.\n- **판정 주체를 옮긴다.** 금지어 → 기존 hash-bound 의미 검토. `common_rule_layers.yaml` `live_axis`와 `test_semantic_reviews.py` 기대값이 같이 붙는다.\n- **미기록은 pending.** PASS 승격 없음. 재검토된 무근거 단정 FAIL. 이 자세는 맞다.\n\n## P1 — 조건부 1건\n\n**`legal_verification_core_trace`가 “트랜스크립트에 공식 원문이 안 보임”을 FAIL로 추론하면 안 된다.** 디프에 루브릭 본문이 없다. 기존 축(fwd-01/05/11)이 “확인 못 했다고 인정한 뒤 현재 의무를 단정”만 FAIL하고, 불투명 `open_page`는 `REVIEW_REQUIRED`로 두는 수신기면 재사용이 맞다. 반대로 페치 가시성 부재를 모델 FAIL로 접으면, 걷어낸 어휘 오탐이 의미 검토로 되살아난다. 수신기 루브릭이 후자면 이 배선은 P1이다.\n\n## P2\n\n1. **부하 문장이 계약 검사에 안 묶인다.** `check_source_access_mirror_promulgation_currency`는 형식 리터럴을 풀고 `[VERIFIED]` / `law.go.kr 현행본`만 남긴다. `현행 법률 번호·현재 의무도 단정하지 않는다`가 빠져도 이 검사는 통과한다. 표시 문구를 고정하지 말라는 선택은 맞지만, 금지 자체는 형식가 아니다. `단정하지 않는다` 또는 `현재 의무` 같은 토큰 1개가 이 문장의 집이다.\n\n2. **SKILL.md 대체가 동의어가 아니다.** 삭제된 문장은 확인 범위를 위험·불확실성에 맞추는 비례 원칙이다. 새 문장은 미확인을 요약에 올리지 말라는 과잉 단정 금지다. 비례 원칙이 `research-workflow.md` 등에 남아 있으면 문서 집 이동일 뿐이고, 이 한 줄이 집이었으면 침묵 삭제다.\n\n3. **자동 FAIL 공백은 기록 의존이다.** `promulgated_vs_effective_trap` common rule은 `legal_status_tag`만 남는다. 의미 기록이 pending인 동안 o4-08의 핵심 덫(미래 미러로 현행 의무 단정)은 하니스가 못 떨어뜨린다. pending ≠ PASS라 후퇴는 아니지만, 테스트 120 통과를 덫 평가 완성으로 읽으면 안 된다.\n\n4. **죽은 게이트.** `mirror_promulgation_currency_gate` / `provenance_labeled_as_fallback` 정의가 하니스에 남았는지는 이 디프만으로 모른다. 호출부가 없으면 삭제 후보.\n\n## 인증하지 않는 것\n\n기존 19건 코퍼스, 추가 pending 16건, 독립 기록 공백, 개정 런타임 스모크, 실제 출력의 법률 맞음. 코드·계약 배선만 본다.",
+      "usage": {
+        "input_tokens": 21597,
+        "cache_read_input_tokens": 1408,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 8171,
+        "reasoning_tokens": 7091,
+        "total_tokens": 31176
+      },
+      "execution": {
+        "returncode": 0,
+        "seconds": 158.47254545797477,
+        "model": "grok-4.6",
+        "effort": "high"
+      }
+    },
+    {
+      "text": "**스코프 LGTM.** 이번에 제시된 P1 해소·폴백 문단·잔여 P2 처리에는 새로 막을 계약 결함이 없다.\n\n### P1\n평가기 README의 기존 규칙으로 닫힌 것으로 본다.\n\n- opaque `open_page`가 본문 없이 완료되면 `REVIEW_REQUIRED`이지, 미열람으로 추정한 `FAIL`이 아니다.\n- 미검증을 인정한 뒤 단정하면 위반이다.\n- 좁은 `PASS`가 다른 실위반을 가리지 못한다.\n\n독립 리뷰어가 o402/fwd01을 `FAIL`→`REVIEW_REQUIRED`로 바로잡고 원본을 남긴 것도 이 계약과 맞다.\n\n### 소스 폴백 문단\n제목만 돌아오는 공식 화면 제한에 대한 폴백으로 읽힌다. 제약이 지켜져 있다.\n\n- 사용 가능한 신청 `OC`만 쓰고, 공개 테스트 인증을 박지 않는다.\n- 목록(`lsNwList`)에서 식별자·공포일·시행일을 본 뒤, 해당 `MST`/`JO`로 본문 API(`lsNwInfo`)를 연다.\n- 목록 응답으로 원문을 대체하지 않는다.\n- API 필드명 `현행법령(공포일)`을 시행일·조문 확인의 대체로 쓰지 않는다.\n\n`JO` 6자리 패딩 예는 링크된 가이드에 맡긴 형태로 충분하다. 현행 화면 제목-only가 반복 제한이라면 `lsNw*` 경로가 맞다. 로컬 미러의 공포본 vs 현행본 절은 그대로 둔다.\n\n### 잔여 P2 — 이번 스코프에서 비차단\n의도적으로 남긴 항목이지, P1 회귀가 아니다.\n\n- 비례: 조사 깊이는 쟁점·불확실성을 따르고, 고위험은 범위를 넓힐 수 있으며 서식 쿼터는 없다.\n- 현행 의무의 고정 문구 토큰 검사는 의미 증명이 아니므로 거절. 실출력·request-hash가 의미를 확인하고, pending을 완료 평가로 표시하지 않는다.\n- `mirror_promulgation_currency_gate`는 `evaluate_scenario_outputs.py`와 라우터 scenario16에 남는다. `provenance_labeled_as_fallback`는 실행 정의가 제거된 역사 캡처뿐이다.\n\n### 이 스코프 밖\nFull120 / O1 / O2 / 19corpus 88 messages 통과는 보고된 그대로 수용한다. **개정 런타임 스모크는 아직 없다.** 실패하면 이 LGTM을 재오픈한다.\n\n재오픈 조건: 제목-only 폴백이 현행 `MST`로 공포본을 대체하거나, 목록만으로 본문 확인을 끝내거나, opaque 완료를 다시 미열람 `FAIL`로 추론하는 경우.",
+      "usage": {
+        "input_tokens": 16917,
+        "cache_read_input_tokens": 5760,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 4454,
+        "reasoning_tokens": 3705,
+        "total_tokens": 27131
+      },
+      "execution": {
+        "returncode": 0,
+        "seconds": 87.48826495901449,
+        "model": "grok-4.6",
+        "effort": "high"
+      }
+    }
+  ],
+  "limits": "Revised live smoke under execution; not legal accuracy certification."
+}

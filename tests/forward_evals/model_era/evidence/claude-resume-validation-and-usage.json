@@ -1,0 +1,178 @@
+{
+  "recorded_at": "2026-09-09T01:46:39.131146+00:00",
+  "runtime_base": "3e76b2595b007635c468f65e59568b58fc606675",
+  "runtime_files_byte_equal": 41,
+  "changes": "Evidence, review pointers, changelog and handoff only; both runtime candidates reverted.",
+  "validation": {
+    "unit": "PASS 120, 26.933s",
+    "O1": "PASS, repeated after evidence-pointer correction",
+    "O2": "PASS 11 outputs, 13 unsafe",
+    "rescore": "PASS 19 corpora, 88 failure/pending messages, delta0",
+    "source": "OK3/WARN2/FAIL0/NOT_INSTALLED2; resume-source-recheck.json",
+    "log_hashes": {
+      "unit": {
+        "sha256": "cf03d598e92df5406ed9f53d6249052ddb02f49475b2897af5a1bcb6a721e788",
+        "exit_code": 0
+      },
+      "o1": {
+        "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+        "exit_code": 0
+      },
+      "o2": {
+        "sha256": "befede5d6b7ed9c11fc595772c370781e6faf8fa234fa802fc62528ea850d856",
+        "exit_code": 0
+      },
+      "rescore": {
+        "sha256": "e6a5d8d2b36c0949ca407f73adca2d7a8a39878e3b3637661b86274afbaba80e",
+        "exit_code": 0
+      },
+      "o1_after_review": {
+        "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+        "exit_code": 0
+      }
+    },
+    "changelog_and_ci": "Actual committed-head gate and remote CI are recorded on PR330; not inferred from local tests."
+  },
+  "cost_scope": "This Claude-approved resume only, including the incomplete first code review; excludes earlier pre-approval runs.",
+  "cost_basis": "CLI list-price accounting under existing subscription, not new cash charges; native reviewer per-call costs unavailable",
+  "claude_calls": [
+    {
+      "source_file": "conclusion-contract-opus.json",
+      "cost_usd": 0.9525880000000001
+    },
+    {
+      "source_file": "epistemic-contract-opus.json",
+      "cost_usd": 0.919258
+    },
+    {
+      "source_file": "conclusion-runtime-review.json",
+      "field": "initial",
+      "cost_usd": 0.1435575
+    },
+    {
+      "source_file": "conclusion-runtime-review.json",
+      "field": "corrected",
+      "cost_usd": 0.20396999999999998
+    },
+    {
+      "source_file": "epistemic-runtime-review.json",
+      "field": "metadata",
+      "cost_usd": 0.212333
+    },
+    {
+      "source_file": "knowledge-claude-initial-pairs.json",
+      "case": "privacy-saas",
+      "arm": "blind-first",
+      "cost_usd": 1.7085359999999998
+    },
+    {
+      "source_file": "knowledge-claude-initial-pairs.json",
+      "case": "privacy-saas",
+      "arm": "hints-first",
+      "cost_usd": 1.1241435000000002
+    },
+    {
+      "source_file": "knowledge-claude-initial-pairs.json",
+      "case": "privacy-tags",
+      "arm": "hints-first",
+      "cost_usd": 1.0226965000000001
+    },
+    {
+      "source_file": "knowledge-claude-initial-pairs.json",
+      "case": "privacy-tags",
+      "arm": "blind-first",
+      "cost_usd": 1.208469
+    },
+    {
+      "source_file": "claude-resume-integration-review-initial.json",
+      "cost_usd": 0.8944340000000001
+    },
+    {
+      "source_file": "claude-resume-integration-review-second.json",
+      "cost_usd": 0.47321199999999997
+    },
+    {
+      "source_file": "claude-resume-integration-review-final.json",
+      "cost_usd": 0.167515
+    }
+  ],
+  "claude_list_price_total_usd": 9.0307125,
+  "quota": {
+    "claude": {
+      "source": "claude",
+      "provider": "claude",
+      "usage": {
+        "secondary": {
+          "resetsAt": "2026-09-12T15:59:00Z",
+          "windowMinutes": 10080,
+          "resetDescription": "resets Sep 13 at 12:59am (Asia/Seoul)",
+          "usedPercent": 12,
+          "remainingPercent": 88
+        },
+        "primary": {
+          "resetsAt": "2026-09-09T02:29:00Z",
+          "windowMinutes": 300,
+          "resetDescription": "resets Sep 9 at 11:29am (Asia/Seoul)",
+          "usedPercent": 75,
+          "remainingPercent": 25
+        },
+        "dataConfidence": "percentOnly",
+        "updatedAt": "2026-09-09T01:45:50Z",
+        "tertiary": null,
+        "extraRateWindows": [
+          {
+            "id": "claude-weekly-scoped-fable",
+            "window": {
+              "resetsAt": "2026-09-12T15:59:00Z",
+              "usedPercent": 3,
+              "resetDescription": "resets Sep 13 at 12:59am (Asia/Seoul)",
+              "windowMinutes": 10080
+            },
+            "title": "Fable only"
+          }
+        ],
+        "monthly": "unknown"
+      },
+      "pace": {
+        "primary": {
+          "deltaPercent": -11,
+          "willLastToReset": true,
+          "summary": "11% in reserve | Expected 86% used | Lasts until reset",
+          "stage": "behind",
+          "expectedUsedPercent": 86
+        },
+        "secondary": {
+          "deltaPercent": -37,
+          "willLastToReset": true,
+          "summary": "37% in reserve | Expected 49% used | Lasts until reset",
+          "stage": "farBehind",
+          "expectedUsedPercent": 49
+        }
+      },
+      "account_label": "Claude subscription; identity withheld"
+    },
+    "codex": {
+      "observed_at": "2026-09-09 01:45:56 UTC",
+      "provider": "codex",
+      "account_label": "Codex Pro",
+      "source": "Codex app usage limits",
+      "dataConfidence": "provider-reported",
+      "windows": [
+        {
+          "windowDurationMins": 10080,
+          "usedPercent": 36,
+          "remainingPercent": 64,
+          "resetsAt": 1789512557
+        }
+      ],
+      "missing_windows": "unknown; not zero",
+      "pace": "unknown",
+      "exhaustion_eta": "unknown",
+      "credits_balance": "0",
+      "reset_used": false
+    }
+  },
+  "no_reset_or_payment": true,
+  "integration_review": "claude-resume-integration-review-final.json; LGTM for evidence integration, not target model PASS",
+  "release": "Not released; #323 AC5 remains open. #325 bounded initial comparison concluded observed-candidate NO_GO, timing causality INCONCLUSIVE, no expansion; integration pending."
+}

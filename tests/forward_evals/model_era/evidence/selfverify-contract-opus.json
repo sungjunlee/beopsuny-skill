@@ -1,0 +1,203 @@
+{
+  "returncode": 0,
+  "seconds": 222.3441657910007,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "12569d3672f6578b45eef40efedca6ed4038bfba8b2c915bfe5655db7fee3f7a",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_base_commit": "15936d96a0a97c45ffdadb1e6d013001b4a26937",
+  "comparison_limit": "Same complete-reference builder, fixed prompt/source and claude-opus-5 high/no-tools settings as binding-contract-opus; self-verification consolidation and reverse-pointer removal per candidate.patch. One observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 53473,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 14578,
+    "output_tokens_details": {
+      "thinking_tokens": 4288
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 53473,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 14578,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 53473,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 53473
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.905598,
+  "num_turns": 1,
+  "output_sha256": "11c50649f51ec3c145523e18be50f2c6449b0852ede48b440fe8107cf9fe1b62",
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 6293,
+      "outputTokens": 23,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.006408,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 14578,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 53473,
+      "webSearchRequests": 0,
+      "costUSD": 0.89919,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 4288,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "assessment": "FAIL",
+  "runtime_structure_adopted": true,
+  "regression_solution_adopted": false,
+  "candidate_patch": "selfverify-consolidation-candidate.patch",
+  "output_file": "selfverify-contract-opus.txt",
+  "independent_review_status": "complete",
+  "packet_metadata_kind": "Exact final pre-execution preparation snapshot, not current execution status",
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "cc5d55885377c41f94c8b7b7b4b65f8d5b046d7addbde3bdfc6a14b0383e6237",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+      "skills/beopsuny/references/contract_review_guide.md": "12f4fd0034d86861f5d0c9403d6d9ea52d55e4831588a9fa277cb814200e1999",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+      "skills/beopsuny/references/self-verification.md": "cc7502a52dfad405c4dfae1f08d404cce4c863fac976ebd8c4a96a727abfcbe6",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+      "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "cc5d55885377c41f94c8b7b7b4b65f8d5b046d7addbde3bdfc6a14b0383e6237",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+          "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+          "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8",
+          "skills/beopsuny/references/contract_review_guide.md": "12f4fd0034d86861f5d0c9403d6d9ea52d55e4831588a9fa277cb814200e1999",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "cc7502a52dfad405c4dfae1f08d404cce4c863fac976ebd8c4a96a727abfcbe6",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "12569d3672f6578b45eef40efedca6ed4038bfba8b2c915bfe5655db7fee3f7a",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "preregistered": {
+    "status": "pre-execution",
+    "at": "2026-09-09T03:21:54.241563+00:00",
+    "base_commit": "15936d96a0a97c45ffdadb1e6d013001b4a26937",
+    "hypothesis": "Delete duplicate omnibus self-verification lists and reverse references; keep all substantive obligations at current citation, research, output, and contract homes. Fewer repeated independent checklists may improve application to actual conclusions, but neither deletion nor code LGTM proves behavioral improvement.",
+    "independent_diagnosis": "Native Sol high selfverify_structure_audit independently mapped all unique obligations to existing homes, supported keeping introduction plus four canonical pointers, and recommended removing role/trust/metadata duplicate sections and contract reverse pointer. Root does not adopt suggested negative-heading guards.",
+    "change_scope": "self-verification.md, SKILL.md, contract_review_guide.md plus README/validator/changelog consumers. No question, source, rubric, source policies or output schema edits.",
+    "initial_trial": "One Opus5 high fixed complex-contract no-tools, same builder/prompt/source as binding-contract-opus, 900 seconds. Prior frozen binding trial is observed comparison only; no causal matched A/B claim.",
+    "expansion": "Only clean independent semantic review and root adjudication open fixed repeat1 and existing missing-annex/case-isolation holdouts as needed. FAIL or material unresolved RR stops model expansion; do not retry phrasing.",
+    "separate_decisions": "Removal of verified redundant instructions can be adopted as structural correctness independently from model behavior. AC5/release remain incomplete without required actual semantic proof and final smokes.",
+    "axes": "Unprovided facts/absence; law vs proposed means; actors/exceptions/time; editable draft utility; actual external action authority; source scope. No arbitrary scores or expert legal gold.",
+    "pre_execution_revision": {
+      "at": "2026-09-09T03:27:36.270372+00:00",
+      "correction": "Code review found unique data-integrity disclosure duty omitted by initial consolidation. Retained this one duty in SKILL trust boundary and existing checker; no target was run before correction."
+    }
+  },
+  "preflight": {
+    "runtime_base_commit": "15936d96a0a97c45ffdadb1e6d013001b4a26937",
+    "only_changed_runtime_inputs": [
+      "skills/beopsuny/SKILL.md",
+      "skills/beopsuny/references/contract_review_guide.md",
+      "skills/beopsuny/references/self-verification.md"
+    ],
+    "prompt_unchanged": true,
+    "source_manifest_unchanged": true,
+    "context_sha256": "12569d3672f6578b45eef40efedca6ed4038bfba8b2c915bfe5655db7fee3f7a",
+    "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "patch_sha256": "f589538e3ed35645bbe4b1c35153b6f9aac4997308492b9ba6dd9a9a77ec2537",
+    "old_context_bytes": 115627,
+    "new_context_bytes": 108268,
+    "execution_status": "not_measured",
+    "packet_directory": "final-runtime-packet",
+    "preparation_note": "Builder correctly refused overwriting initial unexecuted packet. Code-review disclosure correction prepared in a new directory; initial packet retained and never executed."
+  },
+  "cost_note": "CLI list-price telemetry, not actual subscription billing. Includes auxiliary Haiku usage. num_turns is CLI turns, not provider request count.",
+  "root_adjudication": {
+    "overall": "FAIL",
+    "read_scope": "entire output",
+    "findings": [
+      {
+        "lines": [
+          19
+        ],
+        "quote": "감독·감사 조항 없음",
+        "reason": "The prompt does not establish absence of such clauses. It supplies only a transaction summary and explicitly leaves other facts unconfirmed."
+      },
+      {
+        "lines": [
+          53
+        ],
+        "quote": "별첨 미제공 상태에서는 법 제28조의8제2항 각 호의 고지·공개 사항을 특정할 수 없어 국외이전 적법 근거 자체가 성립하지 않음",
+        "reason": "Unprovided annex is not evidence that required information is missing in the transaction or that its statutory basis does not exist. A proposed attachment prerequisite cannot establish that legal conclusion."
+      }
+    ],
+    "whole_answer_context": "Later limitations acknowledge unprovided documents and original-source scope. Proposed clauses are allowed, but the quoted present-state row and legal explanation independently promote unknown facts. No fixed repeat or holdout expansion.",
+    "utility": "PASS: editable completed draft; independent reviewer agrees",
+    "limits": "Single fixed-source observation, not causal proof or expert legal gold.",
+    "review_reconciliation": "Independent overall FAIL agrees. Axes fact boundary, means vs requirements, actor/exception/time FAIL; editable utility and authority PASS; source-scope REVIEW_REQUIRED because verification labels overstate application support. Root accepts factual findings against fixed excerpts only, not expert legal gold."
+  },
+  "independent_review_file": "selfverify-contract-independent-review.json"
+}

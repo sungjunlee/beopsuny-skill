@@ -137,3 +137,29 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 사용자 후속 요청에 따라 Sol의 코드/계약 독립 리뷰와 Grok·Opus 교차 리뷰를 병렬 수행하고 root가 최소 수정을 통합했다. false PASS·setup 결합·상태 표시 오류와 hint-only/고정 메모 잔재를 제거했으며 각 범위 재리뷰는 LGTM. 구현 `b97c5e2`, 상세 검토·재현은 `tests/forward_evals/model_era/review-cycle.md`. 전체119개 unit 후 최종 수정 대상21개 회귀, O1/O2·19 corpus rescore·CHANGELOG gate 통과. #272/#323/#325와 에픽 #316/#317은 여전히 OPEN이며 실험 GO/출시로 해석하지 않는다.
 
 - 2026-09-08 추가 인계: 사용자 PR #327 머지 승인. main `909f206` 통합 충돌 해소, Sol 지적 보완·Grok 교차 LGTM 및 실제 Contract Tests PASS. #272 직접 변형 출처 경로 누락은 미완료 유지; #323 최종 runtime Opus 재실행은 세션 한도(01:30 KST reset)로 답변 없이 실패, 품질 미측정. #325도 미판정 유지. 외부 knowledge legacy usage 불일치·미러 upstream WARN 및 릴리즈 대상 스모크가 남아 v0.9.0은 아직 발행하지 않는다. 증거: `tests/forward_evals/model_era/review-cycle.md`.
+
+- 2026-09-08 후속 검증: PR #327은 `d1373c0`으로 머지됐고 main CI PASS. 후속 draft PR #330에 반복·holdout 증거(`75b0740`)와 실제 법인격 사실 승격/예외 적용 요건 보완(`bd43d61`)을 반영했다. 제안 의무에 대괄호를 강제하는 리뷰 지적은 철회하고, 실제 미확인 사실 오류만 수정했다. 최종 runtime 계약 재평가와 스모크는 진행 중이며 #323/#272는 닫지 않았다. knowledge #325는 별도 draft PR #77의 공식 manifest 준비 차단과 재개 조건을 최신 댓글로 인계했고 INCONCLUSIVE다. 상세 실행 상태는 `tests/forward_evals/model_era/followup-plan.md`를 따른다.
+
+- 2026-09-09 현재 인계: runtime `313a919`의 지침 최소 수정은 Grok LGTM·120 unit/O1/O2/rescore·실제 CI PASS. 그러나 수정본 계약과 별첨 holdout의 미제공→실제 결함 단정은 독립 FAIL로 #323 AC5가 남는다. 최종 Claude guardrails/o4 실행과 fwd11의 300초 timeout 후 같은 실행의 늦은 출력은 분리 보존했다. #272 교정3형식의 유한 검증은 유지하고, #325는 private 전송 미승인으로 INCONCLUSIVE다. 실행 중 생긴 미러 upstream WARN도 기록했다. 최신 조율 지시상 새 merge/release/배포는 하지 않으며 sprint·milestone·에픽을 닫지 않는다. 현재 판정과 재개 근거는 `tests/forward_evals/model_era/followup-plan.md` 상단 및 `evidence/direct-duty-*`를 따른다.
+
+- 2026-09-09 Claude 승인 후 최신 인계: #323의 같은 고정 입력 Opus 실험에서 후보1은 독립 Sol FAIL, 후보2는 독립 Sol major_revision/material_concerns를 root가 FAIL로 판정해 모두 되돌렸다. runtime41파일은3e76b25와 일치한다. #325 SaaS·tags 네 조건은900초 상한 내 완료하고 순서·호출한도를 지켰으나, SaaS의 지원 결함과 tags의 미확인 사실 승격 veto가 관측돼 후보 채택NO_GO·타이밍 인과효과INCONCLUSIVE·확대 없음·운영 순서 유지다. #325의 작은 비교와 조건부 확대 판단은 마쳤으며 PR통합 전OPEN이다. strict ingestion ready인 결합 knowledge 후보는 여전히 unpublished/PR77·78 draft다. Private 전문은 공개하지 않는다.120 unit/O1/O2/rescore는 PASS지만 #323AC5와milestone·epic은미완료이며 출시하지 않는다. 최신판정은 followup-plan 상단과 knowledge-claude-initial-pairs.json을 따른다.
+
+- 2026-09-09 입력 구성 보완: fixed/no-tools 패킷에 기존 research-workflow·source-grading 전문을 추가했다. runtime 정책은 유지하고 A는 준비만 검증했다. B Opus5 high 1회에서도 별첨 미제공→부존재 단정이 남아 root FAIL·확대 없음이다. #323 AC5 미완료, #325 NO_GO 완료 판단 및 #272 유한 검증은 유지한다. 상세 증거는 followup-plan 최신 입력 구성 절과 core-contract-opus.json에 보존한다.
+
+- 2026-09-09 구조 정리: 요건/수단 문구 후보는 고정 Opus 실행 FAIL로 되돌렸다. 별도로 출처 상태→사안 결론 대응표를 삭제하고 기존 등급·검증 계약에 참조를 모았으며, 사건 사실 검증 범위와 하급심 라벨을 맞춰 Opus 코드 LGTM을 받았다. 같은 고정 계약 1회는 법정 의무와 제안 수단을 혼동하는 단정이 남아 root·독립 Sol 전체 FAIL이다(축별 판정 차이는 별도 보존). 구조 정리는 유지하되 회귀 해결로 채택하지 않으며 반복·holdout 확대 없음.120 unit/O1/O2/rescore PASS. #323 AC5와 최신 runtime 릴리즈 스모크는 미완료다. 사용자의 조건부 merge·release 승인에도 완료 증거가 없어 draft·0.8.0을 유지한다. 상세는 followup-plan 최신 절과 binding-* 증거.
+
+- 2026-09-09 자가검증 정리: 중복 차원별 목록·역참조를 삭제하고 기존 정본에 연결했다. 고유 데이터 무결성 표시 의무는 유지해 Opus 코드 재검토 LGTM. 고정 계약 1회는 미제공→부재/법적 근거 미성립 단정으로 root·독립 Sol FAIL이며 활용성·행동 권한은 PASS다. 구조 정리는 유지하되 회귀 해결 채택·반복·holdout 확대 없음.120 unit/O1/O2/rescore PASS, 소스 OK3/WARN2/FAIL0/미설치2. #323 AC5·최종 runtime 스모크·출시는 미완료다. 상세는 followup-plan 최신 절과 selfverify-* 증거.
+
+- 2026-09-09 review mode 정리: 중복 출처·태그·산출물 규칙을 삭제하고 모드 고유 값·실제 로드 경로를 보존해 Opus 코드 LGTM. 고정 Opus 1회는 법정 요건/계약상 수단 혼동 및 미제공 감독 수단 부재 서술로 FAIL이며 완성 초안·직접 통지 의무 보존은 별도 관측이다. fresh Fable A/B 1쌍도 현재 B의 직접 통지 제한 등으로 Sol·root FAIL, 초기 Luna 판정 차이는 보존했다. 두 실험 모두 확대 없음. 구조 정리를 회귀 해결로 채택하지 않으며 #323 AC5·최종 runtime 스모크·출시는 미완료다. 120 unit/O1/O2/rescore PASS, source OK3/WARN2/FAIL0/미설치2. 상세는 followup-plan 최신 절과 review-mode/fable 증거.
+
+- 2026-09-09 최종 runtime 스모크: `8fad7d8`의 guardrails12/o4 8건을 기존 병렬 runner로 실행 완료했다. 실행 오류·timeout0이며 실제 의미 위반은 독립 판정과 root 통합으로 보존한다. 검증용 미러를 upstream으로 실제 갱신해 source OK4/WARN1/FAIL0/미설치2, 120 unit/O1/O2/rescore PASS. 스모크 실행 완료와 게이트 통과를 구별하며 #323 AC5·릴리즈는 미완료다. #272 유한 검증과 #325 작은 비교 NO_GO 완료 판단을 유지하고 draft·0.8.0·milestone/epic OPEN을 유지한다. 상세는 followup-plan 최상단 및 final-runtime-smoke 증거.
+
+
+### 2026-09-09 — 최종 스모크의 사용자 전제 채점 오탐 수정
+
+#333은 별도 scorer 유지보수로 처리했다. fwd-07의 절차 단어 검사를 기존 hash-bound 의미 수신처로 이관하고 실제 응답·미검토/검토 FAIL 대조군을 검증했다. 19 corpus 중 fwd-07 8건의 판정 차이와 이전 기대값은 `premise-scorer-rescore-delta.json`에 보존하며 PASS 승격은 없다. #323 독립 감사는 해당 경계의 실제 로딩 후 모델 불이행을 재확인했고 정당화된 새 runtime 수정은 없었다. runtime8fad7d8·#323 AC5 미완료·릴리즈 NO_GO를 유지한다. #333은 마일스톤 완료의 대체물이 아니다.
+
+
+### 2026-09-09 — Astra native profile 유한 검증
+
+동일 고정 질문·원문·현재 runtime으로 Astra medium 초기 A/B와 B 반복·별첨·사건 분리 holdout을 완료했다. Grok 독립5건 PASS; root는 기준선 A의 미제공/부재 표현을 REVIEW_REQUIRED로 유지하고 현재4건에서 중대한 위반은 확인하지 않았다. 반복 초안의 조문 지칭 모호성은 편집 항목으로 보존한다. 비용·편집 부담 감소는 미측정이므로 채택 INCONCLUSIVE이며 이전 Opus/Fable·필수 스모크 실패는 변하지 않는다. #323·출시·milestone/epic은 완료 처리하지 않았다. 상세는 followup-plan의 Astra 절과 astra-profile-qualification.json.

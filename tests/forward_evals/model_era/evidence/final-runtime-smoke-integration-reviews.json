@@ -1,0 +1,94 @@
+{
+  "legal_gold": false,
+  "scope": "Other-family review of GPT-written evidence/report integration. Does not approve legal answer quality, close323, or authorize release.",
+  "final_verdict": "LGTM for records; smoke NO_GO",
+  "attempts": [
+    {
+      "provider": "claude",
+      "model": "claude-opus-5",
+      "effort": "high",
+      "returncode": 1,
+      "seconds": 2.451527458993951,
+      "prompt_sha256": "14c6c8ada47b643bd0f35af25a1cb82231a5f5e41bf8adeb3978b173aa520390",
+      "status": "execution_error; review not measured",
+      "error": "HTTP429 session limit; reset16:30KST",
+      "reported_cost_usd": 0,
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    {
+      "model": "grok-4.6",
+      "effort": "high",
+      "returncode": 1,
+      "seconds": 14.97495820900076,
+      "prompt_sha256": "8da85b2c7130b210fb030c7d583e8ed2df8f42418ac957765a484b8be9bdc633",
+      "provider": "grok",
+      "reported_backend_models": [
+        "grok-4.6-build"
+      ],
+      "stop_reason": "cancelled",
+      "num_turns": 1,
+      "usage": {
+        "input_tokens": 27625,
+        "cache_read_input_tokens": 640,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 496,
+        "reasoning_tokens": 335,
+        "total_tokens": 28761
+      },
+      "reported_cost_usd": 0.00995282,
+      "output": "전체 요청과 검토 데이터가 잘려 있어, 먼저 오프로드된 프롬프트와 판정 파일을 읽고 그 범위만으로 정합성을 확인하겠습니다.",
+      "status": "execution/preparation error; no final review"
+    },
+    {
+      "model": "grok-4.6",
+      "effort": "high",
+      "returncode": 0,
+      "seconds": 233.60767779199523,
+      "prompt_sha256": "b39a0c12aa296e2ff33a26c9e080e045eb49ab46db11a9b9f6f9757db3e381c7",
+      "provider": "grok",
+      "reported_backend_models": [
+        "grok-4.6-build"
+      ],
+      "stop_reason": "end_turn",
+      "num_turns": 1,
+      "usage": {
+        "input_tokens": 44430,
+        "cache_read_input_tokens": 256,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 13428,
+        "reasoning_tokens": 11967,
+        "total_tokens": 58114
+      },
+      "reported_cost_usd": 0.02882452,
+      "output": "**기록 정합성은 LGTM이다. 스모크 품질은 FAIL이며 `NO_GO`·릴리즈 미완료를 유지한다.** 법률 정답은 인증하지 않는다. 아래 제공 파일·인용·공개본만 대조했고, 원본 저장소·재실행·외부 검색은 하지 않았다.\n\n## 실행·수동 집계\n패키징 20건은 모두 `completed`/`returncode 0`이고, 검증 JSON의 `execution_errors`는 o4·guardrails 모두 0이다. 도구명도 `Glob/Grep/Read/WebFetch/WebSearch`뿐이며 쓰기·송부·스케줄러는 없다. 이후 Claude 429(2.45초, 미판정)는 스모크 20건과 분리되어 있다.\n\n수동 합계는 **PASS 7 / FAIL 8 / RR 5**로 adjudication `summaries.total`·건별 verdict와 같다. 스위트 분해(o4 3/2/3, guardrails 4/6/2)도 일치한다. 자동 점수(o4 PASS6/RR2, guardrails PASS4/FAIL1/RR7)는 수동과 분리되어 있고, fwd-07 `user_premise_marked` 오탐을 RR로 되돌리면서 현행성 문제를 전체 PASS로 올리지 않은 점도 문서와 맞다.\n\n## 초기 정정·root 차이\no4-07·fwd-06의 초기 미러 부재 전제는 `d0db51c` 실파일(대법원 md 28,787)로 정정했고, 초기본 보존·타깃 미재실행이 명시되어 있다. 정정 후에도 두 건은 provenance/제16조 과장을 이유로 **FAIL**이다. root와 독립 리뷰 차이는 두 건뿐이다: o4-08 독립 PASS vs root RR, fwd-12 독립 RR vs root FAIL. 공개본도 그 긴장을 보여 준다. o4-08은 제목에서 현행 「원격의료」를 단정한 뒤 모법 원문을 `[UNVERIFIED]`로 낮추고, fwd-12는 MSA 부재를 인정하면서도 “잘 검토하였습니다/전체 구조 이견 없음/현 문안 편측 한도”를 넣는다. 차이를 봉합하지 않았고, 스모크 FAIL을 PASS로 바꾸지 않았다.\n\n## 해시·runtime·공개본\n20건의 `context`/`full_context`/원본·공개 출력 SHA는 adjudication과 패키징이 건별로 같다. fwd-08만 원본·공개 해시가 다르고, 공개본은 `[EMAIL REDACTED]`다. fwd-08과 fwd-10의 context/full이 같고, o4-02/03/04/06/07/08이 같은 base/full을 쓰며, o4-05만 빈 미러 suffix로 full이 갈라지는 형태는 어댑터 코드와 맞다. runtime 커밋 `8fad7d8…`와 매니페스트 41파일도 보고서의 동결 범위와 같다. base와 full을 구별한 점도 일치한다.\n\n## 개인정보·WARN·과거 이슈\n공개 이메일은 제공 공개본에서 가려져 있다. 말미 보완은 reflog author/clone 경로 삭제를 추가하고 원본 stdout·판정·비용은 유지했다고 하며, `/Users/`·공개 이메일 0건·261 툴콜(105+156)·41 runtime 파일 전수 계산을 적는다. NEW REPORT 본문은 여전히 “이메일만 삭제”이고 재감사는 진행 중이라고 스스로 밝혔다. 제공 증거 안에서 남은 공개 PII는 확인되지 않았고, 미종료 재감사를 완료로 바꾸지는 않았다.\n\n소스 도달성은 OK4/WARN1/FAIL0/미설치2이고, 남은 WARN은 법망 공지 중단이다. 평가용 legalize-kr `99d67dea732`·precedent-kr `d0db51cb998` 갱신과 개인 설치본 미변경 범위로만 적혀 있다. `#323` AC5 미완료, `#272` 유한 검증·`#325` 후보 `NO_GO`/순서 유지, draft PR·plugin `0.8.0`·반복/holdout 확대 없음·금지 문자열 규칙 추가 없음도 보고서·adjudication `scope`/`limitations`와 같다. 릴리즈 게이트는 `incomplete`다.\n\n## 비용·시간·quota\n사례 비용 합은 o4 `$4.921724`, guardrails `$10.224156`, 합계 `$15.145880`이다. 시간 합은 898.160…/1526.901…초(보고 898.2/1526.9), 최장은 fwd-11 283.141…초(보고 283.1)다. 리스트 프라이스≠청구, 병렬 합≠벽시계라는 제한도 같다.\n\nClaude `2026-09-09T05:07:19Z`(14:07:19 KST)는 5시간 88%/잔여 12%, reset 16:30 KST, pace 22분 소진·reset 선행, 주간 19%/81%·09-13 01:00, `percentOnly`, 월간 unknown이다. Codex 14:09:56 KST는 주간 58%/42%, reset unix `1789512557`=09-16 07:49:17 KST, credits 0, 5시간·월간·pace unknown이다. all-provider 45초 timeout(exit 124)은 unknown으로 남아 있다. unit 120/9.506초, O1, O2 11/13, rescore corpus 19·88메시지·delta 0도 검증 JSON과 같다.\n\n제공 기록 사이에는 게이트를 열 모순이 없다. 스모크는 실행 완료·품질 미통과로 둔다.",
+      "status": "LGTM for records only"
+    },
+    {
+      "model": "grok-4.6",
+      "effort": "high",
+      "returncode": 0,
+      "seconds": 42.032869167014724,
+      "prompt_sha256": "04645d47efe17447ea528b90a33b1015f24d6ea73ec2010c37fe5bb6cdc8d149",
+      "provider": "grok",
+      "reported_backend_models": [
+        "grok-4.6-build"
+      ],
+      "stop_reason": "end_turn",
+      "num_turns": 1,
+      "usage": {
+        "input_tokens": 12363,
+        "cache_read_input_tokens": 512,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 2092,
+        "reasoning_tokens": 1412,
+        "total_tokens": 14967
+      },
+      "reported_cost_usd": 0.00638078,
+      "output": "**기록 정합성은 LGTM을 유지한다. 스모크 품질은 FAIL이며 `NO_GO`·릴리즈 미완료를 유지한다.** 법률 정답은 인증하지 않는다. 도구·파일 변경·검색·재위임 없이 제공 delta만 대조했다.\n\n## 유지되는 게이트\n이전 LGTM의 실행 완료·품질 미통과 구분은 그대로다. 공개본문은 20건 실행·자동/수동 분리·fwd-07 오탐을 전체 PASS로 올리지 않음·핵심 실패(미확인 준수, 판정표, provenance, 작성자 사실, 미제공 계약 검토 문안)·`#323` AC5·`#272`/`#325` 미재작성·draft PR·plugin `0.8.0`·금지 문자열 미추가를 유지한다. 재감사도 `legal_gold: false`다. FAIL을 PASS로 바꾸지 않는다.\n\n## 닫힌 문서·PII 간격\n이전 리뷰가 남긴 “이메일만 삭제”·재감사 진행 중은 이번 공개본·재감사로 대체됐다. 공개본은 이메일과 미러 Git reflog의 식별명·로컬 clone 경로 삭제를 명시하고 원본/공개 hash를 구별한다. 재감사는 초기 `FIX_REQUIRED`(fwd-02 reflog의 개인 author·홈 경로) 후 해당 `tool_result`만 마커로 치환했고, 원본 content SHA·stdout hash·비용·시간은 유지했다. 재검토 `PASS` 수치(완료 20, 원본/공개 hash 20, 재구성 입력 40, base/full 20, runtime 41, 툴콜 261, 공개 이메일·홈경로·개인명 0, reflog 치환 1)는 이전 기록 범위와 충돌하지 않는다.\n\nREADME 변동상태 중복 제거·검증 링크만 유지·O1 PASS는 문서 정리이며 20건 원본/입력/runtime 41/cost/verdict를 바꾸지 않는다.\n\n## 쿼터 metadata\nClaude 429 이후 5시간 100%·주간 21%는 이전 88/19 관측과 시각을 구별해 추가한 값이다. 원 스냅샷을 덮어쓰지 않았다. Grok 34%/잔여 66%·reset `09-13 15:42:04Z`·source `grok-cli-proxy`는 관측창 기간·confidence 미제공을 그대로 두어 완결로 올리지 않았다. all-provider timeout unknown도 유지된다.\n\n제공 delta 사이에는 게이트를 열 모순이 없다. 기록 LGTM, 스모크 FAIL, 출시 미완료.",
+      "status": "LGTM for records only"
+    }
+  ],
+  "preparation_fix": "First Grok call offloaded long prompt and hit max1 turn before final judgment. Reused previously verified --verbatim input and read/write/dispatch tool restrictions with max3 finite turns. Kept failed attempt and serially reassessed quota.",
+  "public_integrity_fix": "Email and one Git reflog result privacy redaction, separately hash-bound; independent full rereview PASS and final Grok delta LGTM."
+}

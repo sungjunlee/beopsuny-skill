@@ -1,0 +1,13 @@
+diff --git a/skills/beopsuny/references/self-verification.md b/skills/beopsuny/references/self-verification.md
+index 3983904..478f282 100644
+--- a/skills/beopsuny/references/self-verification.md
++++ b/skills/beopsuny/references/self-verification.md
+@@ -82,7 +82,7 @@
+ 계약 위험 분석·협상 제안·수정 초안에 적용한다.
+ 
+ - 주요 조항의 강행규정·예외·적용 시점과 경과규정을 current primary source로 확인했는가. 후보 목록을 전수 검토나 법률 근거로 승격하지 않았는가.
+-- 법률상 요구와 당사자 협상 선호, 사용자 사실과 가정·미확인 부분이 구별되는가.
++- 법률상 요구와 당사자 협상 선호, 사용자 사실과 가정·미확인 부분이 구별되는가. 핵심 결론과 수정 이유가 의존하는 미확인 전제를 그 결론에서도 유지했는가.
+ - 요청한 범위의 편집 가능한 초안과 수정 이유·확인 사항을 제공했는가. 분석만 요청한 일을 전면 redline으로 확대하지 않았는가.
+ - 법적 유효성·결과를 보증하거나 미확인 사실을 확정하지 않았는가. 작성과 실제 송부·제출·서명의 권한을 구별했는가.
+ 

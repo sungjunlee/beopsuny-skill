@@ -1,0 +1,86 @@
+{
+  "scope": "#333 code/tests/rescore/report integration; not legal accuracy approval",
+  "author": "GPT Luna max implementation; root integration",
+  "reviewer": "Grok4.6 high",
+  "first_attempt": {
+    "returncode": 124,
+    "seconds": 600.0318020410195,
+    "model": "grok-4.6",
+    "effort": "high",
+    "prompt_sha256": "74e977212d80fda47b211fd2e9e146094a00e3a59da95e60ccdfc4fd255db002",
+    "classification": "dispatch_timeout; no reviewer verdict or cost returned",
+    "stdout_bytes": 0,
+    "startup_warning": "Optional global context7 MCP authentication failed; no provider quota/auth fatal observed. No review or tool results returned before timeout."
+  },
+  "after_timeout_quota": {
+    "provider": "grok",
+    "at": "2026-09-09T05:59:21Z",
+    "account_label": "SuperGrok Heavy",
+    "source": "grok-cli-proxy",
+    "dataConfidence": null,
+    "primary": {
+      "resetsAt": "2026-09-13T15:42:04Z",
+      "usedPercent": 34
+    },
+    "secondary": null,
+    "tertiary": null,
+    "pace": {
+      "primary": {
+        "stage": "slightlyBehind",
+        "expectedUsedPercent": 37,
+        "willLastToReset": true,
+        "summary": "3% in reserve | Expected 37% used | Lasts until reset",
+        "deltaPercent": -3
+      }
+    }
+  },
+  "final_attempt": {
+    "returncode": 0,
+    "seconds": 170.64627337499405,
+    "model": "grok-4.6",
+    "effort": "high",
+    "prompt_sha256": "c2e0a47f8cc75228e6d1e904ff61b20747834a78c3442a9c0a1b537583f659fa",
+    "usage": {
+      "input_tokens": 18206,
+      "cache_read_input_tokens": 256,
+      "cache_creation_input_tokens": 0,
+      "output_tokens": 9344,
+      "reasoning_tokens": 9215,
+      "total_tokens": 27806
+    },
+    "cost_usd": 0.01574268,
+    "output_sha256": "bc6faeff1f8ee1a62429a05fa22b44ee571897a45045c8989ed7b0f264d065c6",
+    "output": "```json\n{\n  \"verdict\": \"LGTM\",\n  \"findings\": []\n}\n```\n\n`user_premise_marked` 단어 검사만 제거했고, fwd-07은 기존 hash-bound `legal_verification_core_trace`로 붙습니다. 미기록은 `REVIEW_REQUIRED`, 스텁 FAIL 기록은 FAIL이며 자동 PASS 경로는 없습니다. 기존 출처·상태 규칙과 원 출력은 그대로이고, 재채점 8건도 PASS 승격이 없습니다.",
+    "num_turns": 1,
+    "stop_reason": "end_turn",
+    "reported_models": [
+      "grok-4.6-build"
+    ]
+  },
+  "decision": "LGTM",
+  "release_gate": "NO_GO",
+  "runtime_changed": false,
+  "rerun_difference": "Same code and review criteria; 85454-character review input reduced to 21385 by omitting duplicate whole baseline matrices and unrelated full-file context. Concrete diff, receiver, tests/helper, all8changes, actual output and report retained.",
+  "final_quota": {
+    "provider": "grok",
+    "source": "grok-cli-proxy",
+    "at": "2026-09-09T06:03:23Z",
+    "account_label": "SuperGrok Heavy",
+    "primary": {
+      "resetsAt": "2026-09-13T15:42:04Z",
+      "usedPercent": 34
+    },
+    "secondary": null,
+    "tertiary": null,
+    "dataConfidence": null,
+    "pace": {
+      "primary": {
+        "deltaPercent": -3,
+        "stage": "slightlyBehind",
+        "summary": "3% in reserve | Expected 37% used | Lasts until reset",
+        "expectedUsedPercent": 37,
+        "willLastToReset": true
+      }
+    }
+  }
+}

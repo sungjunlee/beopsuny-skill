@@ -1,0 +1,26 @@
+{
+  "returncode": 0,
+  "seconds": 248.73777108400827,
+  "model": "grok-4.6",
+  "effort": "high",
+  "context_sha256": "1d0ed939abca9b309a3659578d8cdd3342935bd368d1ec111ee3474dadb35ba0",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "comparison_limit": "different target model from prior Sol pair; final runtime validation only, not a new paired effect estimate",
+  "usage": {
+    "input_tokens": 40656,
+    "cache_read_input_tokens": 128,
+    "cache_creation_input_tokens": 0,
+    "output_tokens": 12963,
+    "reasoning_tokens": 5351,
+    "total_tokens": 53747
+  },
+  "output_sha256": "fa9aef4fd3923798dcf8ac12a8fe76922871157e0bdd52d697186a9c0ee082fb",
+  "runtime_commit": "2c93ca4",
+  "cli_stop_reason": "end_turn",
+  "cli_estimated_cost_usd": 0.02705618,
+  "controlled_change": "Added --no-plan only relative to preserved incomplete bounded run; context and prompt hashes unchanged.",
+  "assessment": "REVIEW_REQUIRED",
+  "review_scope": "Completed draft is available; independently assess uncertainty in summary versus body, annex factual status, legal exceptions and current-law limits. No output PASS claimed.",
+  "previous_runs": "currency-contract-incomplete.json",
+  "trace_limitation": "JSON output exposes result and aggregate usage, not a complete tool trace. CLI flags alone do not prove tool isolation."
+}

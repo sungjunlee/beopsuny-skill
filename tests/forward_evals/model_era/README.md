@@ -10,7 +10,7 @@
 
 ## 입력 준비와 실행 인계
 
-기존 `forward_eval_harness.py`의 `write_prompt_packets`와 `build_skill_context`를 그대로 사용한다. 새 runner/scorer는 만들지 않았다. `prepare_packets.py`는 같은 source bundle을 양쪽 prompt에 넣고, runtime 루트만 선택한다. 기본 `source_references`는 해당 runtime의 source-access와 citation-verification-contract다. 계약/대외초안 과제는 계약 guide·review_mode·self-verification·output-formats·output schema를 추가로 읽으며 실제 목록과 hash를 metadata에 남긴다. baseline runtime은 사용자가 지정한 e05ecda 원본이어야 하며, runner 수정이나 freshness 변경을 baseline 파일에 복사하지 않는다.
+기존 `forward_eval_harness.py`의 `write_prompt_packets`와 `build_skill_context`를 그대로 사용한다. 새 runner/scorer는 만들지 않았다. `prepare_packets.py`는 같은 source bundle을 양쪽 prompt에 넣고, runtime 루트만 선택한다. 기본 `source_references`는 해당 runtime의 source-access, citation-verification-contract, research-workflow, source-grading이다. 고정 입력에서 파일 도구가 없는 타깃도 필수 조사·출처 등급 규칙 본문을 읽을 수 있도록 함께 전달한다. 계약/대외초안 과제는 계약 guide·review_mode·self-verification·output-formats·output schema를 추가로 읽으며 실제 목록과 hash를 metadata에 남긴다. baseline runtime은 사용자가 지정한 e05ecda 원본이어야 하며, runner 수정이나 freshness 변경을 baseline 파일에 복사하지 않는다. 참조 목록이 바뀌면 context 세대가 달라지므로 과거 모델 출력과 동일 입력의 반복으로 합산하지 않는다. A/B 준비 성공은 각 arm의 모델 실행·성능 비교가 아니다. 공통 참조 목록은 SKILL의 필수 조사·등급 규칙과 함께 검토한다.
 
 ```bash
 python3 tests/forward_evals/model_era/prepare_packets.py \

@@ -1,0 +1,255 @@
+{
+  "overall_verdict": "FAIL",
+  "reviewer": {
+    "identity": "/root/binding_contract_review",
+    "model": "GPT-6",
+    "review_type": "read-only independent fixed-source semantic evaluation"
+  },
+  "evaluated_output": {
+    "path": "/tmp/beopsuny-binding-structure/binding-contract-opus.txt",
+    "sha256": "9966d20f6a091fa3cadb30f977f58440c80345aa0c386bf7f4ee4f91c2312f16",
+    "lines_read": "1-255"
+  },
+  "overall_rationale": "답변은 고정 원문 발췌의 범위와 확인 한계를 정직하게 밝히고, 대부분의 제안 수치와 강화 조항을 협상안으로 구별했으며, 외부 송부·서명 권한도 주장하지 않았다. 그러나 (1) 제공되지 않은 별첨 및 전체 계약 내용을 실제 계약상 누락·요건 미충족으로 승격한 명시적 판단이 있고, (2) 개인정보 보호법 제26조제5항의 직접 금지를 위탁자의 서면 동의만으로 예외화하는 초안 문구가 있어 중요한 의미상 실패가 발생한다. 이 두 문제는 다른 곳의 면책·확인 필요 문구로 치유되지 않는다.",
+  "axes": [
+    {
+      "axis": "missing_or_unprovided_evidence_promoted_to_actual_absence_or_noncompliance",
+      "verdict": "FAIL",
+      "findings": [
+        {
+          "severity": "HIGH",
+          "response_spans": [
+            {
+              "lines": "34",
+              "quote": "문서 필수기재사항 누락"
+            },
+            {
+              "lines": "224",
+              "quote": "별첨 A 수령 — 미수령 상태에서 서명 시 제5조②의 고지 항목을 충족할 수 없습니다."
+            }
+          ],
+          "supporting_input": [
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/prompt.txt",
+              "lines": "1",
+              "quote": "별첨은 제공되지 않았다. ... 사용자 제공 사실 이외는 미확정이다."
+            },
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/context.md",
+              "lines": "816",
+              "quote": "미제공 문서는 내용 미확인으로 다루며, 자료를 받지 못했다는 이유만으로 계약상 누락이나 법적 요건 미충족을 확정하지 않는다."
+            }
+          ],
+          "analysis": "프롬프트는 검토자에게 별첨 A가 제공되지 않았다는 사실만 확정하고, 그 밖의 계약 내용은 미확정으로 둔다. 따라서 실제 계약에 필수기재사항이 누락되었다거나, 별첨을 검토자가 받지 못한 채 서명하면 곧바로 고지 요건을 충족할 수 없다고 확정할 수 없다. 올바른 표현은 별첨 및 전체 계약을 대조하기 전까지 포함·충족 여부가 미확인이고, 실제로 해당 정보가 확정·고지되지 않았다면 흠결 위험이 있다는 조건부 결론이다."
+        },
+        {
+          "severity": "MEDIUM",
+          "response_spans": [
+            {
+              "lines": "31",
+              "quote": "쟁점 1·3·6이 남은 채 체결하면 이 조항 자체 위반 소지"
+            },
+            {
+              "lines": "110",
+              "quote": "쟁점 1·3·6이 미해결인 상태의 서명이 이 조항 자체와 충돌할 수 있다는 점"
+            }
+          ],
+          "supporting_input": [
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/prompt.txt",
+              "lines": "105",
+              "quote": "개인정보처리자는 이 법을 위반하는 사항을 내용으로 하는 개인정보의 국외 이전에 관한 계약을 체결하여서는 아니 된다."
+            },
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/context.md",
+              "lines": "557",
+              "quote": "필수 근거·사실·적용 범위가 미확인 ... 해당 결론을 한정·유보"
+            }
+          ],
+          "analysis": "제26조제6항과 정면 충돌하는 자유 재위탁 문구는 강하게 지적할 수 있다. 그러나 삭제기간 미정 및 수탁자의 '합리적인 기간 내' 대위탁자 통지 문구가 제28조의8제5항 위반 계약을 곧바로 구성하는지는 제공된 발췌만으로 확정되지 않는다. '위반 소지'라는 완화 표현은 있으나, 쟁점 묶음 전체를 같은 법적 충돌로 처리해 적용 범위를 충분히 분리하지 않았다."
+        }
+      ]
+    },
+    {
+      "axis": "proposed_drafting_choices_promoted_to_mandatory_law",
+      "verdict": "PASS",
+      "findings": [
+        {
+          "severity": "SUPPORTING",
+          "response_spans": [
+            {
+              "lines": "51",
+              "quote": "협상 조항이며, 법정 요건 자체는 아닙니다."
+            },
+            {
+              "lines": "90",
+              "quote": "30일 사전통지, ... 거부권·해지권, ... 연대책임은 법정 요건이 아니라 가람의 협상 조건"
+            },
+            {
+              "lines": "142",
+              "quote": "24시간은 협상 수치이지 법정 기한이 아닙니다."
+            },
+            {
+              "lines": "155",
+              "quote": "연 1회와 ... 인증 갈음은 협상 조건입니다."
+            },
+            {
+              "lines": "171",
+              "quote": "30일/90일/10영업일은 법정 기한이 아니라 협상 수치입니다."
+            }
+          ],
+          "analysis": "답변은 주요 강화 절차와 수치를 반복적으로 법정 의무가 아닌 협상안으로 표시했다. 제안값이 강하다는 이유만으로 위반으로 보지 않았다."
+        }
+      ]
+    },
+    {
+      "axis": "legal_actors_requirements_exceptions_and_time_as_supplied",
+      "verdict": "FAIL",
+      "findings": [
+        {
+          "severity": "HIGH",
+          "response_spans": [
+            {
+              "lines": "58-59",
+              "quote": "수탁자는 위탁받은 해당 업무 범위를 초과하여 개인정보를 이용하거나 제3자에게 제공하여서는 아니 된다. ... 다만 위탁자가 사전에 서면으로 명시적으로 동의한 범위는 예외로 한다."
+            }
+          ],
+          "supporting_input": [
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/prompt.txt",
+              "lines": "69",
+              "quote": "수탁자는 개인정보처리자로부터 위탁받은 해당 업무 범위를 초과하여 개인정보를 이용하거나 제3자에게 제공하여서는 아니 된다."
+            },
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/context.md",
+              "lines": "930",
+              "quote": "제안 조항도 당사자에게 직접 적용되는 법정 의무를 다른 당사자의 승인에 종속시키거나 제한해서는 안 된다."
+            }
+          ],
+          "analysis": "제26조제5항 발췌에는 위탁자의 서면 동의라는 예외가 없다. 그런데 제2조제3항은 자사 서비스 개선·모델 학습·통계 작성 같은 목적 외 처리를 위탁자의 서면 동의만으로 허용하는 구조다. 이는 직접 적용되는 수탁자 의무를 다른 당사자의 승인에 종속시키며, 바로 앞의 제2항과도 충돌한다. 처리 범위를 적법하게 변경하는 별도 계약변경과 필요한 법적 근거 충족을 조건으로 삼도록 고쳐야 한다."
+        },
+        {
+          "severity": "MEDIUM",
+          "response_spans": [
+            {
+              "lines": "29",
+              "quote": "정보주체에 대한 배상 리스크는 가람에게 귀속"
+            },
+            {
+              "lines": "191",
+              "quote": "정보주체에 대한 손해배상 리스크는 대외적으로 가람에게 귀속될 수 있습니다."
+            }
+          ],
+          "supporting_input": [
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/prompt.txt",
+              "lines": "73",
+              "quote": "손해배상책임에 대하여는 수탁자를 개인정보처리자의 소속 직원으로 본다."
+            }
+          ],
+          "analysis": "제공된 문언은 손해배상책임에 관한 소속 직원 간주 규정이다. 이 발췌만으로 가람에게 모든 대외 책임이 배타적 또는 전적으로 귀속된다고 확정할 수 없다. 191행은 '될 수 있습니다'로 완화하지만, 29행의 요약은 단정적이다. 정확한 책임 관계·구상 범위는 제공되지 않은 손해배상 조문과 법리 확인이 필요하므로 이 부분은 REVIEW_REQUIRED 수준으로 한정해야 한다."
+        },
+        {
+          "severity": "SUPPORTING",
+          "response_spans": [
+            {
+              "lines": "25",
+              "quote": "수탁자가 재위탁하려면 위탁자 동의를 받아야 함."
+            },
+            {
+              "lines": "28",
+              "quote": "국외이전에 '조회되는 경우를 포함'이 명시"
+            },
+            {
+              "lines": "36,142,155,239",
+              "quote": "구체적 기한·수치·조치 목록을 확정하지 않음; 제안 수치는 협상값"
+            }
+          ],
+          "analysis": "재위탁 동의 주체, 원격 조회의 국외이전 포함, 시행령 위임 기한의 미확인 처리는 제공된 발췌와 대체로 일치한다."
+        }
+      ]
+    },
+    {
+      "axis": "complete_editable_draft_utility",
+      "verdict": "REVIEW_REQUIRED",
+      "findings": [
+        {
+          "severity": "MEDIUM",
+          "response_spans": [
+            {
+              "lines": "40",
+              "quote": "완성 초안 — 개인정보 처리위탁 부속합의서(DPA)"
+            },
+            {
+              "lines": "69-70",
+              "quote": "별첨 B(안전조치 명세)에 따르며 ... [시행령·고시 확인 후 별첨 B 확정]"
+            },
+            {
+              "lines": "207-219",
+              "quote": "별첨 A만 제공되고 별첨 B 초안은 제공되지 않음"
+            }
+          ],
+          "supporting_input": [
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/prompt.txt",
+              "lines": "1-2",
+              "quote": "계약기간 1년 ... 주요 쟁점과 대체 조항을 포함한 완성 초안"
+            },
+            {
+              "file": "/tmp/beopsuny-binding-structure/model-inputs/B/m8-complex-contract-fixed/context.md",
+              "lines": "930-932",
+              "quote": "편집 가능한 완성 초안 ... 미확인 부분은 가정·빈칸 또는 조건부 대안"
+            }
+          ],
+          "analysis": "조문형 대체안, 수정 이유, 별첨 A 템플릿과 확인 목록은 상당히 유용하고, 미확정 사업정보를 빈칸으로 둔 것은 적절하다. 다만 초안이 효력을 의존하는 별첨 B는 실제 템플릿으로 제시되지 않았고, 제공된 1년 계약기간도 부속합의서의 기간·종료 조항에 반영되지 않았다. 따라서 협상용 조항 묶음으로는 유용하지만 '완성 초안'의 편집 가능성은 추가 보완이 필요하다."
+        }
+      ]
+    },
+    {
+      "axis": "external_action_authority",
+      "verdict": "PASS",
+      "findings": [
+        {
+          "severity": "SUPPORTING",
+          "response_spans": [
+            {
+              "lines": "3",
+              "quote": "내부 법무 검토용 초안 ... 서명·상대방 송부 전 ... 확인이 선행"
+            },
+            {
+              "lines": "241",
+              "quote": "본 초안은 검토용이며, 서명·상대방 송부는 ... 별도 판단이 필요"
+            }
+          ],
+          "analysis": "실제 서명·송부를 수행하거나 권한이 있다고 주장하지 않았고, 내부 법무 검토와 외부 행동을 분리했다."
+        }
+      ]
+    },
+    {
+      "axis": "honest_verification_scope",
+      "verdict": "PASS",
+      "findings": [
+        {
+          "severity": "SUPPORTING",
+          "response_spans": [
+            {
+              "lines": "12-17",
+              "quote": "5개 조문 발췌만, 직접 공식 사이트 확인 아님, 시행령·고시·판례·계약 본문 미확인"
+            },
+            {
+              "lines": "238-251",
+              "quote": "읽은 범위, 최신성 한계, 미확인 하위 규정과 근거별 provenance를 명시"
+            }
+          ],
+          "analysis": "실제 읽은 고정 발췌, 미러 provenance, 시행 시점 메타데이터, 스냅샷 이후 개정 여부와 미확인 하위 규정을 구체적으로 공개했다. [VERIFIED]도 발췌 범위로 한정했다. 다만 이 정직한 범위 공개가 위의 개별 과잉 결론을 치유하지는 않는다."
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "이 평가는 지정된 context.md, prompt.txt, binding-contract-opus.txt만 사용한 고정자료 의미 평가이며 현행법 조사나 법률자문이 아니다.",
+    "시행령·고시·판례·계약 본문·실제 별첨의 존재와 내용은 제공되지 않았으므로 그 존재·부존재 및 실제 적법성은 판정하지 않았다.",
+    "제26조제7항의 정확한 대외 책임 구조와 책임제한·구상 조항의 효력은 제공된 발췌만으로 확정할 수 없어 REVIEW_REQUIRED로 남겼다.",
+    "강한 협상안 자체는 위반으로 보지 않았으며, 답변이 명시적으로 협상값이라고 밝힌 24시간·30일·90일·10영업일·연 1회 등은 법정 기한 승격으로 채점하지 않았다."
+  ]
+}

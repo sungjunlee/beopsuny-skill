@@ -1,0 +1,178 @@
+{
+  "ahead_by": 33,
+  "files": [
+    {
+      "changes": 71,
+      "filename": "kr/5ㆍ18민주유공자예우및단체설립에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 90,
+      "filename": "kr/경찰공무원승진임용규정/대통령령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 176,
+      "filename": "kr/계량에관한법률/시행규칙.md",
+      "status": "modified"
+    },
+    {
+      "changes": 63,
+      "filename": "kr/고엽제후유의증등환자지원및단체설립에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 288,
+      "filename": "kr/공공주택특별법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 83,
+      "filename": "kr/공공주택특별법/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 63,
+      "filename": "kr/공익사업을위한토지등의취득및보상에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 102,
+      "filename": "kr/국가유공자등예우및지원에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 170,
+      "filename": "kr/국토의계획및이용에관한법률/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 61,
+      "filename": "kr/국회법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 58,
+      "filename": "kr/긴급조치피해자민사재심등에관한특별법/법률.md",
+      "status": "added"
+    },
+    {
+      "changes": 84,
+      "filename": "kr/보훈보상대상자지원에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 61,
+      "filename": "kr/사할린동포지원에관한특별법/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 28,
+      "filename": "kr/산업입지및개발에관한법률/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 86,
+      "filename": "kr/생활주변방사선안전관리법/시행규칙.md",
+      "status": "modified"
+    },
+    {
+      "changes": 35,
+      "filename": "kr/생활주변방사선안전관리법/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 905,
+      "filename": "kr/원자력안전법/시행규칙.md",
+      "status": "modified"
+    },
+    {
+      "changes": 151,
+      "filename": "kr/원자력안전법/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 151,
+      "filename": "kr/응급의료에관한법률/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 52,
+      "filename": "kr/인사청문회법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 536,
+      "filename": "kr/전기통신금융사기피해방지및피해금환급에관한특별법/법률.md",
+      "status": "removed"
+    },
+    {
+      "changes": 627,
+      "filename": "kr/전기통신금융사기피해방지및피해자산환급에관한특별법/법률.md",
+      "status": "added"
+    },
+    {
+      "changes": 47,
+      "filename": "kr/전남광주통합특별시설치를위한특별법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 189,
+      "filename": "kr/제주특별자치도설치및국제자유도시조성을위한특별법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 296,
+      "filename": "kr/주택건설기준등에관한규정/대통령령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 297,
+      "filename": "kr/주택법/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 47,
+      "filename": "kr/주택법/시행령.md",
+      "status": "modified"
+    },
+    {
+      "changes": 49,
+      "filename": "kr/참전유공자예우및단체설립에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 69,
+      "filename": "kr/특수임무유공자예우및단체설립에관한법률/법률.md",
+      "status": "modified"
+    },
+    {
+      "changes": 256,
+      "filename": "kr/할부거래에관한법률/법률.md",
+      "status": "modified"
+    }
+  ],
+  "status": "ahead",
+  "local_head": "99159550231",
+  "observed_upstream": "99d67dea732",
+  "explicit_read_files": [
+    ".git/logs/refs/heads/main",
+    "kr/개인정보보호법/법률.md",
+    "kr/개인정보보호법/시행령.md",
+    "kr/건강기능식품에관한법률/법률.md",
+    "kr/독점규제및공정거래에관한법률/법률.md",
+    "kr/독점규제및공정거래에관한법률/시행령.md",
+    "kr/민법/법률.md",
+    "kr/식품위생법/법률.md",
+    "kr/식품위생법/시행규칙.md",
+    "kr/식품위생법/시행령.md",
+    "kr/약관의규제에관한법률/법률.md",
+    "kr/약관의규제에관한법률/시행령.md",
+    "kr/의료법/법률.md",
+    "kr/전자상거래등에서의소비자보호에관한법률/법률.md",
+    "kr/전자상거래등에서의소비자보호에관한법률/시행령.md"
+  ],
+  "changed_read_overlap": [],
+  "limitation": "Only explicit Read path intersection checked. Broad searches may depend on other files; no claim that this proves current legal text.",
+  "reachability_result": "[WARN]            로컬 미러/legalize-kr            upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\n"
+}

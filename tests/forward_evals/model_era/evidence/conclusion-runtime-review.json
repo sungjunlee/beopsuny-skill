@@ -1,0 +1,100 @@
+{
+  "initial": {
+    "returncode": 0,
+    "seconds": 17.06136387499282,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "68a6c5fc25de30563cd1360e42b3bdec6f4a641f2574b2dfd25a91e7d51a8664",
+    "review_scope": "GPT-written single self-verification bullet replacement, not model output quality",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 10699,
+      "cache_read_input_tokens": 2365,
+      "output_tokens": 994,
+      "output_tokens_details": {
+        "thinking_tokens": 962
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10699,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 994,
+          "cache_read_input_tokens": 2365,
+          "cache_creation_input_tokens": 10699,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 10699
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.1435575,
+    "num_turns": 1,
+    "output_sha256": "c0d043593aa9d36e7cb04681a9dfee39f3929e8809efbda7ed8cc9ea65321989"
+  },
+  "initial_output": "I'll read the actual files to verify line numbers and check the surrounding policy for conflicts.",
+  "initial_assessment": "INCOMPLETE; promised file reads with tools disabled, no verdict",
+  "corrected": {
+    "returncode": 0,
+    "seconds": 54.65823683398776,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "68a6c5fc25de30563cd1360e42b3bdec6f4a641f2574b2dfd25a91e7d51a8664",
+    "review_scope": "GPT-written single self-verification bullet replacement, not model output quality",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 10527,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 3526,
+      "output_tokens_details": {
+        "thinking_tokens": 2368
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10527,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 3526,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 10527,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 10527
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.20396999999999998,
+    "num_turns": 1,
+    "output_sha256": "86f991bb9db2a8ee3ec0a4df6e5828574ae2b17d5884b2981b3d66fb9937a0a1"
+  },
+  "corrected_output": "## Verdict: LGTM (one non‑blocking clarification noted)\n\n`skills/beopsuny/references/self-verification.md:85` — Dim 4, second bullet.\n\n### Consistency check against surrounding policy\n\n**No legal-rule change.** The added clause states no new substantive standard; it restates, at the conclusion stage, an obligation already carried in `contract_review_guide.md#counter-drafting` (\"요약과 초안에서도 적용 요건을 유지하며\", \"원문 접근이나 사실 확인이 부족하면 그 부분을 미확인으로 분리하고 가정·빈칸 또는 조건부 대안을 사용한다\").\n\n**No weakening of verification.** The clause is additive and conditional (`의존하는`). It does not lower any confirmation duty, does not create an exception to the `[UNVERIFIED]`/`[INSUFFICIENT]` downgrade path, and does not license asserting a premise as verified. Failure remedy is already covered by the existing Failure Handling row (\"근거·전제·해당 조항을 보정하고 해결되지 않은 결론만 유보한다\"), so it does not escalate to blanket conclusion withholding — consistent with the doc's \"해결되지 않은 결론만 유보\" and with the guide's \"초안을 힌트형으로 강제 후퇴시키지 않는다\".\n\n**No fixed-format / ceremony / hint-only constraint added.** It introduces no required heading, field, block, or wording; it is phrased as a semantic check in the same interrogative style as the neighboring bullets, and the closing line \"표제·인용·문장 완성도는 위반 기준이 아니다\" still governs the section. It does not force drafts down to hints — the object of the check is the premise's uncertainty status, not the draft's completeness.\n\n**Dim 1 interaction is coherent.** Dim 1 says \"검증 결과가 불명확하면 결론에 편입하지 말고 `[UNVERIFIED]` … 표시한다.\" The new clause's subject is expressly `미확인 전제`, so it reads as \"the unverified status travels with the conclusion\", not \"insert the unverified fact as established\". No contradiction.\n\n**Placement is appropriate.** `수정 이유` is a counter-drafting artifact (guide 출력 형식 skeleton), so Dim 4 is the right home; the general-answer analogue remains covered by Dim 2 (\"결론 강도가 conclusion binding 규칙에 맞는가\", \"논리가 불충분하면 결론을 유보\").\n\n### Non-blocking observation\n\n`self-verification.md:85` — \"그 결론에서도 유지했는가\" is location-flavored. A strict reader could take it to require the premise to be restated *inside the conclusion text*, even when it is already carried in the guide's separate `전제·확인 사항` slot — which would be redundant placement pressure against `contract_review_guide.md#출력 형식` (\"표제·필드 이름을 강제하지 않는다\"). Minimal remedy if you want it closed: make the check semantic rather than positional, e.g. \"…미확인 전제를 그 결론에서 확정된 사실로 바꾸지 않았는가\" (표시 위치·형식은 무관). Not required for merge; the current wording is defensible as-is.\n\n### Scope note\n\nThis review covers text-level consistency of the one-bullet replacement only. It does not assert that model behavior under this bullet is correct or validated — actual evaluation remains pending.",
+  "setup_correction": "Explicit system instruction: all review materials inline, no file reads; complete review in one response. Exact system string below.",
+  "corrected_system_prompt": "You are a policy reviewer. All review material is included in the user message. You have no tools and must complete the substantive review from the supplied text in this single response. Do not announce future file reads. A verdict may be LGTM or concrete findings; never infer that model behavior is validated.",
+  "scope": "runtime text LGTM with nonblocking positional-interpretation caveat; not actual output quality PASS"
+}

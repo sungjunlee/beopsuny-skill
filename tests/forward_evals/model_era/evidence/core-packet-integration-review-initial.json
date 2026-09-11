@@ -1,0 +1,50 @@
+{
+  "review": "## 판정: 조건부 — LGTM 아님 (평가자 설정·증거 통합 범위 한정)\n\n전제 확인: 이번 diff는 `skills/` 하위를 전혀 건드리지 않으며(변경 파일은 CHANGELOG, backlog sprint 노트, model_era README·followup-plan, `prepare_packets.py` 4줄), runtime 정책 무변경 주장은 diff 자체와 정합한다. 상위 `assessment: FAIL`·`quality_assessment: not yet measured`·`A_baseline_model_execution: not executed` 표기도 유지돼 있어, 이 리뷰는 **모델 거동·출력 품질에 대한 어떤 PASS도 함의하지 않는다.** 독립 출력 리뷰는 미도착이며 별도 원문 첨부 대상이다.\n\n### 초기 조건부 지적의 해소 상태\n\n| # | 초기 지적 | 현재 | 판단 |\n| --- | --- | --- | --- |\n| 1 | context 세대 구분 명시 | README에 \"참조 목록이 바뀌면 context 세대가 달라지므로 과거 출력과 합산하지 않는다\" 추가, followup-plan·`comparison_limit`에도 반복 | 해소 |\n| 2 | `set` 직렬화 순서 | `root_resolution`이 \"기존 `sorted(loaded_references)` 사용\"이라 주장하나 **diff hunk에 해당 기록 지점이 없어 제출 자료로 검증 불가** | 미검증 |\n| 3 | 목록 이중 관리 | README에만 \"SKILL 필수 규칙과 함께 검토\" 문장 추가, 스크립트 측 주석 없음 | 부분 해소 |\n| 4 | context 절삭 | `context_chars 65253`, `full_bodies_present: true` 기록 | 부분 해소(검사 방법 미기재) |\n\n### 조치 필요 항목\n\n1. **(우선) A arm 증거가 카운트뿐이다.** CHANGELOG는 \"기준선과 현재 runtime 각각의 파일을 읽고 hash를 기록\"이라고 쓰는데, `core-contract-opus.json`에 남은 파일 해시는 B(747a2ad) 10개뿐이고 A는 `baseline_runtime_files_matched_e05ecda: 10`이라는 숫자만 있다. A packet의 `context_sha256`/`prompt_sha256`/파일별 hash를 별도 증거(또는 같은 파일의 `arm: A` 블록)로 남기거나, CHANGELOG 문구를 실제 보존 범위로 낮출 것.\n\n2. **\"필수 참조 누락\"이라는 진단의 근거가 자료 내에 없다.** 두 파일이 SKILL이 read를 명시한 대상이라는 점이 이번 변경의 정당화 전부인데, 증거에 SKILL.md의 해당 문구·앵커가 인용돼 있지 않다. `preregistration_snapshot.missing_from_prior_no_tools_context` 옆에 SKILL의 해당 지시문 인용(파일 경로+행/문구)을 넣어 runtime 파일 없이도 검증 가능하게 할 것. 이는 지적 3(수동 동기화)의 실질적 대체물이기도 하다.\n\n3. **A(e05ecda)에도 같은 하드코딩 목록이 적용되는 대칭성 위험.** 참조 목록은 config가 아니라 스크립트 상수이므로 baseline arm에도 4개가 그대로 들어간다. e05ecda의 SKILL이 research-workflow·source-grading read를 동일하게 요구하지 않는다면, A는 자기 선언보다 **과잉 공급**된 packet이 되어 향후 A/B 비교에 편향이 남는다. e05ecda SKILL의 필수 read 목록 일치 여부를 확인해 `paired_preparation`에 한 줄로 기록할 것(불일치 시 비교 제한 문구 추가).\n\n4. **출력이 인용한 미러 revision/SHA가 입력과 대조되지 않았다.** 타깃 출력은 \"미러 revision `25bca42…c17baa`, SHA256 `586ee34f…3f13ecbb`\"를 근거표에 적었는데, 증거에는 `source_manifest_sha256: faa0da55…`만 있고 둘의 관계가 없다. 같은 파일에 `source-reachability` WARN(legalize-kr upstream 불일치)이 함께 실려 있어 오독 위험이 크다. (a) 출력 인용 해시가 packet 내 원문에서 온 문자열인지 대조 결과를 기록하고, (b) 고정 corpus는 `prepare_packets`의 checksum 검증으로 pin되어 미러 WARN의 영향을 받지 않는다는 문장을 validation 파일에 명시할 것. 대조 전까지 그 인용 문자열은 **미검증 모델 주장**으로 표기해야 한다.\n\n5. **질문 동일성 주장의 근거값이 없다.** `preregistration_snapshot.question_sha256_expected`에 들어간 값이 `prompt_sha256`과 같은 `f19e9388…`인데, 필드명은 question, 실제는 prompt다. 또한 \"질문·고정 원문은 같은 SHA로 유지\"의 비교 대상인 **이전 세대의 prompt/source SHA 실값이 파일에 없다**(대조로 남은 것은 `prior_context_reconstructed_sha256: acdc4018…` 하나뿐). 명칭을 통일하고, 과거 세대 prompt/source SHA를 병기해 동일성이 재계산 가능하게 할 것.\n\n6. **`runtime_commit` 필드에 문장이 섞였다.** `\"747a2ad unchanged runtime; evaluator supplies existing …\"`는 기계 비교가 깨진다. `runtime_commit`은 full SHA(`747a2adb1e5a…`)만, 설명은 별도 키(`runtime_note`)로 분리할 것. `preregistration_snapshot`에는 이미 full SHA가 있으므로 값 충돌도 정리 필요.\n\n7. **`metadata_sha256`·`sorted()` 재계산 절차 미기재(지적 2 잔여).** `metadata_sha256: c217b188…`이 어떤 파일의 어떤 직렬화(정렬 여부, `json.dumps` 옵션)로 산출됐는지가 없어 제3자가 재계산할 수 없고, 정렬 사용 주장도 확인 불가다. 산출 절차 한 줄 + `prepare_packets.py`의 기록 지점 코드 3~4줄 인용을 증거에 포함할 것.\n\n8. **절삭 검사 방법 미기재(지적 4 잔여).** `full_bodies_present: true`가 \"파일 포함 여부\"인지 \"각 참조의 말미 문자열 일치\"인지 불명. 검사 기준(예: 각 참조 마지막 줄 문자열 매칭, 파일 바이트 길이 합 대 context 길이)을 명시할 것.\n\n9. **경미 — 일관성 정리 2건.** (a) followup-plan에 \"runtime 41파일은 `3e76b25`와 일치\"와 \"`747a2ad`와 동일\"이 함께 있어 충돌로 읽힌다. `747a2ad`가 `3e76b25` 대비 `skills/` 무변경이라는 관계를 한 줄로 명시할 것. (b) `packet_metadata.evaluation_date: \"2026-09-08\"`이 실행일(2026-09-09) 및 문서 일자와 어긋난다 — corpus 기준일이면 필드명을 `corpus_date`로 구분할 것.\n\n10. **경미 — 셋업 리뷰 원문 보존 형식.** 타깃은 `core-contract-opus.txt`로 원문을 분리 보존하는데, 셋업 리뷰는 JSON 문자열로만 있고 `output_sha256: 13cf5767…`이 그 인라인 문자열의 해시인지 표기가 없다. 동일 규약(별도 `.txt` + hash)으로 맞추거나 \"inline verbatim, sha256는 본 문자열 기준\"을 명시할 것.\n\n### 이상 없음으로 확인한 항목\n\n- `web_search_requests: 0`, `web_fetch_requests: 0`, `num_turns: 1`, `access_log: []` — no-tools 조건과 정합. 289.9s는 900초 상한 내.\n- nested `execution_status: not_measured`에 `packet_metadata_kind: \"pre-execution snapshot\"` 주석이 붙어 집계 오독 방지 장치가 있음.\n- `runtime_input_count: 10`이 `runtime_inputs` 10개 및 기본 4 + 계약과제 5 + SKILL 구성과 일치.\n- quota 스냅샷에 계정 라벨·이메일 미포함(`quota_scope`에 생략 명시) — 개인정보 유출 없음. 외부 전송 경로 추가 없음.\n- 확대 없음(반복·holdout 미개시), `#323 AC5` 미완료, `#325 NO_GO`, `#272` 유한 검증 유지 문구가 CHANGELOG·sprint·followup-plan 3곳에서 일치.\n\n법률 전문성·실무 적정성 판단과 목표 성능 판정은 이 리뷰 범위 밖이며, 위 항목 중 1~5 반영 후 재검토를 권한다.",
+  "execution": {
+    "returncode": 0,
+    "seconds": 131.73153483399074,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "2d75f000bbb3cc79c0d92fbb3d6a509f27ca80a6a1ce17b560c645f613d23f1f",
+    "review_scope": "GPT-written evaluator required-reference fix and evidence integration only, not legal expert certification",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 27382,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 8475,
+      "output_tokens_details": {
+        "thinking_tokens": 5125
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 27382,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 8475,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 27382,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 27382
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.5113470000000001,
+    "num_turns": 1,
+    "output_sha256": "6ce2a5e20803e72edb2a7ae806b2a1e589b68bbf540a0e7a57333a3a031e32fb"
+  },
+  "root_resolution": "Added exact A/B preparation snapshots, baseline/current required-reference declarations, source pin and prompt hash checks, whole-body containment method, serialization code, and field/date/hash scope notes. No code or runtime policy change required."
+}

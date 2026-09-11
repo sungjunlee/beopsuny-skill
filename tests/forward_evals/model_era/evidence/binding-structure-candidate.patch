@@ -1,0 +1,114 @@
+diff --git a/skills/beopsuny/references/citation-verification-contract.md b/skills/beopsuny/references/citation-verification-contract.md
+index 6b9c854..29867fb 100644
+--- a/skills/beopsuny/references/citation-verification-contract.md
++++ b/skills/beopsuny/references/citation-verification-contract.md
+@@ -49,7 +49,7 @@ local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 
+ 
+ - 요약·스니펫, 검색 결과 title, 링크 미리보기만 확인했다.
+ - `assets/data/*.yaml`, checklist, mandatory provision 후보, verification log 같은 번들 또는 저장 데이터만 봤다.
+-- 사용자가 제공한 조문번호, 사건번호, 금액, 기한을 독립 확인하지 않았다.
++- 사용자가 제공한 조문번호, 사건번호, 법정 금액·기한 등 법률 근거를 독립 확인하지 않았다.
+ - 법령 ID, 인허가 요건, 공식 서식, 법정 기한을 official source 확인 없이 기억이나 후보 데이터로 처리했다.
+ - 링크 패턴이 맞아 보인다는 이유만으로 law.go.kr 원문 확인을 했다고 표시했다.
+ - API timeout, 5xx, `service_maintenance`, 빈 응답을 검색 0건이나 개정 없음으로 해석했다.
+diff --git a/skills/beopsuny/references/research-workflow.md b/skills/beopsuny/references/research-workflow.md
+index deeb9f5..a78268b 100644
+--- a/skills/beopsuny/references/research-workflow.md
++++ b/skills/beopsuny/references/research-workflow.md
+@@ -6,7 +6,7 @@
+ 
+ 모든 법률 결론은 확인한 원문과 적용 범위에 연결한다. 답변에 쓰는 인용마다 citation·pinpoint, 출처 권위 라벨, verification status, 실제 확인 경로(provenance), 적용 시점(currency)을 식별할 수 있어야 한다. 어느 결론을 뒷받침하는지도 드러낸다. 이 정보는 인용 줄과 인접한 설명에 담으면 충분하며 별도 map·packet·ledger에 반복 입력하지 않는다. `[VERIFIED]`의 조건은 `references/citation-verification-contract.md`를 따른다.
+ 
+-- 사용자 전제인 조문·사건번호·금액·기한도 독립적으로 확인한다. 원문에서 확인한 내용과 제공받은 사실·가정을 구별한다.
++- 사용자 전제인 조문·사건번호·법정 금액·기한도 독립적으로 확인한다. 원문에서 확인한 내용과 제공받은 사실·가정을 구별한다.
+ - 공포일과 시행일, 사건 당시 적용법, 예외·단서·적용 제외·경과규정을 확인한다. 결론에 필요한 하위법령·행정규칙·판례가 없으면 확인한 범위로 결론을 제한한다.
+ - 조회 실패를 부존재나 변경 없음으로 해석하지 않는다. 후보·스니펫·stale 자산만으로 결론을 확정하지 않는다.
+ - 같은 결론에 관해 확인된 반대근거나 자료 간 차이를 숨기지 않는다. 해소되지 않은 충돌·미확인 사실은 답변의 결론 강도와 다음 확인 항목에 반영한다.
+@@ -26,16 +26,7 @@
+ 
+ ### Conclusion binding
+ 
+-최종 결론의 강도는 가장 약한 필수 authority에 맞춘다.
+-
+-| 상태 | 결론 표현 |
+-| --- | --- |
+-| 모든 필수 authority가 `공식 원문`, `공식 원문: 하급심`, `공식 원문 기반 로컬 미러`, `공식 원문 기반 로컬 미러: 하급심`, `공식 실무자료` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]` | “확인한 범위에서는 …” |
+-| 필수 authority가 `공식 실무자료: 미확정`, 계류·예정·초안, search-only 결과, 또는 원문 필드 미확인 자료 | `[UNVERIFIED]` 또는 `[INSUFFICIENT]` + 현재법 결론 유보 |
+-| 일부 authority가 `[UNVERIFIED]` | “가능성이 있으나 원문/공식 확인 전 단정 불가” |
+-| 필수 authority가 `[INSUFFICIENT]` | 결론 유보 + 확인할 source 제시 |
+-| source 간 충돌 | `[CONTRADICTED]` 표시 + 결론 강도 낮춤 |
+-| stale 자산만 있음 | triage 후보로만 제시 |
++최종 결론의 강도는 그 결론에 필요한 근거의 사용 가능성·실제 확인 범위와 적용 사실·예외·시점에 맞춘다. 사용자에게서 받은 사건 사실은 제공된 전제로 분석하며, 법률에 관한 주장과 구별한다. 출처의 사용 가능성과 verification status는 `references/source-grading.md`와 `references/citation-verification-contract.md`를 따르며, 인용의 `[VERIFIED]` 상태만으로 사안의 적용 결론을 확정하지 않는다. 필수 근거·사실·적용 범위가 미확인·stale이거나 근거가 상충하면 해당 결론을 한정·유보하고, 가능한 조건부 분석·초안에는 그 전제와 다음 확인 대상을 남긴다.
+ 
+ ## Verification packet contract
+ 
+diff --git a/skills/beopsuny/references/source-grading.md b/skills/beopsuny/references/source-grading.md
+index f3c94ec..e0a5b4e 100644
+--- a/skills/beopsuny/references/source-grading.md
++++ b/skills/beopsuny/references/source-grading.md
+@@ -20,6 +20,7 @@
+ | 라벨 | 결론 근거 | 대표 예시 |
+ | --- | --- | --- |
+ | **공식 원문** | 가능 | law.go.kr 법령·행정규칙·판례 원문, 법제처 해석례, 처분·의결서 원문 |
++| **공식 원문: 하급심** | 가능하되 caveat 필요 | law.go.kr 등에서 직접 확인한 하급심 판례 원문 |
+ | **공식 실무자료** | 보조 가능 | 규제기관 가이드라인·해설서·FAQ·보도자료, 정부 공식 안내 |
+ | **공식 실무자료: 미확정** | 현재법 결론 근거 불가 | 계류 의안, 입법예고, 개정안 |
+ | **공식 원문 기반 로컬 미러** | 가능 | legalize-kr 법령 Markdown, admrule-kr 행정규칙 Markdown, ordinance-kr 자치법규 Markdown, precedent-kr 대법원 판례 Markdown |
+@@ -130,7 +131,7 @@
+ A. 권위와 출처 성격은 별개다. 학술 논문은 개별 의견으로 분류되며, 법적 결론의 단독 근거는 될 수 없다. 그 논문이 인용한 판례·법령이 공식 원문일 수 있고, 그것을 원본에서 직접 확인해야 한다.
+ 
+ **Q. 판례가 대법원이면 공식 원문, 하급심도 공식 원문인가?**
+-A. 직접 law.go.kr 판례 원문을 열어 확인했다면 `공식 원문`이다. precedent-kr 파일만 확인했다면 `공식 원문 기반 로컬 미러`이고, 하급심은 `공식 원문 기반 로컬 미러: 하급심`처럼 caveat를 붙인다.
++A. 직접 law.go.kr 원문을 확인한 대법원 판례는 `공식 원문`, 하급심은 `공식 원문: 하급심`이다. precedent-kr 파일만 확인했다면 `공식 원문 기반 로컬 미러`이고, 하급심은 `공식 원문 기반 로컬 미러: 하급심`처럼 caveat를 붙인다.
+ 
+ **Q. legalize-kr 파일을 읽고 `[VERIFIED]`를 붙일 수 있나?**
+ A. 가능하다. 다만 citation, pinpoint, 최신성, provenance 조건을 모두 충족해야 하고, provenance는 `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`처럼 직접 공식 사이트 확인과 구분한다.
+diff --git a/tests/validate_skill_contracts.py b/tests/validate_skill_contracts.py
+index efbcaeb..c2315a3 100644
+--- a/tests/validate_skill_contracts.py
++++ b/tests/validate_skill_contracts.py
+@@ -1874,20 +1874,24 @@ def check_research_workflow_verification_core() -> None:
+ 
+ 
+ 
+-def check_current_law_verified_binding_excludes_unconfirmed_practice_material() -> None:
++def check_conclusion_binding_uses_canonical_source_rules() -> None:
+     research = read_text("skills/beopsuny/references/research-workflow.md")
+     skill = read_text("skills/beopsuny/SKILL.md")
+ 
+-    assert_not_contains(
+-        research,
+-        "공식 실무자료`, `공식 실무자료: 미확정` 중 해당 source 성격에 맞는 라벨이고 `[VERIFIED]`",
+-        "research-workflow.md",
+-    )
+-    for required in [
+-        "필수 authority가 `공식 실무자료: 미확정`",
+-        "`[UNVERIFIED]` 또는 `[INSUFFICIENT]` + 현재법 결론 유보",
+-    ]:
+-        assert_contains(research, required, "research-workflow.md")
++    binding = section_body(research, "### Conclusion binding")
++    for reference in ["references/source-grading.md", "references/citation-verification-contract.md"]:
++        assert_contains(binding, reference, "research-workflow.md conclusion binding")
++    source_classes = load_yaml("skills/beopsuny/assets/policies/source_grades.yaml")["source_classes"]
++    for source_class, use_allowed in {
++        "official_practice_material": "support_or_context",
++        "official_practice_pending": "future_or_policy_context",
++    }.items():
++        policy = source_classes[source_class]
++        if policy.get("can_be_sole_basis") is not False or policy.get("use_allowed") != use_allowed:
++            raise AssertionError(
++                f"source_grades.yaml: {source_class} requires use_allowed={use_allowed!r} "
++                "and can_be_sole_basis=false"
++            )
+     for required in [
+         # 미확정 실무자료는 현재법 [VERIFIED] 근거 불가
+         "`공식 실무자료: 미확정`",
+@@ -4486,7 +4490,7 @@ CHECK_GROUPS = (
+             check_citation_verification_contract_single_source,
+             check_golden_citation_fixtures,
+             check_research_workflow_verification_core,
+-            check_current_law_verified_binding_excludes_unconfirmed_practice_material,
++            check_conclusion_binding_uses_canonical_source_rules,
+             check_admin_rule_provenance_examples_split_search_and_original_confirmation,
+             check_litigation_element_fact_template,
+             check_enforcement_response_workflow,

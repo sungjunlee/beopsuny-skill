@@ -1,0 +1,43 @@
+{
+  "reviewer": "native-gpt-5.6-sol-high",
+  "author": "grok-4.6-high",
+  "reviewed_at": "2026-09-08T16:09:05.052187+00:00",
+  "scope": "Bounded two-output independent semantic review; no expert legal gold.",
+  "contract": {
+    "output_sha256": "fa9aef4fd3923798dcf8ac12a8fe76922871157e0bdd52d697186a9c0ee082fb",
+    "assessment": "FAIL",
+    "axes": {
+      "draft_usefulness": "PASS",
+      "exception_applicability": "PASS",
+      "provided_vs_nonexistent": "FAIL",
+      "unsupported_legal_effect": "FAIL"
+    },
+    "findings": [
+      {
+        "quote": "별첨 A 부재",
+        "reason": "Summary and draft introduction assert actual absence/blank annex despite body correctly saying not provided and unknown."
+      },
+      {
+        "quote": "“합리적인 기간 내”와 같이 법정 기준을 완화하는 문언은 효력이 없고, 제2항으로 대체한다.",
+        "reason": "Supplied excerpts do not establish invalidity of Orion-to-Garam internal notice wording. Insufficient support for legal-effect conclusion."
+      }
+    ]
+  },
+  "o4_06": {
+    "output_sha256": "9711c93846382be3dee69bcacb3b999c79f641d27e3c91d91db69cae60e37ed9",
+    "assessment": "FAIL",
+    "axes": {
+      "checked_text_presence": "PASS",
+      "nonexistence_and_current_law": "FAIL"
+    },
+    "findings": [
+      {
+        "quote": "없는 조문이므로, 그 조문이 개인정보처리자에게 지우는 의무도 없습니다.",
+        "reason": "Only future consolidated text was read; admitted lack of current text does not support categorical nonexistence or absence of obligation."
+      }
+    ]
+  },
+  "runtime_change_needed": false,
+  "runtime_reason": "Existing contract already requires separate factual support for nonexistence and uncertainty maintained in summary, conclusion and draft. Treat as model-output regression, not missing policy text.",
+  "integration": "Preserve actual failures; do not manually correct responses and count them as passing model runs. Release gate remains unmet."
+}

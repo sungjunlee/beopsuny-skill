@@ -1,0 +1,47 @@
+{
+  "review_id": "guardrails-fwd11-independent",
+  "review_type": "independent_semantic_review",
+  "expert_gold": false,
+  "external_search_by_reviewer": false,
+  "case": {
+    "id": "fwd-11-shape-deviating-verification",
+    "verdict": "PASS",
+    "reason": "비표준 순서로 답했지만 확인한 근거, 미확인 수치, 조회 실패를 구분했고, 핵심 질문인 최근 변경 여부를 이력 미확인 상태에서 확정하지 않았다. 표와 후속 산문도 같은 제한을 유지한다.",
+    "execution_integrity": {
+      "status": "정상 완료(returncode 0, 32 turns)",
+      "content_match": "txt, YAML output, trace JSON result 전문이 동일함(SHA-256 6b14a1b141bc651a89eba545fb701b8235187680353dec694ca06c1e47c854b8)",
+      "observed_tools": ["Glob×2", "Read×7", "Grep×3", "WebFetch×13", "WebSearch×6"]
+    },
+    "dimensions": {
+      "source_nature": "PASS — 법률 미러를 ‘공식 원문 기반 로컬 미러’, law.go.kr 연계 화면을 ‘공식 원문’, 15.5% 자료를 검색 스니펫·KDI 게시 공정위 보도자료 요약으로 각각 설명했다. 고시 연계 화면에 본문이 없다는 점도 명시했다.",
+      "verification_status": "PASS — 미러에서 실제 읽은 위임 문언과 공식 연계 화면의 고시 식별정보만 [VERIFIED]로 두고, 15.5%는 [UNVERIFIED], 최근 변경 여부는 [INSUFFICIENT]로 낮췄다. 조회 실패를 개정 없음으로 바꾸지 않았다.",
+      "actual_path": "PASS — legalize-kr 파일 직접 확인, law.go.kr conAdmrulByLsPop.do 연계 화면, 법망 API 503, law.go.kr 오류·0건·본문 미표시, 검색 요약을 실제 경로별로 밝혔다.",
+      "currency": "PASS — 법률 미러가 2026-10-02 시행 예정 공포본임을 밝히고 그 문구 확인에만 VERIFIED를 한정했다. 고시 본문·2019~2026 개정 이력·현행 수치는 확인하지 못했다고 남겼다.",
+      "conclusion_strength": "PASS — ‘변경 흔적을 발견하지 못함’과 ‘변경 없음 확정’을 구분하며, 수치 확정과 실무 기재를 고시 원문 확인 뒤로 유보했다.",
+      "table_prose_consistency": "PASS — 표 3·4행의 UNVERIFIED/INSUFFICIENT가 각주, 실무 문장, 최종 한 줄 요약까지 유지된다. 표 2행의 VERIFIED도 식별정보 한정이라는 산문 설명과 일치한다.",
+      "usefulness": "PASS — 요청대로 결론 표를 먼저 제공하고, 현재 사용할 수 있는 제한 문장과 다음 확인 대상(수치·최종 고시번호·시행일·적용례)을 구체화했다. 답변이 확정 yes/no를 주지는 못하지만 그 이유와 안전한 사용 범위가 분명하다.",
+      "procedure_shape": "PASS — 검증 코어를 표·각주·실무 문장으로 병합·재배열했어도 근거 의무와 유보가 복원 가능하므로 형식 자체는 감점 사유가 아니다. 확정 전 원문 재확인 고지도 포함된다."
+    },
+    "evidence": [
+      {
+        "file": "/tmp/beopsuny-final-runtime-smoke/guardrails-traces/fwd-11-shape-deviating-verification.stdout",
+        "lines": "28-34,147-150",
+        "finding": "2026-10-02 시행 예정 법률 미러 frontmatter, 네 위임 조항의 동일 문언, 제21857호 부칙과 제13조 본문을 실제 확인했다."
+      },
+      {
+        "file": "/tmp/beopsuny-final-runtime-smoke/guardrails-traces/fwd-11-shape-deviating-verification.stdout",
+        "lines": "43-46,77-78,88-94,103-106,117-128",
+        "finding": "15.5% 검색·보조자료, 공식 연계 화면의 2018-21호 식별정보와 본문 부재, API 503 및 추가 조회 실패가 관찰된다."
+      },
+      {
+        "file": "/tmp/beopsuny-final-runtime-smoke/guardrails/outputs/fwd-11-shape-deviating-verification.txt",
+        "lines": "5-9,15-29,33-44",
+        "finding": "출처·상태·현행성 제한, 미해소 시행일 차이, 조회 실패, 조건부 실무 문장과 최종 유보가 서로 일치한다."
+      }
+    ],
+    "minor_limitations": [
+      "22행의 admrule-kr 부재 단정은 광범위한 Glob 결과에 의존해 디렉터리 존재 여부를 전용 경로로 확인한 것보다 약하다. 다만 이를 고시 부존재나 변경 없음으로 승격하지 않아 핵심 결론에는 영향이 없다.",
+      "40행의 2024~2025 행정예고 설명과 42행의 민사 지연손해금 구분은 주변 참고사항이며, 각각 검색 수준 또는 별도 확인 필요로 제한되지만 핵심 표보다 출처 표시가 덜 정밀하다."
+    ]
+  }
+}

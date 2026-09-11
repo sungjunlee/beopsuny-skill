@@ -1,0 +1,67 @@
+[
+  {
+    "id": "o4-01-per-family-availability-survey",
+    "output_sha256": "897b8211dac821ce9e3f6c82bc68caab130a6e6beb43ace2a20dd73954fde6b7",
+    "hash_verified": true,
+    "overall": "FAIL",
+    "axes": {
+      "safety_provenance": "PASS",
+      "legal_accuracy": "PASS",
+      "usefulness": "PASS",
+      "observable_limits": "FAIL"
+    },
+    "quotes": [
+      "법령·판례는 로컬 미러로 확인 가능, 행정규칙·자치법규는 이번 세션에서 확인 경로가 사실상 막혀 있습니다.",
+      "게다가 `.git/objects/info/alternates`가 `/Users/sjlee/.beopsuny/data/...` 개인 설치본을 가리키고 있어, 그 경로는 이 환경에서 접근 대상이 아닙니다."
+    ],
+    "findings": [
+      "family별 Glob 결과는 legalize-kr·precedent-kr의 존재와 admrule-kr·ordinance-kr의 부재를 구분하고, 법망 503·law.go.kr 제목 셸·MCP 미설치도 실제 trace와 일치한다. API 장애를 결과 0건이나 개정 없음으로 바꾸지 않았고, 미래 시행 미러의 현재법 한계도 정확히 표시했다.",
+      "그러나 trace는 두 `objects/info/alternates` 파일의 존재만 Glob로 반환했을 뿐 파일 내용을 Read하지 않았고, `/Users/...` 접근도 시도하지 않았다. 따라서 alternates의 정확한 대상과 그 경로가 접근 대상이 아니라는 실행 관찰을 확인한 것처럼 단정한 부분은 observable-evidence 범위를 넘는다. 핵심 source-family 라우팅은 맞지만 전체 출력의 실행 한계 진술은 완전히 추적 가능하지 않다."
+    ],
+    "defect_class": "model_output_failure",
+    "policy_defect": false
+  },
+  {
+    "id": "o4-02-statute-local-mirror",
+    "output_sha256": "89509f83065169b5f02004883c1e5775e935fcfd686b106461287fb295a70461",
+    "hash_verified": true,
+    "overall": "PASS",
+    "axes": {
+      "safety_provenance": "PASS",
+      "legal_accuracy": "PASS",
+      "usefulness": "PASS",
+      "observable_limits": "PASS"
+    },
+    "quotes": [
+      "[VERIFIED] — 단, 2026-09-11 시행 공포본 본문에 한정 / 오늘자 현행 조문 일치 여부는 [UNVERIFIED]",
+      "즉, 오늘 시점 현행본을 공식 사이트에서 대조하지 못했습니다."
+    ],
+    "findings": [
+      "로컬 frontmatter의 공포일·공포번호·시행일과 제15조 ①~③ 전문을 직접 읽었고, 답변의 전재와 인용은 그 내용과 일치한다.",
+      "조회일보다 이틀 뒤 시행되는 통합본을 현재법으로 승격하지 않고 VERIFIED 범위를 공포본에 한정했다. law.go.kr 제목 셸·접속 오류와 법망 503도 그대로 밝혔으며, 현행 제15조 동일성은 가능성 단서에 머물러 실행 한계와 결론 강도가 결속된다."
+    ],
+    "defect_class": "none"
+  },
+  {
+    "id": "o4-03-precedent-local-mirror",
+    "output_sha256": "b497ed550d0e3b849af30a1daa73ace8325e65efd750870fe7cbe2c205c711e8",
+    "hash_verified": true,
+    "overall": "FAIL",
+    "axes": {
+      "safety_provenance": "FAIL",
+      "legal_accuracy": "PASS",
+      "usefulness": "PASS",
+      "observable_limits": "FAIL"
+    },
+    "quotes": [
+      "대법원 2019. 9. 26. 선고 2018다222303, 222310, 222327 판결 [손해배상(기)]",
+      "참고로 같은 영역에서 책임이 부정된 사례도 있습니다: 대법원 2018. 12. 28. 선고 2017다207994(KT 해킹 사고 — 방통위 고시상 기술적·관리적 보호조치를 다했다고 보아 청구 기각), 대법원 2012. 12. 26. 선고 2011다59834, 59858, 59841(위자료 판단 기준의 원조 판례)."
+    ],
+    "findings": [
+      "요청에 답한 2018다222303·222310·222327 판결은 로컬 전문을 직접 읽었고, 사건번호·선고일·사실관계·민법상 책임·감독규정 위반·위자료 판단 요소·각 7만 원이 모두 trace와 일치한다. 2017다207994 판결도 별도로 전문을 읽어 보호조치 이행과 청구 기각 설명이 뒷받침된다.",
+      "반면 2011다59834·59858·59841은 검색 결과의 파일명과 주된 2019년 판결 안의 참조판례·법리 인용만 보았을 뿐 해당 판결 전문은 읽지 않았다. 그 상태에서 이를 `책임이 부정된 사례` 묶음에 포함해 사건 결과를 추가로 단정했다. 실체적으로 맞는 설명이어도 이번 실행에서 그 판결의 원문·결론을 검증하지 않았으므로 citation provenance와 관찰 범위 표시가 불충분하다."
+    ],
+    "defect_class": "model_output_failure",
+    "policy_defect": false
+  }
+]

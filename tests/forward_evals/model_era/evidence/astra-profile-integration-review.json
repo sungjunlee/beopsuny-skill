@@ -1,0 +1,30 @@
+{
+  "returncode": 0,
+  "seconds": 202.10815012501553,
+  "model_requested": "grok-4.6",
+  "effort_requested": "high",
+  "prompt_sha256": "fa5d756c58c7b8308440612ad58af8562ecef8492443a48d45a2636dfa26e651",
+  "legal_gold": false,
+  "scope": "evidence/report integration only; no output correctness or release certification",
+  "output": "```json\n{\n  \"verdict\": \"LGTM\",\n  \"scope\": {\n    \"review_type\": \"cross-family integration accuracy only\",\n    \"not_in_scope\": [\n      \"legal re-adjudication of the five native answers\",\n      \"expert-gold or current-law validation\",\n      \"actual provider backend model ID\",\n      \"native per-call wall time/token/cost\",\n      \"independent full tool-trace audit\",\n      \"issue #323 closure\",\n      \"release or runtime-adoption GO\"\n    ],\n    \"native_model\": \"requested/accepted gpt-6-astra medium; actual backend ID unavailable\",\n    \"telemetry\": \"native per-call telemetry unavailable; reviewer display cost is not target cost\",\n    \"preserved_limits\": \"prior Opus/Fable failures and mandatory live-smoke failures remain; no checkbox/release asserted\"\n  },\n  \"hash_binding\": {\n    \"answers_to_independent_reviews\": \"all five output_sha256 match output_reviewed_sha256\",\n    \"A_B_prompt\": \"identical f19e9388…\",\n    \"B_repeat_context_and_prompt\": \"identical\",\n    \"A_runtime_vs_B_runtime\": \"distinct skill hashes; A=baseline e05ecda, B/repeat/annex/isolation match runtime_manifest / 8fad7d8\",\n    \"isolation_inputs\": \"distinct context/prompt hashes as required for the incident-notice holdout\"\n  },\n  \"report_consistency\": {\n    \"legal_gold\": false,\n    \"runtime_adoption\": \"INCONCLUSIVE in record, followup-plan, and sprint\",\n    \"release_gate\": \"NOT_MET; runtime_changed false; #323 not closed\",\n    \"A_status\": \"independent PASS; root REVIEW_REQUIRED on unprovided/absent wording; not converted to FAIL or keyword ban\",\n    \"current_four\": \"B, repeat, annex, isolation: independent PASS; root no material veto; repeat minor referent kept as edit, original unedited\",\n    \"tool_scope\": \"self-reported target completion only; no physical no-tools claim; isolation thread-limit delay recorded as control limit not quality failure\",\n    \"changelog\": \"preserves outputs/judgments; does not claim runtime policy change, smoke replacement, or adoption GO\"\n  },\n  \"findings\": []\n}\n```",
+  "usage": {
+    "input_tokens": 25915,
+    "cache_read_input_tokens": 1152,
+    "cache_creation_input_tokens": 0,
+    "output_tokens": 11044,
+    "reasoning_tokens": 10511,
+    "total_tokens": 38111
+  },
+  "cost_usd": 0.0201739,
+  "reported_models": [
+    "grok-4.6-build"
+  ],
+  "reviewed_scope_files": [
+    "astra-profile-qualification.json",
+    "astra-profile-validation.json",
+    "../followup-plan.md",
+    "../../../../CHANGELOG.md",
+    "../../../../backlog/sprints/2026-09-model-era-refresh.md"
+  ],
+  "review_input_note": "Condensed qualification record preserves per-run hashes/telemetry and independent verdict/correction excerpts; complete validation record and current documentation diff included. Full target answers had separate individual reviews. No raw reasoning published."
+}

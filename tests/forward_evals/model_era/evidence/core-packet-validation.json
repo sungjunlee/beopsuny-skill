@@ -1,0 +1,84 @@
+{
+  "tests": {
+    "unit.log": {
+      "sha256": "f6dcdea4e7825e8471869e6196e94fa6cfed098ae7e3a51b04f95a1674b96663",
+      "result": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 9.488s\n\nOK\n"
+    },
+    "o1.log": {
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+      "result": "PASS\n"
+    },
+    "o2.log": {
+      "sha256": "befede5d6b7ed9c11fc595772c370781e6faf8fa234fa802fc62528ea850d856",
+      "result": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n"
+    },
+    "rescore.log": {
+      "sha256": "e6a5d8d2b36c0949ca407f73adca2d7a8a39878e3b3637661b86274afbaba80e",
+      "result": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)"
+    },
+    "source-reachability.log": {
+      "sha256": "d7fdeccd013d9efed520917ee1e6ab968c89609d25d029302cd29dfb6175ecea",
+      "result": "[WARN]            로컬 미러/legalize-kr            upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\n{\"result\": \"WARN\", \"checks\": [{\"status\": \"WARN\", \"axis\": \"로컬 미러/legalize-kr\", \"detail\": \"upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\"}, {\"status\": \"OK\", \"axis\": \"로컬 미러/precedent-kr\", \"detail\": \"upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\"}, {\"status\": \"NOT_INSTALLED\", \"axis\": \"로컬 미러/admrule-kr\", \"detail\": \"degradation 경로 사용 (실패 아님)\"}, {\"status\": \"NOT_INSTALLED\", \"axis\": \"로컬 미러/ordinance-kr\", \"detail\": \"degradation 경로 사용 (실패 아님)\"}, {\"status\": \"WARN\", \"axis\": \"법망 API\", \"detail\": \"서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\"}, {\"status\": \"OK\", \"axis\": \"링크/law.go.kr 법령\", \"detail\": \"HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\"}, {\"status\": \"OK\", \"axis\": \"링크/law.go.kr 판례\", \"detail\": \"HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\"}], \"summary\": \"RESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\"}\n"
+    },
+    "o1-after-docs.log": {
+      "result": "PASS\n",
+      "sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    }
+  },
+  "quota_after_target_and_setup_review": [
+    {
+      "pace": {
+        "primary": {
+          "willLastToReset": true,
+          "expectedUsedPercent": 92,
+          "deltaPercent": -13,
+          "summary": "13% in reserve | Expected 92% used | Lasts until reset",
+          "stage": "farBehind"
+        },
+        "secondary": {
+          "willLastToReset": true,
+          "expectedUsedPercent": 49,
+          "deltaPercent": -37,
+          "summary": "37% in reserve | Expected 49% used | Lasts until reset",
+          "stage": "farBehind"
+        }
+      },
+      "provider": "claude",
+      "source": "claude",
+      "usage": {
+        "identity": {
+          "providerID": "claude"
+        },
+        "tertiary": null,
+        "updatedAt": "2026-09-09T02:05:11Z",
+        "secondary": {
+          "usedPercent": 12,
+          "windowMinutes": 10080,
+          "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+          "resetsAt": "2026-09-12T16:00:00Z"
+        },
+        "dataConfidence": "percentOnly",
+        "primary": {
+          "usedPercent": 79,
+          "windowMinutes": 300,
+          "resetDescription": "Resets11:30am(Asia/Seoul)",
+          "resetsAt": "2026-09-09T02:30:00Z"
+        },
+        "extraRateWindows": [
+          {
+            "title": "Fable only",
+            "window": {
+              "usedPercent": 3,
+              "windowMinutes": 10080,
+              "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+              "resetsAt": "2026-09-12T16:00:00Z"
+            },
+            "id": "claude-weekly-scoped-fable"
+          }
+        ]
+      }
+    }
+  ],
+  "quota_scope": "Claude account label unavailable; email omitted. Five-hour 79% used/21% remaining; weekly12/88; monthly unknown. Both pace windows willLastToReset; exact exhaustion ETA unavailable. No reset or payment.",
+  "fixed_corpus_vs_live_sources": "Fixed privacy-2025 source hashes remain pinned in manifest; live upstream WARN is a separate release-readiness finding and does not alter this supplied text."
+}

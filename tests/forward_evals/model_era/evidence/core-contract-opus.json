@@ -1,0 +1,240 @@
+{
+  "returncode": 0,
+  "seconds": 289.91206383300596,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "9962e8679725b51cbe7d889c294ccc0d8105fd11f41b7e7948ff6744eaa963ff",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_commit": "747a2adb1e5adf75fe86aa60d214d465c9801362",
+  "comparison_limit": "Same fixed question, source, runtime and claude-opus-5 high/no-tools settings; context now includes two existing required references. Previous incomplete-reference observations remain preserved. Single observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 56762,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 19332,
+    "output_tokens_details": {
+      "thinking_tokens": 6995
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 56762,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 19332,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 56762,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 56762
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 1.057338,
+  "num_turns": 1,
+  "output_sha256": "608d89a19a5b2305b261be12a0e763d35ea9d4fcab39c62c2f7f1c59778af93d",
+  "assessment": "FAIL",
+  "assessment_author": "root; independent Sol overall FAIL (fact-boundary axis REVIEW_REQUIRED)",
+  "output_file": "core-contract-opus.txt",
+  "packet_metadata_kind": "pre-execution snapshot; nested not_measured is preparation state only",
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+      "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/research-workflow.md": "517f593b7ea5b2c779971a3f398071056b4eaa03b1c380798f5caa8996760475",
+      "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+      "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+          "skills/beopsuny/references/research-workflow.md": "517f593b7ea5b2c779971a3f398071056b4eaa03b1c380798f5caa8996760475",
+          "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c",
+          "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "9962e8679725b51cbe7d889c294ccc0d8105fd11f41b7e7948ff6744eaa963ff",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "preflight_snapshot": {
+    "context_sha256": "9962e8679725b51cbe7d889c294ccc0d8105fd11f41b7e7948ff6744eaa963ff",
+    "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "runtime_unchanged_files": 41,
+    "runtime_input_count": 10,
+    "new_required_refs": [
+      "skills/beopsuny/references/research-workflow.md",
+      "skills/beopsuny/references/source-grading.md"
+    ],
+    "metadata_sha256": "c217b1886c8040597464bf6bffb300a8871b3673afcf9feb86b21ca13f02b69c",
+    "preparation_script_sha256": "3d03bc0d53cab90b8b3332b5d8e7d9bb85676390fd4460e2c6c60210c3522a42",
+    "quality_assessment": "not yet measured"
+  },
+  "preregistration_snapshot": {
+    "status": "preparation diagnosis, not performance result",
+    "runtime_commit": "747a2adb1e5adf75fe86aa60d214d465c9801362",
+    "missing_from_prior_no_tools_context": {
+      "skills/beopsuny/references/research-workflow.md": true,
+      "skills/beopsuny/references/source-grading.md": true
+    },
+    "scope": "Supply existing required legal research/grading reference bodies through the existing packet builder. Do not change runtime, question, source excerpts, rubric, or past output judgments.",
+    "trial": "One current fixed-contract Claude Opus5 high/no-tools/900-second run after preparation checks. Repeat fixed once and existing missing-annex holdout only if independent semantic review supports clean improvement. A failed signal does not open more calls.",
+    "question_sha256_expected": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "old_results": "Remain observed FAIL/RR with their exact original context; missing reference coverage limits attribution to the full declared runtime but does not make their erroneous facts correct.",
+    "new_runtime_policy_change": false,
+    "field_note": "question_sha256_expected is the entire prepared prompt SHA, not question-only hash; original preregistration preserved"
+  },
+  "paired_preparation": {
+    "baseline_runtime_files_matched_e05ecda": 10,
+    "A_B_question_source_sha_equal": true,
+    "prior_context_reconstructed_sha256": "acdc4018cf314e9c4d7def63425567c4c41ed7c8de1161a67ea89d40e524a34b",
+    "prior_direct_duty_context_sha_matches": true,
+    "new_context_only_adds_existing_required_refs": true,
+    "A_baseline_model_execution": "not executed; preparation verification only",
+    "A_preparation_file": "core-packet-A-preparation.json",
+    "B_preparation_file": "core-packet-B-preparation.json"
+  },
+  "root_observation": {
+    "failure": "L16 calls annex nonexistence user-provided fact despite prompt only saying not supplied; independent reviewer rates this REVIEW_REQUIRED given same paragraph disclaimers. L50 still makes annex A itself necessary to establish a lawful basis without supplied-source support; root and independent overall FAIL.",
+    "utility": "Complete editable replacement clauses and annex template are provided; does not cure the fact-boundary violation.",
+    "scope": "Provided fixed source only, no expert legal gold. Prior context generations preserved. A prepared only; B one observation, not causal comparison.",
+    "expansion": "No repeat or holdout: clean signal absent.",
+    "adjudication_limit": "어느 경로든 may refer to the two discussed routes rather than every statutory route. Root does not rely on that broad reading alone: even for those two routes, supplied law requires information, not annex A as its exclusive document source. Other detailed legal findings remain reviewer concerns, not expert legal gold."
+  },
+  "independent_review_file": "core-contract-independent-review.json",
+  "runtime_note": "747a2ad has identical skills/ bytes to 3e76b25; only evaluator adds existing references",
+  "packet_metadata_date_note": "evaluation_date is fixed corpus legal evaluation date 2026-09-08; execution occurred 2026-09-09",
+  "setup_verification": {
+    "required_reference_declarations": {
+      "current_SKILL": [
+        "42: | `legal_research` | 조문 확인, 판례, 행정규칙, 과징금, 해고 절차, 개인정보 동의 | `references/source-access.md`, `references/research-workflow.md`, `references/source-grading.md` |",
+        "55: | Citation verification | `references/citation-verification-contract.md` — 근거 대응은 `references/research-workflow.md#legal-verification-core`; 감사·인계가 필요할 때만 `assets/schemas/legal_verification_packet.yaml` | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |",
+        "87: 상세 소스 접근법은 `references/source-access.md`, 조사 깊이 조절은 `references/research-workflow.md`를 읽는다.",
+        "88: 법률 결론은 `references/research-workflow.md#legal-verification-core`에 따라 원문·적용 시점·예외·상충 근거에 연결한다. 확인하지 못한 범위는 요약·결론·초안에서도 유보하며, 같은 근거를 여러 내부 양식에 반복하지 않는다.",
+        "118: - 출처 권위 라벨 정의와 다운그레이드 규칙은 `references/source-grading.md`와 `assets/policies/source_grades.yaml`을 따른다. `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 삼는다."
+      ],
+      "e05ecda_SKILL": [
+        "53: | `legal_research` | 조문 확인, 판례, 행정규칙, 과징금, 해고 절차, 개인정보 동의 | `references/source-access.md`, `references/research-workflow.md`, `references/source-grading.md` |",
+        "66: | Citation verification | `references/citation-verification-contract.md` — `full` tier 결론은 `references/research-workflow.md#legal-verification-core`, `assets/schemas/legal_verification_packet.yaml` 포함 (`light` tier는 packet 불필요) | 조문·판례·행정규칙·금액·기한·과징금 등 법률 근거를 인용하거나 `[VERIFIED]`를 쓰는 모든 답변 |",
+        "110: 상세 소스 접근법은 `references/source-access.md`, 조사 깊이 조절은 `references/research-workflow.md`를 읽는다.",
+        "111: 법률 결론을 내는 답변은 `references/research-workflow.md#legal-verification-core`의 issue-to-authority map, authority packet, citation ledger, contradiction scan, conclusion binding을 내부적으로 거친다. 적용 강도는 같은 섹션의 2단 트리거(light/full)를 따른다 — 결론 후보 1개짜리 단순 확인은 `light`, 복합 결론·금액·기한·외부 송부는 `full`.",
+        "152: - 출처 권위 라벨 정의와 다운그레이드 규칙은 `references/source-grading.md`와 `assets/policies/source_grades.yaml`을 따른다. `[VERIFIED]`, provenance, source family별 확인 조건은 `references/citation-verification-contract.md`를 단일 계약으로 삼는다."
+      ]
+    },
+    "serialization_code": [
+      "74:                         'task_runtime_inputs': {p: digest(runtime / p) for p in ['skills/beopsuny/SKILL.md', *task_references]},",
+      "90:                 'runtime_inputs': {p: digest(runtime / p) for p in ['skills/beopsuny/SKILL.md', *sorted(loaded_references)]},",
+      "96:     (evaluator_dir / f'{args.arm}-metadata.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\\n')",
+      "97:     print(json.dumps({'packet_dir': str(packet_dir), 'tasks': len(records), 'execution_status': 'not_measured'}))"
+    ],
+    "metadata_digest_method": "sha256 of exact B metadata file bytes preserved as core-packet-B-preparation.json; no reserialization",
+    "B_metadata_sha256": "c217b1886c8040597464bf6bffb300a8871b3673afcf9feb86b21ca13f02b69c",
+    "full_body_check_method": "For each added reference: Path.read_text().strip() in full prepared context; verifies contiguous whole body, including last line, not only file-name presence. Provider internal context handling is not observable.",
+    "full_body_checks": {
+      "research-workflow": true,
+      "source-grading": true
+    },
+    "prior_prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "new_prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "fixed_source_manifest_entry": {
+      "id": "privacy-2025",
+      "file": "privacy-2025.md",
+      "sha256": "586ee34fba3a6e937a14eaeb987b991c6d7c725c0eddee09731b07073f13ecbb",
+      "captured_at": "2026-09-08T10:39:48.287745+00:00",
+      "mirror_repository": "https://github.com/legalize-kr/legalize-kr",
+      "mirror_commit": "25bca42c727b596118ab0656abd80890bdc17baa",
+      "mirror_path": "kr/개인정보보호법/법률.md",
+      "official_url": "https://www.law.go.kr/법령/개인정보보호법",
+      "provenance": "official-source-based local mirror; no direct official verification in this capture",
+      "effective_date": "2025-10-02",
+      "capture_completeness": "entire mirror file; external annexes not separately fetched",
+      "expert_adjudication": "unadjudicated",
+      "excerpt": {
+        "file": "privacy-2025-excerpt.md",
+        "sha256": "4f426584abd20731a8fbc0b03a2e384b48c267f2485674b71e8d352141e4c963",
+        "raw_line_ranges": [
+          [
+            1,
+            17
+          ],
+          [
+            360,
+            380
+          ],
+          [
+            598,
+            619
+          ],
+          [
+            678,
+            707
+          ],
+          [
+            729,
+            732
+          ],
+          [
+            901,
+            916
+          ]
+        ]
+      }
+    },
+    "source_pin_note": "Fixed corpus content verified against manifest checksum; separate live upstream WARN does not mutate this captured corpus. HTTP reachability does not prove legal currency.",
+    "source_strings_in_prompt": {
+      "sha256": true,
+      "mirror_commit": true
+    },
+    "review_string_hash_note": "core-packet-setup-review.initial_review is inline verbatim UTF-8; execution.output_sha256 hashes that string."
+  }
+}

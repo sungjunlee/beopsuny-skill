@@ -1,0 +1,210 @@
+{
+  "runtime_base": "d977831a3aab9a68bfaa0e3e88c3fc2d8cd51b79",
+  "runtime_patch": "review-mode-candidate.patch",
+  "checks": [
+    {
+      "command": "python -m unittest discover -s tests -p 'test_*.py'",
+      "exit_code": 0,
+      "output": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 11.159s\n\nOK\n"
+    },
+    {
+      "command": "python tests/validate_skill_contracts.py",
+      "exit_code": 0,
+      "output": "PASS\n"
+    },
+    {
+      "command": "python tests/evaluate_scenario_outputs.py",
+      "exit_code": 0,
+      "output": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n"
+    },
+    {
+      "command": "python tests/check_rescore_baseline.py",
+      "exit_code": 0,
+      "output": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)"
+    },
+    {
+      "command": "python tests/check_source_reachability.py",
+      "exit_code": 0,
+      "output": "[WARN]            로컬 미러/legalize-kr            upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\n"
+    }
+  ],
+  "live_smoke": "not executed on this changed runtime; earlier FAIL/pending remains",
+  "release": "not ready",
+  "source_actions": "No personal mirror updates, external knowledge publication, or deadline extension.",
+  "quota": {
+    "account_label": "default authenticated (email omitted)",
+    "before_target": [
+      {
+        "usage": {
+          "primary": {
+            "usedPercent": 57,
+            "resetDescription": "resets Sep 9 at 4:30pm (Asia/Seoul)",
+            "windowMinutes": 300,
+            "resetsAt": "2026-09-09T07:30:00Z"
+          },
+          "identity": {
+            "providerID": "claude"
+          },
+          "extraRateWindows": [
+            {
+              "window": {
+                "windowMinutes": 10080,
+                "usedPercent": 7,
+                "resetsAt": "2026-09-12T16:00:00Z",
+                "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)"
+              },
+              "title": "Fable only",
+              "id": "claude-weekly-scoped-fable"
+            }
+          ],
+          "tertiary": null,
+          "secondary": {
+            "usedPercent": 18,
+            "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+            "windowMinutes": 10080,
+            "resetsAt": "2026-09-12T16:00:00Z"
+          },
+          "updatedAt": "2026-09-09T04:11:43Z",
+          "dataConfidence": "percentOnly"
+        },
+        "source": "claude",
+        "pace": {
+          "secondary": {
+            "willLastToReset": true,
+            "deltaPercent": -32,
+            "summary": "32% in reserve | Expected 50% used | Lasts until reset",
+            "expectedUsedPercent": 50,
+            "stage": "farBehind"
+          },
+          "primary": {
+            "willLastToReset": false,
+            "deltaPercent": 23,
+            "summary": "23% in deficit | Expected 34% used | Projected empty in 1h 17m",
+            "expectedUsedPercent": 34,
+            "etaSeconds": 4604,
+            "stage": "farAhead"
+          }
+        },
+        "provider": "claude"
+      }
+    ],
+    "after_target": [
+      {
+        "pace": {
+          "secondary": {
+            "summary": "32% in reserve | Expected 50% used | Lasts until reset",
+            "stage": "farBehind",
+            "deltaPercent": -32,
+            "expectedUsedPercent": 50,
+            "willLastToReset": true
+          },
+          "primary": {
+            "summary": "23% in deficit | Expected 38% used | Projected empty in 1h 13m",
+            "stage": "farAhead",
+            "etaSeconds": 4349,
+            "deltaPercent": 23,
+            "expectedUsedPercent": 38,
+            "willLastToReset": false
+          }
+        },
+        "usage": {
+          "extraRateWindows": [
+            {
+              "title": "Fable only",
+              "window": {
+                "usedPercent": 7,
+                "resetsAt": "2026-09-12T16:00:00Z",
+                "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+                "windowMinutes": 10080
+              },
+              "id": "claude-weekly-scoped-fable"
+            }
+          ],
+          "updatedAt": "2026-09-09T04:23:22Z",
+          "tertiary": null,
+          "identity": {
+            "providerID": "claude"
+          },
+          "secondary": {
+            "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+            "resetsAt": "2026-09-12T16:00:00Z",
+            "windowMinutes": 10080,
+            "usedPercent": 18
+          },
+          "primary": {
+            "resetDescription": "resets Sep 9 at 4:30pm (Asia/Seoul)",
+            "resetsAt": "2026-09-09T07:30:00Z",
+            "windowMinutes": 300,
+            "usedPercent": 61
+          },
+          "dataConfidence": "percentOnly"
+        },
+        "source": "claude",
+        "provider": "claude"
+      }
+    ],
+    "monthly": "unknown; not a zero-usage or exhaustion claim",
+    "decision": "Bounded integration review; no repeat/holdout after target FAIL. Primary ETA before reset does not support large same-route expansion.",
+    "after_integration": [
+      {
+        "usage": {
+          "identity": {
+            "providerID": "claude"
+          },
+          "primary": {
+            "usedPercent": 63,
+            "windowMinutes": 300,
+            "resetsAt": "2026-09-09T07:30:00Z",
+            "resetDescription": "resets Sep 9 at 4:30pm (Asia/Seoul)"
+          },
+          "extraRateWindows": [
+            {
+              "title": "Fable only",
+              "id": "claude-weekly-scoped-fable",
+              "window": {
+                "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+                "usedPercent": 7,
+                "windowMinutes": 10080,
+                "resetsAt": "2026-09-12T16:00:00Z"
+              }
+            }
+          ],
+          "secondary": {
+            "usedPercent": 18,
+            "windowMinutes": 10080,
+            "resetsAt": "2026-09-12T16:00:00Z",
+            "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)"
+          },
+          "tertiary": null,
+          "updatedAt": "2026-09-09T04:32:56Z",
+          "dataConfidence": "percentOnly"
+        },
+        "pace": {
+          "secondary": {
+            "stage": "farBehind",
+            "summary": "32% in reserve | Expected 50% used | Lasts until reset",
+            "expectedUsedPercent": 50,
+            "willLastToReset": true,
+            "deltaPercent": -32
+          },
+          "primary": {
+            "etaSeconds": 4333,
+            "stage": "farAhead",
+            "summary": "22% in deficit | Expected 41% used | Projected empty in 1h 13m",
+            "expectedUsedPercent": 41,
+            "willLastToReset": false,
+            "deltaPercent": 22
+          }
+        },
+        "provider": "claude",
+        "source": "claude"
+      }
+    ]
+  },
+  "post_documentation_O1": {
+    "command": "python tests/validate_skill_contracts.py",
+    "exit_code": 0,
+    "output": "PASS\n",
+    "scope": "After evidence/followup/sprint additions; runtime unchanged"
+  }
+}

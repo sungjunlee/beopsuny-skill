@@ -1,0 +1,51 @@
+{
+  "verdict": "LGTM",
+  "scope": "Evaluator setup and evidence integration only; target remains FAIL, #323 AC5 incomplete",
+  "review": "## 판정: LGTM — 기록·셋업 정합성 범위 한정 (모델 PASS 아님)\n\n이전 리뷰에서 제기한 10건 전부가 제출 자료 내에서 검증 가능하게 해소되었습니다. 아래는 항목별 대조 결과입니다.\n\n### 지적사항 해소 대조\n\n| # | 이전 지적 | 현재 근거 | 판정 |\n| --- | --- | --- | --- |\n| 1 | A arm 증거가 카운트뿐 | `core-packet-A-preparation.json`에 A의 10개 파일별 sha256, `context_sha256 78d7a61e…`, `prompt_sha256 f19e9388…`, `runtime_root /private/tmp/beopsuny-m8/baseline` 전체 보존. B와 하네스 해시(`64445b92…`)·source manifest·config 동일 → 통제변수 명확 | 해소 |\n| 2 | 필수 참조 누락 진단의 근거 부재 | `required_reference_declarations.current_SKILL` 5개 인용(42/55/87/88/118행)이 research-workflow·source-grading read 지시를 직접 보임 | 해소 |\n| 3 | A(e05ecda) 대칭성 위험 | `e05ecda_SKILL` 5개 인용(53/66/110/111/152행)이 동일한 필수 read 목록을 선언 → A packet은 과잉 공급 아님. 실제 해시도 research-workflow는 상이(`bf0e547d`/`517f593b`), source-grading은 동일(`0e6b93aa`)로 각 arm 자기 commit 본문 사용이 확인됨 | 해소 |\n| 4 | 인용 미러 revision/SHA 미대조 | `fixed_source_manifest_entry`의 `586ee34f…3f13ecbb`·`25bca42c…c17baa`가 출력 인용값과 일치, `source_strings_in_prompt`로 prompt 내 존재 기록, 스크립트 본문에서 해당 문자열 주입 지점 확인 가능. `source_pin_note`가 checksum pin과 upstream WARN 분리 및 “HTTP reachability ≠ 법적 현행성” 경계 명시 | 해소 |\n| 5 | 질문 동일성 근거값 부재 | `field_note`로 `question_sha256_expected`가 prompt 전체 SHA임을 명시(사전등록 원문 보존), `prior_prompt_sha256` = `new_prompt_sha256` = `f19e9388…` 병기, context는 세대별로 상이(`acdc4018`/`78d7a61e`/`9962e867`)하게 구분 | 해소 |\n| 6 | `runtime_commit`에 문장 혼입 | full SHA만 남기고 `runtime_note` 분리, `preregistration_snapshot`과 값 일치 | 해소 |\n| 7 | 재계산 절차 미기재 | `serialization_code` 4행 인용(90행 `sorted(loaded_references)`, 96행 `json.dumps(..., ensure_ascii=False, indent=2) + '\\n'`) + `metadata_digest_method`(파일 바이트 그대로, 재직렬화 없음), `B_metadata_sha256 c217b188…`이 `preflight_snapshot`과 일치. 인용 코드가 첨부 스크립트 본문과 일치함 | 해소 |\n| 8 | 절삭 검사 방법 미기재 | `full_body_check_method`가 `read_text().strip()` 전체 포함(마지막 행 포함, 파일명 존재 확인 아님)임을 명시하고 provider 내부 처리 비관측성까지 한정 | 해소 |\n| 9 | 3e76b25/747a2ad 충돌, 날짜 불일치 | `runtime_note`(skills/ 바이트 동일), `packet_metadata_date_note`(corpus 기준일 09-08 / 실행 09-09) | 해소 |\n| 10 | 셋업 리뷰 보존 형식 | `review_string_hash_note`로 inline verbatim + `output_sha256` 대상 명시 | 해소 |\n\n### 사실경계 서술의 정합성 (이번 요청의 축소된 근거 반영)\n\n- `assessment: FAIL` / `assessment_author: \"root; independent Sol overall FAIL (fact-boundary axis REVIEW_REQUIRED)\"` — 독립 리뷰 파일의 축별 판정(fact boundary = REVIEW_REQUIRED, 법률 강도 축 = FAIL)과 일치.\n- `root_observation.adjudication_limit`이 “어느 경로든”의 넓은 해석에 **의존하지 않는다**고 명시하고, 논의된 두 경로에 한정해도 법이 요구하는 것은 정보이지 별첨 A라는 배타적 문서가 아니라는 별도 근거를 제시 — 독립 리뷰 본문(“필요한 정보를 계약 별첨이 아닌 다른 자료에서 확보할 가능성도 원문상 배제되지 않는다”)과 모순 없음.\n- 독립 리뷰의 `decisive_reason`은 넓은 해석에 기대고 있어 root 근거와 다르지만, 원문을 개변하지 않고 별도 파일로 보존한 뒤 root 근거를 병기한 구조가 옳습니다. followup-plan·PR 산문 어디에도 “모든 법정 예외”를 확정 사실로 쓴 문장은 없습니다.\n- `legal_adjudication: \"unadjudicated\"`, `expert_adjudication: \"unadjudicated\"` 유지 — 전문가 정답 인증 아님이 유지됨.\n\n### 비차단 개선 제안 (LGTM 유지, 후속 정리 가능)\n\n1. A 파일에 `preparation_script_sha256`가 없습니다. 현재는 A의 `runtime_inputs`에 두 참조가 들어 있다는 사실로 동일 스크립트 사용이 역추론될 뿐입니다. 준비 도구 동일성이 A/B의 통제변수이므로 A에도 `3d03bc0d…`를 한 줄 병기하면 추론 없이 확인됩니다.\n2. 스크립트 산출 파일명은 `A-metadata.json`/`B-metadata.json`인데 증거는 `core-packet-A/B-preparation.json`입니다. 바이트 보존 주석은 있으나 파일명 매핑 한 줄을 추가하면 제3자 추적이 끊기지 않습니다.\n3. `baseline_runtime_files_matched_e05ecda: 10`의 “matched”는 “B와 일치”로 오독될 여지가 있습니다(실제 일치는 source-grading 1건). `hashed_from_e05ecda` 류로 바꾸면 명확합니다.\n\n### 이 LGTM의 경계\n\n이 판정은 **A/B 준비 스냅샷·해시·직렬화·소스 pin·필드 명명 등 기록과 셋업의 자체 정합성**에 한정됩니다. 다음을 함의하지 않습니다: 모델 거동·출력 품질의 PASS, 법률 전문성·실무 적정성 인증, `#323 AC5` 충족, 반복/holdout 확대 승인. 대상 출력은 root·독립 리뷰 모두 FAIL이며 그대로 유지됩니다. PR 본문에 이 LGTM을 인용한다면 기존 문장과 동일한 한정구(“기록 정합성에 한정되며 대상 출력의 FAIL/NO_GO를 바꾸지 않는다”)를 함께 붙이십시오.",
+  "execution": {
+    "returncode": 0,
+    "seconds": 149.12142474998836,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "41713704fb9d5865392133e89ebe957a23a7f38fdb7242cea847e8a79262414a",
+    "review_scope": "GPT-written evaluator required-reference fix and evidence integration only, not legal expert certification",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 22824,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 10908,
+      "output_tokens_details": {
+        "thinking_tokens": 8222
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 22824,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 10908,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 22824,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 22824
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.521294,
+    "num_turns": 1,
+    "output_sha256": "05d9efe5d4d83e9c71b2ac84a4094c77d5e2cd5c786f60fb8f77dcf2a2ac22fc"
+  }
+}

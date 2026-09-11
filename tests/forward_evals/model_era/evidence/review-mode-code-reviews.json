@@ -1,0 +1,173 @@
+{
+  "scope": "Static ownership and actual packet loading, not behavioral PASS",
+  "preserved_mode_values": {
+    "default_and_detection_equal": true,
+    "mode_values_equal": {
+      "strict": true,
+      "moderate": true,
+      "loose": true
+    },
+    "no_detail_key_code_consumer": "root rg plus independent native audit; prepare_packets reads whole YAML, template shows selected mode only"
+  },
+  "reviews": [
+    {
+      "metadata": {
+        "returncode": 0,
+        "seconds": 100.63331833301345,
+        "model": "claude-opus-5",
+        "effort": "high",
+        "prompt_sha256": "cbd7b7f2e3b80dec1b38ad04e60283eff663074c8c34853b78fcb1b65068e875",
+        "review_scope": "Review-mode policy ownership consolidation; not model output quality",
+        "is_error": false,
+        "subtype": "success",
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 26857,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 7019,
+          "output_tokens_details": {
+            "thinking_tokens": 4933
+          },
+          "server_tool_use": {
+            "web_search_requests": 0,
+            "web_fetch_requests": 0
+          },
+          "service_tier": "standard",
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 26857,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "inference_geo": "not_available",
+          "iterations": [
+            {
+              "input_tokens": 2,
+              "output_tokens": 7019,
+              "cache_read_input_tokens": 0,
+              "cache_creation_input_tokens": 26857,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 26857
+              },
+              "type": "message"
+            }
+          ],
+          "speed": "standard"
+        },
+        "total_cost_usd": 0.469856,
+        "num_turns": 1,
+        "modelUsage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 25671,
+            "outputTokens": 26,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.025801,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-opus-5": {
+            "inputTokens": 2,
+            "outputTokens": 7019,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 26857,
+            "webSearchRequests": 0,
+            "costUSD": 0.444055,
+            "contextWindow": 1000000,
+            "maxOutputTokens": 64000,
+            "thinkingTokens": 4933,
+            "canonicalModel": "claude-opus-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "output_sha256": "17ccb5b805bcf96e513a5d698390a698a904abd2f8dae0786b476f35478266b4"
+      },
+      "output": "## 판정: 조건부 LGTM — 차단 finding 없음, 최소 보완 1건 권고\n\n아래는 **제공된 텍스트만으로 한 정적 계약/구조 리뷰**다. prepare_packets 코드, `output_contract.yaml`, 테스트는 본문에 포함되지 않았으므로 \"소비자 파싱 없음\"은 작성자 audit 진술을 근거로 한 조건부 판단이며, 내가 독립 확인한 사실이 아니다. 모델 거동 개선/회귀는 측정되지 않았고 이 리뷰로 검증되지 않는다.\n\n### 1. 고유 의무 손실 — 확인되지 않음\n\n제거된 항목별 소유자 매핑:\n\n| 제거 항목 | 잔존 소유자 | 판단 |\n| --- | --- | --- |\n| `include_low` | `threshold: low/medium/high` | 도출 가능, 중복 |\n| `phase_0.require_all` | `scope: 전수 확인 / 트리거된 항목만` | 도출 가능, 중복 |\n| `include_missing_clauses`(3모드 모두 true, 불변) | SKILL.md 계약 검토 필수 경계(\"누락 조항을 제공한다\") | 전역 소유, 손실 없음 |\n| `grade_c_conclusion: forbidden` | SKILL.md 결론 기준 + source-grading.md 규칙 3 | 중복. 더불어 A/B/C/D 점수형 잔재 제거라 SKILL.md 방침과 정합 |\n| `primary_authority_rule: strict/standard` | source-grading.md 규칙 3(단일 정의, 변형 없음) | `standard`는 정의된 의미가 없었고, 비-strict 모드에서 PAR이 약해 보이는 오해 소지가 있었음. 제거가 경계를 **강화** |\n| `tag_policy.allowed` 6종 | SKILL.md \"상태 태그는 기존 6개만\" (동일 6종) | 축자 중복 |\n| `tag_policy.note` | contract_review_guide.md Review Mode(\"어느 모드도 공식 원문·강행규정 확인 의무를 낮추지 않는다\") + SKILL.md | 중복(§3 단서 참조) |\n| `request_scope.priority/drafting` | SKILL.md \"산출물의 범위는 사용자 요청과 가이드를 따른다\", guide Proportionality(\"엄격도를 높였다는 이유만으로 전면 redline 금지\"), Review Mode(\"mode 때문에 수정안·협상 포인트 생략 금지\") | 양방향 모두 보존 |\n| `request_scope.evidence` | guide Counter-drafting(강행규정·예외·시행/적용 시점·경과규정), Proportionality(법률 vs 협상 선호 분리), SKILL.md legal-verification-core | 5개 구성요소 전부 소유자 있음 |\n| `request_scope.authority` | SKILL.md 안전 경계 + guide 서두/Counter-drafting | 축자 중복 |\n\n**핵심 구조적 근거**: 라우팅 표의 `contract_review` 행이 `review_mode.yaml`을 `contract_review_guide.md`와 함께 로드하고 SKILL.md는 상시 로드다. 즉 잔존 소유자가 항상 co-load되므로 의무가 고아화되지 않는다.\n\n### 2. source/evidence boundary 약화 — 확인되지 않음\n\nVERIFIED 최소조건, provenance, 다운그레이드, 모순 처리, PAR은 전부 `citation-verification-contract.md` / `source-grading.md`가 mode-무관 always-on으로 소유한다. 삭제분 중 어느 것도 이 축의 유일 소유자가 아니었다. 오히려 정책 파일에서 mode별 `source_grading` 축을 없앤 것이 \"mode가 증거 강도를 조절한다\"는 잘못된 신호를 제거한다.\n\n### 3. 최소 finding (권고 1건)\n\n**`require_cross_check: true`(strict 전용, 유일한 mode-가변 증거 필드) + `tag_policy.note` 동시 제거 지점.** 두 항목의 잔존 소유자(SKILL.md / guide)는 정상 라우팅에서는 co-load되지만, `review_mode.yaml`이 **단독으로** 패킷·서브에이전트에 주입되는 경로가 존재하면 그 컨텍스트에는 \"모드는 증거 의무를 낮추지 않는다\"는 앵커가 남지 않는다. 나는 prepare_packets를 볼 수 없으므로 이 경로의 존재 여부를 판정하지 못한다.\n\n최소 수정(새 금지문자열·순서·수치·출력형식 추가 아님, 포인터 주석 1줄):\n\n```yaml\n# 계약 리뷰 깊이 정책. 산출물 종류는 사용자 요청으로 정하며 금지 문자열을 채점하지 않는다.\n# 출처 권위·검증 의무·태그 집합은 SKILL.md와 references/contract_review_guide.md가 소유하며 모드가 완화하지 않는다.\n```\n\n단독 주입 경로가 없음을 확인했다면 이 보완은 생략 가능하다.\n\n### 4. 비차단 관찰 2건\n\n- strict `description`에서 \"누락 조항\" 언급이 사라져 moderate/loose보다 서술이 좁아 보인다. 의무는 SKILL.md가 소유하므로 손실은 아니나, 원하면 \"모든 위험 조항·누락 조항을 플래그한다\"로 한 단어만 복원 가능.\n- 필드 삭제(스키마 형태 변경)에 patch bump(1.2.1)를 적용했다. 소비자가 없다는 audit 전제에서는 수용 가능하나, 버전 규칙 소유자가 별도라면 그 쪽 판단을 따르는 편이 안전하다."
+    },
+    {
+      "metadata": {
+        "returncode": 0,
+        "seconds": 32.27892137499293,
+        "model": "claude-opus-5",
+        "effort": "high",
+        "prompt_sha256": "f123601898f9608c0a659752c72b1b63313e2ebc678a0d344281958db5b28b9e",
+        "review_scope": "Review-mode policy ownership consolidation; not model output quality",
+        "is_error": false,
+        "subtype": "success",
+        "usage": {
+          "input_tokens": 2,
+          "cache_creation_input_tokens": 6117,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 1875,
+          "output_tokens_details": {
+            "thinking_tokens": 912
+          },
+          "server_tool_use": {
+            "web_search_requests": 0,
+            "web_fetch_requests": 0
+          },
+          "service_tier": "standard",
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 6117,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "inference_geo": "not_available",
+          "iterations": [
+            {
+              "input_tokens": 2,
+              "output_tokens": 1875,
+              "cache_read_input_tokens": 0,
+              "cache_creation_input_tokens": 6117,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 6117
+              },
+              "type": "message"
+            }
+          ],
+          "speed": "standard"
+        },
+        "total_cost_usd": 0.11378,
+        "num_turns": 1,
+        "modelUsage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 5600,
+            "outputTokens": 25,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.005725,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-opus-5": {
+            "inputTokens": 2,
+            "outputTokens": 1875,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 6117,
+            "webSearchRequests": 0,
+            "costUSD": 0.10805500000000001,
+            "contextWindow": 1000000,
+            "maxOutputTokens": 64000,
+            "thinkingTokens": 912,
+            "canonicalModel": "claude-opus-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "output_sha256": "361be5cd8a6a39c6299ea6e05a9d48cf449eec06dd1994fb52aa16a51cbd2397"
+      },
+      "output": "## 판정: LGTM — 이전 조건 해소, 잔여 차단 finding 없음\n\n### 조건(단독 주입 경로) 해소 근거\n\n- `prepare_packets.py`에서 `review_mode.yaml`은 단독으로 추가되지 않는다. `task_type in ('complex-contract','external-draft','missing-annex')` 분기에서 `contract_review_guide.md`, `self-verification.md`, `output-formats.md`, `output_contract.yaml`과 **같은 리스트 리터럴로 한 번에** 붙는다. 정책만 실린 패킷은 구성 불가능하다.\n- `build_skill_context()`는 `source_references` 순회 **이전에** SKILL.md를 무조건 첫 섹션으로 넣는다. 따라서 review_mode.yaml이 포함된 모든 context.md에는 SKILL.md(태그 6종·증거 경계 소유자)와 guide(Review Mode 단서)가 동반된다.\n- 패킷 단위는 태스크 디렉터리의 단일 `context.md` 연결 문자열이며, 파일별 개별 주입·서브에이전트 분할 경로가 코드에 없다.\n\n→ 이전 리뷰 §3의 포인터 주석 권고는 **철회**한다(요청대로 추가 제안하지 않음). §1·§2 결론은 유지.\n\n### 비차단 잔여 관찰 3건\n\n1. `validate_skill_contracts.py` 725/2113/3135 세 지점이 정책을 참조하나 본문은 이번에도 제공되지 않았다. 120 unit PASS는 현재 제거된 필드에 대한 실패 단정이 없음을 시사할 뿐이며, 내가 해당 assertion을 읽고 확인한 사실은 아니다. 태그 6종·필드명을 열거하는 allowlist가 그 안에 있다면 소유권 중복 지점이 한 곳 더 있다는 뜻이다.\n2. manifest의 `runtime_inputs`/`task_runtime_inputs`는 파일 sha256이라 필드 삭제로 값이 바뀐다. 편집 이전에 준비된 패킷·메타데이터와 바이트 비교는 성립하지 않으므로, 어떤 arm 비교든 재-prepare가 선행되어야 한다. `execution_status: not_measured`는 그대로다.\n3. 템플릿 pill은 `moderate` 리터럴만 노출하며 모드 이름 3종은 불변이므로 영향 없음.\n\n런타임 동작은 이번에도 미측정이다. 테스트 PASS는 모델 거동의 개선·무회귀 증거가 아니며, 이 리뷰는 정적 계약/로드경로 검토에 한정된다."
+    }
+  ],
+  "root_consumer_check": "Detailed removed YAML keys have no parsing consumer; existing validator inventories policy path, parser validates general asset surface, builder embeds full text with SKILL and guide. Mode IDs/default/detection/threshold/unique boilerplate/phase/verbosity retained."
+}

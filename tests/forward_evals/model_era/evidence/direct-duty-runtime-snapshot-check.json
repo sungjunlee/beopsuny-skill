@@ -1,0 +1,11 @@
+{
+  "runtime_commit": "313a919",
+  "tracked_runtime_files": 41,
+  "tracked_file_hash_mismatches": [],
+  "snapshot_extra_files": [
+    "skills/beopsuny/assets/tools/__pycache__/knowledge_manifest_ingest.cpython-312.pyc",
+    "skills/beopsuny/assets/tools/__pycache__/knowledge_manifest_ingest.cpython-314.pyc"
+  ],
+  "observed_read_calls_to_extra_bytecode": [],
+  "scope_note": "Snapshot retained two bytecode caches generated from the repository tool; they were not loaded into fixed contexts and no Read call opened them. Full observed manifest is retained rather than silently normalized. Snapshot hash is not a claim of OS-level sandboxing."
+}

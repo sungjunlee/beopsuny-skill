@@ -1,0 +1,228 @@
+{
+  "returncode": 0,
+  "seconds": 237.7619254589954,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_base_commit": "d977831a3aab9a68bfaa0e3e88c3fc2d8cd51b79",
+  "comparison_limit": "Same complete-reference builder, fixed prompt/source and claude-opus-5 high/no-tools settings as selfverify-contract-opus; only review_mode.yaml changed per candidate.patch. One observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 52778,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 15716,
+    "output_tokens_details": {
+      "thinking_tokens": 4758
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 52778,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 15716,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 52778,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 52778
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.927113,
+  "num_turns": 1,
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 6293,
+      "outputTokens": 26,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.006423,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 15716,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 52778,
+      "webSearchRequests": 0,
+      "costUSD": 0.92069,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 4758,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "output_sha256": "640c85cbea3ab69ba1b538f96f9c16aba9a131b5050484ce44b8ab37c26f9df4",
+  "preregistration": {
+    "status": "preregistered_before_edit_and_target",
+    "at": "2026-09-09T04:01:32.066557+00:00",
+    "base_commit": "d977831a3aab9a68bfaa0e3e88c3fc2d8cd51b79",
+    "hypothesis": "Remove mode-owned duplicate evidence/output/tag rules and redundant flags. Review mode must control depth, not source verification strength. This is independently warranted structural correction; behavioral effect unproven.",
+    "independent_audit": "Native Sol high read-only ownership audit found no code parser for detailed keys; builder loads policy text. Keep default, modes, detection, threshold, unique boilerplate flag, phase scope, verbosity. Remove include_low, include_missing_clauses, require_all, per-mode source_grading, tag_policy, request_scope and strict source-authority prose. Their boundaries already live in SKILL/contract guide/source contract.",
+    "runtime_scope": [
+      "skills/beopsuny/assets/policies/review_mode.yaml"
+    ],
+    "consumer_scope": "Changelog and existing static checks as needed; no scenario/question/source/rubric/evaluator threshold changes. File remains loaded; no retired-file inventory change.",
+    "trial": "One fixed complex-contract claude-opus-5 high/no-tools/900 seconds on same question/source/builder as selfverify-contract-opus. Prior output preserved as observed comparison, not fresh causal A/B.",
+    "expansion": "Only clean independent semantic review and root adjudication plus preserved useful draft open fixed repeat1 and existing missing-annex/case-isolation holdouts. FAIL/material unresolved RR stops expansion. No blind retries.",
+    "adoption": "Structural correction may be retained independently; regression solution requires actual same-profile evidence and repeat/holdout. Fable pair on frozen d977831 is separate and cannot replace this requirement.",
+    "axes": [
+      "unprovided facts",
+      "law vs proposed means",
+      "actors/exceptions/time",
+      "source-supported omissions",
+      "usable complete draft",
+      "actual external action authority",
+      "honest source scope"
+    ],
+    "legal_gold": false
+  },
+  "preflight_before_execution": {
+    "base_commit": "d977831a3aab9a68bfaa0e3e88c3fc2d8cd51b79",
+    "only_changed_runtime_inputs": [
+      "skills/beopsuny/assets/policies/review_mode.yaml"
+    ],
+    "prompt_unchanged": true,
+    "source_manifest_unchanged": true,
+    "context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+    "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "patch_sha256": "363ce7c41024b6d6bb42e5932c1ee5012aec9544c862da6849ae10a03954ee3a",
+    "execution_status": "not_measured"
+  },
+  "packet_preparation_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "cc5d55885377c41f94c8b7b7b4b65f8d5b046d7addbde3bdfc6a14b0383e6237",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "710c73d5b434f5af14f683d108ef65fa07a00f63c5ec0cf08733bd749048788e",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+      "skills/beopsuny/references/contract_review_guide.md": "12f4fd0034d86861f5d0c9403d6d9ea52d55e4831588a9fa277cb814200e1999",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+      "skills/beopsuny/references/self-verification.md": "cc7502a52dfad405c4dfae1f08d404cce4c863fac976ebd8c4a96a727abfcbe6",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+      "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "cc5d55885377c41f94c8b7b7b4b65f8d5b046d7addbde3bdfc6a14b0383e6237",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+          "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+          "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8",
+          "skills/beopsuny/references/contract_review_guide.md": "12f4fd0034d86861f5d0c9403d6d9ea52d55e4831588a9fa277cb814200e1999",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "710c73d5b434f5af14f683d108ef65fa07a00f63c5ec0cf08733bd749048788e",
+          "skills/beopsuny/references/self-verification.md": "cc7502a52dfad405c4dfae1f08d404cce4c863fac976ebd8c4a96a727abfcbe6",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "runner_sha256": "38a622dc04936dc4f185a73d04d7683da135d0fbb85471fba48f813b95040ed0",
+  "candidate_patch": "review-mode-candidate.patch",
+  "root_adjudication": {
+    "overall": "FAIL",
+    "legal_expert_gold": false,
+    "scope": "Full output against supplied fixed question and primary-source excerpts; no external current-law verification.",
+    "findings": [
+      {
+        "lines": [
+          22,
+          110
+        ],
+        "axis": "unprovided facts / law vs proposed means",
+        "severity": "material",
+        "reason": "Prompt gives no audit-clause status. Summary labels supervision means absent; reasons further assert that without contractual audit rights Garam cannot perform its statutory duty. Article 26(4) requires supervision but the supplied excerpt does not establish contractual audit rights as its necessary means."
+      },
+      {
+        "lines": [
+          20,
+          126
+        ],
+        "axis": "law vs proposed means",
+        "severity": "material",
+        "reason": "A reasonable-period processor notice creates risk but the source does not prove statutory compliance structurally impossible or a fixed hourly contractual deadline legally necessary."
+      },
+      {
+        "lines": [
+          18,
+          40,
+          137
+        ],
+        "axis": "law vs proposed means / unprovided facts",
+        "severity": "material",
+        "reason": "Missing annex remains expressly unknown in opening. Later analysis conflates information required for publication with an annex containing it, and fixed contractual day counts with statutory retention-period information. Overall FAIL does not depend on reading every annex sentence as actual absence."
+      }
+    ],
+    "positive_observations": [
+      "Full editable draft supplied; utility is separate from legal correction burden.",
+      "Direct processor notification/reporting duties are explicitly preserved in definition and notice clauses.",
+      "Read source scope and lower-rule limitations disclosed; no actual external action."
+    ],
+    "adoption": "Retain independently warranted structural ownership cleanup, not a regression solution. No repeat or holdout expansion."
+  },
+  "independent_review": "review-mode-contract-independent-review.json",
+  "independent_review_summary": {
+    "reviewer": "fresh native gpt-5.6-sol high requested; actual provider telemetry unavailable",
+    "overall": "FAIL",
+    "raw_review_preserved": true,
+    "root_reconciliation": {
+      "overall": "FAIL",
+      "adopted_overlap": "L22/110 unprovided supervision status and statutory duty versus contractual means; L20 summary drops conditions. These support root FAIL independently.",
+      "qualified_findings": "Do not treat every item as independently decisive. Personal-data categories are already specified at L66; supplied law does not require every disclosure item to appear in a specifically named annex. Missing refusal information in operative terms may warrant correction, but absence from that single clause is not automatic noncompliance. L67 purpose expansion is concerning but must be read with global legal-duty preservation and scope restrictions, not assume each clause must restate every statutory condition. Controller education and processor staff training may coexist; lack of explicit duplication is not itself decisive.",
+      "utility": "Independent REVIEW_REQUIRED reflects legal correction burden; root separately records completed editable draft without declaring legal readiness.",
+      "rules": "Independent diagnosis finds existing rules cover boundaries; no material document conflict/gap and no additional warning rule recommended."
+    }
+  }
+}

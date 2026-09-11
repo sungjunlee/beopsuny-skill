@@ -1,0 +1,56 @@
+{
+  "returncode": 0,
+  "elapsed_seconds": 60.02902395799174,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "prompt_sha256": "2a78bb02d9f986763f2d324d67b1dc68b93edf00288c6ff371cb23af9f3966e7",
+  "review_scope": "GPT-written public evidence integration, not legal expert certification or target quality PASS",
+  "input_files_sha256": {
+    "tests/forward_evals/model_era/followup-plan.md": "c2a6999287bbce75bbe0e7fb487baaa8057f0fbcee8123d6a3bcf16007fad0ec",
+    "tests/forward_evals/model_era/evidence/conclusion-contract-opus.json": "d1a48f10be96ae653958ccc76d3c08e9e4f635669108ebf132c8f3619c2072c6",
+    "tests/forward_evals/model_era/evidence/epistemic-contract-opus.json": "ccd8d34188f2ef88c0155f0d199f83b9bfc22a217d887504d01523db0862399c",
+    "tests/forward_evals/model_era/evidence/direct-duty-fwd11-late.json": "3b5ba94bf1a895f3b8c9e4895e51a7be27d59bfb57c9120621165b43687460b1",
+    "tests/forward_evals/model_era/evidence/claude-resume-integration-review-initial.json": "eef7241bb2294f12706dcb1db8bf9446a7fad06b79e3b8772e75d9166b3ba99f",
+    "tests/forward_evals/model_era/evidence/knowledge-claude-initial-pairs.json": "dbbaffd38caa4561bf541c7b11da2e2c4d2283757beffba799b9438cdbc503c2"
+  },
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 33350,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 4437,
+    "output_tokens_details": {
+      "thinking_tokens": 3032
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 33350,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 4437,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 33350,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 33350
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.47321199999999997,
+  "num_turns": 1,
+  "output_sha256": "387593f816bb860049da761a1481161b3197a2be159cc843a5e3187a320e38fc",
+  "review_text": "## 재검토 결과 (evidence integration 한정)\n\n**판정: 조건부 — 1·2번은 해소, 3번에 잔여 불일치 1건**\n\n### 1) fwd11 run set 분리 — 해소\n`direct-duty-fwd11-late.json`의 실측(`harness_timeout_seconds: 300`, `harness_execution_status: execution_error`, `num_turns: 41`, `duration_ms: 356798`, `runtime_commit 313a919`, `assessment: REVIEW_REQUIRED`)이 followup-plan·PR 본문 문구와 정확히 대응합니다. currency 18턴 한도 종료와 live-followup 240/900초를 \"다른 실행\"으로 명시한 것도 적절하며, 실제 실행 기록을 다른 묶음의 실패로 대체하지 않았습니다. `capture_note`의 \"same execution, not a rerun\" 유지와 timed harness 실행 오류 보존도 일관됩니다.\n(비차단 참고: knowledge 문단의 \"이전 300초 timeout\"은 direct-duty 하네스 300초와 숫자가 겹칩니다. 문맥으로 구분되나 \"이전 knowledge 300초\" 정도로 한정하면 오독 여지가 사라집니다.)\n\n### 2) 실제 모델 메타데이터 위치 — 해소\n`conclusion-contract-opus.json`/`epistemic-contract-opus.json`에 seconds·model/effort·context/prompt/output sha·runtime_inputs manifest·usage·cost·`candidate_patch_file`·`independent_review_file`·`output_file`이 실재하며, followup-plan의 실행/패치/리뷰 링크와 PR 본문 주장이 파일 내용과 일치합니다. 두 파일 모두 `packet_metadata_scope`로 내부 `execution_status: not_measured`·`assessment: null`이 사전 스냅샷임을 명시하고, 최상위 `assessment: FAIL ...`이 최종 판정임을 분리했습니다. runtime_inputs hash 차이(후보1 self-verification.md, 후보2 contract_review_guide.md)도 각 `runtime_commit` 설명과 정합합니다. 새 측정을 창작한 흔적 없음.\n\n### 3) 후보 2 판정 주체 분리 — 잔여 불일치 (구체)\nfollowup-plan 상단과 PR 본문은 \"첫 후보 독립 Sol FAIL, 둘째 후보 독립 Sol major_revision/material_concerns를 root가 FAIL로 판정\"으로 올바르게 분리되었습니다. 그러나 **같은 diff에 새로 추가된 `backlog/sprints/2026-09-model-era-refresh.md` 인계 줄**이 교정 전 귀속을 그대로 유지합니다.\n\n> \"#323 최소 수정 후보2개는 같은 고정 입력 Opus 실험·**독립 Sol 의미 리뷰에서 FAIL로 모두 되돌렸다**\"\n\n후보 2의 독립 리뷰 판정은 major_revision/material_concerns이고 FAIL은 root 판정이므로, 이 문장은 리뷰어에게 없는 판정을 귀속합니다. 조치: \"후보1은 독립 Sol FAIL, 후보2는 독립 Sol major_revision을 root가 FAIL로 판정해 모두 되돌렸다\"로 한 줄 수정(문구 정정만, 새 실행 불필요).\n\n### 범위\n문서·포인터 정합성만 검토했습니다. 후보 2건 FAIL, #323 AC5 미완료, fwd11 REVIEW_REQUIRED/하네스 timeout, guardrails UNSCORABLE1, o4·현행성 위반, #325 NO_GO/INCONCLUSIVE는 그대로 실패로 유지되어야 하며 본 검토가 이를 완화하지 않습니다. 위 3번 한 줄 정정 후 evidence integration LGTM입니다.",
+  "root_resolution": "Fixed the remaining new sprint line to distinguish candidate-1 reviewer FAIL and candidate-2 reviewer major_revision/material_concerns followed by root FAIL. Also qualified historical knowledge timeout in the current summary."
+}

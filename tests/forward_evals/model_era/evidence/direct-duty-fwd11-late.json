@@ -1,0 +1,115 @@
+{
+  "runtime_commit": "313a91901188c6186b3158ae0da4efdbbb4c0ad0",
+  "output_sha256": "2dc82f00f715c46bd98e3a84a6341c097b1ff0411f0a472999c17cae539726de",
+  "published_output_sha256": "2dc82f00f715c46bd98e3a84a6341c097b1ff0411f0a472999c17cae539726de",
+  "harness_execution_status": "execution_error",
+  "harness_timeout_seconds": 300,
+  "late_provider_result": {
+    "duration_api_ms": 389186,
+    "stop_reason": "end_turn",
+    "total_cost_usd": 2.026695,
+    "usage": {
+      "input_tokens": 42,
+      "cache_creation_input_tokens": 71385,
+      "cache_read_input_tokens": 1065174,
+      "output_tokens": 19028,
+      "output_tokens_details": {
+        "thinking_tokens": 8245
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 71385,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 5659,
+          "cache_read_input_tokens": 72097,
+          "cache_creation_input_tokens": 2303,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2303
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 201393,
+        "outputTokens": 6591,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 7,
+        "costUSD": 0.304348,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5": {
+        "inputTokens": 42,
+        "outputTokens": 19028,
+        "cacheReadInputTokens": 1065174,
+        "cacheCreationInputTokens": 71385,
+        "webSearchRequests": 0,
+        "costUSD": 1.722347,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 8245,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 41,
+    "subtype": "success",
+    "api_error_status": null,
+    "ttft_ms": 2256,
+    "type": "result",
+    "duration_ms": 356798,
+    "ttft_stream_ms": 1352,
+    "time_to_request_ms": 246,
+    "queued_turn_count": 0
+  },
+  "capture_note": "Provider result completed after the harness deadline (356798 ms). This is recovered output from the SAME execution, not a rerun or a successful budgeted harness run. Judge content separately; retain original empty harness output and timeout. No matching processes remained at process check.",
+  "assessment": "REVIEW_REQUIRED"
+}

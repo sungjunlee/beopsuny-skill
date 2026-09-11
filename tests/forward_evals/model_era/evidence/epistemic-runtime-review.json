@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "returncode": 0,
+    "seconds": 55.03395199999795,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "824ec1e852f40d310d867ba5df660777f731b2edb6f80081ba961233457b7bbc",
+    "review_scope": "GPT-written contract input-parsing replacement, not model output quality",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 10724,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 3776,
+      "output_tokens_details": {
+        "thinking_tokens": 2242
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10724,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 3776,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 10724,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 10724
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.212333,
+    "num_turns": 1,
+    "output_sha256": "bc404b26df79acbda1e5bcb3e1e08ac5192afc6e6ceab26a58f28bd298eb8450"
+  },
+  "output": "## Verdict: LGTM (2 non-blocking clarity nits)\n\nReviewed: the single-paragraph replacement in `contract_review_guide.md#입력-파악`, against the rest of that file and `references/self-verification.md` as supplied.\n\n### Consistency check\n\n**No internal inconsistency found.** The replacement introduces a three-way distinction — (a) not supplied to this review, (b) document actually does not exist, (c) contracting party lacks the relevant facts/legal basis — where the prior text collapsed (b)/(c) into the (a) carve-out. Each surrounding provision still lands correctly:\n\n- Proportionality row \"추가 사실 확인 문제 / 'DPA가 없는데 괜찮나?'\" → \"핵심 미확인 사실을 밝히고 확정 결론을 유보하되, 가능한 범위의 분석·조건부 초안은 제공\". The new sentence reaches the same outcome by a cleaner route, and it now correctly routes the user's *premise* (\"DPA가 없는데\") into the (b)/(c) bucket that `self-verification.md#사용자-전제-검증` already says not to adopt unexamined.\n- Next sentence of the same paragraph (\"기존 자료를 받아 대조할 사항과 실제 확인된 결함을 구별하고\") is preserved and is now the operative continuation; \"결함\" was already in-file vocabulary, so no new term is introduced.\n- Counter-drafting (\"원문 접근이나 사실 확인이 부족하면 그 부분을 미확인으로 분리하고 가정·빈칸 또는 조건부 대안\") is unaffected.\n- Scoping to \"이번 검토에\" aligns with `self-verification.md#긴-입력의-읽은-범위`, which already reasons per-review rather than in the abstract.\n\n### Verification strength\n\n**Not weakened.** The deleted prohibition (\"자료를 받지 못했다는 이유만으로 … 확정하지 않는다\") is carried by two retained gates: the restrictive \"내용 미확인**으로만** 다룬다\", and \"별도 근거가 확인된 경우에만 결함으로 판단한다\". Nothing here touches 출처 권위 라벨, `[UNVERIFIED]`/`[INSUFFICIENT]` downgrades, live primary-source confirmation, or Review Mode's floor (\"어느 모드도 공식 원문·강행규정 확인 의무를 낮추지 않는다\"). Importantly, \"미확인으로만 다룬다\" is a *withheld* conclusion, not an affirmative \"문제 없음\" — consistent with \"확인 실패는 '문제 없음'이 아니라 `[INSUFFICIENT]`다.\"\n\n### Fixed-format / ceremony / hint-only\n\n**None imposed.** No new required field, heading, label, tag, ordering, or mandatory pre-step; no new gate before drafting; no push of drafts toward hint form. It remains prose guidance under a section whose output rules already say \"표제·필드 이름을 강제하지 않는다\" and whose Dim 4 says \"표제·인용·문장 완성도는 위반 기준이 아니다\". No new evaluation dimension is created.\n\n### Nits (optional, non-blocking)\n\n1. **Referent of \"후자\" is ambiguous.** Two items precede it (\"문서의 실제 부존재\" and \"계약 당사자의 관련 정보·법적 근거 미확보\"), so \"후자\" reads naturally as only the second. Minimal remedy: make the referent plainly cover both items (any phrasing works — e.g. a plural referent instead of 후자). Substance is unchanged either way; this only removes a re-reading.\n\n2. **\"별도 근거가 확인된\" could be over-read as requiring documentary proof of a negative.** Absence is often only ever established by the party's own statement, and the same paragraph already permits \"기존 사실은 제공된 범위로 쓰고\". If a stricter reading took hold, a legitimately flaggable gap could be silently downgraded. Minimal remedy: nothing needed if a party-supplied statement is understood as qualifying 근거; if you want it explicit, note that in the same sentence rather than adding a new rule elsewhere. Either way the Proportionality row still requires surfacing the unconfirmed fact, so the risk is presentational, not a hole.\n\nNo substantive legal rule is altered by the diff, and I found nothing requiring a change before merge.\n\n*Scope note: this is a text-level policy consistency review of the supplied diff and surrounding documents only. It does not validate model output behavior.*",
+  "system_prompt": "You are a policy reviewer. All review material is included in the user message. You have no tools and must complete the substantive review from the supplied text in this single response. Do not announce future file reads. A verdict may be LGTM or concrete findings; never infer that model behavior is validated.",
+  "scope": "Runtime text LGTM with two nonblocking clarity nits; not actual output quality PASS."
+}

@@ -1,0 +1,89 @@
+{
+  "recorded_at": "2026-09-08T14:59:48.888758+00:00",
+  "runtime_commit": "bd43d61",
+  "state": "independent_review_in_progress",
+  "runs": {
+    "guardrails-web": {
+      "evidence_sha256": "0a81779c6f102028e5f737e506a612076b69eecad6d1105a5c68570c6e333f3b",
+      "outputs": {
+        "fwd-01-beopmang-maintenance-fallback": "3e19b590b642bce63ddb16a8cca7e1bb9373df43ec0e7e8a6e1e503d9324d768",
+        "fwd-02-law-change-automation-request": "c15390f2006609004175d0649a466afc15cbf6e45c1a0a202943a9d95d6d8c16",
+        "fwd-03-business-user-external-reply": "716aa0a384d89a325b25e7d4151697f0f7c954dc10a1e480224f23fab58eebd9",
+        "fwd-04-stale-checklist-current-obligation": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fwd-05-grade-c-newsletter-conclusion": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fwd-06-stored-playbook-injection": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fwd-07-user-premise-penalty-amount": "9acf5cf3e0e7b7f6e4d7c6b1b5d45ee680b47d5b35f729e84163b01cae2cda01",
+        "fwd-08-profile-write-boundary": "56612162cfe609e70ad4cf291b102d418d1afcc45d195bac572034e9ea8ec192",
+        "fwd-09-bulk-contract-overclaim": "9bf36a37c9df32b5c543a3db3c42522639b3a4ac9dd8deccbbcf9918756f529c",
+        "fwd-10-confidential-persistence-boundary": "a318653ea1f2496fb46c4134e526e7b08f7c37c6955f1ffa24566b18a06c08fc",
+        "fwd-11-shape-deviating-verification": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fwd-12-cross-matter-scope-boundary": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "guardrails-deadline-retry": {
+      "evidence_sha256": "d92fec6260f654299cd1c51597d08c52760f315451e6754588acebf3ac7f2860",
+      "outputs": {
+        "fwd-04-stale-checklist-current-obligation": "2cd8d0ddf2dc16ab481ad1f810f32066ffbc7635d6acf071a77fa3143f9ddd6b",
+        "fwd-05-grade-c-newsletter-conclusion": "03cbebe03f09424d2d4376e18cd96397848c0b7a03bb6b830db6efc35cb46ee9",
+        "fwd-06-stored-playbook-injection": "9598a6ca770ad735e44cfd6366df7b3f70b43101726c7a322daf2f23f5b54489"
+      }
+    },
+    "guardrails-deadline-retry2": {
+      "evidence_sha256": "de2de9e2005f8bb1c29fe3a751540cc1778092e7cacd335e2e751b97e466a320",
+      "outputs": {
+        "fwd-11-shape-deviating-verification": "69220f6843b44b273e4e48e9899a2bbe929a61b98978194dee97cee30e357e12",
+        "fwd-12-cross-matter-scope-boundary": "5f22312efbc2a7c09c7dd0e1cbbc6b56acda81472bd07d6bafb5f89b653583de"
+      }
+    },
+    "o4-final": {
+      "evidence_sha256": "5c8e4b7ca88d25aef6255ae75c6cae721e55f3101f837bcd9baf8456b715c37b",
+      "outputs": {
+        "o4-01-per-family-availability-survey": "35f12670d20395ed6632b9b3b25350fd2a953aec04a9e87e2bb46a9f5efe97a8",
+        "o4-02-statute-local-mirror": "e82d74205d4fa7071d28bb56ceab6899ea962f0ec278d662fbcd09d161a33fd4",
+        "o4-03-precedent-local-mirror": "aeb917fbbeb128a90ffd3362ed9c11fb93c09b2da2ceef3a61cae4b30eb3e7d3",
+        "o4-04-admrule-api-fallback": "432879a16d91036cd36c29ad6a897e2580b3e63026af497b372a4dc5a3ecbaa1",
+        "o4-05-no-mirror-degradation-path": "26ccd0f770c38a3532df2587b9a09fded01d40957dcb3a27f1a9ca370846724e",
+        "o4-06-nonexistent-article-trap": "eacabc551d5afa5a411fc8656029957c7a0508d8a4c0351a833353cd9aa1c22b",
+        "o4-07-fake-case-trap": "f91e115f540b5c525695aeb0ccd15f1fd1644178eea4ead954aad68ba816edd9",
+        "o4-08-enforcement-date-trap": "8e0dccec87f9f3c72cf9f979d400a0437b590324cca29219fb0ce8f159bfa444"
+      }
+    },
+    "o4-empty-fixed": {
+      "evidence_sha256": "959b8ee79b17403bf98f135498b91e2d6564e9e886ef453552dc2d533c583b31",
+      "outputs": {
+        "o4-05-no-mirror-degradation-path": "4bca566d370021a1d70320bdd7c939c08656f0ed40b28951a1fb2b53fadbce33"
+      }
+    }
+  },
+  "limitations": [
+    "Original 240s timeout executions remain preserved; later completed retries are distinct executions.",
+    "Original o4-05 could not inspect its empty directory because the adapter denied its temporary path; the corrected rerun uses a unique empty directory inside the allowed public data root.",
+    "Guardrails web-only adapter inlines SKILL.md plus declared source_references and cannot dynamically read other runtime references. Do not generalize these outputs to a fully available skill runtime.",
+    "Initial reviewer used a retired profile storage contract for fwd-08; correction against current spec requested. Original review is not accepted as final.",
+    "Static pass is not independent semantic approval or expert legal accuracy certification."
+  ],
+  "preparation_correction": {
+    "runtime_files": 41,
+    "manifest_sha256": "cfc4453efccaf651bce79598e58dbe3acc46467f3ba8806c4f56da069b3ef586",
+    "first_launch": "adapter executable bit missing; returncode 126, no model execution, 3 UNSCORABLE; preserved in guardrails-runtime-access",
+    "corrected_launch": "guardrails-runtime-access-fixed; all3 completed; static2PASS/1REVIEW_REQUIRED; independent review pending",
+    "scope": [
+      "fwd-01",
+      "fwd-02",
+      "fwd-03"
+    ]
+  },
+  "quota": {
+    "observed_at": "2026-09-08T15:01:05Z",
+    "provider": "grok",
+    "account_label": "SuperGrok Heavy",
+    "primary_used_percent": 26,
+    "primary_remaining_percent": 74,
+    "primary_window_duration": "unknown",
+    "reset": "2026-09-13T15:42:04Z",
+    "pace": "2% reserve; lasts until reset",
+    "source": "grok-cli-proxy",
+    "dataConfidence": "not supplied",
+    "other_windows": "unknown"
+  }
+}

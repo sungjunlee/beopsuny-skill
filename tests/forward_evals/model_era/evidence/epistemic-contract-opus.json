@@ -1,0 +1,109 @@
+{
+  "returncode": 0,
+  "seconds": 264.74165454201284,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "bd3021c89efca2450d02a717070175c16085c777214edab449292075b0a699cf",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_commit": "3e76b25 plus one contract input-parsing sentence replacement; exact packet manifest preserved",
+  "comparison_limit": "Same fixed question, source and claude-opus-5 high settings as direct-duty run; stochastic single observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 46934,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 17738,
+    "output_tokens_details": {
+      "thinking_tokens": 3545
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 46934,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 17738,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 46934,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 46934
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.919258,
+  "num_turns": 1,
+  "output_sha256": "4df9a498b0ebfedf8b3802e675829eaed4929e614536b99e4bb847fb5c745a87",
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+      "skills/beopsuny/references/contract_review_guide.md": "f48e37834aa177ab66de0772deb30113309104680ebfef186a79e664544ef443",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+          "skills/beopsuny/references/contract_review_guide.md": "f48e37834aa177ab66de0772deb30113309104680ebfef186a79e664544ef443",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "bd3021c89efca2450d02a717070175c16085c777214edab449292075b0a699cf",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "candidate_patch_sha256": "e1c98fa5442b3c90b174f5d8b5b246d22342ccd732430c7857a717e555066338",
+  "assessment": "FAIL after independent semantic review and root adjudication",
+  "expert_legal_validation": false,
+  "independent_review_file": "epistemic-contract-independent-review.json",
+  "candidate_patch_file": "epistemic-subject-candidate.patch",
+  "output_file": "epistemic-contract-opus.txt",
+  "packet_metadata_scope": "Preserved pre-execution preparation snapshot; embedded null/not-executed assessment fields are not the observed execution status. Top-level execution fields and linked final review govern the outcome."
+}

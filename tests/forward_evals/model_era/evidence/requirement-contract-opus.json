@@ -1,0 +1,230 @@
+{
+  "returncode": 0,
+  "seconds": 337.8342862909776,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "a6d4a0ff4a7d9f060c02eb17e97cdaf5f19be4c66bb32f75c8670cc3901c4b45",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "comparison_limit": "Same complete-reference builder, fixed prompt/source and claude-opus-5 high/no-tools settings as core-contract-opus; one contract guide sentence replaced per candidate.patch. One observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 56837,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 22514,
+    "output_tokens_details": {
+      "thinking_tokens": 9953
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 56837,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 22514,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 56837,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 56837
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 1.137658,
+  "num_turns": 1,
+  "output_sha256": "80cea5af15cefb87a979904bb6a8f8d4cc73d6c5e8f5745c9e8ec97b9c5e2727",
+  "runtime_base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+  "assessment": "FAIL",
+  "runtime_change_adopted": false,
+  "candidate_patch": "requirement-means-candidate.patch",
+  "output_file": "requirement-contract-opus.txt",
+  "independent_review_file": "requirement-contract-independent-review.json",
+  "packet_metadata_kind": "Exact pre-execution preparation snapshot, not current execution status",
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+      "skills/beopsuny/references/contract_review_guide.md": "bfa7f2b3770edc297ffdeec803f0677ea970081efd53c91852ca1b2a4e5ff6ee",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/research-workflow.md": "517f593b7ea5b2c779971a3f398071056b4eaa03b1c380798f5caa8996760475",
+      "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+      "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+          "skills/beopsuny/references/research-workflow.md": "517f593b7ea5b2c779971a3f398071056b4eaa03b1c380798f5caa8996760475",
+          "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c",
+          "skills/beopsuny/references/contract_review_guide.md": "bfa7f2b3770edc297ffdeec803f0677ea970081efd53c91852ca1b2a4e5ff6ee",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "a6d4a0ff4a7d9f060c02eb17e97cdaf5f19be4c66bb32f75c8670cc3901c4b45",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "preflight_snapshot": {
+    "only_changed_runtime_input": [
+      "skills/beopsuny/references/contract_review_guide.md"
+    ],
+    "prompt_unchanged": true,
+    "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "context_sha256": "a6d4a0ff4a7d9f060c02eb17e97cdaf5f19be4c66bb32f75c8670cc3901c4b45",
+    "patch_sha256": "ade0b643151c359993dc538e41e1d38f42381f4da840b294aea6976b9bb3f068",
+    "runtime_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+    "status": "prepared; performance unmeasured"
+  },
+  "preregistration_snapshot": {
+    "status": "planned; no model execution",
+    "base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+    "hypothesis": "Distinguishing statutory requirements from one proposed means of satisfying or evidencing them prevents inferring that missing information about that means establishes legal noncompliance. This changes the requirement/means distinction, not another repetition of uncertainty propagation or observer identity.",
+    "change_scope": "Replace existing contract Counter-drafting sentence only, if independent source diagnosis supports it. No case-specific legal rule, output format, scorer, source excerpt, user prompt or other runtime file changes.",
+    "initial_trial": "One Claude Opus5 high, no tools, 900 seconds; same current complete-reference packet builder and fixed contract question/source as core-contract-opus. No A model rerun. Prior actual B output retained as prior-context/control observation.",
+    "adoption": "Independent GPT semantic review plus root source adjudication must find no material fact promotion or unsupported legal necessity/effect; complete editable draft, source/applicability/exceptions and external-action boundaries retained. No arbitrary scores or expert legal gold.",
+    "expansion": "Only a clean initial signal opens one fixed repeat and existing missing-annex holdout on unchanged candidate runtime. Then relevant runtime smoke via existing runner. FAIL or unresolved material REVIEW_REQUIRED stops expansion and reverts candidate; no blind retry.",
+    "comparison_limit": "One prior versus one candidate observation does not prove causality or model-general reliability; repeats and held-out semantics must support adoption.",
+    "quota_before": "2026-09-09T02:18:06Z Claude 5h87% used/13% remaining, weekly13/87; reset about11:29KST and9/13 00:59KST; sourceclaude percentOnly, both pace lastToReset. Codex Pro week41/59 reset9/16 07:49KST oauth/exact; other non-Spark windows unknown. No reset/payment."
+  },
+  "diagnosis": {
+    "author": "native gpt-5.6-sol high",
+    "base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+    "assessment": "Supported semantic gap hypothesis; no model quality finding",
+    "basis": {
+      "contract_review_guide.md:131": "Existing sentence distinguishes statutory requirement from additional procedures/liability, but not required information/effect from a specific document or implementation means.",
+      "research-workflow.md:7-12; self-verification.md:84-87; review_mode.yaml:103; capabilities.md:204": "General source/fact/preference boundaries present, no direct conflicting policy."
+    },
+    "distinction_from_failed_candidates": "Earlier candidates addressed propagation of an unknown premise and identity of the observer. This candidate addresses legal necessity vs one means of compliance/evidence even if facts remain unknown.",
+    "preserved": "Mandatory source/actor/exception/time checks, no assumption of actual absence, direct statutory duties, complete drafts and external-action boundaries, include_missing_clauses remain.",
+    "caveat": "Reviewer initially supported chosen wording, then suggested 필수 충족수단 as more precise than 유일한 법정 요건. Later suggestion arrived after target dispatch; tested runtime remains frozen and wording concern is not hidden.",
+    "effect": "Not causally established; independent output review required before expansion."
+  },
+  "root_adjudication": {
+    "overall": "FAIL",
+    "accepted_decisive_reason": "§1 row2 and §2 turn annex not supplied into actual empty content and inability to fulfill disclosure/legal conditions. §3 replacement transfer-information clause also omits refusal effects present in supplied Article28-8(2)(5).",
+    "independent_review_scope": "Other substantive findings are retained as independent review, not expert legal gold. The primary verdict does not require treating every omitted statutory qualifier or proposed scope amendment as an independently established legal violation.",
+    "utility": "PASS for editable complete draft; source-scope and external-action separation preserved as distinct axes.",
+    "decision": "Exact candidate patch reverted after input-hash/patch checks. No repeat or holdout, no causal claim about wording ambiguity or model-general performance."
+  },
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 6293,
+      "outputTokens": 27,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.006428,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 22514,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 56837,
+      "webSearchRequests": 0,
+      "costUSD": 1.13123,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 9953,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "cost_note": "CLI total list-price estimate includes reported auxiliary Haiku usage; requested/final-answer target is Opus5. num_turns is CLI conversation turns, not all internal provider requests. Raw provider transcript not published.",
+  "quota_after_target": [
+    {
+      "source": "claude",
+      "provider": "claude",
+      "usage": {
+        "dataConfidence": "percentOnly",
+        "identity": {
+          "providerID": "claude"
+        },
+        "secondary": {
+          "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "usedPercent": 13
+        },
+        "extraRateWindows": [
+          {
+            "title": "Fable only",
+            "id": "claude-weekly-scoped-fable",
+            "window": {
+              "usedPercent": 3,
+              "windowMinutes": 10080,
+              "resetsAt": "2026-09-12T16:00:00Z",
+              "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)"
+            }
+          }
+        ],
+        "updatedAt": "2026-09-09T02:31:10Z",
+        "primary": {
+          "windowMinutes": 300,
+          "usedPercent": 0
+        },
+        "tertiary": null
+      },
+      "pace": {
+        "secondary": {
+          "willLastToReset": true,
+          "stage": "farBehind",
+          "deltaPercent": -36,
+          "expectedUsedPercent": 49,
+          "summary": "36% in reserve | Expected 49% used | Lasts until reset"
+        }
+      }
+    }
+  ]
+}

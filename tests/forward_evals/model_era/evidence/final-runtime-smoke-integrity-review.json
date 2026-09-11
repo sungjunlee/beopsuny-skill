@@ -1,0 +1,25 @@
+{
+  "reviewer": "native Sol high / next_execution_audit",
+  "scope": "Only outputs/preregistered/adapter/validation and frozen runtime/raw traces/reconstructed inputs; transformation package.py added for redaction rereview. Read-only, no target reruns.",
+  "initial_verdict": "FIX_REQUIRED",
+  "initial_finding": "fwd02 local evaluation mirror Git reflog tool result contained personal author and source clone home path; original access remained inside evaluation mirror.",
+  "correction": "One matching reflog tool_result content entirely replaced with explicit redaction marker; original_content_sha256 and original stdout hash retained.",
+  "rereview_verdict": "PASS",
+  "checks": {
+    "completed_nonempty_return0": 20,
+    "original_output_stdout_hash_matches": 20,
+    "published_output_trace_content_and_hash_matches": 20,
+    "reconstructed_input_files": 40,
+    "base_and_full_context_hashes_reconstructed": 20,
+    "runtime_files_exact_Git_8fad_bytes": 41,
+    "tool_calls_read_search_allowlist_only": 261,
+    "published_email_count": 0,
+    "published_home_path_count": 0,
+    "published_personal_name_count": 0,
+    "reflog_result_redactions": 1,
+    "cost_time_unchanged": true
+  },
+  "package_transform_sha256": "56b60322494146e597dee98c4853cfda6ba7b0f133f83467c7d0aa55b2dfd826",
+  "published_outputs_sha256": "9020eaa9311d077aa5d39eecaece21adda022a29097adb80b349eaab9f0c1a39",
+  "legal_gold": false
+}
