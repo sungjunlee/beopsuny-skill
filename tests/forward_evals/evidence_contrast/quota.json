@@ -1,0 +1,67 @@
+{
+  "snapshots": [
+    {
+      "provider": "claude",
+      "account_label": "Max/default",
+      "at": "2026-09-12T13:56:46Z",
+      "source": "claude",
+      "dataConfidence": "percentOnly",
+      "windows": {
+        "primary": {
+          "resetDescription": "Resets12:30am(Asia/Seoul)",
+          "usedPercent": 100,
+          "windowMinutes": 300,
+          "resetsAt": "2026-09-12T15:30:00Z",
+          "remainingPercent": 0
+        },
+        "secondary": {
+          "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+          "usedPercent": 74,
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "remainingPercent": 26
+        },
+        "tertiary": "unknown"
+      },
+      "pace": {
+        "secondary": {
+          "stage": "farBehind",
+          "deltaPercent": -25,
+          "expectedUsedPercent": 99,
+          "summary": "25% in reserve | Expected 99% used | Lasts until reset",
+          "willLastToReset": true
+        }
+      }
+    },
+    {
+      "provider": "codex",
+      "account_label": "Pro/default",
+      "at": "2026-09-12T13:56:46Z",
+      "source": "oauth",
+      "dataConfidence": "exact",
+      "windows": {
+        "primary": "unknown",
+        "secondary": {
+          "resetDescription": "Sep 19 at 5:10 PM",
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-19T08:10:30Z",
+          "usedPercent": 25,
+          "remainingPercent": 75
+        },
+        "tertiary": "unknown"
+      },
+      "pace": {
+        "secondary": {
+          "deltaPercent": 22,
+          "etaSeconds": 62331,
+          "expectedUsedPercent": 3,
+          "willLastToReset": false,
+          "stage": "farAhead",
+          "summary": "22% in deficit | Expected 3% used | Runs out in 17h 19m"
+        }
+      }
+    }
+  ],
+  "all_provider_query": "55s timeout, empty output: unknown, not exhaustion",
+  "target_selection": "Claude Opus5 high to match reused valid baseline; 5h100% => no target launch, no route/model substitution or extra spend"
+}
