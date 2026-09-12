@@ -2718,7 +2718,11 @@ def check_design_decision_archive() -> None:
 def check_knowledge_manifest_policy_config() -> None:
     data = load_yaml("skills/beopsuny/assets/policies/knowledge_manifest.yaml")
     text = read_text("skills/beopsuny/references/knowledge-injection.md")
-    helper = read_text("skills/beopsuny/assets/tools/knowledge_manifest_ingest.py")
+    helper = (
+        read_text("skills/beopsuny/assets/tools/knowledge_manifest_ingest.py")
+        + "\n"
+        + read_text("skills/beopsuny/assets/tools/knowledge_manifest_validate.py")
+    )
     label = "knowledge_manifest.yaml"
 
     manifest = data.get("knowledge_manifest")
