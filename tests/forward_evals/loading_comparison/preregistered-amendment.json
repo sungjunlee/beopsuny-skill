@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-12T08:25:48.714858+00:00",
+  "before_any_target_quality_run": true,
+  "runtime_commit": "4022d86",
+  "runtime_same_as_preregistered_9c03725": true,
+  "preparation_correction": "Earlier 9c03725 builder omitted research-workflow and source-grading. Main integrated existing complete builder; regenerate with it before any quality run, retain old prepared packet unexecuted. Native plugin content unchanged. This restores the exact previous current-profile fixed input, not an easier question.",
+  "context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "probe": {
+    "status": "PASS_LOADING_ONLY",
+    "exact_skill_body_in_trace": true,
+    "actual_model": "claude-opus-5",
+    "skills_in_init": [
+      "beopsuny:beopsuny",
+      "design",
+      "doctor"
+    ],
+    "limit": "Other advertised names design/doctor remain visible despite requested disableBundledSkills; origin not independently verified. No other plugin/personal skill bodies or tools invoked. No quality verdict.",
+    "followup_setting": "Before quality runs, explicitly set design/doctor off via skillOverrides; audit actual init in target, no second inference probe."
+  },
+  "comparison_limit": "Native chooses which references to load; injection-versus-progressive loading path comparison, not isolated system prompt causality.",
+  "external_controls": {
+    "data_root": "/tmp/beopsuny-release09/fresh-mirrors",
+    "legalize_commit": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+    "precedent_commit": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+    "pre_run_git_status": "both clean",
+    "mirror_policy": "Shared frozen snapshot; no update during pair. Verify git state and actual read-file hashes after both arms.",
+    "setup_surface": "Same fixture setup text: legacy injected context, native append-system-prompt as harness context, not personal memory.",
+    "tools": "Read,Glob,Grep both; Skill additionally native. No web in either new arm. Previous live run allowed web; this fresh pair isolates against shared frozen sources and is not a byte-exact reproduction of that entire historical adapter.",
+    "read_grant_root": "/tmp/beopsuny-release09/fresh-mirrors/data"
+  },
+  "fixed_environment_clarification": {
+    "before_target_at": "2026-09-12T08:28:49.558702+00:00",
+    "text": "자료 조건의 파일 접근 제한은 사건 자료와 법률 원문에 적용된다. 법순이 runtime 지침 파일 로딩은 허용된다. 제공된 법령 발췌 이외의 법률 자료에는 접근할 수 없다.",
+    "reason": "Original no-other-files premise would conflict with normal runtime reference loading. Same environment clarification in both arms; original question and legal source bytes untouched. Record base context and actual full system/append separately."
+  }
+}

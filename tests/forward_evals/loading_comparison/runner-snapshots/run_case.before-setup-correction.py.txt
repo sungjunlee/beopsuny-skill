@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""Bounded loading-path experiment. No inference occurs with --dry-run.
+
+Raw JSONL/stderr and exact argv are local-only; public/ contains an allowlisted
+result summary, tool traces, and the final answer, never whole stream events.
+External cases use the root-approved shared frozen mirror and setup surface.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+
+
+ROOT = Path(__file__).resolve().parent
+RUNTIME = "9c03725115ccec130fb01e1f464b7858729d5924"
+FIXED = ROOT / "fixed-current/model-inputs/B/m8-complex-contract-fixed"
+DATA = Path("/tmp/beopsuny-release09/fresh-mirrors/data")
+FIXED_ENV = "\n자료 조건의 파일 접근 제한은 사건 자료와 법률 원문에 적용된다. 법순이 runtime 지침 파일 로딩은 허용된다. 제공된 법령 발췌 이외의 법률 자료에는 접근할 수 없다.\n"
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def encoded(value):
+    return json.dumps(value, ensure_ascii=False, sort_keys=True).encode("utf-8")
+
+
+def write_json(path, value):
+    path.write_bytes(encoded(value) + b"\n")
+
+
+def file_info(path):
+    data = path.read_bytes()
+    return {"path": str(path), "sha256": digest(data), "bytes": len(data)}
+
+
+def plugin_manifest(plugin):
+    if plugin.is_symlink():
+        raise ValueError(f"Plugin must be an actual copy: {plugin}")
+    result = {}
+    for path in sorted(plugin.rglob("*")):
+        if path.is_symlink():
+            raise ValueError(f"Symlink forbidden in copied plugin: {path}")
+        if path.is_file():
+            result[str(path.relative_to(plugin))] = digest(path.read_bytes())
+    if "skills/beopsuny/SKILL.md" not in result:
+        raise ValueError("Copied plugin has no target SKILL.md")
+    expected = json.loads((ROOT / "runtime-manifest.json").read_bytes())
+    for relative, sha in expected.items():
+        if result.get(relative) != sha:
+            raise ValueError(f"Frozen runtime mismatch: {relative}")
+    if {p for p in result if p.startswith("skills/")} != set(expected):
+        raise ValueError("Copied plugin has unexpected runtime files")
+    return result
+
+
+def plan(case, arm):
+    plugin = ROOT / arm / "plugin"
+    workspace = ROOT / arm / "workspace"
+    if not workspace.is_dir():
+        raise ValueError(f"Missing prepared workspace: {workspace}")
+    source = FIXED if case == "fixed" else ROOT / "external/fwd-12-cross-matter-scope-boundary"
+    prompt_path, context_path = source / "prompt.txt", source / "context.md"
+    prompt_bytes, context_bytes = prompt_path.read_bytes(), context_path.read_bytes()
+    prompt, context = prompt_bytes.decode("utf-8"), context_bytes.decode("utf-8")
+    if "\0" in prompt or "\0" in context:
+        raise ValueError("NUL in input is not representable in argv")
+    manifest = plugin_manifest(plugin)
+    environment = FIXED_ENV
+    setup = ""
+    if case == "external":
+        if not DATA.is_dir():
+            raise ValueError(f"Missing approved frozen mirror: {DATA}")
+        setup = "## Evaluation workspace context (setup.md)\n" + json.loads(
+            (ROOT / "external-previous-setup.json").read_bytes())["execution_setup"]["text"]
+        environment = (f"\n[평가 환경] BEOPSUNY_DATA_ROOT={DATA.parent}. 추가 스킬 reference는 "
+                       f"{plugin}/skills/beopsuny에서 읽는다. 개인 설치본·다른 평가 출력은 "
+                       "이용하지 않는다. 실제 확인 경로와 실패를 정직하게 보고한다. "
+                       "도구는 자료 읽기·검색만 허용된다.\n")
+    system_text = context + environment if arm == "legacy" else setup + environment
+    argv = ["timeout", "-k", "10s", "900s", "claude", "-p",
+            "--permission-mode", "auto", "--model", "claude-opus-5",
+            "--effort", "high", "--restricted", "--setting-sources", "",
+            "--settings", str(ROOT / "session-settings.json"),
+            "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}']
+    if arm == "native" or case == "external":
+        # Claude permission patterns use // for absolute filesystem paths.
+        scope = "/" + str(plugin) + "/**"
+        grants = (["Skill(beopsuny:beopsuny)"] if arm == "native" else []) + [
+            f"{tool}({scope})" for tool in ("Read", "Glob", "Grep")]
+        argv += ["--add-dir", str(plugin)]
+        if case == "external":
+            argv += ["--add-dir", str(DATA)]
+            grants += [f"{tool}(/{DATA}/**)" for tool in ("Read", "Glob", "Grep")]
+        argv += ["--tools", ("Skill," if arm == "native" else "") + "Read,Glob,Grep",
+                 "--allowedTools", ",".join(grants)]
+    else:
+        argv += ["--tools", ""]
+    if arm == "native":
+        argv += ["--plugin-dir", str(plugin), "--append-system-prompt", system_text]
+    else:
+        argv += ["--safe-mode", "--system-prompt", system_text]
+    argv += ["--no-session-persistence", "--output-format", "stream-json",
+             "--verbose", "--", prompt]
+    return {"case": case, "arm": arm, "created_at": now(),
+            "runtime_commit": RUNTIME, "cwd": str(workspace), "argv": argv,
+            "argv_sha256": digest(encoded(argv)),
+            "argv_hash_encoding": "UTF-8 JSON ensure_ascii=false sort_keys=true",
+            "inputs": {"prompt": file_info(prompt_path),
+                       "context": file_info(context_path),
+                       "settings": file_info(ROOT / "session-settings.json"),
+                       "preregistered": file_info(ROOT / "preregistered.json")},
+            "context_injected": arm == "legacy", "plugin": str(plugin),
+            "system_argument_kind": "system-prompt" if arm == "legacy" else "append-system-prompt",
+            "system_argument_sha256": digest(system_text.encode("utf-8")),
+            "environment_suffix_sha256": digest(environment.encode("utf-8")),
+            "setup_text_sha256": digest(setup.encode("utf-8")),
+            "data_root": str(DATA) if case == "external" else None,
+            "environment_overrides": {"BEOPSUNY_DATA_ROOT": str(DATA.parent)} if case == "external" else {},
+            "plugin_manifest": manifest,
+            "plugin_manifest_sha256": digest(encoded(manifest)),
+            "stdin": "DEVNULL", "hard_deadline_seconds": 900,
+            "kill_after_seconds": 10, "automatic_retries": 0,
+            "isolation_note": "Tool allow grants are not OS sandbox proof; audit trace and probe separately"}
+
+
+def text_blocks(content):
+    """Only observable text; never thinking/redacted_thinking blocks."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(block.get("text", "") for block in content
+                         if isinstance(block, dict) and block.get("type") == "text")
+    return ""
+
+
+def extract(raw, public, run_plan, execution):
+    calls, trace, results, bad_lines = {}, [], [], []
+    init_metadata, loaded_user_text = [], []
+    final_assistant_text = ""
+    with raw.open(encoding="utf-8", errors="replace") as stream:
+        for line_number, line in enumerate(stream, 1):
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                bad_lines.append(line_number)
+                continue
+            if not isinstance(event, dict):
+                bad_lines.append(line_number)
+                continue
+            kind = event.get("type")
+            if kind == "system" and event.get("subtype") == "init":
+                init_metadata.append({key: event[key] for key in (
+                    "model", "tools", "skills", "plugins", "mcp_servers", "permissionMode")
+                    if key in event})
+            elif kind == "result":
+                results.append({key: event[key] for key in (
+                    "subtype", "is_error", "duration_ms", "duration_api_ms", "num_turns",
+                    "total_cost_usd", "usage", "modelUsage", "permission_denials",
+                    "stop_reason", "result") if key in event})
+            elif kind in ("assistant", "user"):
+                message = event.get("message") or {}
+                blocks = message.get("content", []) if isinstance(message, dict) else []
+                if not isinstance(blocks, list):
+                    continue
+                if kind == "user":
+                    loaded_user_text.append(text_blocks(blocks))
+                if kind == "assistant":
+                    visible = text_blocks(blocks)
+                    if visible:
+                        final_assistant_text = visible
+                for block in blocks:
+                    if not isinstance(block, dict):
+                        continue
+                    if kind == "assistant" and block.get("type") == "tool_use":
+                        entry = {"event": "tool_use", "line": line_number,
+                                 "id": block.get("id"), "name": block.get("name"),
+                                 "input": block.get("input", {})}
+                        calls[block.get("id")] = entry
+                        trace.append(entry)
+                    elif kind == "user" and block.get("type") == "tool_result":
+                        trace.append({"event": "tool_result", "line": line_number,
+                                      "tool_use_id": block.get("tool_use_id"),
+                                      "is_error": block.get("is_error", False),
+                                      "content": text_blocks(block.get("content", []))})
+    candidates = []
+    plugin = Path(run_plan["plugin"]).resolve()
+    target_calls = {key for key, item in calls.items()
+                    if item["name"] == "Skill" and
+                    item["input"].get("skill") == "beopsuny:beopsuny"}
+    target_results = [item for item in trace if item["event"] == "tool_result"
+                      and item["tool_use_id"] in target_calls and not item["is_error"]]
+    skill_body = (plugin / "skills/beopsuny/SKILL.md").read_text(encoding="utf-8")
+    skill_body = skill_body.split("---", 2)[-1].strip() if skill_body.startswith("---") else skill_body.strip()
+    loaded_body_proved = any(skill_body in body for body in loaded_user_text)
+    target_path_proved = bool(target_results) and loaded_body_proved and any(
+        Path(line.removeprefix("Base directory for this skill: ").strip()).resolve()
+        == plugin / "skills/beopsuny"
+        for body in loaded_user_text for line in body.splitlines()
+        if line.startswith("Base directory for this skill: "))
+    if run_plan["arm"] == "native":
+        if not target_calls:
+            candidates.append("INVALID_SETUP: target Skill was not invoked")
+        elif not target_path_proved:
+            candidates.append("INVALID_SETUP: successful target Skill path not proven in tool result")
+    for item in calls.values():
+        name, parameters = item["name"], item["input"]
+        if (run_plan["arm"] == "legacy" and run_plan["case"] == "fixed") or name not in ("Skill", "Read", "Glob", "Grep"):
+            candidates.append(f"INVALID_SETUP: unexpected tool {name}")
+        if name == "Skill" and parameters.get("skill") != "beopsuny:beopsuny":
+            candidates.append("INVALID_SETUP: other skill invocation")
+        if name in ("Read", "Glob", "Grep"):
+            requested = parameters.get("file_path") if name == "Read" else parameters.get("path")
+            accessed = Path(requested or run_plan["cwd"])
+            if not accessed.is_absolute():
+                accessed = Path(run_plan["cwd"]) / accessed
+            allowed_roots = [plugin] + ([DATA.resolve()] if run_plan["case"] == "external" else [])
+            if not any(accessed.resolve().is_relative_to(root) for root in allowed_roots):
+                candidates.append(f"INVALID_SETUP: {name} path outside own plugin: {accessed}")
+    last = results[-1] if results else {}
+    final = last.get("result")
+    final_source = "result.result"
+    if not isinstance(final, str):
+        final, final_source = final_assistant_text, "last assistant text (unconfirmed final)"
+    if not results or bad_lines or execution["returncode"] != 0 or last.get("is_error"):
+        candidates.append("UNSCORABLE: incomplete/error execution or malformed JSONL; inspect local raw")
+    public.mkdir(mode=0o700)
+    (public / "final-answer.md").write_text(final, encoding="utf-8")
+    with (public / "tool-trace.jsonl").open("w", encoding="utf-8") as output:
+        for item in trace:
+            output.write(json.dumps(item, ensure_ascii=False) + "\n")
+    summary = {"case": run_plan["case"], "arm": run_plan["arm"],
+               "execution": execution, "results": [
+                   {key: value for key, value in item.items() if key != "result"}
+                   for item in results], "final_answer_source": final_source,
+               "final_answer_sha256": digest(final.encode("utf-8")),
+               "target_skill_invoked": bool(target_calls),
+               "target_skill_path_proven": target_path_proved,
+               "target_skill_body_proven": loaded_body_proved,
+               "init_metadata": init_metadata,
+               "setup_candidates": list(dict.fromkeys(candidates)),
+               "adjudication": "Pending manual setup/isolation and legal-quality review",
+               "malformed_jsonl_lines": bad_lines,
+               "raw_stdout_sha256": digest(raw.read_bytes()),
+               "inputs": run_plan["inputs"], "argv_sha256": run_plan["argv_sha256"]}
+    write_json(public / "summary.json", summary)
+    return summary
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--case", required=True, choices=("fixed", "external"))
+    parser.add_argument("--arm", required=True, choices=("legacy", "native"))
+    parser.add_argument("--dry-run", action="store_true", help="Print hashes and command shape; never call model or write files")
+    args = parser.parse_args()
+    run_plan = plan(args.case, args.arm)
+    if args.dry_run:
+        shown = dict(run_plan)
+        shown["argv"] = list(run_plan["argv"])
+        shown["argv"][-1] = "<exact prompt.txt bytes; hash above>"
+        if "--system-prompt" in shown["argv"]:
+            shown["argv"][shown["argv"].index("--system-prompt") + 1] = "<context.md plus environment suffix; hash above>"
+        print(json.dumps(shown, ensure_ascii=False, indent=2))
+        return 0
+    if not shutil.which("timeout") or not shutil.which("claude"):
+        raise RuntimeError("Required timeout/claude executable missing; no model launched")
+    os.umask(0o077)
+    runs = ROOT / "runs"
+    runs.mkdir(exist_ok=True, mode=0o700)
+    output = runs / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ") +
+                     f"-{args.case}-{args.arm}")
+    output.mkdir(mode=0o700)
+    write_json(output / "pre-execution.local.json", run_plan)
+    started, began = now(), time.monotonic()
+    execution = {"started_at": started, "returncode": None, "runner_error": None}
+    process = None
+    try:
+        with (output / "stdout.raw.jsonl").open("wb") as stdout, (output / "stderr.raw.log").open("wb") as stderr:
+            process = subprocess.Popen(run_plan["argv"], cwd=run_plan["cwd"],
+                                       stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr,
+                                       env={**os.environ, **run_plan["environment_overrides"]},
+                                       start_new_session=True)
+            try:
+                execution["returncode"] = process.wait(timeout=925)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                execution["returncode"] = process.wait()
+                execution["runner_error"] = "Outer 925-second watchdog killed process group"
+    except (OSError, KeyboardInterrupt) as error:
+        if process is not None and process.poll() is None:
+            os.killpg(process.pid, signal.SIGKILL)
+            execution["returncode"] = process.wait()
+        execution["runner_error"] = type(error).__name__ + ": " + str(error)
+    execution.update(ended_at=now(), elapsed_seconds=time.monotonic() - began)
+    write_json(output / "execution.local.json", execution)
+    summary = extract(output / "stdout.raw.jsonl", output / "public", run_plan, execution)
+    print(json.dumps({"output": str(output), "returncode": execution["returncode"],
+                      "setup_candidates": summary["setup_candidates"]}, ensure_ascii=False))
+    return 0 if execution["returncode"] == 0 and not execution["runner_error"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

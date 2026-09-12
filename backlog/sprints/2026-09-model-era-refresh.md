@@ -180,6 +180,8 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 
 - 2026-09-12 사용자 정정 반영: 가족 일반 사용/피벗 트랙 #341 철회, #323 AC5 원문 복원, #317/#340 및 knowledge #79의 방향 정렬. #316 완료 상태는 유지한다. PR #342의 해당 인계 문구를 정정했고 새 모델 실행·자산 승격은 없다.
 
+- 2026-09-12 로딩 진단: 정상 Claude Skill 본문·실제 reference 로딩을 확인하고 고정 계약/대외 회신 각 1쌍을 비교했다. 유효4건은 FAIL3/REVIEW_REQUIRED1이며 입력 누락 최초1건은 제외 후 사전등록한 대체1회로 교정했다. 개선·반복 확대 조건 미충족으로 runtime 유지·출시 NO_GO. 136 unit/O1/O2/rescore PASS. 외부 knowledge usage/hash 불일치는 현재 main에서 해소됐으나 채택 GO가 아니다. #323 AC5·#317·milestone/sprint 미완료를 유지한다. 증거: `tests/forward_evals/loading_comparison/README.md`.
+
 - 2026-09-14: #323 완성 초안·수정 제안 계약을 합성 fixture(`router-19`)로 고정했다. 실제 법원·NAS 자료와 라이브 모델 재실행은 없다. AC5·릴리즈는 미완료이며 #340은 열지 않았다.
 
 - 2026-09-14 근거 대조 진단: 동결 두 미러·runtime41파일을 복원했다. 권한 오류 즉시중단1회는 완성출력0으로 보존하고, 승인된 검색복구 조건의 추가1회는 완성출력에서 미확인 회사표준·수정안수령 단정으로 root·독립 GPT FAIL이다. CLI2.1.270/과거2.1.269 차이와 observer 오류를 한계로 남기며 확대·runtime 수정·릴리즈 없음. 최신 증거: `tests/forward_evals/evidence_contrast/recoverable-search-20260914/README.md`.
