@@ -96,5 +96,21 @@
     "five_hour": "unknown",
     "monthly": "unknown",
     "pace": "unknown"
+  },
+  "after_publication_review": {
+    "provider": "grok",
+    "account_label": "SuperGrok Heavy/default",
+    "at": "2026-09-12T09:07:17Z",
+    "source": "grok-cli-proxy",
+    "dataConfidence": "unknown",
+    "window": {
+      "usedPercent": 92,
+      "resetsAt": "2026-09-13T15:42:04Z",
+      "remainingPercent": 8
+    },
+    "window_duration": "unknown",
+    "other_windows": "unknown",
+    "pace": "unknown",
+    "execution": "1 call, grok-4.6-build, high, 96.782s, CLI USD0.02042652; cash charge unknown"
   }
 }
