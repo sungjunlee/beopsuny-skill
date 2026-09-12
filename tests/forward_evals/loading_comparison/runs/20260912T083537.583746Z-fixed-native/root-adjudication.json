@@ -1,0 +1,20 @@
+{
+  "run": "20260912T083537.583746Z-fixed-native",
+  "case": "fixed",
+  "arm": "native",
+  "setup_status": "VALID_WITH_RECORDED_LIMITS",
+  "quality_included": true,
+  "root_quality": "FAIL",
+  "root_reason": "한 달 책임한도 변경을 강행규정(non-negotiable)으로 분류하고 미제공 교육·감독·감사 수단을 없다고 서술했다. 독립 F2는 root 확정 veto로 채택하지 않는다.",
+  "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+  "answer_sha256": "46bf959ad8d7042940db842c910fe2ddf532f3b8395f3072f738eecc8bfaa413",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "system_argument_sha256": "594da61953df8a6285ce7e5bf836685f19b9304b679f8bbf2a0eb2b410bdd098",
+  "actual_skill_body_proven": true,
+  "elapsed_seconds": 300.17822079203324,
+  "reported_list_cost_usd": 1.35893,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "run": "20260912T084335.123397Z-external-legacy",
+  "case": "external",
+  "arm": "legacy",
+  "setup_status": "INVALID_SETUP",
+  "quality_included": false,
+  "root_quality": null,
+  "root_reason": "실제 target에 다른 사건 setup 누락. judge에는 제공돼 original review도 INVALID_REVIEW_INPUT; 품질 분모에서 제외.",
+  "review_status": "INVALID_REVIEW_INPUT",
+  "answer_sha256": "a26c803e02fc0818fb5cc5b137358c933cb1499ef019d3811af48484eb086b5d",
+  "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+  "system_argument_sha256": "2ceb44bb80d4d1c3936638c46007ec789488d3a9a491d7cbc81b93924def2df0",
+  "actual_skill_body_proven": false,
+  "elapsed_seconds": 117.45357545901788,
+  "reported_list_cost_usd": 0.77937,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

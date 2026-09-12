@@ -167,3 +167,5 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 - 2026-09-12: PR330 현재 범위를 재확인했다. runtime은 #334에 이미 반영돼 main과 동일하고, 남은 평가 기록·준비기·보존 출력 회귀를 별도 통합한다. 현재/최종 표기를 당시 commit에 한정하고 main #336 테스트 분리를 합쳤다. 준비기 잠금·참조·평가 정보 비유입 CLI 회귀를 추가했다. 실행·검증 범위는 followup-plan 상단, 작업 완료 판정은 GitHub #272/#325/#323이 정본이다. #323·릴리즈는 열린 상태다.
 
 - 2026-09-12 통합 완료: PR330은 평가 기록·준비기·회귀 범위로 main f6d0737에 병합했고 main CI도 PASS다. #272·#325는 한정된 AC 근거로 종료했다. #323 AC5·에픽·milestone·릴리즈와 이 sprint는 열린 상태다. agy Gemini3.8 Flash medium 보조 리뷰는 최종 판정 없이 1055.4초 후 필요한 primary 리뷰·CI 완료에 따라 종료했다(dispatch_cli_error, interrupted); 통과 근거에 포함하지 않는다.
+
+- 2026-09-12 로딩 진단: 정상 Claude Skill 본문·실제 reference 로딩을 확인하고 고정 계약/대외 회신 각 1쌍을 비교했다. 유효4건은 FAIL3/REVIEW_REQUIRED1이며 입력 누락 최초1건은 제외 후 사전등록한 대체1회로 교정했다. 개선·반복 확대 조건 미충족으로 runtime 유지·출시 NO_GO. 136 unit/O1/O2/rescore PASS. 외부 knowledge usage/hash 불일치는 현재 main에서 해소됐으나 채택 GO가 아니다. #323 AC5·#317·milestone/sprint 미완료를 유지한다. 증거: `tests/forward_evals/loading_comparison/README.md`.
