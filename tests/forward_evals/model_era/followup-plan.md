@@ -2,6 +2,23 @@
 
 시작 runtime: `d1373c09bcd16f05dc68515f58eeaaf5394b1d2a`. 기준선 `e05ecda`와 기존 캡처는 보존한다. 최신 작업 정의는 GitHub #323/#272/#325이며 이 문서는 실행 조건과 판정 범위만 기록한다.
 
+## 통합 범위 확인 — 2026-09-12
+
+PR #330의 검토 기준은 `b7b5cb3`, 비교 main은 `9c03725`다. [PR #334](https://github.com/sungjunlee/beopsuny-skill/pull/334)가 runtime·정책·계약 검사 변경을 `f3103fa`로 먼저 통합했고, 두 검토 기준의 `skills/beopsuny/`는 동일하다. #330의 잔여 변경은 평가 기록·문서와 fixed packet 준비기 보완, 보존 출력에 연결한 회귀 검사다. 따라서 이 PR의 통합은 새로운 runtime 채택이나 릴리즈 통과를 뜻하지 않는다.
+
+최신 main을 합친 `3a54892`에서 전체134 회귀, O1, O2(11 outputs/13 unsafe), corpus19 재채점 변화0을 확인했다. 추가 준비기 CLI 회귀2건은 불투명 task ID의 missing-annex 분기, holdout 기본 잠금, 참조 전문·hash 일치와 evaluator 정보 비유입을 검증한다. 임시 사본에서 annex 분기 제거·source-grading 제거·evaluator 유입 mutation 세 종류를 모두 검출했다. 이 검사는 holdout 모델을 실행하거나 성능 판정을 내리지 않는다.
+
+대표 계약 입력은 현재 main `9c03725`와 과거 `8fad7d8`에서 동일했다(context SHA256 `3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae`, prompt SHA256 `f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6`). 같은 입력의 [Opus 출력](evidence/review-mode-contract-opus.txt)과 [독립 판정](evidence/review-mode-contract-independent-review.json)은 overall FAIL·미제공 사실 축 REVIEW_REQUIRED다. 이번 입력 대조가 새 모델 실행이나 그 실패의 해소를 뜻하지 않는다. 초기 core-contract 실패는 다른 context 세대여서 이 입력과 혼합하지 않는다.
+
+Cursor `cursor-grok-4.6-high`는 기존 사실/제안 의무 경계와 과거 requirement-means·epistemic-subject·conclusion-propagation 후보의 실패를 검토해 추가 정책 수정의 근거가 없다고 판단했다(438.2초, 정상 종료). root는 원문·patch·판정을 대조해 지침 재서술을 채택하지 않았다. 모델 적용 실패를 정적 검사 성공으로 대체하지 않는다. 새 target 실행·반복·holdout 확장은 없으며 #323 AC5의 실행 완료 후 FAIL 상태를 유지한다.
+
+Cursor Grok4.6 high의 최종 범위 리뷰는 LGTM이며 P1/P2가 없었다. 준비기의 참조 추가·missing-annex 분기, 보존 fwd07의 REVIEW_REQUIRED, 신규 CLI 회귀와 CI 등록, 문서의 실행 시점 구분을 확인했다. 이는 평가 자료·도구 통합 승인이고 모델 품질 승인이 아니다. Gemini3.8 Flash의 agy 보조 리뷰는 이 기록 시점에 최종 판정 미반환이므로 통과 근거에 포함하지 않았다.
+
+아래 절의 ‘현재’, ‘최신’, ‘최종 runtime’, PR 상태와 quota는 각 절의 관찰일·명시 commit에 한정된 기록이다. 이후 head의 재실행 결과로 읽지 않는다. 과거 입력·출력·판정은 보존하며, 새로운 검증은 해당 commit과 실행 조건을 별도로 기록한다. 특히 2026-09-09 스모크 PASS7/FAIL8/REVIEW_REQUIRED5와 Astra의 유한 긍정 관측은 서로 다른 실행이며 #323 AC5 해결 근거로 합치지 않는다.
+
+[#272](https://github.com/sungjunlee/beopsuny-skill/issues/272)의 원본/직접 변형 3건 FAIL 및 교정 3형식의 표시 의미 PASS, [#325](https://github.com/sungjunlee/beopsuny-skill/issues/325)의 작은 순서 비교와 후보 NO_GO·인과효과 INCONCLUSIVE 판정은 각 이슈의 완료된 검증 범위다. 두 이슈는 현재 증거 통합을 기다리는 OPEN 상태이며, 그 범위의 종료 판단은 #323 AC5와 분리한다. #325의 운영 순서와 knowledge의 `research_hold`는 유지한다. 실행 당시 knowledge PR 미게시·승인 차단 기록도 당시 조건으로 보존하며 현재 공급 상태는 해당 저장소와 GitHub 이슈에서 확인한다.
+
+
 ## Astra native profile 후속 검증 — 2026-09-09
 
 runtime 정책을 변경하지 않고 `gpt-6-astra medium`을 요청한 fresh native 세션으로 기준선 A(`e05ecda`)와 현재 B(`e22553b`, runtime은 `8fad7d8`과 동일)를 각각 1회 실행했다. B의 질문·원문·context는 직전 Opus 고정 계약 입력과 byte 단위로 같다. 초기 B가 완성 초안과 사실 경계를 보존해, 실행 전 등록한 조건에 따라 B 1회 반복과 기존 missing-annex·case-isolation holdout 각 1회를 추가했다. 사건 분리 실행의 첫 dispatch는 에이전트 수 제한으로 거절됐고 빈자리가 난 뒤 시작했다. 이는 모델 출력 실패나 재시도가 아니다.

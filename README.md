@@ -180,6 +180,7 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_knowledge_value_prepare.py \
+  tests/test_model_era_prepare.py \
   tests/test_cross_matter_scope_rule.py \
   tests/test_semantic_reviews.py \
   tests/test_common_rule_layers.py \
@@ -197,6 +198,7 @@ $PYTHON -m py_compile \
   tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_knowledge_value_prepare.py \
+  tests/test_model_era_prepare.py \
   tests/test_cross_matter_scope_rule.py \
   tests/test_semantic_reviews.py \
   tests/test_common_rule_layers.py \
@@ -210,7 +212,7 @@ git diff --check
 
 ### 릴리즈 체크리스트
 
-후속 릴리즈의 실행 결과와 잔여 조건은 [검증 기록](tests/forward_evals/model_era/followup-plan.md)에서 확인한다.
+마일스톤 8의 보존된 실행 결과와 통합 범위는 [검증 기록](tests/forward_evals/model_era/followup-plan.md)에서 확인한다. 기록된 스모크는 해당 runtime의 관측이며 새 태깅 대상 커밋의 릴리즈 검증을 대신하지 않는다.
 
 1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
 2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage, 미러 설치됨)에서** 로컬 미러 staleness / 법망 API / law.go.kr 링크 3축을 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 3축의 기준이다 — 주간 CI(`--dns-links`)가 실제로 감지하는 것은 law.go.kr DNS 1축뿐이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.

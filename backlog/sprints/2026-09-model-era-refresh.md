@@ -163,3 +163,5 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 ### 2026-09-09 — Astra native profile 유한 검증
 
 동일 고정 질문·원문·현재 runtime으로 Astra medium 초기 A/B와 B 반복·별첨·사건 분리 holdout을 완료했다. Grok 독립5건 PASS; root는 기준선 A의 미제공/부재 표현을 REVIEW_REQUIRED로 유지하고 현재4건에서 중대한 위반은 확인하지 않았다. 반복 초안의 조문 지칭 모호성은 편집 항목으로 보존한다. 비용·편집 부담 감소는 미측정이므로 채택 INCONCLUSIVE이며 이전 Opus/Fable·필수 스모크 실패는 변하지 않는다. #323·출시·milestone/epic은 완료 처리하지 않았다. 상세는 followup-plan의 Astra 절과 astra-profile-qualification.json.
+
+- 2026-09-12: PR330 현재 범위를 재확인했다. runtime은 #334에 이미 반영돼 main과 동일하고, 남은 평가 기록·준비기·보존 출력 회귀를 별도 통합한다. 현재/최종 표기를 당시 commit에 한정하고 main #336 테스트 분리를 합쳤다. 준비기 잠금·참조·평가 정보 비유입 CLI 회귀를 추가했다. 실행·검증 범위는 followup-plan 상단, 작업 완료 판정은 GitHub #272/#325/#323이 정본이다. #323·릴리즈는 열린 상태다.

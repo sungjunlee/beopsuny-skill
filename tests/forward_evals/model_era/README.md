@@ -1,6 +1,6 @@
 # Model-era comparison (#320, #325)
 
-`../model_era.yaml`는 9종 과제 각각의 fixed/live 정의 18개를 담는다. 현재 실행·도입 상태는 [통합 보고서](integration-report.md)에 기록한다. 기존 guardrail corpus와 과거 evidence는 보존한다. 이 corpus는 표현 일치 채점·검증배지 개수·이상형 답안을 법률 정확도 대용으로 쓰지 않는다.
+`../model_era.yaml`는 9종 과제 각각의 fixed/live 정의 18개를 담는다. 초기 통합 결과는 [통합 보고서](integration-report.md), 후속 실행과 통합 범위는 [후속 검증 기록](followup-plan.md)에서 확인한다. 각 결과는 기록된 runtime·입력·실행 조건에 한정된다. 기존 guardrail corpus와 과거 evidence는 보존한다. 이 corpus는 표현 일치 채점·검증배지 개수·이상형 답안을 법률 정확도 대용으로 쓰지 않는다.
 
 ## 원문과 시점
 
