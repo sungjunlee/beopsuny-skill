@@ -1,0 +1,67 @@
+{
+  "reservation_id": "bf5bd3a856a844c3ab4914044ff3ef71",
+  "checked_at": "2026-09-12T21:15:59.865165+00:00",
+  "prepared_head": "5ef242f505da18a8d7fce71192f6f25fe989cf21",
+  "status": "STOPPED_CLI_DRIFT",
+  "expected_cli": "2.1.269",
+  "actual_cli": "2.1.270",
+  "target_calls": 0,
+  "output_review_calls": 0,
+  "quality": "NOT_MEASURED",
+  "new_inference_cost": 0,
+  "auth": {
+    "logged_in": true,
+    "auth_method": "claude.ai",
+    "provider": "firstParty",
+    "subscription": "max"
+  },
+  "preregistered_sha256": "3bc9e7a8bc6c355797a6409f1ffa81139acc53c90799d15c001fdf7a40eacb49",
+  "candidate_plan_sha256": "38f18e81580bdb9a7e8671ca2e42cfe99d80e1723fecd9d4fb0182427dd2c8ec",
+  "checks": "Owner worktree clean at prepared HEAD; current CLI version and auth queried. Full input revalidation not repeated after mandatory CLI stop.",
+  "changes_not_made": [
+    "No baseline/target inference",
+    "No retry, downgrade, reinstall, provider substitution, permission bypass",
+    "No preregistration or frozen input change",
+    "No merge/release/deploy"
+  ],
+  "required_decision": "Whether to explicitly amend the CLI condition to2.1.270, acknowledging historical-baseline CLI confounding, or separately authorize restoration of2.1.269. No amendment is assumed.",
+  "quota": {
+    "at": "2026-09-12T21:15:42Z",
+    "account_label": "Max/default",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "windows": {
+      "primary": {
+        "usedPercent": 7,
+        "resetDescription": "Resets10:30am(Asia/Seoul)",
+        "windowMinutes": 300,
+        "resetsAt": "2026-09-13T01:30:00Z",
+        "remainingPercent": 93
+      },
+      "secondary": {
+        "usedPercent": 3,
+        "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+        "windowMinutes": 10080,
+        "resetsAt": "2026-09-19T16:00:00Z",
+        "remainingPercent": 97
+      },
+      "tertiary": "unknown"
+    },
+    "pace": {
+      "primary": {
+        "deltaPercent": -8,
+        "willLastToReset": true,
+        "expectedUsedPercent": 15,
+        "stage": "behind",
+        "summary": "8% in reserve | Expected 15% used | Lasts until reset"
+      },
+      "secondary": {
+        "deltaPercent": 0,
+        "willLastToReset": true,
+        "expectedUsedPercent": 3,
+        "stage": "onTrack",
+        "summary": "On pace | Expected 3% used | Lasts until reset"
+      }
+    }
+  }
+}
