@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-12T08:34:32.252361+00:00",
+  "scope": "post-execution trace extraction only; no argv/model/input changes",
+  "finding": "Actual probe uses /tmp alias whereas run plan canonicalizes /private/tmp. Original extractor produced a false INVALID_SETUP despite exact skill body.",
+  "fix": "Resolve observed Base directory path before comparison",
+  "validation": [
+    "Actual successful probe call + exact body + /tmp alias accepted",
+    "Same transcript with wrong loaded path rejected"
+  ],
+  "quality_runs_affected": "fixed legacy currently running does not invoke Skill; native not yet dispatched",
+  "runner_sha256": "48975a0be19149f8e1ba1439669194e83260dae654769b1aed0b800d70ab1363"
+}

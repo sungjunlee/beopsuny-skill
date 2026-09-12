@@ -1,0 +1,55 @@
+{
+  "main": "f1561d13bdec8ff9837fef794628694b0f650a2d",
+  "manifests": {
+    "stable": {
+      "git_blob_sha": "e3888f08fff59e5a682092d3b09e432da1a0f1e2",
+      "keys": [
+        "schema_version",
+        "channel",
+        "published_at",
+        "vertical",
+        "compatibility",
+        "publication",
+        "taxonomy",
+        "authority_map",
+        "retrieval_hints",
+        "session_schema"
+      ],
+      "schema_version": "1",
+      "channel": "stable",
+      "usage_counts": {},
+      "published_at": "2026-09-09T22:20:00+09:00",
+      "compatibility": {
+        "min_beopsuny_version": "0.1.0",
+        "supported_schema_versions": [
+          "1"
+        ]
+      }
+    },
+    "canary": {
+      "git_blob_sha": "7034fc7f714f17a3aff8504a9a4e871bc8178a1c",
+      "keys": [
+        "schema_version",
+        "channel",
+        "published_at",
+        "vertical",
+        "compatibility",
+        "publication",
+        "taxonomy",
+        "authority_map",
+        "retrieval_hints",
+        "session_schema"
+      ],
+      "schema_version": "1",
+      "channel": "canary",
+      "usage_counts": {},
+      "published_at": "2026-09-09T22:20:00+09:00",
+      "compatibility": {
+        "min_beopsuny_version": "0.1.0",
+        "supported_schema_versions": [
+          "1"
+        ]
+      }
+    }
+  }
+}

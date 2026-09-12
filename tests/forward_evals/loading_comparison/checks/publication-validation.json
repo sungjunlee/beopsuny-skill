@@ -1,0 +1,8 @@
+{
+  "hash_binding_assertions": 217,
+  "status": "PASS",
+  "scope": "5 answer\u2194reviewer/input hashes; 41 runtime files at4022d86 checked per run; native load metadata; counts",
+  "json_jsonl_parse": "PASS",
+  "credential_pattern_scan": "no candidates",
+  "raw_streams_thinking_private_knowledge": "excluded by whitelist"
+}

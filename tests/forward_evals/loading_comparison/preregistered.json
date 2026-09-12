@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-09-12T03:49:15.361757+00:00",
+  "status": "PREPARED_NOT_EXECUTED; native loading/isolation probe and quota recovery required",
+  "runtime_commit": "9c03725115ccec130fb01e1f464b7858729d5924",
+  "model": "claude-opus-5",
+  "effort": "high",
+  "cli_version": "2.1.269",
+  "initial_cases": [
+    "m8-complex-contract-fixed",
+    "fwd-12-cross-matter-scope-boundary"
+  ],
+  "initial_runs_per_arm_per_case": 1,
+  "order": [
+    "contract:legacy,native",
+    "external:native,legacy"
+  ],
+  "session": "fresh CLI process per run, no session reuse",
+  "hard_deadline_seconds": 900,
+  "controls": [
+    "same current runtime content and question/source bytes per case",
+    "fixed case: provided excerpts only, both arms no network",
+    "external case: same frozen mirror root and identical read/search grants",
+    "same model/effort/permission mode/timeout wherever compatible with target loading",
+    "only difference under study: legacy injected context versus default system with actual copied plugin loading; bundling/load timing is an execution-path factor, not isolated system-prompt causality"
+  ],
+  "legacy": "special final-smoke adapter configuration --safe-mode --restricted --system-prompt, not repo default append runner",
+  "native": "keep default system, explicit --plugin-dir copied current runtime, preserve normal OAuth. Do not use --bare. Need actual trace proof of Skill invocation and loaded target path; no global skill/hooks/memory contamination",
+  "preflight": "Resolve native session-only isolation preserving existing OAuth without copying credentials or modifying personal configuration. Probe loading on an existing target, classify absent load/control mismatch UNSCORABLE rather than quality failure. No automatic retries on quota/auth errors.",
+  "expansion": "Only a valid path comparison with native material improvement and no new legal/safety regression permits one repeat of affected pair plus existing missing-annex holdout; otherwise stop. Before expansion recheck quota and preregister exact matched cases.",
+  "adjudication": "Independent other-family review, whole outputs and actual accessed source spans. Separate legal support, factual assumptions, utility, external action authority, provenance, setup failures and measured cost/latency. Model review not expert gold.",
+  "runtime_changes": "none unless actual diagnostic evidence supports a minimal change; no new prohibition strings or policy boilerplate",
+  "release": "held; this bounded experiment is not the full mandatory live smoke",
+  "quota": [
+    {
+      "provider": "claude",
+      "account_label": "Max/default",
+      "at": "2026-09-12T03:46:12Z",
+      "source": "claude",
+      "dataConfidence": "percentOnly",
+      "windows": {
+        "primary": {
+          "resetsAt": "2026-09-12T05:30:00Z",
+          "resetDescription": "Resets2:30pm(Asia/Seoul)",
+          "windowMinutes": 300,
+          "usedPercent": 100
+        },
+        "secondary": {
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+          "windowMinutes": 10080,
+          "usedPercent": 60
+        },
+        "tertiary": null
+      },
+      "pace": {
+        "secondary": {
+          "stage": "farBehind",
+          "expectedUsedPercent": 93,
+          "willLastToReset": true,
+          "summary": "33% in reserve | Expected 93% used | Lasts until reset",
+          "deltaPercent": -33
+        }
+      }
+    },
+    {
+      "provider": "codex",
+      "account_label": "Pro/default",
+      "at": "2026-09-12T03:46:51Z",
+      "source": "oauth",
+      "dataConfidence": "exact",
+      "windows": {
+        "primary": null,
+        "secondary": {
+          "usedPercent": 84,
+          "resetsAt": "2026-09-15T09:31:05Z",
+          "windowMinutes": 10080,
+          "resetDescription": "Sep 15 at 6:31 PM"
+        },
+        "tertiary": null
+      },
+      "pace": {
+        "secondary": {
+          "deltaPercent": 30,
+          "summary": "30% in deficit | Expected 54% used | Runs out in 17h 12m",
+          "stage": "farAhead",
+          "willLastToReset": false,
+          "expectedUsedPercent": 54,
+          "etaSeconds": 61896
+        }
+      }
+    }
+  ],
+  "auth": "Normal unrestricted host: loggedIn true / claude.ai / Max. Empty config dir: loggedIn false. No inference calls made."
+}

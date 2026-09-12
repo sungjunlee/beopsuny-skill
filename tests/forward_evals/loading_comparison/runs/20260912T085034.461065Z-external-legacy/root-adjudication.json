@@ -1,0 +1,20 @@
+{
+  "run": "20260912T085034.461065Z-external-legacy",
+  "case": "external",
+  "arm": "legacy",
+  "setup_status": "VALID_WITH_RECORDED_LIMITS",
+  "quality_included": true,
+  "root_quality": "FAIL",
+  "root_reason": "MSA 원문·cap을 모른다고 밝히고도 대외 초안에서 기존 한도의 불균형·일방성을 단정했다.",
+  "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+  "answer_sha256": "d48d7df796c352b9b79ed61e15c478ef1c011f6989d7b84240b1ad98a96eed32",
+  "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+  "system_argument_sha256": "61fbc76f469de7fe5a21ff9b4ddd5c438fc4b00019e8fa38164b341b5dce2e57",
+  "actual_skill_body_proven": false,
+  "elapsed_seconds": 108.83997987501789,
+  "reported_list_cost_usd": 0.7038159999999999,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

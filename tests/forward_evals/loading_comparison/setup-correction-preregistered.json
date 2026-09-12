@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-12T08:50:25.939002+00:00",
+  "before_replacement_execution": true,
+  "invalid_run": "20260912T084335.123397Z-external-legacy",
+  "reason": "Prepared external context omitted setup; root mistakenly assumed setup was included. Actual legacy system lacked the other-matter facts although native received them. Original pair INVALID_SETUP, not quality FAIL. Original review also received setup missing from target and is not admissible for this case.",
+  "correction": "Append the identical existing setup text to legacy, assert its presence, keep question/runtime/model/effort/grants/mirror unchanged.",
+  "replacement_count": 1,
+  "reuse": "Valid native external run preserved. Fixed pair remains unchanged; native fixed FAIL prevents expansion.",
+  "corrected_system_sha256": "61fbc76f469de7fe5a21ff9b4ddd5c438fc4b00019e8fa38164b341b5dce2e57",
+  "setup_sha256": "09668541e809755d395f0916b220756ea061d891a799f10a6af56db3ed08b00f",
+  "runner_sha256": "a0dea457bd2396a04adde511601dd280654e8becf957a52058939baa27e51583",
+  "automatic_retry": false
+}

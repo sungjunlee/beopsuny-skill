@@ -1,0 +1,45 @@
+{
+  "main": "f1561d13bdec8ff9837fef794628694b0f650a2d",
+  "assets": {
+    "core": {
+      "sha256": "74db317ed90cba27f2aa3fc042da06d4b62d3b7159e5276e56b8b317ea06e7cb",
+      "manifest_hash_matches": true,
+      "top_keys": [
+        "schema_version",
+        "asset_type",
+        "asset_id",
+        "version",
+        "vertical",
+        "jurisdiction",
+        "updated_at",
+        "usage_mode",
+        "principles",
+        "global_audit_checks",
+        "issues",
+        "maintenance"
+      ],
+      "usage_mode": "post_search_audit_only",
+      "asset_type": "authority_map_core"
+    },
+    "overlay": {
+      "sha256": "22f29a0636102f3f0b147c8312e54aad4539e1aa677d04714973399dd6d2cb75",
+      "manifest_hash_matches": true,
+      "top_keys": [
+        "schema_version",
+        "asset_type",
+        "asset_id",
+        "version",
+        "vertical",
+        "jurisdiction",
+        "updated_at",
+        "usage_mode",
+        "recent_focus",
+        "overlay_items",
+        "stale_candidates",
+        "maintenance"
+      ],
+      "usage_mode": "post_search_audit_only",
+      "asset_type": "authority_map_overlay"
+    }
+  }
+}
