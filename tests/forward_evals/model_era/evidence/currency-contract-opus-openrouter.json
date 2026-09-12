@@ -1,0 +1,33 @@
+{
+  "returncode": 0,
+  "seconds": 207.1187059590011,
+  "provider": "openrouter",
+  "model": "anthropic/claude-opus-5",
+  "effort": "high",
+  "context_sha256": "1d0ed939abca9b309a3659578d8cdd3342935bd368d1ec111ee3474dadb35ba0",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_commit": "2c93ca4",
+  "public_source_commit": "2796251",
+  "comparison_limit": "Alternate provider/runtime and target model; final-runtime validation only, not causal improvement from earlier Sol/Grok pair.",
+  "usage": {
+    "input": 2,
+    "output": 13670,
+    "cacheRead": 0,
+    "cacheWrite": 48080,
+    "reasoning": 4895,
+    "totalTokens": 61752,
+    "cost": {
+      "input": 1e-05,
+      "output": 0.34175,
+      "cacheRead": 0,
+      "cacheWrite": 0.3005,
+      "total": 0.64226
+    }
+  },
+  "stopReason": "stop",
+  "actual_model": "anthropic/claude-opus-5",
+  "actual_provider": "openrouter",
+  "output_sha256": "5e8ca7907d98fa8bc7b03504948774e961a2d72c30997ac9f2783ba82713d691",
+  "assessment": "REVIEW_REQUIRED",
+  "privacy": "Only public committed runtime and fictional fixed-source case were transmitted; exact reconstruction proved before approval. Private knowledge stages excluded."
+}

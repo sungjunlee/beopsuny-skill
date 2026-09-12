@@ -1,0 +1,64 @@
+{
+  "scope": "Evaluator required reference completeness only",
+  "initial_review": "## 검토 결과: 조건부 LGTM (설정/범위/프라이버시 한정)\n\n**범위·정합성 (문제 없음)**\n- 변경은 `references` 기본 목록에 저장소에 이미 존재하는 파일 2개를 추가한 것뿐. 새 runner/scorer/loader, 재귀 로더, 커스텀 평가자 지시문, runtime 파일 수정 없음 — 선언된 범위와 일치.\n- 동일 목록이 A/B 양쪽에 적용되고 runtime 루트만 갈리므로 대칭성 유지. `baseline_runtime_files_matched_e05ecda: 10`, `runtime_unchanged_files: 41`, 질문/법령 SHA 동일이 이를 뒷받침.\n- SKILL이 read하라고 명시한 파일을 파일 도구 없는 고정 타깃에 본문으로 넣는 것은, 선언된 runtime을 실제로 재현하는 방향의 수정이지 힌트 주입이 아님. 자기검증·인용 규칙이 그 두 파일에 있다는 점에서 근거도 타당.\n\n**프라이버시**\n- 추가 입력은 저장소 내부 reference 파일뿐. 외부 전송·신규 네트워크 경로·사용자 식별정보 유입 없음.\n\n**남은 지적 (반영 권장)**\n1. **결과 비교 경계 명시**: 새 컨텍스트 SHA(`9962e86…`)는 기존 `acdc4018…`와 다르므로, 이번 A/B는 *같은 실행 내 A vs B*에서만 유효. 과거 기록된 실패 사례와 새 실행 결과를 같은 표에 놓고 개선/악화로 읽으면 안 됨. README에 \"컨텍스트 세대 구분\" 한 줄 추가 권장.\n2. **`loaded_references = set(...)` 직렬화 순서**: metadata에 set을 그대로 덤프하면 파이썬 문자열 해시 랜덤화로 실행마다 순서가 달라져 `metadata_sha256`이 흔들릴 수 있음(항목이 2→4개로 늘며 확률 증가). 이미 `sorted()`로 기록 중인지 확인하고, 아니면 정렬 후 기록.\n3. **목록 이중 관리**: 동일 파일 목록이 스크립트와 README에 하드코딩됨. SKILL의 필수 read 목록이 바뀌면 조용히 어긋남. 새 로더를 만들지 않는 범위를 지키되, 스크립트에 \"SKILL 필수 read 목록과 수동 동기화\" 주석 정도는 남길 것.\n4. **컨텍스트 예산**: 전문 2개가 추가되며 프롬프트 길이가 늘었음. `build_skill_context`에 절삭/상한 로직이 있다면 뒷부분(예: source-grading)이 잘려 \"선언은 했으나 실제로는 미전달\"이 될 수 있으니 packet 길이와 각 참조의 말미 문자열 포함 여부를 한 번 확인.\n\n**주의(판정 아님)**\n- `A_baseline_model_execution: \"not executed\"`, `quality_assessment: \"not yet measured\"` — 이번 검토는 **준비 단계 결선(binding) 검증**까지만 확인한 것이며, 새 컨텍스트에서의 모델 거동·산출물 품질은 전혀 검증되지 않았음. 이 리뷰를 근거로 \"개선됨/통과\" 주장 금지.\n- 법률 전문성·실무 적정성 판단은 이 리뷰 범위 밖.",
+  "execution": {
+    "returncode": 0,
+    "seconds": 43.6986349580111,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "fa29a069ee65180aa88105dda9d51ba56d9d60fbd37350574dcd3aafcfebd717",
+    "review_scope": "GPT-written fixed-packet required-reference completeness fix, not model output quality",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 2516,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 2512,
+      "output_tokens_details": {
+        "thinking_tokens": 1232
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 2516,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 2512,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 2516,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2516
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.09059999999999999,
+    "num_turns": 1,
+    "output_sha256": "13cf57670116d303899758c6a58b41b4a57e52dbafe1bc007ba04645b6c49a81"
+  },
+  "root_resolution": {
+    "metadata_reference_serialization": "existing sorted(loaded_references) in prepare_packets.py; no new unordered JSON set serialization",
+    "existing_sorted_present": true,
+    "full_bodies_present": {
+      "skills/beopsuny/references/research-workflow.md": true,
+      "skills/beopsuny/references/source-grading.md": true
+    },
+    "context_chars": 65253,
+    "context_sha256": "9962e8679725b51cbe7d889c294ccc0d8105fd11f41b7e7948ff6744eaa963ff",
+    "A_execution": "not executed; prepared only",
+    "B_execution": "one current-runtime observation with changed context; not a matched repeat of old generations",
+    "runtime_change": false,
+    "synchronization_documented": "README identifies SKILL reference-list review; no recursive loader or duplicate checker added"
+  }
+}

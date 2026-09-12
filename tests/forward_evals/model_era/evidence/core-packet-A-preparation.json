@@ -1,0 +1,58 @@
+{
+  "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+  "arm": "A",
+  "runtime_root": "/private/tmp/beopsuny-m8/baseline",
+  "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+  "runtime_inputs": {
+    "skills/beopsuny/SKILL.md": "11c330834e3effa823d237201d16d01cd1aa72c21527776fed76df8258fac882",
+    "skills/beopsuny/assets/policies/review_mode.yaml": "798642fb533f012dc9d798df2472a82322c34d47f79d3e0f5117c91c938a32bc",
+    "skills/beopsuny/assets/schemas/output_contract.yaml": "d9a12591497213a0e1acb6402ebd135b253e87a44141f14567c4c7b1a62ba2ce",
+    "skills/beopsuny/references/citation-verification-contract.md": "9b6e05d12b42161eac404474ebfdfd236727f24a03cca026f59a741b4033c008",
+    "skills/beopsuny/references/contract_review_guide.md": "5787fe309de1a4bcb0bc6fd31ba3ea88b13872a92518fb8aea04b456450b58dc",
+    "skills/beopsuny/references/output-formats.md": "e43cb2e35552f0fb4d4389b915033958e93ef6439b98e30081873c7a540defc9",
+    "skills/beopsuny/references/research-workflow.md": "bf0e547d31affd349c421664c8b91908915b9cc90c66cd8ad53c76ba319ee872",
+    "skills/beopsuny/references/self-verification.md": "2d0c93b8d1d8520f6e8a50f6375e2edd86f9a9f6b1ea95f7d7d78f9150511eca",
+    "skills/beopsuny/references/source-access.md": "294c2e4b8ca01b668e85a89392277c60ab4449233bc91568a35e069b8b7d8797",
+    "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c"
+  },
+  "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+  "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+  "evaluation_date": "2026-09-08",
+  "records": [
+    {
+      "task_id": "m8-complex-contract-fixed",
+      "arm": "A",
+      "split": "development",
+      "source_mode": "fixed",
+      "source_ids": [
+        "privacy-2025"
+      ],
+      "task_runtime_inputs": {
+        "skills/beopsuny/SKILL.md": "11c330834e3effa823d237201d16d01cd1aa72c21527776fed76df8258fac882",
+        "skills/beopsuny/references/source-access.md": "294c2e4b8ca01b668e85a89392277c60ab4449233bc91568a35e069b8b7d8797",
+        "skills/beopsuny/references/citation-verification-contract.md": "9b6e05d12b42161eac404474ebfdfd236727f24a03cca026f59a741b4033c008",
+        "skills/beopsuny/references/research-workflow.md": "bf0e547d31affd349c421664c8b91908915b9cc90c66cd8ad53c76ba319ee872",
+        "skills/beopsuny/references/source-grading.md": "0e6b93aa1f8ad39ca6a351da25c576a68e020f622cb210c42066653cb7eb642c",
+        "skills/beopsuny/references/contract_review_guide.md": "5787fe309de1a4bcb0bc6fd31ba3ea88b13872a92518fb8aea04b456450b58dc",
+        "skills/beopsuny/assets/policies/review_mode.yaml": "798642fb533f012dc9d798df2472a82322c34d47f79d3e0f5117c91c938a32bc",
+        "skills/beopsuny/references/self-verification.md": "2d0c93b8d1d8520f6e8a50f6375e2edd86f9a9f6b1ea95f7d7d78f9150511eca",
+        "skills/beopsuny/references/output-formats.md": "e43cb2e35552f0fb4d4389b915033958e93ef6439b98e30081873c7a540defc9",
+        "skills/beopsuny/assets/schemas/output_contract.yaml": "d9a12591497213a0e1acb6402ebd135b253e87a44141f14567c4c7b1a62ba2ce"
+      },
+      "execution_status": "not_measured",
+      "legal_adjudication": "unadjudicated",
+      "assessment": null,
+      "model_id": null,
+      "effort": null,
+      "elapsed_seconds": null,
+      "tokens": null,
+      "cost": null,
+      "unavailable_reason": "not executed",
+      "tools": "none required; executor must enforce no tools",
+      "access_log": [],
+      "scorer_false_positives": null,
+      "context_sha256": "78d7a61e6f61a8c1d2f891792c0683e911fbc8f5af49157ff1661ad73698989b",
+      "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+    }
+  ]
+}

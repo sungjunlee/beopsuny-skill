@@ -39,7 +39,9 @@ def main() -> None:
                 raise ValueError(f'source checksum mismatch: {item["file"]}')
     tasks = {task['id']: task for task in config['tasks']}
     references = ['skills/beopsuny/references/source-access.md',
-                  'skills/beopsuny/references/citation-verification-contract.md']
+                  'skills/beopsuny/references/citation-verification-contract.md',
+                  'skills/beopsuny/references/research-workflow.md',
+                  'skills/beopsuny/references/source-grading.md']
     prompts, records = [], []
     loaded_references = set(references)
     for task_id in args.tasks:
@@ -56,7 +58,7 @@ def main() -> None:
         else:
             text += '\n[자료 조건] 실제로 접근한 공식 소스와 자료의 적용 시점을 확인해 답하라. 접근 실패는 그대로 구분하라. 개인 설치 skill 및 다른 평가 사례·채점 파일은 이용하지 않는다.\n'
         task_references = list(references)
-        if any(kind in task_id for kind in ('complex-contract', 'external-draft')):
+        if task['task_type'] in ('complex-contract', 'external-draft', 'missing-annex'):
             task_references += [
                 'skills/beopsuny/references/contract_review_guide.md',
                 'skills/beopsuny/assets/policies/review_mode.yaml',

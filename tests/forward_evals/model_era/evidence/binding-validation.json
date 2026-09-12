@@ -1,0 +1,88 @@
+{
+  "unit": {
+    "exit_code": 0,
+    "tests": 120,
+    "seconds": 9.164
+  },
+  "skill_contracts": {
+    "exit_code": 0,
+    "result": "PASS"
+  },
+  "scenario_outputs": {
+    "exit_code": 0,
+    "outputs": 11,
+    "unsafe_fixtures": 13
+  },
+  "rescore": {
+    "exit_code": 0,
+    "corpus": 19,
+    "messages": 88,
+    "delta": 0
+  },
+  "diff_check": {
+    "exit_code": 0
+  },
+  "source_reachability": {
+    "result": "OK3 WARN2 FAIL0 NOT_INSTALLED2",
+    "note": "Earlier same goal-turn actual reachability check; no source runtime changes since that check.",
+    "log": "[WARN]            로컬 미러/legalize-kr            upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\n"
+  },
+  "changelog_gate": {
+    "status": "pending final commit PR-context check; non-PR invocation skipped"
+  },
+  "logs": {
+    "unit-final.log": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 9.164s\n\nOK\n",
+    "o1-final.log": "PASS\n",
+    "o2-final.log": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n",
+    "rescore-final.log": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)"
+  },
+  "quota": {
+    "provider": "claude",
+    "account_label": "default authenticated account",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "updatedAt": "2026-09-09T02:56:04Z",
+    "primary": {
+      "usedPercent": 13,
+      "resetsAt": "2026-09-09T07:29:00Z",
+      "windowMinutes": 300,
+      "resetDescription": "resets Sep 9 at 4:29pm (Asia/Seoul)"
+    },
+    "weekly": {
+      "usedPercent": 14,
+      "resetsAt": "2026-09-12T15:59:00Z",
+      "windowMinutes": 10080,
+      "resetDescription": "resets Sep 13 at 12:59am (Asia/Seoul)"
+    },
+    "monthly": "unknown",
+    "pace": {
+      "primary": {
+        "willLastToReset": false,
+        "etaSeconds": 10874,
+        "deltaPercent": 4,
+        "summary": "4% in deficit | Expected 9% used | Projected empty in 3h 2m",
+        "stage": "slightlyAhead",
+        "expectedUsedPercent": 9
+      },
+      "secondary": {
+        "willLastToReset": true,
+        "deltaPercent": -35,
+        "summary": "35% in reserve | Expected 49% used | Lasts until reset",
+        "stage": "farBehind",
+        "expectedUsedPercent": 49
+      }
+    },
+    "billing_note": "CLI cost is list-price telemetry, not actual subscription billing. No credit reset consumed."
+  },
+  "codex_quota": {
+    "account_label": "Pro",
+    "weekly_used_percent": 45,
+    "weekly_remaining_percent": 55,
+    "reset_epoch": 1789512557,
+    "source": "Codex app usage API",
+    "dataConfidence": "not provided",
+    "other_windows": "unknown",
+    "pace_eta": "unknown",
+    "credits_balance": "0"
+  }
+}

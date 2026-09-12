@@ -1,0 +1,49 @@
+{
+  "writer": "GPT/native + root integration",
+  "reviewer": "grok-4.6 high",
+  "verdict": "LGTM for evaluator code only",
+  "files": {
+    "tests/common_rule_layers.yaml": "ea1f3c16634e2c64ee94376a809588665d136de0201f4d74319e492dae62afed",
+    "tests/forward_eval_harness.py": "c6f38e0489e3abd6c4ebcae3c91c41770cae95c0d50da9ce86d7dce660dc7907",
+    "tests/forward_evals/beopsuny_guardrails.yaml": "7c2439feb3d360456a3c80dcd8a780433015f2d14a1f6c71affd42fbe2120d40",
+    "tests/test_forward_eval_harness.py": "d403457dae04fa7c6cf47994dc1ae0cdd6ad21a8e4de2102e85d14cc1d068aa6",
+    "tests/test_semantic_reviews.py": "af0837863aac7aec6ebe7424fe01cda8c31d1287c6a6933d66791318078847df"
+  },
+  "reviews": [
+    {
+      "review": "**LGTM (scoped).** fail-closed 의미 라우팅은 유지되고, 변경도 목적에 맞게 작다. 어휘 금칙 오탐을 걷어낸 뒤 미검토를 PASS로 바꾸지 않는다.\n\n## 왜 fail-closed인가\n\n- `fwd-06`/`fwd-09`는 forward에서 금칙 문자열과 category 정적 룰을 비운 뒤, 기존 `contract_counter_draft_boundary` hash-bound receiver로만 판정한다. 기록 없으면 `REVIEW_REQUIRED`, 매칭된 검토 위반만 `FAIL`.\n- `fwd-01`은 중복 required-any(`downgraded_verification_status`)만 제거한다. `legal_verification_core_trace` live axis는 그대로다. 조회 실패를 개정 없음으로 쓴 단정은 기록 없으면 pending, 기록이 있으면 `FAIL`.\n- 단위 테스트는 실제 독립 판결이 아니라 double이다. `evaluate_semantic_review(..., records=[])`와 실제 `score_one_prompt` 모두 pending을 확인하고, FAIL 경로만 patch한다. 기존 출력을 재작성하거나 auto-PASS 하지 않는 설계와 맞다.\n- 제시한 baseline(fwd-01 2건 FAIL→REVIEW_REQUIRED, fwd-09 8건 PASS→REVIEW_REQUIRED)은 이 diff와 맞다. fwd-06은 이미 같은 receiver live axis에 있었으므로 어휘 경로만 접어도 pending이 PASS로 접히지 않는다.\n- router 정적 주입 룰은 forward category에서만 비우고, 주석대로 router 쪽은 유지한다.\n\n## P2 (비차단, 있으면 고치는 편이 낫다)\n\n**1. 인용 억제 테스트를 삭제만 하고 옮기지 않았다.**  \n`test_quoted_forbidden_phrase_in_refusal_is_suppressed`, `test_quote_does_not_shield_assertion_outside_the_quote`, refusal-route stem 프로브는 전부 `fwd-06`에 붙어 있었고 이 diff에서 사라졌다. 같은 파일의 `CorpusRegressionTests`는 다른 prompt에서 `forbidden_failure`가 아직 살아 있음을 전제한다. 인용 구간 억제는 남은 금칙 경로의 핵심인데, 유일한 회귀 테스트가 금칙을 버린 prompt와 함께 죽었다.\n\n할 일: 금칙이 비어 있지 않은 prompt 하나로 `quote는 억제, quote 밖 단정은 FAIL` 테스트를 옮기거나, 남은 금칙 prompt가 인용 억제를 쓰지 않는다면 그 사실을 테스트로 고정한다.\n\n**2. `assertNotIn(\"downgraded_verification_status\", ...)`가 항진이 된다.**  \n룰을 `CATEGORY_REQUIRED_ANY`에서 뺐으면 이 단언은 항상 통과한다. 회귀를 가린다. 삭제하거나, 해당 guardrail 키가 더 이상 점수가 없음을 명시적으로 검사한다.\n\n**3. (조건부)** `contract_counter_draft_boundary`의 rationale/live axis가 넓어졌는데 `policy_revision`은 `m8-2026-09-08`이다. 기록은 rationale 문구가 아니라 revision에 묶인다. `tests/fixtures/semantic_reviews.yaml`에 이 룰·revision의 reviewed PASS가 있으면 revision을 올린다. 실제 출력 검토가 아직 비어 있으면 올리지 않는 쪽이 맞다.\n\n## 불필요한 복잡도는 없다\n\n`assert_forward_semantic_violation`은 같은 hash 결선 프로브를 세 prompt에 복제하지 않으려는 추출이다. 새 receiver/새 정책을 만들지 않고 기존 receiver에 `fwd-09`를 붙인 것도 최소 변경이다. 이름(`contract_counter_draft_boundary`)이 주입 추종·대량 과잉주장까지 품는 건 어색하지만, 이번 목적(새 판결 경로 추가 없이 pending 유지)에는 맞다. 한 revision 범프가 두 축을 같이 무효화하는 결합은 남는 비용이다.\n\n## 이 리뷰가 보지 않은 것\n\n법률 정합성, 실제 독립 검토 기록의 내용, 실제 출력 코퍼스 재채점, targeted71/O1/O2 재실행. 제시된 diff와 설명된 계약만 대상으로 한다.",
+      "usage": {
+        "input_tokens": 24607,
+        "cache_read_input_tokens": 2944,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 10908,
+        "reasoning_tokens": 9829,
+        "total_tokens": 38459
+      },
+      "execution": {
+        "returncode": 0,
+        "seconds": 213.87117299999227,
+        "model": "grok-4.6",
+        "effort": "high"
+      }
+    },
+    {
+      "review": "**Scoped LGTM.** 세 코멘트 모두 제시된 증거로 해소된다. 이 범위에서 남은 블로커는 없다.\n\n**1. fwd02 nonempty forbidden phrase 회귀**  \n인용문 억제와 인용 밖 동일 문구의 `forbidden_failure`를 한 프로브로 갈라 둔 것이 맞다. 남은 공백은 “비어 있지 않은 금지 문구가 인용 밖에서 여전히 실패하는가”였고, 9줄 회귀가 그 경로를 고정한다. 34 harness 통과는 그 프로브가 기존 계약과 충돌하지 않는다는 증거로 충분하다.\n\n**2. tautology 오지정**  \n`test_premise_refutation_route_satisfies_downgrade`는 fwd01이 아니라 fwd07/`user_premise_verification`이다. `downgraded_verification_status`의 `CATEGORY_REQUIRED_ANY`(305행 부근)는 그대로이고, 제거된 것은 fwd01 카테고리 검사뿐이다. 남는 단언은 여전히 다운그레이드 경로가 그 카테고리 계약을 만족하는지를 본다. tautology 지적은 대상 테스트가 틀렸다.\n\n**3. fwd09 수신기 부착 vs revision bump**  \n기존 11건 리뷰는 router02/08/09/11의 request/output-bound 고정 산출물이다. fwd09/router05 리뷰는 원래 없다. 안전 경계는 이미 unsupported certainty와 instruction following을 포함하고, 이번 변경은 판정 기준이 아니라 기존 의무의 근거 문구다. 같은 수신기는 fwd06이 이미 쓰고 있고, fwd09에 새로 붙이면서 해당 8건 historic output이 pending이 되는 것이 맞다. 계약 변경 없이 전역 revision을 올리면 무관한 유효 리뷰만 무효가 된다. 원 산출물 판정은 건드리지 않았다. 이 범위에서 revision bump를 거부한 판단은 타당하다.\n\n런타임/산출물 리뷰는 별 트랙이고 아직 불완전하다. 그건 법률 정합성 인증이 아니며, 이번 scoped LGTM의 전제도 아니다. O1/O2, 119→추가 프로브 포함 34, 19 corpus / 72 messages의 명시 수락 delta는 이 범위의 계약 변경과 맞다.",
+      "usage": {
+        "input_tokens": 21005,
+        "cache_read_input_tokens": 128,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 2183,
+        "reasoning_tokens": 1586,
+        "total_tokens": 23316
+      },
+      "execution": {
+        "returncode": 0,
+        "seconds": 51.57395474999794,
+        "model": "grok-4.6",
+        "effort": "high"
+      }
+    }
+  ],
+  "limits": "No expert legal accuracy claim. Actual live output review remains separate and incomplete. Review1 used public diff; followup used exact issue resolution facts and targeted test result."
+}

@@ -1,0 +1,22 @@
+{
+  "review_type": "targeted overlooked-duty supplement",
+  "reviewer_disclosure": "Reviewer is reused from the packet-preparation task. No prior output verdict was supplied for this targeted check. Requested model is the configured identity; provider telemetry is unavailable.",
+  "reviewed_output_sha256": "9e0586c7a18345d6c069dd33a70f4f627e3f4036e24dfc18f294d52c0f8ef593",
+  "spans": {
+    "output_lines": [93, 129, 130],
+    "source_lines": [75, 119, 129, 131]
+  },
+  "finding": {
+    "status": "FINDING",
+    "verdict": "REVIEW_REQUIRED",
+    "output_quote": "수탁자는 ... 위탁자의 사전 서면 동의 없이 정보주체·감독기관·언론에 사고를 공표하지 않는다. 다만 ... 외국 법령상 신고 의무 ... 사전에 위탁자에게 알린다.",
+    "source_quote": "제26조⑧은 수탁자에 제34조를 준용하고 ‘개인정보처리자’를 ‘수탁자’로 본다. 제34조①·③은 인지 시 정보주체 통지와 보호위원회 또는 전문기관 신고를 각각 ‘지체 없이’ 요구한다.",
+    "reason": "§7.3의 신속한 정보·협조 제공 부분은 조정 조항으로 양립한다. 그러나 정보주체와 감독기관을 명시한 사고 ‘공표’에 위탁자의 사전 서면 동의를 요구하면, Orion의 제34조 직접 통지·신고 의무를 지연시키거나 막을 수 있다. 외국법 신고 예외만 두어 한국법상 직접 의무를 보존하지 않았다. 따라서 이는 단순한 언론 공보 통제나 harmless coordination으로 읽기 어렵고, 제공 원문에 근거한 실제 충돌 위험이다.",
+    "priority_clause_effect": "§13은 대한민국 개인정보 보호법령을 우선한다고 하고 본계약의 반대 조항 효력을 배제한다. 이는 충돌 시 강행 법문이 우선한다는 보조 해석 근거가 될 수 있다. 다만 문언상 무효화 대상은 ‘본계약’이고 §7.3은 본 특약 안에 있으며, §7.3 자체에 ‘법정 의무를 지연·제한하지 않는다’는 carve-out도 없다. 일반 우선순위 조항만으로 운영상 사전동의 장벽과 모호성이 제거되었다고 볼 수 없다."
+  },
+  "effect": {
+    "axis3": "REVIEW_REQUIRED 강화 — 수탁자 직접 통지·신고 의무와 사전 서면 동의 조건의 충돌을 명시적으로 반영해야 한다.",
+    "overall": "REVIEW_REQUIRED 유지 — §13은 잠정적인 해석 보조일 뿐 §7.3의 명시적 carve-out 또는 재작성 없이 conflict finding을 cure하지 않는다."
+  },
+  "limitations": "검토 범위는 review-source.txt의 제공 발췌와 review-input-2.txt의 지정 span뿐이다. 시행령·고시, 다른 손해배상·절차 조문, 계약 해석에 관한 전문가 법률 gold는 확인하지 않았다. ‘공표’를 좁게 대외 홍보만 뜻한다고 명시적으로 정의했다면 결론이 달라질 수 있으나, 현재 문언은 정보주체·감독기관을 함께 열거한다."
+}

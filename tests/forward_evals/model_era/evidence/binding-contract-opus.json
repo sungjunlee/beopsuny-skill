@@ -1,0 +1,205 @@
+{
+  "returncode": 0,
+  "seconds": 245.1069117919833,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "5200c557d00b85ca1287a016ea0a31d4634c83e8a9aa432f1cb1288c209aa130",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "runtime_base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+  "comparison_limit": "Same complete-reference builder, fixed prompt/source and claude-opus-5 high/no-tools settings as core-contract-opus; three reference structural consistency changes per candidate.patch. One observation, not causal proof.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 56696,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 16781,
+    "output_tokens_details": {
+      "thinking_tokens": 3636
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 56696,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 16781,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 56696,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 56696
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.9929080000000001,
+  "num_turns": 1,
+  "output_sha256": "9966d20f6a091fa3cadb30f977f58440c80345aa0c386bf7f4ee4f91c2312f16",
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 6293,
+      "outputTokens": 24,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.006413,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 16781,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 56696,
+      "webSearchRequests": 0,
+      "costUSD": 0.9864950000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 3636,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "assessment": "FAIL",
+  "runtime_structure_adopted": true,
+  "regression_solution_adopted": false,
+  "candidate_patch": "binding-structure-candidate.patch",
+  "output_file": "binding-contract-opus.txt",
+  "independent_review_status": "complete",
+  "packet_metadata_kind": "Exact pre-execution preparation snapshot, not current execution status",
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+      "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+      "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+      "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-complex-contract-fixed",
+        "arm": "B",
+        "split": "development",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+          "skills/beopsuny/references/research-workflow.md": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+          "skills/beopsuny/references/source-grading.md": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8",
+          "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "5200c557d00b85ca1287a016ea0a31d4634c83e8a9aa432f1cb1288c209aa130",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6"
+      }
+    ]
+  },
+  "preregistered": {
+    "status": "pre-execution",
+    "base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+    "hypothesis": "Remove the source-status-to-conclusion expression table: source eligibility and citation verification are necessary inputs, not sufficient proof of case facts and applicability. Delegate grading/status semantics to existing canonical contracts and keep case applicability/conditional drafts in binding.",
+    "independent_diagnosis": "Native Sol high found a source-only sufficiency ambiguity and conflict with official practice material being support-only. It did not claim causal proof from one output.",
+    "change_scope": "research-workflow Conclusion binding paragraph replaces old sentence/table; existing validator checks canonical source-class values and pointers instead of table prose. No contract-guide candidate retained, no source/prompt/rubric changes.",
+    "initial_trial": "One Claude Opus5 high no-tools 900s fixed complex-contract; same current builder and question/source as core-contract-opus. No new A execution.",
+    "expansion": "Only clean independent semantic review plus root adjudication opens fixed repeat and existing missing-annex holdout. FAIL or material unresolved RR stops expansion, not an invitation for wording retries.",
+    "separate_decisions": "Structural correctness and lower duplication are reviewed as code/policy correctness. They are not a claim that model regression is solved. AC5/release remain incomplete until actual required model output evidence supports completion.",
+    "quality_axes": "Fact/document promotion, unsupported legal necessity/effect, statutory actor/exception/time, complete editable draft, external action authority and honest source scope. No arbitrary score or expert legal gold.",
+    "pre_execution_revision": {
+      "at": "2026-09-09T02:51:09.712188+00:00",
+      "scope": "Three runtime references: research-workflow binding and legal-amount scope; source-grading canonical lower-court label definition and FAQ; citation-verification-contract legal-amount scope. Validator canonical pointers/classes. Code review clarifiers before model execution; task, sources, guide and rubric unchanged."
+    }
+  },
+  "preflight": {
+    "only_changed_runtime_inputs": [
+      "skills/beopsuny/references/citation-verification-contract.md",
+      "skills/beopsuny/references/research-workflow.md",
+      "skills/beopsuny/references/source-grading.md"
+    ],
+    "prompt_unchanged": true,
+    "source_manifest_unchanged": true,
+    "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+    "context_sha256": "5200c557d00b85ca1287a016ea0a31d4634c83e8a9aa432f1cb1288c209aa130",
+    "patch_sha256": "819a3564bd945db28d17d401e4c215c52ff1277e7a19b7e15fee28fd0682b96f",
+    "runtime_base_commit": "28c1a9ed15a66c2d1a2c9c013c0a6547de8a3a66",
+    "status": "prepared; performance unmeasured"
+  },
+  "root_adjudication": {
+    "overall": "FAIL",
+    "findings": [
+      {
+        "output_lines": [
+          155
+        ],
+        "quote": "감사·점검권이 계약에 없으면 가람이 법정 의무를 이행할 수 없습니다.",
+        "reason": "Supplied Article 26(4) requires supervision, but does not establish an express contractual audit clause as its only possible means. Proposed clause utility is separate."
+      },
+      {
+        "output_lines": [
+          224
+        ],
+        "quote": "미수령 상태에서 서명 시 제5조②의 고지 항목을 충족할 수 없습니다.",
+        "reason": "Missing from reviewer input is not proof of missing contractual information or inability to meet disclosure requirements. Section 5(2) is the model-proposed annex clause; the statement needs that proposal premise and does not establish actual statutory noncompliance."
+      }
+    ],
+    "whole_answer_context": "Read entire response. Section 1(4) expressly labels attachment prerequisite as a negotiation choice, and multiple caveats identify unavailable documents. Those improve scope but do not support the unqualified statutory impossibility at L155. L224 also mixes model-proposed requirements and original case status. Overall FAIL does not rely on ambiguous L224 alone.",
+    "utility": "Complete editable clauses provided.",
+    "verification_scope": "Actual mirror/excerpt scope and unknown amendment status disclosed.",
+    "expansion": "None: no fixed repeat or holdout under this candidate.",
+    "limitations": "One fixed-source observation; not expert legal gold or causal proof.",
+    "independent_review_reconciliation": "Independent reviewer overall FAIL for unprovided-document promotion and purpose-use exception; proposed-law axis PASS and utility REVIEW_REQUIRED preserved verbatim. Root separately finds L155 unsupported necessity despite correct negotiation-value labels elsewhere; those labels do not settle whether an explicit audit clause is statutorily indispensable. L224 references a proposed draft clause and is not sole decisive evidence. Purpose-use and utility findings remain reviewer judgments, not uncontested expert gold."
+  },
+  "independent_review_file": "binding-contract-independent-review.json",
+  "reviewer_dispatch": {
+    "requested_model": "gpt-5.6-sol",
+    "effort": "high",
+    "runtime": "native subagent",
+    "note": "Verbatim reviewer JSON self-identifies GPT-6; dispatch request was gpt-5.6-sol high. No provider-side actual model telemetry available."
+  },
+  "cost_note": "CLI list-price telemetry, not actual subscription billing. Total includes auxiliary Haiku modelUsage. num_turns is CLI turns, not provider request count."
+}

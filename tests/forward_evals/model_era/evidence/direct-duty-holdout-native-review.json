@@ -1,0 +1,217 @@
+{
+  "review_metadata": {
+    "reviewed_at": "2026-09-09T08:19:18+09:00",
+    "task_id": "m8-missing-annex-fixed",
+    "arm": "B",
+    "split": "holdout",
+    "subject": "/tmp/beopsuny-release09/direct-duty-holdout-opus.txt",
+    "method": "제공된 고정 prompt, clean runtime context, evaluator metadata만으로 출력의 문언과 근거를 독립 대조했다. 인터넷·개인 설치본·저장소의 다른 파일·기존 판정은 사용하지 않았다.",
+    "allowed_inputs": [
+      "/tmp/beopsuny-release09/direct-duty-holdout-packets/model-inputs/B/m8-missing-annex-fixed/context.md",
+      "/tmp/beopsuny-release09/direct-duty-holdout-packets/model-inputs/B/m8-missing-annex-fixed/prompt.txt",
+      "/tmp/beopsuny-release09/direct-duty-holdout-packets/evaluator-only/B-metadata.json",
+      "/tmp/beopsuny-release09/direct-duty-holdout-opus.txt"
+    ],
+    "hashes": {
+      "output_sha256": "fe6776eb732eed7e803dc975a2277052c414ec7d734b358b3f16855ff2543810",
+      "context_sha256": "acdc4018cf314e9c4d7def63425567c4c41ed7c8de1161a67ea89d40e524a34b",
+      "prompt_sha256": "8ba078e77d33d609064ff4398b74ee2d38cec33d6b0ad8df48b3f6fae63e455f",
+      "metadata_sha256": "32fa08d197724935fbe8fd1752d88606c88469810d4edd851f325e71c3e6a0d4",
+      "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a"
+    },
+    "limitations": [
+      "법률 실체 평가는 패킷에 포함된 개인정보 보호법 제15조·제26조·제28조의8·제29조·제34조 발췌에 한정한다.",
+      "별첨 A와 실제 계약 원문, 제21조·제35조부터 제37조까지의 본문, 역외적용 조항, 민법, 약관규제법, 시행령·고시·판례는 제공되지 않았다."
+    ]
+  },
+  "verdict": {
+    "overall": "FAIL",
+    "reason": "출력은 별첨 A에서 현재 채울 수 있는 값과 Orion·가람의 추가 사실이 필요한 값을 상세히 구별했지만, 첫 결론과 법적 이유에서는 별첨 A 미제공만으로 국외이전 적법근거가 성립하지 않는다고 단정했다. runtime은 미제공 문서를 내용 미확인으로 다루고 그 사실만으로 계약상 누락이나 법적 요건 미충족을 확정하지 말라고 명시한다. 또한 가능한 인도 접근을 실제 조회 사실로 바꾸고, 제26조제7항의 책임 효과를 제공되지 않은 민법·손해배상 근거 없이 확대했다.",
+    "axes": {
+      "legal_accuracy": "FAIL",
+      "evidence_and_safety": "FAIL",
+      "missing_fact_handling": "FAIL",
+      "actual_missing_input_vs_conclusive_contract_condition": "FAIL",
+      "transaction_type_conditions_and_exceptions": "FAIL",
+      "statutory_duty_vs_negotiated_procedure": "REVIEW_REQUIRED",
+      "direct_statutory_obligations": "REVIEW_REQUIRED",
+      "complete_draft_usefulness": "REVIEW_REQUIRED",
+      "external_action_boundary": "PASS",
+      "citation_and_provenance": "PASS"
+    },
+    "classification": {
+      "policy_defect": false,
+      "model_output_defect": true,
+      "setup_limitation": false
+    }
+  },
+  "findings": [
+    {
+      "id": "H1-missing-annex-treated-as-failed-legal-basis",
+      "severity": "HIGH",
+      "axes": [
+        "actual_missing_input_vs_conclusive_contract_condition",
+        "missing_fact_handling",
+        "transaction_type_conditions_and_exceptions",
+        "legal_accuracy"
+      ],
+      "output_locations": [
+        "line 10",
+        "lines 67-76",
+        "lines 125-131"
+      ],
+      "output_quotes": [
+        "별첨 A가 없으면 제28조의8 제2항의 국외이전 고지·공개 내용을 구성할 수 없어 적법근거 자체가 성립하지 않으며",
+        "제2항 각 호의 고지·공개 내용은 별첨 A 없이는 구성 자체가 불가능합니다.",
+        "별첨 A 없이 서명할 경우를 대비한 계약적 안전장치입니다."
+      ],
+      "runtime_quote": "미제공 문서는 내용 미확인으로 다루며, 자료를 받지 못했다는 이유만으로 계약상 누락이나 법적 요건 미충족을 확정하지 않는다.",
+      "source_quotes": [
+        "정보주체로부터 국외 이전에 관한 별도의 동의를 받은 경우",
+        "정보주체와의 계약의 체결 및 이행을 위하여 개인정보의 처리위탁ㆍ보관이 필요한 경우로서 ... 제2항 각 호의 사항을 ... 개인정보 처리방침에 공개한 경우",
+        "개인정보를 이전받는 자가 ... 보호위원회가 정하여 고시하는 인증을 받은 경우",
+        "보호위원회가 인정하는 경우"
+      ],
+      "assessment": "제28조의8제2항 각 호 정보는 제1항제1호 동의 경로와 제3호 공개·통지 경로에 중요하지만, 법은 그 정보를 반드시 '별첨 A'라는 계약 문서에 담으라고 규정하지 않는다. 현재 패킷에 별첨이 없다는 사실은 검토자가 해당 정보와 실제 고지·공개 이행을 확인할 수 없다는 뜻이다. 가람 또는 Orion이 다른 문서에서 정보를 보유하는지, 제1호·제3호 절차를 이행했는지, 제4호·제5호 근거가 있는지는 미확인이다. 출력 후반이 제4호·제5호와 조건부 서명을 별도로 유보한 점은 좋지만, 첫 결론의 '적법근거 자체가 성립하지 않는다'는 단정과 모순된다.",
+      "required_fix": "'현재 제공 자료만으로는 적법근거 및 고지·공개 이행을 확인하거나 별첨을 완성할 수 없다'로 낮춘다. 별첨 A 완성은 계약상 서명 조건 또는 서비스 개시 조건으로 제안하되, 법이 특정 부속서 형식을 직접 요구한다고 표현하지 않는다."
+    },
+    {
+      "id": "H2-possible-india-access-converted-to-actual-transfer",
+      "severity": "HIGH",
+      "axes": [
+        "missing_fact_handling",
+        "evidence_and_safety",
+        "legal_accuracy"
+      ],
+      "output_locations": [
+        "lines 20-24",
+        "lines 67-76",
+        "lines 145-150"
+      ],
+      "output_quotes": [
+        "미국(저장), 인도(원격 접근)",
+        "당사자는 미국 소재 설비에서의 저장 및 인도 소재 인력의 원격 접근(조회를 포함한다)이 개인정보 보호법상 국외 이전에 해당함을 확인한다.",
+        "인도 원격 접근은 별도 이전 행위입니다."
+      ],
+      "prompt_quote": "미국 리전 저장, 인도 지원 인력 원격 접근이 가능하다. ... 사용자 제공 사실 이외는 미확정이다.",
+      "runtime_quote": "미확인 사실을 초안에 확정하거나 stale 후보를 현행 의무로 승격하지 않는다.",
+      "assessment": "제28조의8제1항은 국외에서 실제로 조회되는 경우를 이전에 포함한다. 사용자 사실은 인도 접근이 가능하다는 것이므로, 실제 접근이 있었거나 예정됐다고 확정할 수 없다. 출력은 인도 접근을 잠정값이라고 표시한 곳도 있지만, 계약 조항과 법적 이유에서는 실제 이전 행위로 확정했다.",
+      "required_fix": "접근 가능성·권한 보유·실제 또는 예정 접근을 분리하고, 실제 접근이 허용되거나 이루어지는 경우 인도를 이전 국가로 기재한다는 조건부 문구로 바꾼다."
+    },
+    {
+      "id": "H3-liability-effect-overstated",
+      "severity": "HIGH",
+      "axes": [
+        "legal_accuracy",
+        "evidence_and_safety",
+        "statutory_duty_vs_negotiated_procedure"
+      ],
+      "output_locations": [
+        "lines 115-121",
+        "lines 137-151"
+      ],
+      "output_quotes": [
+        "즉 Orion이 원인을 제공해도 정보주체에 대한 대외적 책임은 가람이 부담하는 구조인데, 내부 구상이 1개월 이용료로 막히면 위험이 사실상 전부 가람에게 남습니다.",
+        "위탁자가 수탁자 위반의 손해배상책임 구조를 떠안음"
+      ],
+      "source_quote": "수탁자가 위탁받은 업무와 관련하여 개인정보를 처리하는 과정에서 이 법을 위반하여 발생한 손해배상책임에 대하여는 수탁자를 개인정보처리자의 소속 직원으로 본다.",
+      "assessment": "제공된 제26조제7항만으로 모든 대외 책임이 가람에게 전속되는지, Orion 자신의 책임이 배제되는지, 가람의 구상권과 계약상 cap이 어떠한 범위에서 적용되는지 확정할 수 없다. 출력이 cap의 무효 여부는 유보했지만, 귀속·구상 효과 자체는 단정했다.",
+      "required_fix": "가람의 대외 배상 노출 및 Orion에 대한 계약상 회수 제약 가능성으로 표현을 낮추고, 민법·개인정보 보호법 손해배상 조항·실제 책임제한 문언 확인 전 책임 귀속과 구상 범위를 유보한다."
+    },
+    {
+      "id": "H4-return-destruction-clause-does-not-preserve-direct-duty",
+      "severity": "MEDIUM",
+      "axes": [
+        "direct_statutory_obligations",
+        "statutory_duty_vs_negotiated_procedure",
+        "complete_draft_usefulness"
+      ],
+      "output_location": "lines 107-111",
+      "output_quote": "계약 종료·해지 시 Orion은 가람의 선택에 따라 개인정보를 반환하거나 파기하며, 늦어도 종료일로부터 [__]일 이내에 완료한다.",
+      "source_quote": "수탁자에 관하여는 ... 제21조 ... 를 준용한다. 이 경우 \"개인정보처리자\"는 \"수탁자\"로 본다.",
+      "runtime_quote": "제안 조항도 당사자에게 직접 적용되는 법정 의무를 다른 당사자의 승인에 종속시키거나 제한해서는 안 된다.",
+      "assessment": "제21조 본문이 제공되지 않아 종료 시점의 정확한 파기 요건·기한은 확정할 수 없다. 그렇더라도 제26조제8항은 제21조가 Orion에 직접 준용됨을 명시한다. 가람의 선택에 따른 반환 또는 파기와 계약상 빈칸 기한이 Orion의 더 이른 직접 파기 의무를 제한하지 않는다는 단서가 없다. 유출 조항에는 직접 의무 보존 단서를 정확히 넣었으므로, 반환·파기 조항에도 같은 구조를 적용할 수 있었다.",
+      "required_fix": "반환 후 Orion 보유 사본의 파기를 명시하고, 가람의 선택·계약상 기한과 관계없이 법령상 더 이른 파기 의무가 있으면 그 의무를 따른다는 단서를 넣는다."
+    },
+    {
+      "id": "H5-vague-incident-term-characterized-too-categorically",
+      "severity": "MEDIUM",
+      "axes": [
+        "legal_accuracy",
+        "statutory_duty_vs_negotiated_procedure"
+      ],
+      "output_locations": [
+        "line 10",
+        "lines 80-89"
+      ],
+      "output_quotes": [
+        "'합리적인 기간 내' 통지는 법 제34조의 '지체 없이' 및 가람의 신고기한 역산과 맞지 않습니다.",
+        "'합리적인 기간 내'는 가람의 법정 기한을 지킬 수 없게 만듭니다."
+      ],
+      "source_quote": "개인정보처리자는 ... 지체 없이 해당 정보주체에게 ... 알려야 한다. ... 지체 없이 보호위원회 또는 ... 전문기관에 신고하여야 한다.",
+      "assessment": "제34조와 제26조제8항은 가람과 Orion의 직접 법정 통지·신고 의무를 정하고, Orion의 가람 대상 계약 통지 문언이 그 의무를 없애지는 않는다. '합리적인 기간'은 가람의 이행을 위태롭게 하는 중대한 운영 리스크라서 구체화 제안은 타당하지만, 반드시 기한 준수를 불가능하게 만든다고 단정할 근거는 없다.",
+      "required_fix": "'가람이 지체 없이 통지·신고할 수 있다는 보장이 없어 기한 준수 위험이 크다'로 표현하고, 제안한 즉시 통지·직접 의무 보존 조항은 유지한다."
+    }
+  ],
+  "positive_findings": [
+    {
+      "axis": "actual_missing_input_vs_conclusive_contract_condition",
+      "quotes": [
+        "지금 채울 수 없는 것 (Orion의 사실 제공이 필요 — 만들어 넣으면 안 됨)",
+        "사용자 제공 사실 없음. 인도 지원 인력이 Orion 직원인지 별도 재수탁자인지도 미확정",
+        "별첨 A 확정 후 서명 vs 조건부 서명 ... 중 선택"
+      ],
+      "assessment": "별첨의 실제 미제공 상태와 미확정 필드를 구체적으로 식별하고, 완성 후 서명과 조건부 서명을 계약 선택지로 제시했다. H1의 첫 결론이 이 구별을 뒤집어 축 전체는 FAIL이다."
+    },
+    {
+      "axis": "transaction_type_conditions_and_exceptions",
+      "quotes": [
+        "적법근거를 ① 별도 동의 ... ② 계약 이행 필요 + 처리방침 공개/통지 ... 로 갈지 정해야 합니다.",
+        "인도 인력의 '조회'형 접근이 이 경로에 포섭되는지는 해석이 필요합니다 [UNVERIFIED].",
+        "제4호(인증)·제5호(적정성 인정)는 ... 판단할 수 없습니다 [INSUFFICIENT]."
+      ],
+      "assessment": "제1호·제3호 경로와 제3호의 처리위탁·보관 요건, 제4호·제5호의 미확인 사실을 구별했다. H1의 모든 적법근거 불성립 단정과 충돌하므로 축 전체는 FAIL이다."
+    },
+    {
+      "axis": "statutory_duty_vs_negotiated_procedure",
+      "quotes": [
+        "별첨 A 없이 서명할 경우를 대비한 계약적 안전장치입니다.",
+        "위 초안은 법률상 무효 주장이 아니라 협상 요구로 설계했습니다.",
+        "삭제 기간은 계약상 미정인 협상 사항이며, 이 자료에는 법정 상한도 확인되지 않습니다."
+      ],
+      "assessment": "해지권, 책임 cap 예외, 삭제 기한을 계약 제안으로 표시했다. H1·H3·H5에서 법정 효과와 계약 리스크의 강도가 섞여 축 전체는 REVIEW_REQUIRED다."
+    },
+    {
+      "axis": "direct_statutory_obligations",
+      "quotes": [
+        "다만 Orion에게 직접 적용되는 법령상 통지·신고 의무의 이행은 이에 의하여 제한되지 아니한다.",
+        "제4항 단서는 Orion에게 준용되는 법정 의무를 가람의 승인에 종속시키지 않기 위한 장치입니다."
+      ],
+      "assessment": "유출 통지·신고 조항에서는 runtime의 직접 의무 보존 경계를 정확히 구현했다. H4의 파기 조항이 같은 보호장치를 빠뜨려 축 전체는 REVIEW_REQUIRED다."
+    },
+    {
+      "axis": "citation_and_provenance",
+      "quotes": [
+        "legalize-kr 계열 공식 원문 기반 미러 확인(직접 공식 사이트 확인 아님)",
+        "시행령·고시는 이번 자료에 포함되지 않았습니다. 인터넷 접근이 없어 재확인하지 못했으며, 해당 수치는 빈칸으로 남겼습니다."
+      ],
+      "assessment": "미러 provenance, 공포·시행 시점, 읽은 조문과 하위규정 미제공 범위를 명확히 표시했다."
+    },
+    {
+      "axis": "external_action_boundary",
+      "quotes": [
+        "내부 법무 검토용 초안입니다. 서명·송부 전에 변호사/법무 검토가 필요",
+        "이 초안은 편집용이며 법적 유효성이나 규제 대응 결과를 보증하지 않습니다. 서명 여부와 시점은 별도 판단 사항입니다."
+      ],
+      "assessment": "서명 검토용 작성과 실제 서명·송부를 분리했고 외부 행동을 직접 지시하지 않았다."
+    }
+  ],
+  "minimum_corrections_before_reliance": [
+    "별첨 A 미제공은 현재 자료상 확인·완성 불가로 표현하고, 국외이전 적법근거 자체의 불성립 단정을 삭제한다.",
+    "별첨 A를 법정 형식 요건이 아니라 계약상 서명 또는 서비스 개시 조건으로 제안한다.",
+    "인도 접근 가능성을 실제 이전 사실로 바꾸지 않고 조건부로 기재한다.",
+    "제26조제7항에 따른 책임 귀속·구상 효과를 유보하고 대외 노출 및 회수 제약 가능성으로 낮춘다.",
+    "반환·파기 조항에 Orion의 직접 법정 파기 의무와 더 이른 법정 기한을 보존하는 단서를 넣는다.",
+    "'합리적인 기간' 조항은 법정 의무 불가능 단정이 아니라 기한 준수 위험으로 설명한다."
+  ]
+}

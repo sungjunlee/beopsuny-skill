@@ -1,0 +1,14 @@
+{
+  "date": "2026-09-08",
+  "runtime_commit": "bd43d61",
+  "vantage": "local macOS, same domestic network as original check",
+  "check": "BEOPSUNY_DATA_ROOT=<isolated refreshed mirror root> python3 tests/check_source_reachability.py",
+  "result": "[OK]              로컬 미러/legalize-kr            upstream 일치 (HEAD 99159550231, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=4 warn=1 fail=0 not_installed=2)\n",
+  "mirror_preparation": {
+    "legalize-kr": "99159550231 (fetched origin/main, full checkout)",
+    "precedent-kr": "d0db51cb99834ab3d2813dc37673b4534d46bb42 (remote HEAD verified; full checkout; 124911 tree entries objects present)",
+    "history_limitation": "Precedent depth-1 fetch received objects but timed out before metadata completion twice. Validated all snapshot tree entries, then explicitly marked the verified HEAD as shallow boundary; git log now succeeds. This verifies snapshot/source availability, not full historical ancestry."
+  },
+  "preserved": "Original personal mirrors were not updated. Isolated checkouts borrow unchanged object stores via shared clone.",
+  "interpretation": "Both installed mirror snapshots now match upstream. API outage remains declared WARN; two absent optional families use degradation. HTTP 200 does not certify article currency or legal correctness."
+}

@@ -1,0 +1,90 @@
+diff --git a/skills/beopsuny/assets/policies/review_mode.yaml b/skills/beopsuny/assets/policies/review_mode.yaml
+index f5fe35e..0134278 100644
+--- a/skills/beopsuny/assets/policies/review_mode.yaml
++++ b/skills/beopsuny/assets/policies/review_mode.yaml
+@@ -1,29 +1,20 @@
+ # 계약 리뷰 깊이 정책. 산출물 종류는 사용자 요청으로 정하며 금지 문자열을 채점하지 않는다.
+-version: 1.2.0
+-last_updated: '2026-09-08'
++version: 1.2.1
++last_updated: '2026-09-09'
+ default_mode: moderate
+ modes:
+   strict:
+     label: 엄격 검토 — 보수적 관점, 모든 위험 플래그
+-    description: '모든 위험 조항을 플래그하고 해설/의견 단독 결론을 허용하지 않으며,
+-
+-      Primary Authority Rule 을 엄격히 적용하는 모드.
++    description: '모든 위험 조항을 플래그한다.
+ 
+       Phase 0 횡단 이슈는 트리거 여부와 무관하게 전수 확인한다.
+ 
+       '
+     risk_flagging:
+       threshold: low
+-      include_low: true
+-      include_missing_clauses: true
+       include_boilerplate_inconsistency: true
+     phase_0:
+       scope: 전수 확인
+-      require_all: true
+-    source_grading:
+-      primary_authority_rule: strict
+-      grade_c_conclusion: forbidden
+-      require_cross_check: true
+     output:
+       verbosity: high
+   moderate:
+@@ -31,16 +22,9 @@ modes:
+     description: 관련 위험과 누락 조항을 실무 우선순위로 정리한다. 트리거된 횡단 이슈를 확인한다.
+     risk_flagging:
+       threshold: medium
+-      include_low: false
+-      include_missing_clauses: true
+       include_boilerplate_inconsistency: false
+     phase_0:
+       scope: 트리거된 항목만
+-      require_all: false
+-    source_grading:
+-      primary_authority_rule: standard
+-      grade_c_conclusion: forbidden
+-      require_cross_check: false
+     output:
+       verbosity: medium
+   loose:
+@@ -48,16 +32,9 @@ modes:
+     description: 중요 위험과 명백한 누락을 짧게 보고한다. 관련 강행규정과 횡단 이슈 확인은 생략하지 않는다.
+     risk_flagging:
+       threshold: high
+-      include_low: false
+-      include_missing_clauses: true
+       include_boilerplate_inconsistency: false
+     phase_0:
+       scope: 트리거된 항목만
+-      require_all: false
+-    source_grading:
+-      primary_authority_rule: standard
+-      grade_c_conclusion: forbidden
+-      require_cross_check: false
+     output:
+       verbosity: low
+ detection:
+@@ -90,18 +67,3 @@ detection:
+     reason: 기존 사용자 경험 유지 (하위 호환)
+   - rule: 사용자가 명시적으로 `review_mode:` 를 지정하면 힌트보다 우선
+     reason: 명시 지정 > 추론
+-tag_policy:
+-  existing_tags_only: true
+-  allowed:
+-  - '[VERIFIED]'
+-  - '[UNVERIFIED]'
+-  - '[INSUFFICIENT]'
+-  - '[CONTRADICTED]'
+-  - '[STALE]'
+-  - '[EDITORIAL]'
+-  note: 모드는 설명 밀도를 조절하며 출처 권위와 검증 의무를 완화하지 않는다. 해설/의견은 [EDITORIAL] 보조 자료이고 단독 법률 결론 근거가 아니다.
+-request_scope:
+-  priority: 사용자의 요청 범위가 모드별 기본 설명 밀도보다 우선한다. 모드는 산출물 종류를 차단하지 않는다.
+-  drafting: 수정 조항을 요청하면 완성된 검토용 초안을 제공한다. 분석만 요청하면 전면 redline으로 확대하지 않는다.
+-  evidence: 모든 모드에서 공식 원문·강행규정·예외·적용 시점·미확인 전제와 협상 선호를 구별한다.
+-  authority: 초안 작성은 법적 유효성·결과 보증 또는 실제 송부·제출·서명의 권한이 아니다.

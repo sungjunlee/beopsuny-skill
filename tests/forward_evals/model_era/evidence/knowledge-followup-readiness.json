@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-08",
+  "issue": 325,
+  "decision": "INCONCLUSIVE",
+  "quality_measurement": null,
+  "production_order_change": false,
+  "external_pr": "https://github.com/sungjunlee/beopsuny-knowledge/pull/77",
+  "external_commit": "804be8b",
+  "upstream_baseline": "f4bad924a970a2715b5e743c35cac0d926063d56",
+  "change": "Exact authority-map usage contract and version alignment; legal updated_at unchanged.",
+  "passed": [
+    "asset contracts",
+    "preknowledge sync",
+    "Python compile",
+    "diff whitespace",
+    "diagnostic temporary manifest strict ingestion: 5 assets"
+  ],
+  "not_passed": [
+    "official stable/canary manifest generation",
+    "whole repository validation"
+  ],
+  "preexisting_error": "reports/2026-04-19-overlay-candidates.yaml evidence session must be declared in source_sessions",
+  "baseline_reproduced": true,
+  "official_manifest_regenerated": false,
+  "resume_condition": "Integrate separately owned knowledge #67 session-reference consistency work, regenerate official manifests, pass complete validator and strict consumer ingestion; then use existing preregistered staged paired protocol.",
+  "preserved": "Original dirty knowledge checkout and private asset bodies; no private body copied into this evidence.",
+  "limitation": "Diagnostic manifest consumption is not authorized stable publication or a valid hint-order performance comparison."
+}

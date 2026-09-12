@@ -1,0 +1,188 @@
+{
+  "scope": "Final structural/evidence integration, not regression solution or release approval",
+  "verdict": "LGTM",
+  "reviews": {
+    "integration-review": {
+      "returncode": 0,
+      "seconds": 91.25374141699285,
+      "model": "claude-opus-5",
+      "effort": "high",
+      "prompt_sha256": "0933a2d870d5b9e5730f32b9e59d36c0e1a4e8b5fe28a805e12c721a86c85122",
+      "review_scope": "Final consolidation, evidence and status integration; known model FAIL retained",
+      "is_error": false,
+      "subtype": "success",
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 25593,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 6224,
+        "output_tokens_details": {
+          "thinking_tokens": 4167
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 25593,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 6224,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 25593,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 25593
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "total_cost_usd": 0.434502,
+      "num_turns": 1,
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 22822,
+          "outputTokens": 28,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.022962,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "thinkingTokens": 0,
+          "canonicalModel": "claude-haiku-4-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        },
+        "claude-opus-5": {
+          "inputTokens": 2,
+          "outputTokens": 6224,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 25593,
+          "webSearchRequests": 0,
+          "costUSD": 0.41154,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 4167,
+          "canonicalModel": "claude-opus-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "output_sha256": "7bfc3cf91506251fc9199d330112ede2e966caa846fd851fbaf5bdb67a20d7ad"
+    },
+    "integration-rereview": {
+      "returncode": 0,
+      "seconds": 64.45623354200507,
+      "model": "claude-opus-5",
+      "effort": "high",
+      "prompt_sha256": "c25094c125f06e28cd4f0cd2ae86333ea0a182ccd1664553d5b486cc079c8862",
+      "review_scope": "Final consolidation, evidence and status integration; known model FAIL retained",
+      "is_error": false,
+      "subtype": "success",
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 28972,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 4135,
+        "output_tokens_details": {
+          "thinking_tokens": 2307
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 28972,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4135,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 28972,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 28972
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "total_cost_usd": 0.41954700000000006,
+      "num_turns": 1,
+      "modelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 26342,
+          "outputTokens": 20,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.026442,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "thinkingTokens": 0,
+          "canonicalModel": "claude-haiku-4-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        },
+        "claude-opus-5": {
+          "inputTokens": 2,
+          "outputTokens": 4135,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 28972,
+          "webSearchRequests": 0,
+          "costUSD": 0.39310500000000004,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 2307,
+          "canonicalModel": "claude-opus-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "output_sha256": "2c7f76f39997782c09fd92c0cfbf1a38f5b762b9ab892aa0da1f6d1273ad8880"
+    }
+  },
+  "resolution": {
+    "finding1": "Partially accepted. Existing check_research_workflow_verification_core checks CONTRADICTED; check_conclusion_binding_uses_canonical_source_rules owns binding; check_output_role_destination_contracts invokes schema/composition with external draft must_strip. Prior review did not receive unchanged functions. Added actual output anchors, premise token at core and read-scope axes at existing note checker. Do not duplicate all duties in pointer checker.",
+    "finding2": "Narrowed changelog statement to reference connections and each canonical checker.",
+    "finding3": "Not adopted: full unchanged preceding paragraph explicitly discusses original-source/fact-check insufficiency and authority checks, followed by 실패 시. This refers to those checks without an external named procedure. No substantive ambiguity or new runtime phrasing trial justified. Full section included for rereview.",
+    "finding4": "Docstring now explicitly pointer-only; content belongs to canonical checkers."
+  },
+  "cost_note": "CLI list-price telemetry, not subscription billing; includes auxiliary usage",
+  "additional_mutations": [
+    {
+      "home": "skills/beopsuny/references/research-workflow.md",
+      "removed_axis": "사용자 전제",
+      "detected": true
+    },
+    {
+      "home": "skills/beopsuny/references/output-formats.md",
+      "removed_axis": "읽은 범위",
+      "detected": true
+    },
+    {
+      "home": "skills/beopsuny/references/output-formats.md",
+      "removed_axis": "제외 범위",
+      "detected": true
+    },
+    {
+      "home": "skills/beopsuny/references/output-formats.md",
+      "removed_axis": "결론 영향",
+      "detected": true
+    }
+  ],
+  "runtime_changed_after_target": false
+}

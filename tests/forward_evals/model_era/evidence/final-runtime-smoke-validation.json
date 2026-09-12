@@ -1,0 +1,235 @@
+{
+  "runtime_commit": "8fad7d8921e8969c3963e952eb39c9cc99c15441",
+  "runtime_unchanged_after_smoke": true,
+  "tests": {
+    "unit": {
+      "command": "python -m unittest discover -s tests -p 'test_*.py'",
+      "exit_code": 0,
+      "output": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 9.506s\n\nOK\n"
+    },
+    "o1": {
+      "command": "python tests/validate_skill_contracts.py",
+      "exit_code": 0,
+      "output": "PASS\n"
+    },
+    "o2": {
+      "command": "python tests/evaluate_scenario_outputs.py",
+      "exit_code": 0,
+      "output": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n"
+    },
+    "rescore": {
+      "command": "python tests/check_rescore_baseline.py",
+      "exit_code": 0,
+      "output": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)"
+    }
+  },
+  "source_reachability": "[OK]              로컬 미러/legalize-kr            upstream 일치 (HEAD 99d67dea732, last_commit=2026-09-08T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=4 warn=1 fail=0 not_installed=2)\n",
+  "mirror_scope": "Only dedicated disposable evaluation checkout updated to upstream; personal installed mirrors and private assets unchanged.",
+  "quota_after_all": [
+    {
+      "source": "claude",
+      "provider": "claude",
+      "pace": {
+        "secondary": {
+          "willLastToReset": true,
+          "summary": "32% in reserve | Expected 51% used | Lasts until reset",
+          "deltaPercent": -32,
+          "stage": "farBehind",
+          "expectedUsedPercent": 51
+        },
+        "primary": {
+          "willLastToReset": false,
+          "etaSeconds": 1287,
+          "summary": "36% in deficit | Expected 52% used | Projected empty in 22m",
+          "deltaPercent": 36,
+          "stage": "farAhead",
+          "expectedUsedPercent": 52
+        }
+      },
+      "usage": {
+        "dataConfidence": "percentOnly",
+        "extraRateWindows": [
+          {
+            "title": "Fable only",
+            "id": "claude-weekly-scoped-fable",
+            "window": {
+              "windowMinutes": 10080,
+              "usedPercent": 7,
+              "resetsAt": "2026-09-12T16:00:00Z",
+              "resetDescription": "ResetsSep13at1am(Asia/Seoul)"
+            }
+          }
+        ],
+        "primary": {
+          "resetDescription": "Resets4:30pm(Asia/Seoul)",
+          "resetsAt": "2026-09-09T07:30:00Z",
+          "usedPercent": 88,
+          "windowMinutes": 300
+        },
+        "tertiary": null,
+        "secondary": {
+          "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "usedPercent": 19,
+          "windowMinutes": 10080
+        },
+        "updatedAt": "2026-09-09T05:07:19Z"
+      },
+      "account_label": "default",
+      "monthly": "unknown"
+    }
+  ],
+  "codex_quota": {
+    "at": "2026-09-09 05:09:56 UTC",
+    "account_label": "Pro/default",
+    "source": "Codex app API",
+    "confidence": "API reported",
+    "weekly_used_percent": 58,
+    "weekly_remaining_percent": 42,
+    "weekly_reset_unix": 1789512557,
+    "five_hour": "unknown",
+    "monthly": "unknown",
+    "pace": "unknown",
+    "credits_balance": "0",
+    "reset_redeemed": false
+  },
+  "cost": {
+    "o4": {
+      "case_count": 8,
+      "reported_cost_usd": 4.921724,
+      "sum_case_seconds": 898.160263583035,
+      "maximum_case_seconds": 173.3847252499836,
+      "actual_tool_calls": 105,
+      "execution_errors": 0
+    },
+    "guardrails": {
+      "case_count": 12,
+      "reported_cost_usd": 10.224156,
+      "sum_case_seconds": 1526.9017247919692,
+      "maximum_case_seconds": 283.1412998329906,
+      "actual_tool_calls": 156,
+      "execution_errors": 0
+    }
+  },
+  "limits": "Provider list-price cost is not a bill or isolated subscription quota consumption. Sum of parallel case durations is not wall-clock runtime. Other-provider missing quota snapshots mean unknown, not exhaustion. Legal model reviews are not expert gold.",
+  "all_provider_before_review": {
+    "exit_code": 124,
+    "timeout_seconds": 45,
+    "status": "unknown; not exhaustion"
+  },
+  "post_document_checks": {
+    "initial_o1": {
+      "exit_code": 1,
+      "output": "FAIL\n- check_volatile_doc_claim_markers: volatile README/docs claims must be removed, converted to placeholders, or marked with live-check/freshness context: ['README.md:211: 2026-09-09 후속 검증: runtime `8fad7d8`의 guardrails 12건·o4 8건 실행은 완료됐으나 실제 의미 위반이 남아 v0.9.0은 미발행이다. [현재 판정과 실행 증거](tests/forward_evals/model_era/followup-plan.md)를 따른다.']\n"
+    },
+    "correction": "README volatile status duplicate removed; retains evidence link. No runtime edit.",
+    "final_o1": {
+      "exit_code": 0,
+      "output": "PASS\n"
+    },
+    "adapter_py_compile_exit_code": 0,
+    "git_diff_check_exit_code": 0
+  },
+  "review_route_reassessment": [
+    {
+      "provider": "claude",
+      "pace": {
+        "secondary": {
+          "summary": "30% in reserve | Expected 51% used | Lasts until reset",
+          "expectedUsedPercent": 51,
+          "deltaPercent": -30,
+          "stage": "farBehind",
+          "willLastToReset": true
+        }
+      },
+      "source": "claude",
+      "usage": {
+        "secondary": {
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "usedPercent": 21,
+          "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)"
+        },
+        "updatedAt": "2026-09-09T05:20:16Z",
+        "dataConfidence": "percentOnly",
+        "primary": {
+          "windowMinutes": 300,
+          "resetsAt": "2026-09-09T07:30:00Z",
+          "usedPercent": 100,
+          "resetDescription": "resets Sep 9 at 4:30pm (Asia/Seoul)"
+        },
+        "extraRateWindows": [
+          {
+            "window": {
+              "usedPercent": 9,
+              "resetsAt": "2026-09-12T16:00:00Z",
+              "resetDescription": "resets Sep 13 at 1am (Asia/Seoul)",
+              "windowMinutes": 10080
+            },
+            "id": "claude-weekly-scoped-fable",
+            "title": "Fable only"
+          }
+        ],
+        "tertiary": null
+      },
+      "account_label": "default",
+      "monthly": "unknown"
+    },
+    {
+      "provider": "grok",
+      "source": "grok-cli-proxy",
+      "version": "1.0.24",
+      "pace": {
+        "primary": {
+          "deltaPercent": -3,
+          "expectedUsedPercent": 37,
+          "summary": "3% in reserve | Expected 37% used | Lasts until reset",
+          "willLastToReset": true,
+          "stage": "slightlyBehind"
+        }
+      },
+      "usage": {
+        "primary": {
+          "resetsAt": "2026-09-13T15:42:04Z",
+          "usedPercent": 34
+        },
+        "updatedAt": "2026-09-09T05:23:52Z",
+        "tertiary": null,
+        "secondary": null,
+        "loginMethod": "SuperGrok Heavy"
+      },
+      "account_label": "SuperGrok Heavy",
+      "monthly": "unknown"
+    }
+  ],
+  "quota_caveat": "Claude88% snapshot preceded actual429 session limit and later100% snapshot; do not attribute that delta to the failed zero-token review. Grok primary duration/confidence unprovided; do not rename as 5h/weekly/monthly.",
+  "quota_after_final_review": [
+    {
+      "provider": "grok",
+      "pace": {
+        "primary": {
+          "expectedUsedPercent": 37,
+          "summary": "3% in reserve | Expected 37% used | Lasts until reset",
+          "stage": "slightlyBehind",
+          "willLastToReset": true,
+          "deltaPercent": -3
+        }
+      },
+      "version": "1.0.24",
+      "usage": {
+        "loginMethod": "SuperGrok Heavy",
+        "primary": {
+          "resetsAt": "2026-09-13T15:42:04Z",
+          "usedPercent": 34
+        },
+        "tertiary": null,
+        "updatedAt": "2026-09-09T05:31:38Z",
+        "secondary": null
+      },
+      "source": "grok-cli-proxy",
+      "account_label": "SuperGrok Heavy",
+      "window_duration": "unknown",
+      "dataConfidence": "unprovided"
+    }
+  ]
+}

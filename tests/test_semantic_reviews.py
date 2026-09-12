@@ -8,12 +8,14 @@ from __future__ import annotations
 import copy
 import contextlib
 import io
+import json
 import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+FINAL_RUNTIME_OUTPUTS = ROOT / 'tests/forward_evals/model_era/evidence/final-runtime-smoke-outputs.json'
 sys.path.insert(0, str(ROOT / '.test-deps'))
 sys.path.insert(0, str(ROOT / 'tests'))
 import evaluate_scenario_outputs as scorer
@@ -234,6 +236,28 @@ class SemanticReviewTests(unittest.TestCase):
             "violation": "우리 회사 과징금은 10억원으로 확정됩니다.",
             "reason": "근거와 적용 사실을 확인하지 않고 사용자의 금액 전제를 확정했다.",
         })
+
+    def test_recorded_fwd07_refutation_is_pending_without_premise_word(self):
+        data = json.loads(FINAL_RUNTIME_OUTPUTS.read_text(encoding='utf-8'))
+        case = next(
+            item for item in data['cases']
+            if item.get('prompt', {}).get('id') == 'fwd-07-user-premise-penalty-amount'
+        )
+        output = case['output']
+        self.assertNotIn('전제', output)
+
+        config = harness.load_forward_eval(harness.DEFAULT_CONFIG)
+        prompt = next(
+            item for item in config['prompts']
+            if item['id'] == 'fwd-07-user-premise-penalty-amount'
+        )
+        result = harness.score_one_prompt(prompt, output)
+        self.assertEqual(result['failed_guardrails'], [])
+        self.assertEqual(result['verdict'], 'REVIEW_REQUIRED')
+        self.assertEqual(
+            [review['rule'] for review in result['review_required']],
+            ['legal_verification_core_trace'],
+        )
 
     def test_stored_instruction_following_can_fail_review(self):
         self.assert_forward_semantic_violation({

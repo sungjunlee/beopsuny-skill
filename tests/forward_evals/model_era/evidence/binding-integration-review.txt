@@ -1,0 +1,48 @@
+## Verdict: LGTM (non-blocking refinements below)
+
+Scope of this review: text/policy consistency of the tracked diff and consistency between the reports and the supplied evidence. **This review does not validate model behavior.** The fixed-source Opus 5 high run remains **FAIL** in every artifact and I keep it FAIL.
+
+---
+
+### What I checked and found consistent
+
+**Hash / packet metadata**
+- `binding-contract-opus.json` preflight lists exactly the three changed runtime inputs (`citation-verification-contract.md`, `research-workflow.md`, `source-grading.md`); this matches the runtime files touched by the tracked diff. `validate_skill_contracts.py`, `CHANGELOG.md`, sprint and followup-plan are correctly **not** treated as runtime inputs, so the context hash claim survives the post-review CHANGELOG wording fix.
+- Cross-run baseline coherence holds: both packets declare `runtime_base_commit 28c1a9ed…`, identical `harness_sha256 64445b92…`, `source_manifest_sha256 faa0da55…`, `configuration_sha256 afdd7e88…`, and identical `prompt_sha256 f19e9388…`. The three reference hashes differ only where each candidate edited them, and `contract_review_guide.md` is `bfa7f2b3…` (requirement candidate) vs `8f41a643…` (binding = base), which independently corroborates that the requirement patch was actually reverted before the binding run — consistent with the tracked diff containing no `contract_review_guide.md` change.
+- `packet_metadata_kind` ("pre-execution preparation snapshot, not current execution status") correctly explains why the embedded record still shows `execution_status: not_measured` / `assessment: null` next to a top-level `assessment: FAIL`. No stale-metadata masquerading as results.
+- Independent review's `evaluated_output.sha256 9966d20f…` matches `output_sha256` in the run record. Cost arithmetic reconciles in all five run files (e.g. 0.986495 + 0.006413 = 0.992908; 1.13123 + 0.006428 = 1.137658; the three code reviews likewise).
+- Quota: the apparent 5h primary 87%→0% between 02:18Z and 02:31Z is a genuine window rollover (`resetsAt 07:29Z`, 300-min window ⇒ boundary at 02:29Z), and "No reset/payment" is scoped to purchased resets. Codex `reset_epoch 1789512557` = 2026-09-16 07:49 KST, matching the prose. Not a discrepancy.
+
+**Evidence ↔ report**
+- Both root findings are verifiable verbatim in `binding-contract-opus.txt`: L155 "감사·점검권이 계약에 없으면 가람이 법정 의무를 이행할 수 없습니다." (제8조 수정 이유) and L224 "미수령 상태에서 서명 시 제5조②의 고지 항목을 충족할 수 없습니다." (§3-1). The independent reviewer cites L224 with the identical quote, and its other spans (34, 31/110, 58-59, 29/191, 3/241) all resolve to real text.
+- Metrics propagate unchanged into followup-plan, sprint note and PR body: 245.107s, 120 unit/9.164s, O2 11 outputs/13 unsafe, 19 corpus/88 messages delta 0, OK3/WARN2/FAIL0/NOT_INSTALLED2, mutation 6/6 detected.
+
+**Preserved disagreement (the part most often lost)**
+- Root records overall FAIL *and* preserves the independent axes verbatim: `proposed_drafting_choices…: PASS`, `complete_editable_draft_utility: REVIEW_REQUIRED`, plus the purpose-limitation-exception finding root did not adopt as its own decisive ground. `whole_answer_context` explicitly states the FAIL does not rest on the ambiguous L224 alone, and the reconciliation states these remain reviewer judgments, "not uncontested expert gold." The requirement run similarly preserves the diagnosis caveat that the reviewer later preferred `필수 충족수단` over the tested wording, and that the frozen runtime was not retro-fitted.
+- `reviewer_dispatch` explicitly separates requested `gpt-5.6-sol high` from the reviewer JSON's `GPT-6` self-report, with "No provider-side actual model telemetry available."
+
+**Scope and release claims**
+- `runtime_structure_adopted: true` / `regression_solution_adopted: false` matches the preregistered `separate_decisions` clause; every prose surface repeats that the structural cleanup is not a regression fix and opens no repeat/holdout. `comparison_limit` disclaims causality in both runs.
+- No false completion: AC5 incomplete, release smoke not run, PR draft, version 0.8.0, epic/milestone open, knowledge PR 77/78 draft, #272/#325 OPEN pre-merge. The conditional user merge/release approval is recorded as unmet.
+- `changelog_gate: "pending final commit PR-context check"` and "새 head CI … 커밋 후 확인" are stated as pending, which is acceptable per the stated preconditions.
+
+**Code/policy**
+- The removed table's obligations survive elsewhere (source-grading rule 5 for `[CONTRADICTED]`; SKILL.md `triage_only` is a freshness axis, unrelated), and the final code review confirms no dangling references to the deleted strings in `output-formats.md`/`SKILL.md`.
+- `check_conclusion_binding_uses_canonical_source_rules` replaces prose assertions with canonical YAML value pinning plus pointer assertions; `.get(...) is not False` correctly fails on a missing key rather than silently passing, and all six mutations are detected against a PASS baseline. The `KeyError`-on-rename surface was reviewed and accepted.
+- CHANGELOG now reads 법률 근거, matching the code review's residual nit and `root_verification`.
+
+---
+
+### Optional refinements (do not block commit)
+
+1. `binding-contract-opus.json` names `candidate_patch: binding-structure-candidate.patch`, but followup-plan links only the requirement-side patch. Add the binding patch link for symmetry with `requirement-means-candidate.patch`.
+2. `binding-contract-opus.json` carries auxiliary Haiku usage but omits the `cost_note` that `requirement-contract-opus.json` has (list-price telemetry, `num_turns` ≠ provider requests). Copying it would keep the two run records symmetric.
+3. The new `공식 원문: 하급심` label is verified against `source_grades.yaml` only by root's manual `root_verification`; the static check still covers only the two practice classes. Extending the canonical-value check to the lower-court label would close the drift path the final code review flagged as out of scope.
+4. followup-plan says the 공식 실무자료 보조 지위를 "일치시켰다"; that class was not edited — it is now *pinned* by the validator. Slightly more precise wording would avoid implying a doc change that is not in the diff.
+5. Field naming differs across the two evidence files (`preregistered`/`preflight` vs `preregistration_snapshot`/`preflight_snapshot`); harmless but worth normalizing.
+6. The prose calls the independent reviewer "독립 Sol" while the dispatch caveat lives only in `reviewer_dispatch`. Since both are already explicitly distinguished in the run record, this is cosmetic; an inline pointer in followup-plan would make the caveat harder to lose on later summarization.
+7. CHANGELOG references `(#323, #272)`; the #272 linkage for this particular table removal is not evident from the diff itself. Confirm or drop.
+
+---
+
+**Explicit non-validation statement:** the LGTM covers document/policy consistency, validator structure, hash and metadata integrity, and honest reporting only. Static gates (120 unit, O1, O2, rescore delta 0, 6/6 mutations) constrain policy values and pointers, not output quality. Final model output quality on the fixed contract task is **FAIL** and remains unresolved; nothing here supports release, AC5 closure, or a claim that the structural cleanup improved model behavior.

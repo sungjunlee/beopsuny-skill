@@ -1,0 +1,134 @@
+{
+  "returncode": 0,
+  "seconds": 268.6591131660098,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "context_sha256": "acdc4018cf314e9c4d7def63425567c4c41ed7c8de1161a67ea89d40e524a34b",
+  "prompt_sha256": "8ba078e77d33d609064ff4398b74ee2d38cec33d6b0ad8df48b3f6fae63e455f",
+  "runtime_commit": "313a91901188c6186b3158ae0da4efdbbb4c0ad0",
+  "comparison_limit": "Different target model than Sol/Grok outputs; final-runtime validation, not causal paired improvement.",
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 5825,
+    "cache_read_input_tokens": 41060,
+    "output_tokens": 18111,
+    "output_tokens_details": {
+      "thinking_tokens": 9198
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5825,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 18111,
+        "cache_read_input_tokens": 41060,
+        "cache_creation_input_tokens": 5825,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 5825
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.537994,
+  "num_turns": 1,
+  "output_sha256": "fe6776eb732eed7e803dc975a2277052c414ec7d734b358b3f16855ff2543810",
+  "model_usage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 6289,
+      "outputTokens": 28,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.006429000000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5": {
+      "inputTokens": 2,
+      "outputTokens": 18111,
+      "cacheReadInputTokens": 41060,
+      "cacheCreationInputTokens": 5825,
+      "webSearchRequests": 0,
+      "costUSD": 0.531565,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 9198,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "packet_metadata": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/private/tmp/beopsuny-release09/public-runtime-direct-duty",
+    "harness_sha256": "64445b92fb3ff5793504fceae1b0ceab8173b96c610c49c40a798c25bc776a4d",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+      "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+      "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+      "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+      "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+      "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+      "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+      "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-missing-annex-fixed",
+        "arm": "B",
+        "split": "holdout",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "eb05342548b01514c605fee35bb649f48acf017394496fdbcea7cae51cab4d76",
+          "skills/beopsuny/references/source-access.md": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+          "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac",
+          "skills/beopsuny/references/contract_review_guide.md": "8f41a643089ee261481a56b5c3690ff55df34e46183205594ba02a55c062fd9f",
+          "skills/beopsuny/assets/policies/review_mode.yaml": "0787c0aaed3cbc95ea7bc7e69692066792112ce2510f924007c596e2f0590a1f",
+          "skills/beopsuny/references/self-verification.md": "c16bca720576cd58e6dad4e58e61eda5472d2e85146b22ed66f88b0ba8378f6e",
+          "skills/beopsuny/references/output-formats.md": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+          "skills/beopsuny/assets/schemas/output_contract.yaml": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "acdc4018cf314e9c4d7def63425567c4c41ed7c8de1161a67ea89d40e524a34b",
+        "prompt_sha256": "8ba078e77d33d609064ff4398b74ee2d38cec33d6b0ad8df48b3f6fae63e455f"
+      }
+    ]
+  },
+  "assessment": "REVIEW_REQUIRED",
+  "legal_expert_validation": false
+}

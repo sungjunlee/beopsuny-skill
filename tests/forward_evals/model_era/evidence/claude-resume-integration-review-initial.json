@@ -1,0 +1,62 @@
+{
+  "returncode": 0,
+  "elapsed_seconds": 257.79328320900095,
+  "model": "claude-opus-5",
+  "effort": "high",
+  "prompt_sha256": "de6fbf1b3cb520b3869fea90a3db6c004f8f9162dac64af4d421b5335e592377",
+  "review_scope": "GPT-written public evidence integration, not legal expert certification or target quality PASS",
+  "input_files_sha256": {
+    "tests/forward_evals/model_era/followup-plan.md": "061a9d3ad3f6b3c3e6fee599fcee0831d47ca6fc92062d7f4858344bed3ba197",
+    "tests/forward_evals/model_era/rubric.json": "ab15d4bbc46735e0d099a825c955a6d34bc7f0c2a5c0fb3bd466079bcab34426",
+    "tests/forward_evals/model_era/evidence/conclusion-contract-independent-review.json": "e2510acf2481756af83fe88ce9f1475c3b35671d93303b85415bcb2d00d65aff",
+    "tests/forward_evals/model_era/evidence/epistemic-contract-independent-review.json": "87fd5203b217e0b305a0de01cf14abf3bc204d9d9edb52957146bb28d14af058",
+    "tests/forward_evals/model_era/evidence/knowledge-claude-initial-pairs.json": "de158178d66cb68db79bfc3d2fac321771de742f6e80a1de0c3cb5541cc38c2e",
+    "tests/forward_evals/model_era/evidence/resume-source-recheck.json": "0c604da96420f9e78ed9b4c3b601689408850d3f373b11badc0f6444aba16cbe"
+  },
+  "is_error": false,
+  "subtype": "success",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 39581,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 18543,
+    "output_tokens_details": {
+      "thinking_tokens": 15495
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 39581,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 18543,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 39581,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 39581
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "total_cost_usd": 0.8944340000000001,
+  "num_turns": 1,
+  "output_sha256": "888a5422d781d3aeb103cdb8e13b876f3171b282d0734bacab75d327260b209f",
+  "review_text": "## 판정\n\n**evidence integration LGTM 보류** — 실패 보존·범위 제한·사전등록 준수는 전반적으로 정확하나, 공개 문서에 남은 **내부 모순 2건 + 귀속 오류 1건**이 있습니다. 세 건 모두 문구/포인터 정정으로 해소 가능하며, 알려진 target 실패를 PASS로 바꾸거나 비공개 payload 공개를 요구하는 지적은 없습니다.\n\n## 먼저 확인된 정합 사항 (변경 요구 없음)\n\n- 두 계약 runtime 후보 = FAIL·철회, runtime 41파일 = `3e76b25`, diff에 skills/ 변경 없음(CHANGELOG·sprint 문서만) → \"새 runtime 변경 없음\" 주장과 일치.\n- knowledge 4실행: `call_order` 실제 집계가 Read5/WebSearch4/WebFetch5와 정확히 일치, taxonomy→(arm별 hints)→audit 순서, blind arm의 hints가 초기 검색 이후(run1 idx46, run4 idx26)로 arm 정의와 일치, 최장 353.55초 < 900초.\n- 비용 합산 1.7085+1.1241+1.0227+1.2085 = 5.063845 = `list_price_accounting_usd` 일치, \"구독 하 list-price 회계·신규 현금 지출 아님\" 명시.\n- 사전등록 확대 기준(clean benefit + veto 0)을 충족하지 않아 반복·incident holdout 미개방, 운영 순서 유지 — rubric `knowledge_ordering.expand`와 일치. 관측 후보 **NO_GO**(general adoption 규칙의 confirmed veto)와 **타이밍 인과 INCONCLUSIVE**를 분리해 표기한 점, veto confidence를 \"high for the observed answer, not causal timing attribution\"으로 한정한 점은 정확합니다.\n- 소스 재확인 OK3/WARN2/FAIL0/미설치2가 `resume-source-recheck.json`(ok=3 warn=2 fail=0 not_installed=2)과 일치, 미러 upstream 불일치·법망 중단 기한을 연장 없이 그대로 기록.\n- 전문가 법률 정답 부존재(`legal_gold: false`, `expert_adjudication: unadjudicated`, 각 증거의 `expert_legal_gold: false`)와 \"지침 LGTM ≠ 출력 PASS\" 구분 유지.\n- 프라이버시: 공개 증거는 hash·호출 순서·측정치·추상화 판정만 담고 stage 본문·질문·답변·검색어·원시 trace는 hash로만 참조. 계정 이메일 등 식별자 없음. rubric `target_input_exclusions`도 `read_files`상 위반 없음.\n- rubric 파일을 `status: preregistered; no performance result`로 동결한 채 결과를 별도 증거에 둔 처리는 사전등록 무결성상 적절 — 수정 요구하지 않습니다.\n\n## 수정 필요 (구체적)\n\n**1. fwd11 종료 원인이 자체 정정 기록과 모순 (must-fix, 공개 PR 본문)**\n\n- PR 본문: \"fwd11의 **300초 timeout** 후 같은 실행의 늦은 답변을 전체 PASS로 바꾸지 않습니다.\"\n- followup-plan 상단: \"fwd11 **timeout** 후 늦은 출력은 그대로 유효한 실패·한계 증거다.\"\n- 같은 문서의 최종 기록: \"**fwd11은 timeout이 아니라 18턴 한도 종료**이며 도구 호출은 read14/list7/grep7/web_fetch34였다.\"\n- 또한 인라인 기록상 스모크 상한은 240초(→900초 재실행)이고 300초는 knowledge runner 상한이므로, \"fwd11 300초 timeout\"은 어느 실행 기록과도 맞지 않습니다.\n- 조치: 어느 run set을 말하는지 명시하고 종료 원인을 정정하세요. 예) \"fwd11은 timeout이 아니라 18턴 한도 종료(read14/list7/grep7/web_fetch34)이며, 이전 240초 상한 실행의 늦은 출력과는 별도 실행으로 보존한다. 두 경우 모두 PASS로 바꾸지 않는다.\" 아울러 현행성 기록의 fwd-11 전체 FAIL(무개정 확정 위반)과 currency-final의 미판정/REVIEW_REQUIRED를 한 문장에 뭉개지 않도록 run set을 구분해 주세요.\n\n**2. 후보 2건 증거 구성 주장과 실제 파일 내용 불일치 (must-fix, 포인터 또는 문구)**\n\n- followup-plan 상단: \"…`conclusion-contract-independent-review.json`, `epistemic-contract-independent-review.json`에 **실제 출력 hash·패치·입력 manifest**를 연결했다.\" PR 본문: \"두 후보의 **패치·입출력 hash**·리뷰·철회 이유를 보존합니다.\"\n- 그러나 두 파일에는 `output_sha256`(및 reviewer/writer/판정)만 있고 **패치, 입력·context·runtime hash, elapsed(예: 286.848초)/usage/비용**이 없습니다. knowledge 증거가 prompt/context/stage/runtime hash·usage·cost를 갖춘 것과 대비되어, 같은 문장 하나로 두 수준을 동일하게 주장하고 있습니다.\n- 조치(둘 중 하나): (a) 해당 값이 다른 파일에 있으면 그 파일명을 문장에 정확히 적으세요; (b) 없으면 \"이 두 파일에는 출력 hash와 축별 판정만 있고, 패치·입력 manifest·per-run usage/비용은 **미보존/미측정**\"으로 rubric `cost_latency`의 \"unavailable stays null with reason\" 형식대로 낮춰 쓰세요. (새 실험 요구가 아니라 문구 정정 요구입니다.)\n\n**3. 후보 2의 독립 판정 귀속 (should-fix)**\n\n- PR 본문: \"후속 최소 수정 후보 2개도 … **독립 Sol 의미 리뷰에서 실패**해 모두 되돌렸습니다.\"\n- 실제: 후보 1은 리뷰어 overall **FAIL**, 후보 2는 리뷰어 overall **major_revision / material_concerns**이고 **root가 FAIL로 판정**했습니다(followup-plan 마지막 단락에는 이 구분이 이미 있음).\n- 조치: PR 본문도 \"후보1 독립 FAIL, 후보2 독립 major_revision을 root가 FAIL로 판정\" 식으로 판정 주체를 분리하세요. 결론(둘 다 미채택·철회)은 그대로 유지됩니다.\n\n## 선택적 (LGTM 조건 아님)\n\n- `knowledge-claude-initial-pairs.json`의 `usage.server_tool_use`가 `web_search_requests: 0 / web_fetch_requests: 0`인데 `tool_counts`는 4/5입니다. CLI측 도구와 server tool 계정 차이임을 `observability_limit`에 한 줄 추가하면 오독을 막습니다.\n- 공개 증거의 `quota`/`codex_quota`(pace, `claude-weekly-scoped-fable`, credits_balance)는 이번 비교 판정에 쓰이지 않으므로 최소화 가능. 식별자 유출은 없으므로 차단 사유는 아닙니다.\n- PR 본문 Related에 draft OPEN인 skill PR #331이 빠져 있습니다(플랜에는 있음).\n- PR 본문 한계 목록에 guardrails 12건 중 **UNSCORABLE1(실행 오류1)** 미해소를 한 줄 남기면, \"출시 조건 미충족\" 근거가 플랜과 완전히 대응합니다.\n\n## 범위 명시\n\n본 검토는 evidence integration(주장–증거 대응, 사전등록 준수, 실패 보존, 프라이버시)만 대상입니다. 개인정보보호법 조문 해석·현행성·전문가 법률 정확도는 판정하지 않았고, 후보 2건의 FAIL·#323 AC5 미완료·o4/현행성 FAIL·#325 NO_GO/INCONCLUSIVE는 그대로 유지되어야 합니다. 위 1~3 정정 후 evidence integration LGTM입니다.",
+  "root_resolution": {
+    "finding_1": "The suggested replacement of 300-second timeout with 18-turn limit is factually wrong across run sets. Preserve actual direct-duty 300-second harness timeout and late same-run completion, and explicitly distinguish currency 18-turn and live-followup 240/900-second runs.",
+    "finding_2": "Added explicit model-metadata, patch and review file links. Metadata existed; no missing measurement was invented. Preparation snapshots are labeled as preparation; top-level final assessment and links are current.",
+    "finding_3": "Separated reviewer major_revision/material_concerns from root FAIL for candidate two.",
+    "optional_tool_accounting": "Clarified observed CLI calls versus server_tool_use accounting.",
+    "optional_pr331": "Historical separate PR reference remains in the historical plan; not a new dependency for this evidence-only resume."
+  }
+}

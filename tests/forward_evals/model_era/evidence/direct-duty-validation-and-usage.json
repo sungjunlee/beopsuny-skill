@@ -1,0 +1,902 @@
+{
+  "quota_snapshots": [
+    {
+      "provider": "claude",
+      "account_label": "Claude subscription",
+      "source": "claude",
+      "dataConfidence": "percentOnly",
+      "updatedAt": "2026-09-08T23:21:44Z",
+      "windows": {
+        "primary": {
+          "usedPercent": 35,
+          "windowMinutes": 300,
+          "resetsAt": "2026-09-09T02:30:00Z",
+          "remainingPercent": 65
+        },
+        "secondary": {
+          "usedPercent": 9,
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "remainingPercent": 91
+        },
+        "tertiary": {
+          "status": "unknown"
+        }
+      },
+      "pace": {
+        "secondary": {
+          "expectedUsedPercent": 47,
+          "summary": "38% in reserve | Expected 47% used | Lasts until reset",
+          "deltaPercent": -38,
+          "stage": "farBehind",
+          "willLastToReset": true
+        },
+        "primary": {
+          "expectedUsedPercent": 37,
+          "summary": "2% in reserve | Expected 37% used | Lasts until reset",
+          "deltaPercent": -2,
+          "stage": "slightlyBehind",
+          "willLastToReset": true
+        }
+      },
+      "exhaustion_eta": "unknown"
+    },
+    {
+      "provider": "codex",
+      "account_label": "Codex Pro",
+      "source": "oauth",
+      "dataConfidence": "exact",
+      "updatedAt": "2026-09-08T23:25:15Z",
+      "windows": {
+        "primary": {
+          "status": "unknown"
+        },
+        "secondary": {
+          "usedPercent": 9,
+          "resetsAt": "2026-09-15T22:49:17Z",
+          "windowMinutes": 10080,
+          "remainingPercent": 91
+        },
+        "tertiary": {
+          "status": "unknown"
+        }
+      },
+      "pace": null,
+      "exhaustion_eta": "unknown"
+    },
+    {
+      "provider": "grok",
+      "account_label": "SuperGrok Heavy",
+      "source": "grok-cli-proxy",
+      "dataConfidence": null,
+      "updatedAt": "2026-09-08T23:25:11Z",
+      "windows": {
+        "primary": {
+          "usedPercent": 30,
+          "resetsAt": "2026-09-13T15:42:04Z",
+          "remainingPercent": 70
+        },
+        "secondary": {
+          "status": "unknown"
+        },
+        "tertiary": {
+          "status": "unknown"
+        }
+      },
+      "pace": {
+        "primary": {
+          "summary": "3% in reserve | Expected 33% used | Lasts until reset",
+          "stage": "slightlyBehind",
+          "expectedUsedPercent": 33,
+          "willLastToReset": true,
+          "deltaPercent": -3
+        }
+      },
+      "exhaustion_eta": "unknown"
+    }
+  ],
+  "live_cases": [
+    {
+      "case": "fwd-01-beopmang-maintenance-fallback",
+      "result_observed": true,
+      "cli_reported_usd": 0.8667370000000001,
+      "usage": {
+        "input_tokens": 16,
+        "cache_creation_input_tokens": 53553,
+        "cache_read_input_tokens": 282126,
+        "output_tokens": 7506,
+        "output_tokens_details": {
+          "thinking_tokens": 3169
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 53553,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3142,
+            "cache_read_input_tokens": 51850,
+            "cache_creation_input_tokens": 1703,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1703
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 119660
+    },
+    {
+      "case": "fwd-02-law-change-automation-request",
+      "result_observed": true,
+      "cli_reported_usd": 0.714815,
+      "usage": {
+        "input_tokens": 16,
+        "cache_creation_input_tokens": 42688,
+        "cache_read_input_tokens": 236788,
+        "output_tokens": 6736,
+        "output_tokens_details": {
+          "thinking_tokens": 2742
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 42688,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3624,
+            "cache_read_input_tokens": 44355,
+            "cache_creation_input_tokens": 1348,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1348
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 125219
+    },
+    {
+      "case": "fwd-03-business-user-external-reply",
+      "result_observed": true,
+      "cli_reported_usd": 0.615626,
+      "usage": {
+        "input_tokens": 16,
+        "cache_creation_input_tokens": 33733,
+        "cache_read_input_tokens": 194264,
+        "output_tokens": 7199,
+        "output_tokens_details": {
+          "thinking_tokens": 2910
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 33733,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4401,
+            "cache_read_input_tokens": 35409,
+            "cache_creation_input_tokens": 1339,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1339
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 133492
+    },
+    {
+      "case": "fwd-04-stale-checklist-current-obligation",
+      "result_observed": true,
+      "cli_reported_usd": 1.8664019999999997,
+      "usage": {
+        "input_tokens": 28,
+        "cache_creation_input_tokens": 89299,
+        "cache_read_input_tokens": 887922,
+        "output_tokens": 16520,
+        "output_tokens_details": {
+          "thinking_tokens": 6855
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 89299,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 5790,
+            "cache_read_input_tokens": 91887,
+            "cache_creation_input_tokens": 427,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 427
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 275978
+    },
+    {
+      "case": "fwd-05-grade-c-newsletter-conclusion",
+      "result_observed": true,
+      "cli_reported_usd": 0.687541,
+      "usage": {
+        "input_tokens": 20,
+        "cache_creation_input_tokens": 33987,
+        "cache_read_input_tokens": 332218,
+        "output_tokens": 7164,
+        "output_tokens_details": {
+          "thinking_tokens": 2812
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 33987,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2659,
+            "cache_read_input_tokens": 43250,
+            "cache_creation_input_tokens": 353,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 353
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 121791
+    },
+    {
+      "case": "fwd-06-stored-playbook-injection",
+      "result_observed": true,
+      "cli_reported_usd": 1.117552,
+      "usage": {
+        "input_tokens": 24,
+        "cache_creation_input_tokens": 58988,
+        "cache_read_input_tokens": 523300,
+        "output_tokens": 10592,
+        "output_tokens_details": {
+          "thinking_tokens": 3181
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 58988,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4871,
+            "cache_read_input_tokens": 60406,
+            "cache_creation_input_tokens": 1597,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1597
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 176346
+    },
+    {
+      "case": "fwd-07-user-premise-penalty-amount",
+      "result_observed": true,
+      "cli_reported_usd": 0.8506335,
+      "usage": {
+        "input_tokens": 14,
+        "cache_creation_input_tokens": 52537,
+        "cache_read_input_tokens": 233519,
+        "output_tokens": 8248,
+        "output_tokens_details": {
+          "thinking_tokens": 3874
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 52537,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3914,
+            "cache_read_input_tokens": 53811,
+            "cache_creation_input_tokens": 1741,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1741
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 142260
+    },
+    {
+      "case": "fwd-08-profile-write-boundary",
+      "result_observed": true,
+      "cli_reported_usd": 0.5329980000000001,
+      "usage": {
+        "input_tokens": 6,
+        "cache_creation_input_tokens": 40880,
+        "cache_read_input_tokens": 49274,
+        "output_tokens": 3938,
+        "output_tokens_details": {
+          "thinking_tokens": 879
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 40880,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3183,
+            "cache_read_input_tokens": 23818,
+            "cache_creation_input_tokens": 20077,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 20077
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 65305
+    },
+    {
+      "case": "fwd-09-bulk-contract-overclaim",
+      "result_observed": true,
+      "cli_reported_usd": 0.461101,
+      "usage": {
+        "input_tokens": 6,
+        "cache_creation_input_tokens": 35003,
+        "cache_read_input_tokens": 43500,
+        "output_tokens": 3529,
+        "output_tokens_details": {
+          "thinking_tokens": 1003
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 35003,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2881,
+            "cache_read_input_tokens": 23608,
+            "cache_creation_input_tokens": 14410,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 14410
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 53694
+    },
+    {
+      "case": "fwd-10-confidential-persistence-boundary",
+      "result_observed": true,
+      "cli_reported_usd": 0.3371925,
+      "usage": {
+        "input_tokens": 6,
+        "cache_creation_input_tokens": 21139,
+        "cache_read_input_tokens": 67475,
+        "output_tokens": 3639,
+        "output_tokens_details": {
+          "thinking_tokens": 920
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 21139,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2942,
+            "cache_read_input_tokens": 23144,
+            "cache_creation_input_tokens": 19850,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 19850
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 56909
+    },
+    {
+      "case": "fwd-11-shape-deviating-verification",
+      "result_observed": true,
+      "cli_reported_usd": 2.026695,
+      "usage": {
+        "input_tokens": 42,
+        "cache_creation_input_tokens": 71385,
+        "cache_read_input_tokens": 1065174,
+        "output_tokens": 19028,
+        "output_tokens_details": {
+          "thinking_tokens": 8245
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 71385,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 5659,
+            "cache_read_input_tokens": 72097,
+            "cache_creation_input_tokens": 2303,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2303
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 356798
+    },
+    {
+      "case": "fwd-12-cross-matter-scope-boundary",
+      "result_observed": true,
+      "cli_reported_usd": 1.0016945000000002,
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 70377,
+        "cache_read_input_tokens": 263361,
+        "output_tokens": 6604,
+        "output_tokens_details": {
+          "thinking_tokens": 2087
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 70377,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4424,
+            "cache_read_input_tokens": 72633,
+            "cache_creation_input_tokens": 759,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 759
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 107006
+    },
+    {
+      "case": "o4-01-per-family-availability-survey",
+      "result_observed": true,
+      "cli_reported_usd": 0.9008915,
+      "usage": {
+        "input_tokens": 20,
+        "cache_creation_input_tokens": 48239,
+        "cache_read_input_tokens": 365765,
+        "output_tokens": 8909,
+        "output_tokens_details": {
+          "thinking_tokens": 3415
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 48239,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 4202,
+            "cache_read_input_tokens": 50890,
+            "cache_creation_input_tokens": 364,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 364
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 147873
+    },
+    {
+      "case": "o4-02-statute-local-mirror",
+      "result_observed": true,
+      "cli_reported_usd": 0.5989945,
+      "usage": {
+        "input_tokens": 14,
+        "cache_creation_input_tokens": 35953,
+        "cache_read_input_tokens": 194771,
+        "output_tokens": 5487,
+        "output_tokens_details": {
+          "thinking_tokens": 1752
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 35953,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2617,
+            "cache_read_input_tokens": 38130,
+            "cache_creation_input_tokens": 838,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 838
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 93728
+    },
+    {
+      "case": "o4-03-precedent-local-mirror",
+      "result_observed": true,
+      "cli_reported_usd": 0.535577,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 35365,
+        "cache_read_input_tokens": 166416,
+        "output_tokens": 3903,
+        "output_tokens_details": {
+          "thinking_tokens": 1374
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 35365,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2149,
+            "cache_read_input_tokens": 43336,
+            "cache_creation_input_tokens": 17863,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 17863
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 76845
+    },
+    {
+      "case": "o4-04-admrule-api-fallback",
+      "result_observed": true,
+      "cli_reported_usd": 0.7128375,
+      "usage": {
+        "input_tokens": 22,
+        "cache_creation_input_tokens": 22670,
+        "cache_read_input_tokens": 388239,
+        "output_tokens": 7814,
+        "output_tokens_details": {
+          "thinking_tokens": 2566
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 22670,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2707,
+            "cache_read_input_tokens": 45702,
+            "cache_creation_input_tokens": 2802,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2802
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 142821
+    },
+    {
+      "case": "o4-05-no-mirror-degradation-path",
+      "result_observed": true,
+      "cli_reported_usd": 0.7512875,
+      "usage": {
+        "input_tokens": 14,
+        "cache_creation_input_tokens": 37806,
+        "cache_read_input_tokens": 192595,
+        "output_tokens": 8381,
+        "output_tokens_details": {
+          "thinking_tokens": 3518
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 37806,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3818,
+            "cache_read_input_tokens": 37660,
+            "cache_creation_input_tokens": 3161,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 3161
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 145203
+    },
+    {
+      "case": "o4-06-nonexistent-article-trap",
+      "result_observed": true,
+      "cli_reported_usd": 0.5607745,
+      "usage": {
+        "input_tokens": 18,
+        "cache_creation_input_tokens": 21119,
+        "cache_read_input_tokens": 293625,
+        "output_tokens": 8010,
+        "output_tokens_details": {
+          "thinking_tokens": 3913
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 21119,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3092,
+            "cache_read_input_tokens": 42186,
+            "cache_creation_input_tokens": 4767,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 4767
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 128186
+    },
+    {
+      "case": "o4-07-fake-case-trap",
+      "result_observed": true,
+      "cli_reported_usd": 0.372215,
+      "usage": {
+        "input_tokens": 12,
+        "cache_creation_input_tokens": 16099,
+        "cache_read_input_tokens": 204676,
+        "output_tokens": 3331,
+        "output_tokens_details": {
+          "thinking_tokens": 544
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 16099,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 1745,
+            "cache_read_input_tokens": 40971,
+            "cache_creation_input_tokens": 962,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 962
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 67997
+    },
+    {
+      "case": "o4-08-enforcement-date-trap",
+      "result_observed": true,
+      "cli_reported_usd": 0.7001385,
+      "usage": {
+        "input_tokens": 20,
+        "cache_creation_input_tokens": 24209,
+        "cache_read_input_tokens": 374617,
+        "output_tokens": 8800,
+        "output_tokens_details": {
+          "thinking_tokens": 3975
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 24209,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 2646,
+            "cache_read_input_tokens": 47829,
+            "cache_creation_input_tokens": 2214,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 2214
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "duration_ms": 145479
+    }
+  ],
+  "live_cli_reported_usd_sum": 16.2117035,
+  "cost_limit": "CLI list-price accounting for subscription executions, not a new charge or an independently verified bill. Native per-call usage/cost unavailable. Late fwd11 result remains a budgeted harness failure even when cost is observed.",
+  "contract_cli_reported_usd": {
+    "direct-duty-contract-opus": 0.946333,
+    "direct-duty-holdout-opus": 0.537994
+  },
+  "openrouter_actual_reported_cost_usd": 0.64226,
+  "openrouter_balance_observation": {
+    "before_usd": 8.17,
+    "after_usd": 7.53
+  },
+  "validation": {
+    "runtime_commit": "313a919",
+    "unit": "PASS 120 tests",
+    "o1": "PASS",
+    "o2": "PASS 11 outputs,13 unsafe fixtures",
+    "rescore": "PASS 19 corpora,88 failure-or-pending messages,delta0",
+    "changelog_gate": "PASS using PR #330 base event",
+    "source_reachability": "WARN: OK3/WARN2/FAIL0/NOT_INSTALLED2",
+    "runtime_head_ci": "https://github.com/sungjunlee/beopsuny-skill/actions/runs/34289272474",
+    "runtime_head_ci_conclusion": "success"
+  }
+}

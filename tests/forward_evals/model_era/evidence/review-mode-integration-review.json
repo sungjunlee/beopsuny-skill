@@ -1,0 +1,81 @@
+{
+  "scope": "Final integration consistency; not model output PASS or release readiness",
+  "metadata": {
+    "returncode": 0,
+    "seconds": 134.40357316599693,
+    "model": "claude-opus-5",
+    "effort": "high",
+    "prompt_sha256": "8e9f9090ea86c5a5675463ccab37cd88377495fcd2f34631313bc10f344d9bf1",
+    "review_scope": "Final integration consistency of review-mode cleanup and failed fixed experiments; not output PASS",
+    "is_error": false,
+    "subtype": "success",
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 72452,
+      "cache_read_input_tokens": 0,
+      "output_tokens": 8083,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 72452,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 8083,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 72452,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 72452
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "total_cost_usd": 0.9929040000000001,
+    "num_turns": 1,
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 66174,
+        "outputTokens": 25,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.066299,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5": {
+        "inputTokens": 2,
+        "outputTokens": 8083,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 72452,
+        "webSearchRequests": 0,
+        "costUSD": 0.9266050000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "output_sha256": "c9d4677e60571ac4aa08d943bc1fac071e456ccc29311374c46e9dabd5631390"
+  },
+  "output": "# 독립 최종 통합 리뷰 — review_mode 중복 규칙 삭제 + fresh Fable A/B 기록\n\n**리뷰어**: Opus 5 (다른 계열, 도구 없음, 제공 텍스트만)\n**판정**: **구현·기록 정합성 LGTM** — 차단 finding 없음. 아래 비차단 관찰 3건과 문구 정밀도 권고 1건은 병합 차단 사유가 아니다.\n**단, 이 LGTM은 정적 계약/기록 정합성에 한정한다. 모델 출력 품질은 두 실험 모두 FAIL이며 release gate는 미충족이다.**\n\n---\n\n## 1. 범위 확인 (요청된 6축)\n\n### 1.1 정책 고유 기능 유지\n\n삭제된 필드와 잔존 소유자를 diff 본문만으로 대조했다.\n\n| 삭제 항목 | 도출/소유 근거 | 판정 |\n| --- | --- | --- |\n| `include_low` | `threshold: low/medium/high`가 그대로 남음 (strict=low는 저위험 포함과 동치) | 도출 가능, 손실 없음 |\n| `phase_0.require_all` | `scope: 전수 확인 / 트리거된 항목만` 잔존. strict description에도 \"전수 확인한다\" 유지 | 도출 가능 |\n| `include_missing_clauses` | 3모드 전부 `true`로 불변 상수였음. moderate/loose description의 \"누락 조항\"과 가이드 Counter-drafting이 소유 | 상수 제거, 손실 없음 |\n| `source_grading.*` (3모드) | 가이드 Review Mode 절 \"어느 모드도 공식 원문·강행규정 확인 의무를 낮추지 않는다\" + `source-grading.md`/`citation-verification-contract.md` | 중복. 제거가 오히려 \"모드가 증거 강도를 조절한다\"는 잘못된 신호를 없앰 |\n| `tag_policy` | 가이드 서두가 라벨/verification status를 SKILL·source-grading·citation-contract로 위임 | 중복 |\n| `request_scope.*` | 가이드 Proportionality(\"전면 redline 금지\"), Counter-drafting(\"편집 가능한 완성 초안\", \"법정 요건과 제안한 추가 절차 구별\", \"법적 유효성 보증 아님\", \"실제 외부 행동은 별도 확인\"), Review Mode(\"mode 때문에 수정안 생략 금지\") | 4항목 모두 잔존 소유자 확인 |\n\n**보존 확인**: `default_mode: moderate`, 3모드 ID, `detection` 블록 전체(하위호환 규칙 포함), 모드별 `threshold`, strict 전용 `include_boilerplate_inconsistency: true`, `phase_0.scope`, `output.verbosity`, 헤더 주석(\"금지 문자열을 채점하지 않는다\") — 전부 diff에서 미변경. **모드 고유 값 손실 없음.**\n\n### 1.2 소비자\n\n- `review-mode-code-reviews.json` 2차 리뷰가 `prepare_packets.py`의 실제 리스트 리터럴 동반 로드와 `build_skill_context()`의 SKILL.md 무조건 선행 삽입을 근거로 1차 리뷰의 \"단독 주입 경로\" 조건을 해소했다. 조건부 → 무조건 LGTM 전환 근거가 코드 경로에 바인딩되어 있고, 1차 권고(포인터 주석)를 명시적으로 **철회**한 기록도 남았다. 절차상 정합.\n- 제공된 validator 발췌를 직접 대조했다: `check_contract_review_guide()`는 `\"review_mode.yaml\"` **문자열 존재**만 확인하고 삭제된 키를 열거하지 않는다. `check_asset_freshness_metadata_tracked()`의 allowlist와 inventory 검사도 **경로**만 참조한다. 즉 삭제된 상세 키에 대한 assertion이 실제로 없음이 제공 텍스트 범위에서 확인된다. 1차 리뷰의 비차단 관찰1(\"allowlist가 있을지 모른다\")은 이 발췌로 해소된다.\n- 가이드 Review Mode 절이 여전히 `strict/moderate/loose`와 기본값 moderate를 명시하며, 이는 삭제 후 YAML과 일치한다. **문서-정책 불일치 없음.**\n\n### 1.3 질문·원문·rubric 고정\n\n- `prompt_sha256: f19e9388...`가 review_mode Opus 실행, Fable A, Fable B **3건 모두 동일**. 고정 질문 유지 확인.\n- `source_manifest_sha256: faa0da55...`가 3건 동일. `rubric_sha256: ab15d4bb...`는 사전등록과 설계감사 수정본에서 동일.\n- `runner_sha256`는 Fable(`cf7e4e08...`)과 review_mode(`38a622dc...`)가 다르다 — 별개 실험이므로 정상이며, review_mode json이 \"same complete-reference builder ... only review_mode.yaml changed per candidate.patch\"로 범위를 명시했다.\n- `context_sha256`는 arm별로 다르다(A `78d7a61e`, B `12569d36`, review_mode `3807999a`). runtime 파일이 다르므로 **달라야 정상**이며, review_mode.yaml 해시가 B(`0787c0aa`)와 review_mode 실행본(`710c73d5`)에서 다른 것이 candidate.patch 적용을 정확히 반영한다. 정합.\n\n### 1.4 명시적 한계\n\n기록된 한계 문구를 대조했고 과장 없음:\n\n- `legal_gold: false` / `legal_expert_gold: false` — 3개 판정 파일 전부.\n- 독립 Sol 리뷰가 `review_metadata`에서 \"변호사 또는 법률 전문가의 gold 판정이 아니다\"를 자기선언.\n- Fable `comparison.limits`: \"N=1 per arm ... No causal magnitude or general safety claim.\"\n- review_mode `comparison_limit`: \"One observation, not causal proof.\"\n- code-reviews 2건 모두 본문에서 \"런타임 동작은 미측정\", \"테스트 PASS는 모델 거동의 개선·무회귀 증거가 아니다\"를 명시.\n- followup-plan: \"Opus 코드 재검토 LGTM은 구조 검토이며 출력 품질 PASS가 아니다\", \"버전 1.2.1의 날짜는 정책 수정일이며 법률 최신성 기한 연장이 아니다\".\n\n마지막 항목은 특히 중요하다. `last_updated: '2026-09-09'` 갱신이 법령 currency 주장으로 오독될 여지를 선제 차단했다. **적절.**\n\n### 1.5 비용·판정 분리\n\n- Fable `cost_usd_cli_list` 옆에 \"Costs are CLI list-price estimates including auxiliary Haiku, not subscription billing. num_turns is CLI turns, not provider request count.\"\n- A(1.797) > B(1.682)이고 latency는 A(140s) < B(188s)인데, 어느 방향으로도 채택 근거로 쓰지 않았다. B가 더 싸고 느리지만 그 자체가 판정에 반영되지 않았고 `assessment: NO_GO`가 **의미 축**(제26조8항 직접 통지 제한)에 근거한다.\n- review_mode Opus 0.927 USD / 237.8초도 판정과 분리 기록.\n- quota 스냅샷(primary 55%, \"Projected empty in 1h 16m\")이 있으나 이를 판정이나 확대 근거로 쓰지 않았고, 사전등록이 \"Quota/execution uncertainty never treated as PASS or quality failure\"를 명시. **비용→판정 오염 없음.**\n\n### 1.6 아직 미충족 AC\n\nCHANGELOG·스프린트·followup-plan·_context 4곳 전부에서 일관되게 유지:\n\n- `#323 AC5` 미완료\n- 최종 runtime 릴리즈 스모크(guardrails/o4) 미완료\n- draft PR·0.8.0 유지\n- \"사용자의 조건부 merge·release 승인은 유효하지만 현재 근거는 그 조건을 충족하지 않는다\"\n\nVerification 절이 \"Final-head CI and PR changelog gate pending commit; no new smoke, merge or release\"로 재확인. **release gate 미충족이 4개 문서에서 모순 없이 기술됨.**\n\n---\n\n## 2. 실제 실패 결과의 정직한 기록 (요청 핵심)\n\n### 2.1 review_mode 정리 후 고정 Opus 1회 — FAIL\n\nroot가 지목한 3건을 실제 출력에서 확인했다:\n\n- **L22 / L110**: 쟁점표 8행 \"감독·점검 수단 부재\"는 제공되지 않은 계약 내용의 부존재 단정이다. §2 본문 \"계약에 근거가 없으면 가람이 자신의 법정 의무를 이행할 수 없습니다\"는 제26조④의 \"교육하고, 처리 현황 점검 등 ... 감독하여야 한다\"로부터 **계약상 감사권이 유일한 수단**임을 도출한 것으로, 제공 발췌가 뒷받침하지 않는다. 실재하는 오류.\n- **L20 / L126**: 쟁점표 6행이 \"지체 없이 신고해야 함\"을 무조건 의무처럼 표제화했다. 제34조③ 원문은 \"개인정보의 유형, 유출등의 경로 및 규모 등을 고려하여 대통령령으로 정하는 바에 따라\" 조건을 유지하고 있고, 후보 자신도 L126에서 \"시행령상 신고 기한·기준은 열람하지 못했으므로 [INSUFFICIENT]\"라고 적었다. **요약과 본문의 강도 불일치**가 실제로 존재한다.\n- **L18 / L137**: 쟁점표 4행 \"별첨이 이를 담지 못하면 제3호 경로 자체가 성립하지 않음\"과 L137 \"계약서에 확정 일수를 기재하는 것이 필수\"는, 제28조의8②이 요구하는 **정보의 공개·고지**를 특정 별첨/특정 계약 형식과 동일시한다. 원문은 형식을 특정하지 않는다.\n\nroot가 **overall FAIL을 3번째 항목에 의존시키지 않는다**고 명시한 점(“Overall FAIL does not depend on reading every annex sentence as actual absence”)은 방어적으로 적절하다.\n\n**긍정 관측의 분리 처리도 정확하다.** L54-59(제○조(정의 및 지위) ③항 \"법령상 직접 부과되는 의무의 이행을 위탁자의 승인·요청을 조건으로 하도록 해석되지 아니한다\")와 L122-126(유출 통지 ④항 단서 \"수탁자에게 법령상 직접 부과되는 통지·신고 의무의 이행은 제한하지 아니한다\")는 실제로 제26조⑧ 준용 구조를 보존한다. 이를 **별도 긍정 관측**으로 기록하고 overall을 뒤집지 않은 것이 정직하다.\n\n**독립 Sol과의 판정 차이 처리**: root가 Sol의 누락 finding 전부를 채택하지 않고, 개인정보 항목이 L66(제○조 ③항 \"고객의 성명 및 이메일 주소\")에 이미 특정되어 있음을 근거로 일부를 qualified로 낮췄다. 이는 실제 출력과 대조하면 맞다 — Sol이 L85-92 국외이전 조항의 별첨 A 필수정보에 \"이전되는 개인정보 항목\"이 없다고 지적했으나, 항목 자체는 다른 조항에 명시되어 있다. **Sol 원문을 그대로 보존하면서 root가 근거를 대고 축소 채택한 구조**가 요청하신 \"독립 평가자를 전문가 정답으로 보지 않는다\"에 부합한다. Sol이 `recommended_rule_changes: []`로 신규 규칙을 권고하지 않고 `candidate_level_fixes_only`로 분리한 점도 규칙 팽창 방지 측면에서 적절하다.\n\n### 2.2 fresh Fable A/B 1쌍 — 양쪽 FAIL, NO_GO\n\n- **A(e05ecda)**: 실제 출력 3행에서 \"이 스킬은 확정 문안을 제시하지 않으므로 힌트 형태로 낸다\"고 선언하고 전 조항을 \"대안 방향(힌트)\"로 냈다. 질문이 \"완성 초안\"을 요구했으므로 요청 미충족이다. 또한 §2-A 표제 \"국외이전 근거 부재\"는 제공되지 않은 계약 내용의 부존재 단정. 기록과 일치.\n- **B(d977831)**: 실제 L93(제7조 ③항) \"위탁자의 사전 서면 동의 없이 정보주체·감독기관·언론에 사고를 공표하지 않는다. 다만 수탁자가 자신에게 적용되는 **외국 법령상** 신고 의무를 부담하는 경우 사전에 위탁자에게 알린다\"를 확인했다. 제26조⑧이 제34조를 수탁자에게 **직접** 준용하므로, 예외를 외국 법령으로만 한정하면 Orion 자신의 **국내법상** 직접 통지·신고 의무가 계약상 동의에 종속된다. 이는 가이드 Counter-drafting의 \"제안 조항도 당사자에게 직접 적용되는 법정 의무를 다른 당사자의 승인에 종속시키거나 제한해서는 안 된다\"를 정면으로 위반한다. **결정적 finding이 실제 출력에 존재함을 독립 확인했다.**\n  - 대조로, 위 2.1의 Opus 출력 L122-126은 같은 자리에서 \"법령상 직접 부과되는 통지·신고 의무의 이행은 제한하지 아니한다\"로 **한정 없이** 보존했다. B가 이 축에서 열등하다는 판정은 텍스트로 뒷받침된다.\n- **A vs B 개선의 정직한 처리**: B가 완성 초안·사실구별에서 개선됐음을 `draft_utility` PASS로 기록하되, `expansion: none`을 유지했다. 사전등록의 확대 조건(\"zero confirmed B veto\")이 L93 veto로 무너졌으므로 **사후 완화 없이 사전 기준대로 정지**했다. 정합.\n- **판정자 계보 표기**: `reviewers` 블록이 A=fresh Sol, B_auxiliary=packet-preparation을 재사용한 Luna(**verdict 미제공**), B_final=fresh Sol로 3자를 명확히 분리했다. followup-plan도 \"초기 Luna의 REVIEW_REQUIRED와 보완 답변도 별도 보존하고 **이를 Sol 리뷰로 표시하지 않는다**\"고 못박았다. 재사용 판정자와 fresh 독립 판정자를 섞지 않은 처리가 정확하다.\n- **두 실험 혼동 방지**: `experiment` 필드가 \"not Opus regression repair\", `non_go_claims`가 \"Do not mark Opus regression fixed\", followup-plan이 \"Fable 관측으로 Opus 회귀가 해결됐다고 주장하지 않는다\"를 각각 명시. review_mode json의 `adoption`도 \"Fable pair on frozen d977831 is separate and cannot replace this requirement\". **3중으로 분리 고정됨.**\n\n### 2.3 사전등록 무결성\n\n`pre_result_design_audit_amendment`가 잠재적 우려 지점이다. 설계 감사가 baseline A 실행 **후**에 도착했다. 다만:\n\n- `timing`이 \"After baseline A launched, **before any target result received**; no target input change\"로 자기고지되어 있다.\n- 수정 내용이 `issue_omissions` 축 **추가**로, 후보에게 **불리한** 방향이다. 사후 완화가 아니다.\n- `correction`이 \"This restates existing criteria, not post-outcome relaxation\"이라고 근거를 대고, 실제로 원본 `rubric_sha256`가 동일하게 유지된다(rubric 자체는 불변).\n- 원본 `preregistered` 블록이 삭제 없이 병존한다.\n\n**타이밍 자체는 이상적이지 않으나, 방향·불변성·병존 보존으로 무결성이 유지된다고 판단한다.** 다만 아래 관찰2 참조.\n\n---\n\n## 3. 비차단 관찰 (병합 차단 아님)\n\n**관찰 1 — 버전 bump 규칙.**\n`1.2.0 → 1.2.1`은 필드 삭제(스키마 형태 변경)에 patch bump를 적용한 것이다. 1차 코드 리뷰도 같은 지점을 비차단으로 남겼고 나도 독립적으로 같은 결론이다. 파싱 소비자가 없다는 audit 전제 하에서는 수용 가능하며, 이 프로젝트의 버전 규칙 원문이 제공되지 않아 위반 여부를 판정할 수 없다. **차단하지 않음. 표현 선호로 강제하지 않음.**\n\n**관찰 2 — 설계 감사 telemetry 부재.**\n`design_audit_received.reviewer`가 \"native gpt-5.6-sol high requested; **actual provider telemetry unavailable**\"이다. `reviewers` 블록의 A/B_final도 동일하게 \"requested; actual provider telemetry unavailable\" 표기다. 즉 독립 리뷰어가 실제로 요청한 모델로 실행됐다는 **provider 측 확증이 없다**. 이 한계가 정직하게 표기되어 있으므로 기록 정합성 위반은 아니지만, \"독립 리뷰 FAIL\"의 증거 강도가 target 실행(returncode/usage/cost가 실제로 붙어 있음)보다 약하다는 점은 남는다. 어차피 root가 exact span을 직접 인용해 독립적으로 FAIL을 기록했으므로 결론에는 영향 없다.\n\n**관찰 3 — `execution_status: not_measured`의 이중 의미.**\n`packet_preparation_metadata.records[0]`이 `execution_status: not_measured`, `assessment: null`인데, 같은 파일 최상위는 `returncode: 0`, `seconds: 237.76`, `assessment: FAIL`이다. Verification 절이 \"Packet metadata's not_measured is explicitly a pre-execution immutable snapshot inside actual completed result metadata\"로 해소해 두었다. **모순 아님.** 다만 이 파일만 자동 파싱하는 후속 도구가 생기면 오독 여지가 있다. 현재 소비자가 없으므로 차단하지 않는다.\n\n---\n\n## 4. 문구 정밀도 권고 1건 (선택, 비차단)\n\nCHANGELOG \"Changed\" 신규 항목:\n\n> \"…근거 의무는 기존 공통 계약에서 확인한다\"\n\n가이드 Review Mode 절의 실제 문구는 \"어느 모드도 공식 원문·강행규정 확인 의무를 낮추지 않는다\"이다. \"기존 공통 계약\"이 SKILL/source-grading/citation-contract/가이드 중 어디인지 CHANGELOG만 읽는 사람은 특정하기 어렵다. 다른 항목들처럼 소유자를 한 곳이라도 지시하면 추적성이 조금 나아진다. **표현 선호 수준이므로 채택 여부는 작성자 판단.** 이것 때문에 차단하지 않는다.\n\n---\n\n## 5. 요청하신 금지사항 준수 확인\n\n- 기존 프로젝트 재설계 제안 **없음**.\n- 신규 금지 문자열 제안 **없음** (독립 Sol도 `recommended_rule_changes: []`).\n- 추가 절차·고정 출력형식 제안 **없음**.\n- 사소한 표현 선호로 차단하지 않았음 (§4는 명시적 선택 항목).\n- 파일 수정 **하지 않음**.\n- 독립 Sol을 전문가 정답으로 취급하지 않았음 — §2.1에서 root의 축소 채택이 텍스트상 타당함을 별도 검증했다.\n\n---\n\n## 6. 최종 판정\n\n**구현·기록 정합성: LGTM.**\n\n- `review_mode.yaml` 삭제분은 전부 잔존 소유자 또는 기존 필드에서 도출 가능하고, 모드 고유 값(default/ID/detection/threshold/strict 전용 boilerplate/phase scope/verbosity)은 손실 없이 보존됐다.\n- 삭제된 키를 파싱·assert하는 소비자가 제공된 validator 발췌 범위에서 확인되지 않는다.\n- 질문·원문 해시가 3개 실행에서 동일하고 rubric이 불변이다.\n- 두 실험의 실패가 실제 출력 라인(L22/L110, L20/L126, L18/L137, fable B L93)과 대조해 실재함을 독립 확인했다.\n- 비용·latency·quota가 판정에 반영되지 않았다.\n- 확대 없음·회귀 미해결·AC5 미완료·draft/0.8.0 유지가 4개 문서에서 모순 없이 기술됐다.\n\n**동시에 명확히 한다:**\n\n- **출력 품질은 두 관측 모두 FAIL이다.** review_mode 정리 후 고정 Opus 1회 FAIL, fresh Fable A/B 양 arm FAIL·NO_GO.\n- **release gate는 미충족이다.** #323 AC5, 최종 runtime guardrails/o4 스모크, final-head CI, PR changelog gate 모두 pending. draft PR과 0.8.0 유지가 맞다.\n- **이 LGTM은 정적 계약/기록 정합성에 대한 것이며 모델 PASS가 아니다.** 구조 정리를 회귀 해결로 채택하지 않는다는 작성자 판단이 정확하고, 이 리뷰도 그것을 뒤집지 않는다.\n- 본 리뷰는 제공된 텍스트 범위에 한정된다. `prepare_packets.py` 전문, `validate_skill_contracts.py` 전문, SKILL.md, 다른 references 원문은 본문에 포함되지 않았으므로 그 부분의 결론은 작성자 audit 진술과 인용된 발췌에 의존한 조건부 판단이며, 내가 직접 확인한 사실이 아니다.",
+  "root_disposition": "LGTM adopted for structural cleanup and evidence/report consistency. Nonblocking observations retained; no runtime changes after target. Native reviewer identity is requested profile, provider telemetry unavailable. Output FAIL and release gates remain distinct."
+}

@@ -1,0 +1,33 @@
+## 최종 통합 리뷰 — 자가검증 구조 정리 (#323)
+
+**판정: 조건부 (finding 4건). 릴리즈 금지 유지에는 이견 없음.**
+
+### 먼저 확인한 것 (문제 없음)
+
+- **FAIL 해결 주장 없음.** CHANGELOG 신규 항목은 "중복 질문·실패 처리·역참조 제거"라는 구조 서술에 한정되고, 모델 품질 개선을 주장하지 않는다. `selfverify-contract-opus.json`의 `assessment: FAIL`, `regression_solution_adopted: false`, PLAN의 "회귀 해결로 채택하지 않고 반복·holdout 확대를 멈춘다", `runtime_smoke: "Not executed"`, `changelog_gate: pending`이 서로 일치한다. root FAIL(L19 미언급 조항 부존재 단정, L53 별첨 미제공→적법근거 미성립 승격)과 독립 리뷰 FAIL(동일 축 + 출처 라벨 REVIEW_REQUIRED)도 보존되어 있고, "단일 fixed 관측, 인과 아님"이라는 한계 표기가 유지된다. AC5 미해결 보존은 적절하다.
+- **역참조 순환 제거는 실제로 성립한다.** `contract_review_guide` → `self-verification`(Counter-drafting Quality) 역참조가 제거되고 `self-verification` → `contract_review_guide#counter-drafting` 단방향만 남았다. README/SKILL/validator의 참조 삭제도 서로 정합한다.
+- 안전 경계의 고유 "데이터 무결성 표시" 의무는 SKILL.md 본문 + `check_..._trust_boundary`의 `데이터 무결성` 토큰으로 실제 보존되었다(사전등록의 pre_execution_revision과 일치).
+
+### Finding 1 (중) — 정본 확인 없이 가드만 삭제됨
+
+`check_self_verification_guardrails`는 이제 포인터 문자열 4개 존재만 확인한다. 반면 삭제된 문서가 유일하게 강제하던 다음 의무들은 **어느 검사에서도 확인되지 않는다**: 사용자 전제 검증, `conclusion binding`, `[CONTRADICTED]`, 외부 공유용 초안에 내부 검토자 메모·자가 검증 블록 미부착, 법무 검토 전 단계와 실제 외부 행동 분리, 긴 입력의 읽은 범위 표시. #306에서 의도적으로 추가한 anchored regex 가드 3개가 대체 없이 사라졌고, `QUALITY_CONTRACT_REFERENCES`의 `role--destination-gate` 앵커도 대체 앵커 없이 제거되어 "Output role/destination gate" 계약이 앵커 없는 파일 참조만 남는다.
+
+최소 수정: `contract_review_guide`에 적용한 방식(section_body + 토큰)을 정본에도 대칭 적용.
+- `QUALITY_CONTRACT_REFERENCES`에 `("...output-formats.md", "role-based-output-modes")`, `("...output-formats.md", "destination-output-contracts")` 추가.
+- `check_self_verification_guardrails`에 정본 토큰 확인 추가: `research-workflow.md#legal-verification-core` 본문에 `사용자 전제`/`[CONTRADICTED]`/`conclusion binding`, `output-formats.md`의 role/destination 절에 `외부 공유용`·`읽은 범위`.
+
+### Finding 2 (중) — CHANGELOG가 구현을 초과
+
+"관련 검사는 중복 문장이 아닌 **해당 규칙의 정본을 확인한다**"는 현재 diff에서 계약 가이드 Counter-drafting 한 곳에만 참이다. 자가검증·출력 역할/목적지 축은 정본을 확인하지 않는다. Finding 1을 반영하거나, 문장을 "중복 문장 검사를 제거하고 계약 검토 의무는 정본에서 확인한다"로 축소.
+
+### Finding 3 (소) — 계약 가이드의 선행사 소실
+
+`contract_review_guide.md` Counter-drafting 절에서 "초안·수정 제안에는 … Counter-drafting Quality를 적용한다" 문장이 삭제되면서 다음 문장 "**실패 시** 근거·전제·해당 문구를 보정하거나…"의 선행사가 없다. 최소 수정: "근거·전제 확인에 실패한 부분은 근거·전제·해당 문구를 보정하거나 미확인 부분만 유보한다."
+
+### Finding 4 (소) — 검사 docstring 과장
+
+`"""The final-answer check reaches existing obligation homes without copies."""`는 실제로는 포인터 문자열 존재만 검증한다. Finding 1을 적용하지 않을 경우 docstring을 "포인터 4개가 정본을 가리키는지만 확인한다(정본 내용은 각 정본 검사 소관)"로 낮출 것.
+
+### 결론
+
+구조 정리 자체(중복 삭제, 단방향 참조, 고유 의무 1건 보존)는 독립 채택 가능하다. 다만 Finding 1은 "고유 의무 자체의 손실"이 아니라 **손실 탐지 능력의 손실**이며, 이후 정본이 약화돼도 그린이 되는 상태를 만든다 — #262 주석이 경계하던 실패 양상과 동일하다. 로컬 검사(unit 120 / O1 / O2 / rescore delta 0)는 PASS이나 이는 정적 확인일 뿐 모델 행동 검증이 아니며, 스모크·CI 미완이므로 릴리즈 보류 유지가 맞다.

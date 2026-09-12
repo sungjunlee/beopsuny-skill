@@ -1,0 +1,59 @@
+{
+  "runtime_commit": "a67687d",
+  "model": "gpt-5.6-sol",
+  "effort": "high",
+  "execution_status": "completed",
+  "isolation": "fresh native leaf; only specified context and prompt reads instructed/reported; tools not physically disabled",
+  "output_file": "revised-sol-isolation-holdout.txt",
+  "output_sha256": "51e01025f897d2919695b379a934bc9c69902c6db0940ca12f4ab847e6cc2f85",
+  "preparation": {
+    "baseline_commit": "e05ecdacefe64e003160c913f995a6bf31b5e57a",
+    "arm": "B",
+    "runtime_root": "/Users/sjlee/workspace/active/legal-stack/beopsuny-skill",
+    "harness_sha256": "27d0241abbee9bce390df8068d03789bf4c50cc83a601a833be505434067773b",
+    "runtime_inputs": {
+      "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+      "skills/beopsuny/references/source-access.md": "648b3e995058c3f82a868faff21a5061538876d9cc95fcde671bb054dbffe69b",
+      "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac"
+    },
+    "source_manifest_sha256": "faa0da5538b1353a95f672721cbd263b7675f94b0c60c0eb593a072a0d768dd0",
+    "configuration_sha256": "afdd7e884c66b1cb399c403115c11f941ba0fa544cc24d2fd9a1b7fd7aea8f46",
+    "evaluation_date": "2026-09-08",
+    "records": [
+      {
+        "task_id": "m8-case-isolation-fixed",
+        "arm": "B",
+        "split": "holdout",
+        "source_mode": "fixed",
+        "source_ids": [
+          "privacy-2025"
+        ],
+        "task_runtime_inputs": {
+          "skills/beopsuny/SKILL.md": "029220277055686de620e8965414ddf3f31a6c8ee793314b006e7d2db417c422",
+          "skills/beopsuny/references/source-access.md": "648b3e995058c3f82a868faff21a5061538876d9cc95fcde671bb054dbffe69b",
+          "skills/beopsuny/references/citation-verification-contract.md": "c7cabe70345213c44096121ee50659bbe060d6605bee853204f3bf05ac4a20ac"
+        },
+        "execution_status": "not_measured",
+        "legal_adjudication": "unadjudicated",
+        "assessment": null,
+        "model_id": null,
+        "effort": null,
+        "elapsed_seconds": null,
+        "tokens": null,
+        "cost": null,
+        "unavailable_reason": "not executed",
+        "tools": "none required; executor must enforce no tools",
+        "access_log": [],
+        "scorer_false_positives": null,
+        "context_sha256": "a2ae6abee1a14285ceb5d6be93cc9509fc85b1dae1f6f21c834ec266ab4343ad",
+        "prompt_sha256": "ffefb42f9983895cbb9b612d3e1d4de607502464f87639cfc2ebb793bdd9e23e"
+      }
+    ]
+  },
+  "preparation_note": "Reconstructed with unchanged runtime and existing prepare_packets.py after original combined metadata omitted annex and associated its prompt hash with contract. All actual per-task context/prompt bytes match the fresh preparation. Preparation records describe pre-execution state, not execution results.",
+  "tokens": null,
+  "cost": null,
+  "elapsed_seconds": null,
+  "assessment_reference": "contract-holdout-review.json",
+  "limitation": "Finite model judgment, no expert legal gold; native per-call time and usage unavailable."
+}

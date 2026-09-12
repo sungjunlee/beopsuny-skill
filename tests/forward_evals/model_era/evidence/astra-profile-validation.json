@@ -1,0 +1,87 @@
+{
+  "recorded_at": "2026-09-09T06:40:41.101441+00:00",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "seconds": 7.1871280840132385,
+      "output": "..........................................................................................................................\n----------------------------------------------------------------------\nRan 122 tests in 6.957s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python",
+        "tests/validate_skill_contracts.py"
+      ],
+      "returncode": 0,
+      "seconds": 3.1371068340085912,
+      "output": "PASS\n"
+    },
+    {
+      "command": [
+        "python",
+        "tests/evaluate_scenario_outputs.py"
+      ],
+      "returncode": 0,
+      "seconds": 0.28885787501349114,
+      "output": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n"
+    },
+    {
+      "command": [
+        "python",
+        "tests/check_rescore_baseline.py"
+      ],
+      "returncode": 0,
+      "seconds": 1.796375249978155,
+      "output": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 94건)"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.047359832999063656,
+      "output": ""
+    }
+  ],
+  "changelog_gate": {
+    "base_sha": "d1373c09bcd16f05dc68515f58eeaaf5394b1d2a",
+    "returncode": 0,
+    "output": "PASS: CHANGELOG.md가 함께 바뀌었다\n"
+  },
+  "source_reachability": {
+    "returncode": 0,
+    "scope": "Existing evaluation-only mirror checkout used by final runtime smoke; no personal installation changed",
+    "output": "[OK]              로컬 미러/legalize-kr            upstream 일치 (HEAD 99d67dea732, last_commit=2026-09-08T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=4 warn=1 fail=0 not_installed=2)\n"
+  },
+  "artifact_integrity": {
+    "all_output_hashes_match": true,
+    "all_native_per_call_costs_unavailable": true,
+    "all_independent_review_executions_completed": true,
+    "tracked_runtime_files": 41,
+    "no_runtime_changes": true,
+    "initial_B_and_repeat_inputs_identical": true,
+    "A_B_questions_identical": true,
+    "captured_input_hashes_match": true
+  },
+  "reviewer_reported_cost_usd": 0.0987037,
+  "cost_limit": "Reviewer display cost only, not target native cost, invoice or subscription usage delta.",
+  "legal_gold": false,
+  "runtime_changed": false,
+  "release_gate": "NOT_MET; native fixed profile evidence does not replace mandatory live smoke failures.",
+  "cross_family_integration_review": "astra-profile-integration-review.json",
+  "post_document_O1": {
+    "returncode": 0,
+    "output": "PASS"
+  }
+}

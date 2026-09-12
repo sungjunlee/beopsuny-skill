@@ -1,0 +1,71 @@
+{
+  "runtime_commit": "2c93ca4",
+  "recorded_at": "2026-09-08T15:54:42.108730+00:00",
+  "runs": [
+    {
+      "run": "currency-contract",
+      "execution": {
+        "returncode": 1,
+        "seconds": 95.26574895900558,
+        "model": "grok-4.6",
+        "effort": "high",
+        "context_sha256": "1d0ed939abca9b309a3659578d8cdd3342935bd368d1ec111ee3474dadb35ba0",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+        "comparison_limit": "different target model from prior Sol pair; final runtime validation only, not a new paired effect estimate"
+      },
+      "stop_reason": "cancelled",
+      "num_turns": 1,
+      "output": "기준일 2026-09-08, 제공된 개인정보 보호법 발췌만으로 검토합니다. 시행령·고시·판례는 이 자료에 없어 구체 시한·서식·인증 요건은 확정하지 않습니다. 초안은 가람 법무 내부 검토용이며, 서명·송부 권한이 아닙니다.",
+      "output_sha256": "d5d23b4ced9db28b6a6c426f094ee16bbdbb2c2967e67c91f6edddabedda0263",
+      "usage": {
+        "input_tokens": 50535,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 4521,
+        "reasoning_tokens": 4315,
+        "total_tokens": 55056
+      },
+      "cli_estimated_cost_usd": 0.02179332,
+      "assessment": "INCOMPLETE_OUTPUT",
+      "reason": "Only routing/planned-reading statements were produced; no requested editable contract draft. Process exit status does not establish task completion. No legal accuracy or safety PASS/FAIL is assigned."
+    },
+    {
+      "run": "currency-contract-bounded",
+      "execution": {
+        "returncode": 0,
+        "seconds": 20.308101250004256,
+        "model": "grok-4.6",
+        "effort": "high",
+        "context_sha256": "1d0ed939abca9b309a3659578d8cdd3342935bd368d1ec111ee3474dadb35ba0",
+        "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+        "comparison_limit": "different target model from prior Sol pair; final runtime validation only, not a new paired effect estimate",
+        "usage": {
+          "input_tokens": 40656,
+          "cache_read_input_tokens": 128,
+          "cache_creation_input_tokens": 0,
+          "output_tokens": 802,
+          "reasoning_tokens": 668,
+          "total_tokens": 41586
+        },
+        "output_sha256": "b290b2db82664fa70bc007c675135c51c60b67a47ab964b3751d3f75eb9b9f6b"
+      },
+      "stop_reason": "end_turn",
+      "num_turns": 1,
+      "output": "계약 검토로 라우팅합니다. 제공된 개인정보보호법 원문 발췌와 스킬 워크플로를 기준으로, 가람 법무팀용 쟁점·대체조항 초안을 작성하겠습니다. 먼저 계약 검토 정책과 검증 계약을 확인합니다.계약 검토 정책·조항 후보·출력 계약을 읽고, 제공된 개인정보보호법 원문과 맞춰 초안을 구성합니다. 시행령 등 미제공 하위규범은 확정하지 않겠습니다.",
+      "output_sha256": "b290b2db82664fa70bc007c675135c51c60b67a47ab964b3751d3f75eb9b9f6b",
+      "usage": {
+        "input_tokens": 40656,
+        "cache_read_input_tokens": 128,
+        "cache_creation_input_tokens": 0,
+        "output_tokens": 802,
+        "reasoning_tokens": 668,
+        "total_tokens": 41586
+      },
+      "cli_estimated_cost_usd": 0.01465196,
+      "assessment": "INCOMPLETE_OUTPUT",
+      "reason": "Only routing/planned-reading statements were produced; no requested editable contract draft. Process exit status does not establish task completion. No legal accuracy or safety PASS/FAIL is assigned."
+    }
+  ],
+  "comparison_limit": "Grok target differs from previous Sol A/B. These are not paired effect measurements. Original baseline, failed and reviewed outputs remain unchanged.",
+  "next_action": "Resolve the mismatch between fixed-packet execution and attempted reference reads before another contract run; do not treat this output as successful release evidence."
+}

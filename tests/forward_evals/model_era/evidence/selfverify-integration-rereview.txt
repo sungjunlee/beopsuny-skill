@@ -1,0 +1,33 @@
+## 재리뷰 결론 — LGTM (릴리즈 보류·target FAIL 유지)
+
+### Finding 1 — 철회
+
+이전 리뷰가 변경되지 않은 검사 함수들을 보지 못한 채 "확인 주체 부재"를 단정한 것이 오류였다. 실제 소유권은 다음과 같이 이미 분산되어 있다.
+
+- `[CONTRADICTED]` · `사용자 전제` → `check_research_workflow_verification_core` (`## Legal Verification Core` section_body).
+- `conclusion binding` → `check_conclusion_binding_uses_canonical_source_rules`(`### Conclusion binding` 본문 + source_grades 정책 값 + SKILL.md 앵커 정렬 토큰).
+- 외부 공유용 초안의 내부 메모·자가 검증 블록 미부착 → `check_output_contract_schema`의 `external_draft.may_include_internal_blocks is False` 및 `must_strip ⊇ {검토자 메모, 자가 검증, internal scratchpad, 다른 건…사실}`. 문자열 존재가 아니라 구조 필드 값을 검증하므로 이전 anchored regex보다 오히려 강하다.
+- 법무 검토 전 단계/실제 외부 행동 분리 → 같은 스키마의 `legal_effect_triggers`, `non_overrides`(`lawyer/legal_ops review requirement`), `agency_or_court_submission.must_include: review before submission`, `composition_rule.forbidden_after_composition ⊇ {서명, 송부, 제출}`. 문서 축은 새 `## Counter-drafting` 토큰(`외부 행동`)이 보강한다.
+- 읽은 범위 → `check_output_reviewer_note_lite`의 `## 검토자 메모` 본문 `읽은 범위/제외 범위/결론 영향`.
+
+`role--destination-gate` 앵커 소실 우려도 해소됐다. `QUALITY_CONTRACT_REFERENCES`가 실존 섹션 앵커 `output-formats.md#role-based-output-modes`, `#destination-output-contracts` 두 개로 교체되어, 삭제된 포인터 앵커보다 정본 위치를 직접 가리킨다. 추가된 토큰들은 모두 **기존 정본에 이미 있던 문자열**이며 새 고정문장을 만들지 않았다 — 지침에 부합한다.
+
+### Finding 2 — 해소
+
+CHANGELOG가 "참조 연결을 확인하고 내용 검사는 각 정본의 기존 검사에서 수행한다"로 좁혀져 구현과 일치한다. 더 이상 정본 확인을 초과 주장하지 않는다.
+
+### Finding 3 — 철회
+
+전체 절을 확인한 결과, "실패 시"의 선행사는 삭제된 문장이 아니라 바로 앞 문단의 "원문 접근이나 사실 확인이 부족하면 … 미확인으로 분리"와 1문단의 공식 원문·강행규정·적용 시점 확인 의무다. 별도 명명 절차를 참조하는 구조가 아니므로 실질적 모호성이 없고, 문구 수정은 런타임 표현을 새로 시험하는 비용만 발생시킨다. 철회.
+
+### Finding 4 — 해소
+
+docstring이 포인터 전용임을 명시하고 내용 소유를 정본 검사로 귀속시켰다. 검사 범위와 서술이 일치한다.
+
+### 비차단 관찰 (수정 요구 아님)
+
+`check_self_verification_guardrails`에서 `assert_not_contains("지시가 아니다"/"덮어쓸 수 없다")`와 `check_self_verification_metadata_single_home`의 self-verification→output-formats 포인터 확인이 함께 사라졌다. 규칙 본문이 self-verification.md로 되돌아오는 재중복은 지금 탐지되지 않는다. 다만 대체 수단은 특정 어구를 고정하는 부정 검사여서 문구 다듬기에 취약하고, 현재 중복 원문 자체가 제거되어 즉시적 위험은 없다. 새 문자열 고정을 만들지 않는다는 방침상 이번 변경의 차단 사유로 보지 않는다. 재중복이 실제로 관측되면 그때 구조적 축(포인터 개수/섹션 부재)으로 다루는 편이 낫다.
+
+### 유지 사항
+
+`selfverify-contract-opus.json`의 `assessment: FAIL`, `regression_solution_adopted: false`, root/독립 리뷰 FAIL(L19·L53, REVIEW_REQUIRED 라벨), "단일 fixed 관측, 인과 아님" 한계 표기, AC5 미해결은 그대로 보존된다. 통과한 것은 정적 계약 검사이며 **모델 행동은 검증되지 않았다**. `runtime_smoke: Not executed`, `changelog_gate: pending`이므로 릴리즈 금지를 유지한다. 구조 정리(중복 삭제, 단방향 참조, 스키마 기반 소유권 이관)는 이 상태로 병합 가능하다.

@@ -1,0 +1,44 @@
+{
+  "result": "WARN",
+  "checks": [
+    {
+      "status": "WARN",
+      "axis": "로컬 미러/legalize-kr",
+      "detail": "upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)"
+    },
+    {
+      "status": "OK",
+      "axis": "로컬 미러/precedent-kr",
+      "detail": "upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)"
+    },
+    {
+      "status": "NOT_INSTALLED",
+      "axis": "로컬 미러/admrule-kr",
+      "detail": "degradation 경로 사용 (실패 아님)"
+    },
+    {
+      "status": "NOT_INSTALLED",
+      "axis": "로컬 미러/ordinance-kr",
+      "detail": "degradation 경로 사용 (실패 아님)"
+    },
+    {
+      "status": "WARN",
+      "axis": "법망 API",
+      "detail": "서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용"
+    },
+    {
+      "status": "OK",
+      "axis": "링크/law.go.kr 법령",
+      "detail": "HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)"
+    },
+    {
+      "status": "OK",
+      "axis": "링크/law.go.kr 판례",
+      "detail": "HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)"
+    }
+  ],
+  "summary": "RESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)",
+  "record_type": "post-approval resume source recheck; performed before knowledge pairs",
+  "raw_report_sha256": "1513b2556d34db516394a717d9ac871cd4f6fecc6bfa69374e8125729ba99d7e",
+  "actions": "No personal mirror mutation or pause-deadline extension. Frozen evaluated mirror remains unchanged."
+}

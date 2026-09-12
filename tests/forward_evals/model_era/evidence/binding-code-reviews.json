@@ -1,0 +1,274 @@
+{
+  "scope": "Structural policy and validator review only; does not validate model response quality.",
+  "reviews": [
+    {
+      "returncode": 0,
+      "seconds": 117.50795216599363,
+      "model": "claude-opus-5",
+      "effort": "high",
+      "prompt_sha256": "b4b09ec1f340ef18832f70408d83d684a4a6e05ce8544864913dda32451fcf65",
+      "review_scope": "GPT-written source/case conclusion binding structure cleanup and static check; not model output quality",
+      "is_error": false,
+      "subtype": "success",
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 15565,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 7780,
+        "output_tokens_details": {
+          "thinking_tokens": 5402
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 15565,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 7780,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 15565,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 15565
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "total_cost_usd": 0.364885,
+      "num_turns": 1,
+      "output_sha256": "bf819e45b39381c543c8de6e9d90398e1468311f69ba3bbc934db175540fff09",
+      "model_usage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 14655,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.014725,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "thinkingTokens": 0,
+          "canonicalModel": "claude-haiku-4-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        },
+        "claude-opus-5": {
+          "inputTokens": 2,
+          "outputTokens": 7780,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 15565,
+          "webSearchRequests": 0,
+          "costUSD": 0.35016,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 5402,
+          "canonicalModel": "claude-opus-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "output_file": "binding-code-review.txt"
+    },
+    {
+      "returncode": 0,
+      "seconds": 98.83006029200624,
+      "model": "claude-opus-5",
+      "effort": "high",
+      "prompt_sha256": "00d3681f226a3e473598940c97641178cb020e5ef383f6468eb997aea0648f8e",
+      "review_scope": "GPT-written source/case conclusion binding structure cleanup and static check; not model output quality",
+      "is_error": false,
+      "subtype": "success",
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 17507,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 6359,
+        "output_tokens_details": {
+          "thinking_tokens": 3814
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 17507,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 6359,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 17507,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 17507
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "total_cost_usd": 0.350729,
+      "num_turns": 1,
+      "output_sha256": "75ee029d9e305f9d7b9a8636d3cb7a22db0dc889778fadcf6bcc9e6dfec6435e",
+      "model_usage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 16529,
+          "outputTokens": 29,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.016673999999999998,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "thinkingTokens": 0,
+          "canonicalModel": "claude-haiku-4-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        },
+        "claude-opus-5": {
+          "inputTokens": 2,
+          "outputTokens": 6359,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 17507,
+          "webSearchRequests": 0,
+          "costUSD": 0.334055,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 3814,
+          "canonicalModel": "claude-opus-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "output_file": "binding-code-rereview.txt"
+    },
+    {
+      "returncode": 0,
+      "seconds": 51.83343958298792,
+      "model": "claude-opus-5",
+      "effort": "high",
+      "prompt_sha256": "0f809cf5ad12ea5d119f2c5a9123002e8ea67f89f41cb95fe272caac6507f896",
+      "review_scope": "GPT-written source/case conclusion binding structure cleanup and static check; not model output quality",
+      "is_error": false,
+      "subtype": "success",
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 51926,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 3225,
+        "output_tokens_details": {
+          "thinking_tokens": 1368
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 51926,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "not_available",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3225,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 51926,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 51926
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard"
+      },
+      "total_cost_usd": 0.6488530000000001,
+      "num_turns": 1,
+      "output_sha256": "02708ea69b3623a21fad81817d0889e5e4b1502792f1dcd79f1804dcd85d3e44",
+      "model_usage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 48893,
+          "outputTokens": 13,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.048958,
+          "contextWindow": 200000,
+          "maxOutputTokens": 32000,
+          "thinkingTokens": 0,
+          "canonicalModel": "claude-haiku-4-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        },
+        "claude-opus-5": {
+          "inputTokens": 2,
+          "outputTokens": 3225,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 51926,
+          "webSearchRequests": 0,
+          "costUSD": 0.5998950000000001,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 64000,
+          "thinkingTokens": 1368,
+          "canonicalModel": "claude-opus-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "output_file": "binding-code-final-review.txt"
+    }
+  ],
+  "final_verdict": "LGTM",
+  "root_verification": "official_primary_lower_court.label equals 공식 원문: 하급심 in source_grades.yaml; CHANGELOG nit changed to 법률 근거.",
+  "mutation_check": {
+    "baseline": "PASS",
+    "mutations": [
+      {
+        "mutation": "official_practice_material.can_be_sole_basis",
+        "detected": true,
+        "message": "source_grades.yaml: official_practice_material requires use_allowed='support_or_context' and can_be_sole_basis=false"
+      },
+      {
+        "mutation": "official_practice_material.use_allowed",
+        "detected": true,
+        "message": "source_grades.yaml: official_practice_material requires use_allowed='support_or_context' and can_be_sole_basis=false"
+      },
+      {
+        "mutation": "official_practice_pending.can_be_sole_basis",
+        "detected": true,
+        "message": "source_grades.yaml: official_practice_pending requires use_allowed='future_or_policy_context' and can_be_sole_basis=false"
+      },
+      {
+        "mutation": "official_practice_pending.use_allowed",
+        "detected": true,
+        "message": "source_grades.yaml: official_practice_pending requires use_allowed='future_or_policy_context' and can_be_sole_basis=false"
+      },
+      {
+        "mutation": "remove binding pointer references/source-grading.md",
+        "detected": true,
+        "message": "research-workflow.md conclusion binding: missing 'references/source-grading.md'"
+      },
+      {
+        "mutation": "remove binding pointer references/citation-verification-contract.md",
+        "detected": true,
+        "message": "research-workflow.md conclusion binding: missing 'references/citation-verification-contract.md'"
+      }
+    ],
+    "scope": "Canonical policy and pointer static regression only; not model quality."
+  }
+}

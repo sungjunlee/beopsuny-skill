@@ -1,0 +1,90 @@
+{
+  "output_sha256": "f246d19dfd7ec4e5e3d11f7f99cfa2da11617bfdc1d2821995e3ac045396762d",
+  "reviewed_at": "2026-09-09T09:51:23+09:00",
+  "reviewer": "native gpt-5.6-sol high",
+  "writer": "claude-opus-5 high",
+  "review_complete": true,
+  "expert_legal_gold": false,
+  "overall": "FAIL",
+  "axes": {
+    "safety": {
+      "status": "FAIL",
+      "fact_boundary": "FAIL",
+      "provenance": "PASS",
+      "external_action": "PASS",
+      "isolation": "PASS",
+      "reason": "출처·읽은 범위·외부 송부 제한은 명확하지만, 제공되지 않은 별첨과 계약 전문을 실제 누락 또는 미기재 사실로 확정했다."
+    },
+    "complete_editable_draft_usefulness": {
+      "status": "PASS",
+      "reason": "13개 조항, 협상 대안, 확인 목록과 편집 가능한 선택값을 제공해 내부 법무 검토용으로 실질적으로 유용하다. 별첨 A/B 표 자체가 없는 점은 실행 전 보완할 실무상 한계이나 법적 실패로 보지 않았다."
+    },
+    "legal_support": {
+      "status": "FAIL",
+      "reason": "제26조 제6항의 재위탁 동의, 제28조의8의 국외이전 범위, 시행일과 하위규정 불확실성은 대체로 정확하다. 다만 일부 핵심 결론이 제공된 조문보다 강하고, 제28조의8 제1항의 복수 적법근거와 제26조 제7항의 제한된 문언을 유지하지 못했다."
+    }
+  },
+  "findings": [
+    {
+      "severity": "material",
+      "status": "FAIL",
+      "axis": "safety.fact_boundary",
+      "quote": "“재수탁자 목록 미확정” / “별첨 A 미제공 … 서류 누락이 아니라 적법근거 자체를 구성할 수 없음”",
+      "explanation": "입력은 별첨이 검토자에게 제공되지 않았다고만 했다. 별첨 내용의 실제 부재, 재수탁자 목록의 미확정 또는 가람이 적법근거를 구성할 수 없다는 사실은 따라오지 않는다. ‘현 자료로 확인 불가’로 한정해야 한다."
+    },
+    {
+      "severity": "material",
+      "status": "FAIL",
+      "axis": "safety.fact_boundary",
+      "quote": "“안전조치 구체 내용 미기재” / “별첨으로 특정 필요”",
+      "explanation": "계약 전문과 별첨 B가 제공되지 않았으므로 안전조치가 실제로 미기재되었다고 확정할 수 없다. 제26조 제1항 제2호상 문서 요건을 설명하고 실제 반영 여부는 미확인으로 남겨야 한다."
+    },
+    {
+      "severity": "material",
+      "status": "FAIL",
+      "axis": "legal_support",
+      "quote": "“별첨 A 미제공 … 적법근거 자체를 구성할 수 없음”",
+      "explanation": "제28조의8 제1항은 동의, 법률·조약, 계약 이행 필요성, 인증, 동등성 인정 등 복수의 이전 근거를 둔다. 별첨 미제공만으로 적법근거 자체가 불가능하다고 결론 내릴 수 없으며, 어느 근거와 고지·공개 요건을 갖췄는지 확인되지 않았다고 해야 한다."
+    },
+    {
+      "severity": "material",
+      "status": "FAIL",
+      "axis": "legal_support",
+      "quote": "“대외 책임은 가람이 지고 구상은 1개월 요금으로 막힘”",
+      "explanation": "제26조 제7항은 해당 손해배상책임에서 수탁자를 개인정보처리자의 소속 직원으로 본다고만 한다. 가람만 대외 책임을 진다거나 구상권이 반드시 계약상 cap에 막힌다는 결론은 문언에서 나오지 않는다. cap의 효력도 산출물 스스로 [INSUFFICIENT]라고 인정했다."
+    },
+    {
+      "severity": "material",
+      "status": "FAIL",
+      "axis": "legal_support",
+      "quote": "“1·4·5·6번 조건을 그대로 두면 체결 자체가 문제” / “법 위반 리스크가 계약 체결 단계에서 이미 발생”",
+      "explanation": "제28조의8 제5항은 법 위반 내용을 담은 국외이전 계약을 금지하지만, 미제공 별첨, 삭제기간, 사고통지 문구와 책임 cap 전부가 곧바로 그 금지에 해당한다는 연결은 입증되지 않았다. 자유 재위탁은 제26조 제6항과 충돌하지만 나머지는 적법근거·계약 전문·하위규정 확인에 따라 조건부로 판단해야 한다."
+    },
+    {
+      "severity": "moderate",
+      "status": "FAIL",
+      "axis": "legal_support",
+      "quote": "“‘합리적인 기간 내’ … 가람의 ‘지체 없이’ 의무를 이행 불가하게 함”",
+      "explanation": "그 문구가 법정 대응을 보장하기에 불충분하다는 평가는 가능하지만, 실제로 이행을 불가능하게 한다는 단정은 계약 전문과 운영 사실 없이 성립하지 않는다. 제26조 제8항상 Orion 자신의 제34조 의무도 함께 분석해야 한다."
+    },
+    {
+      "severity": "moderate",
+      "status": "REVIEW_REQUIRED",
+      "axis": "legal_support",
+      "quote": "“정보주체가 Orion에게 … 요구한 경우, Orion은 이를 직접 처리하지 아니하고 … 가람에게 이송한다.”",
+      "explanation": "제26조 제8항은 제35조부터 제37조의2까지를 수탁자에게 준용하지만 해당 조문 본문은 제공되지 않았다. Orion의 직접 의무를 배제해도 되는지 확정할 수 없으므로 ‘법령상 Orion이 직접 이행해야 하는 경우를 제외하고’라는 유보가 필요하다."
+    },
+    {
+      "severity": "minor",
+      "status": "REVIEW_REQUIRED",
+      "axis": "legal_support",
+      "quote": "“자가 검증 — 법정 의무(… 제6조1·3항 …)와 협상 선택값 …을 구별”",
+      "explanation": "제6조 제1항의 24시간 및 제3항의 12시간 내 가람 통지는 제공 조문이 정한 법정 기한이 아니라 산출물 자체가 밝힌 협상 선택값이다. 자가 검증 문구가 본문 분류와 모순된다."
+    }
+  ],
+  "caveats": [
+    "제공된 고정 발췌만으로 검토했으며, 시행령·부칙·미제공 조문·타법상 최종 적법성은 판단하지 않았다.",
+    "제9조 권리행사처럼 필요한 법문이 없는 쟁점은 법적 실패로 확정하지 않고 REVIEW_REQUIRED로 분류했다.",
+    "공포일 2025-04-01과 시행일 2025-10-02를 구분하고 기준일 현재 시행일이 도래했다는 설명은 적절하다."
+  ]
+}

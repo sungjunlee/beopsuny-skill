@@ -1,0 +1,162 @@
+{
+  "scope": "Actual local checks on final self-verification consolidation; static checks are not model-quality proof",
+  "unit": {
+    "exit_code": 0,
+    "tests": 120,
+    "seconds": 11.857
+  },
+  "skill_contracts": {
+    "exit_code": 0,
+    "result": "PASS"
+  },
+  "scenario_outputs": {
+    "exit_code": 0,
+    "outputs": 11,
+    "unsafe_fixtures": 13
+  },
+  "rescore": {
+    "exit_code": 0,
+    "corpus": 19,
+    "messages": 88,
+    "delta": 0
+  },
+  "logs": {
+    "unit-final.log": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 14.758s\n\nOK\n",
+    "o1-revised.log": "PASS\n",
+    "o2.log": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n",
+    "rescore.log": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)",
+    "source-reachability.log": "[WARN]            로컬 미러/legalize-kr            upstream 불일치 — 재동기화 필요: 로컬 변경 없음 확인 후 `git fetch origin && git reset --hard origin/main` (force-push 재생성 대응, source-access.md 최신화 절차 참조; local 99159550231, upstream 99d67dea732, last_commit=2026-09-07T12:00:00+09:00)\n[OK]              로컬 미러/precedent-kr           upstream 일치 (HEAD d0db51cb998, last_commit=1996-08-27T12:00:00+09:00)\n[NOT_INSTALLED]   로컬 미러/admrule-kr             degradation 경로 사용 (실패 아님)\n[NOT_INSTALLED]   로컬 미러/ordinance-kr           degradation 경로 사용 (실패 아님)\n[WARN]            법망 API                       서비스 공지 중단 (복구 예상 2027-Q1, 조회 실패 ≠ 개정 없음), 2027-06-30까지 수용\n[OK]              링크/law.go.kr 법령              HTTP 200 (https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95)\n[OK]              링크/law.go.kr 판례              HTTP 200 (https://www.law.go.kr/LSW/precInfoP.do?precSeq=233797)\nRESULT: WARN (ok=3 warn=2 fail=0 not_installed=2)\n",
+    "unit-integrated.log": "........................................................................................................................\n----------------------------------------------------------------------\nRan 120 tests in 11.857s\n\nOK\n",
+    "o2-integrated.log": "PASS 11 outputs, 13 unsafe fixtures; fixed semantic reviews checked (not legal gold)\n",
+    "rescore-integrated.log": "PASS: 판정 변화 0건 — baseline과 일치 (corpus 19, 실패/검토대기 메시지 88건)"
+  },
+  "source_reachability": {
+    "ok": 3,
+    "warn": 2,
+    "fail": 0,
+    "not_installed": 2,
+    "personal_mirrors_changed": false,
+    "expiry_changed": false
+  },
+  "quota": {
+    "provider": "claude",
+    "account_label": "default authenticated account",
+    "updatedAt": "2026-09-09T03:26:38Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "primary": {
+      "resetsAt": "2026-09-09T07:29:00Z",
+      "resetDescription": "resets Sep 9 at 4:29pm (Asia/Seoul)",
+      "usedPercent": 18,
+      "windowMinutes": 300
+    },
+    "weekly": {
+      "resetsAt": "2026-09-12T15:59:00Z",
+      "resetDescription": "resets Sep 13 at 12:59am (Asia/Seoul)",
+      "usedPercent": 15,
+      "windowMinutes": 10080
+    },
+    "monthly": "unknown",
+    "pace": {
+      "primary": {
+        "stage": "onTrack",
+        "summary": "On pace | Expected 19% used | Lasts until reset",
+        "expectedUsedPercent": 19,
+        "willLastToReset": true,
+        "deltaPercent": -1
+      },
+      "secondary": {
+        "stage": "farBehind",
+        "summary": "35% in reserve | Expected 50% used | Lasts until reset",
+        "expectedUsedPercent": 50,
+        "willLastToReset": true,
+        "deltaPercent": -35
+      }
+    },
+    "later_read": {
+      "status": "unknown",
+      "reason": "60-second query timeout; not exhaustion"
+    }
+  },
+  "changelog_gate": {
+    "result": "PASS",
+    "pr": 330,
+    "base_sha": "d1373c09bcd16f05dc68515f58eeaaf5394b1d2a",
+    "check": "Actual PR base; precommit result, CI checked separately"
+  },
+  "runtime_smoke": "Not executed on this runtime; fixed initial output FAIL so preregistered expansion did not open.",
+  "quota_after_target": {
+    "provider": "claude",
+    "account_label": "default authenticated account",
+    "updatedAt": "2026-09-09T03:33:36Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "primary": {
+      "windowMinutes": 300,
+      "usedPercent": 30,
+      "resetsAt": "2026-09-09T07:30:00Z",
+      "resetDescription": "Resets4:30pm(Asia/Seoul)"
+    },
+    "weekly": {
+      "windowMinutes": 10080,
+      "usedPercent": 15,
+      "resetsAt": "2026-09-12T16:00:00Z",
+      "resetDescription": "ResetsSep13at1am(Asia/Seoul)"
+    },
+    "monthly": "unknown",
+    "pace": {
+      "secondary": {
+        "willLastToReset": true,
+        "summary": "35% in reserve | Expected 50% used | Lasts until reset",
+        "expectedUsedPercent": 50,
+        "stage": "farBehind",
+        "deltaPercent": -35
+      },
+      "primary": {
+        "willLastToReset": false,
+        "etaSeconds": 8905,
+        "expectedUsedPercent": 21,
+        "summary": "9% in deficit | Expected 21% used | Projected empty in 2h 29m",
+        "stage": "ahead",
+        "deltaPercent": 9
+      }
+    }
+  },
+  "quota_after_integration": {
+    "provider": "claude",
+    "account_label": "default authenticated account",
+    "updatedAt": "2026-09-09T03:44:01Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "primary": {
+      "usedPercent": 41,
+      "resetsAt": "2026-09-09T07:30:00Z",
+      "resetDescription": "Resets4:30pm(Asia/Seoul)",
+      "windowMinutes": 300
+    },
+    "weekly": {
+      "usedPercent": 16,
+      "resetsAt": "2026-09-12T16:00:00Z",
+      "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+      "windowMinutes": 10080
+    },
+    "monthly": "unknown",
+    "pace": {
+      "primary": {
+        "summary": "16% in deficit | Expected 25% used | Projected empty in 1h 47m",
+        "willLastToReset": false,
+        "stage": "farAhead",
+        "etaSeconds": 6391,
+        "deltaPercent": 16,
+        "expectedUsedPercent": 25
+      },
+      "secondary": {
+        "summary": "34% in reserve | Expected 50% used | Lasts until reset",
+        "willLastToReset": true,
+        "stage": "farBehind",
+        "deltaPercent": -34,
+        "expectedUsedPercent": 50
+      }
+    }
+  }
+}

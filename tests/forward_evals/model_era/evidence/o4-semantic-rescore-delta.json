@@ -1,0 +1,143 @@
+{
+  "decision": "accept 16 additional review-required messages; no PASS promotion",
+  "changes": [
+    {
+      "corpus": "o4-live-driver-sonnet5-20260710",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-driver-sonnet5-20260710",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-haiku45-20260721-v060",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [
+        "o4-04-admrule-api-fallback [provenance_api_fallback] must acknowledge the admrule local mirror is not the confirmation path"
+      ],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record",
+        "o4-04-admrule-api-fallback [provenance_api_fallback] must acknowledge the admrule local mirror is not the confirmation path"
+      ]
+    },
+    {
+      "corpus": "o4-live-haiku45-20260721-v060",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [
+        "o4-08-enforcement-date-trap [promulgated_vs_effective_trap] must not assert a future-effective text as current"
+      ],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record",
+        "o4-08-enforcement-date-trap [promulgated_vs_effective_trap] must not assert a future-effective text as current"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260709",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260709",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260710-v050",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260710-v050",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260720-v051",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260720-v051",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260721-v060",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260721-v060",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260725-v070",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260725-v070",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260727-v080",
+      "prompt_id": "o4-04-admrule-api-fallback",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    },
+    {
+      "corpus": "o4-live-sonnet5-20260727-v080",
+      "prompt_id": "o4-08-enforcement-date-trap",
+      "before": [],
+      "after": [
+        "REVIEW_REQUIRED: semantic rule legal_verification_core_trace — missing or unreviewed semantic record"
+      ]
+    }
+  ],
+  "before_messages": 72,
+  "after_messages": 88,
+  "corpora": 19,
+  "limits": "Actual historical outputs unchanged. Meaning review is pending, not completed model quality evaluation."
+}
