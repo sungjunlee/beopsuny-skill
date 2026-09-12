@@ -1,0 +1,7 @@
+........................................................................................................./opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 404: 'Not Found'>
+  _warnings.warn(self.warn_message, ResourceWarning)
+...............................
+----------------------------------------------------------------------
+Ran 136 tests in 14.433s
+
+OK
