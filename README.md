@@ -315,7 +315,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `freshness_metadata.yaml` | 번들 asset의 `next_review`, `last_verified`, `source_url`, `freshness_days`, `must_reverify` 공통 metadata 구조 |
 | `freshness_revalidation.yaml` | stale 자산 갱신·retirement 전 공식 source 확인과 volatile item 검토 기록 |
 
-### ⑤ 리포트 템플릿·인제스트 도구 — `assets/templates/` (2 files) + `assets/tools/` (2 files)
+### ⑤ 리포트 템플릿·인제스트 도구 — `assets/templates/` (2 files) + `assets/tools/` (3 files)
 
 검증된 결론을 HTML 리포트로 내거나 knowledge manifest를 ingest할 때 쓰는 렌더·도구 표면. destination gate를 소비할 뿐 새 의도를 만들지 않는다 — 리포트 템플릿은 `references/report-deliverable.md`가 정의하는 render contract(self-contained, 외부 리소스 로딩 금지, `external_draft`/`agency_or_court_submission` destination gate 부착)를 따르고, `knowledge_manifest_ingest.py`는 privacy manifest channel의 checksum·`usage_mode`·`publish_ready` 경계를 집행한다.
 
@@ -325,6 +325,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 | `report_contract_review.html` | 계약 검토 리포트 템플릿 (완성 조항·전제·확인 사항과 destination 경계, `references/contract_review_guide.md` 참조) |
 | `knowledge_manifest_ingest.py` | `beopsuny-knowledge` privacy manifest ingest 도구 (`--strict`, sha256·usage_mode 검증, 실패 시 knowledge injection skip 후 live legal research 계속) |
 | `knowledge_manifest_validate.py` | ingest helper가 import하는 publication·asset 검증 (`yaml_header`, `validate_asset`) |
+| `knowledge_manifest_io.py` | ingest helper가 import하는 YAML·텍스트 소스 읽기 (`load_yaml`, `read_text_source`) |
 
 ## Acknowledgments
 

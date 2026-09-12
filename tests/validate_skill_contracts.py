@@ -2722,6 +2722,8 @@ def check_knowledge_manifest_policy_config() -> None:
         read_text("skills/beopsuny/assets/tools/knowledge_manifest_ingest.py")
         + "\n"
         + read_text("skills/beopsuny/assets/tools/knowledge_manifest_validate.py")
+        + "\n"
+        + read_text("skills/beopsuny/assets/tools/knowledge_manifest_io.py")
     )
     label = "knowledge_manifest.yaml"
 
