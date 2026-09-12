@@ -2,7 +2,7 @@
 
 dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린트를 넘어 재발견 비용이 큰 것만 남긴다.
 
-- **고급 모델 스킬 재정렬 계획 승인** (2026-09-08, 마일스톤 8): 실행·공통 인계는 [2026-09-model-era-refresh.md](2026-09-model-era-refresh.md), 작업 정의와 Agent Brief는 GitHub Issues가 정본이다. 검토용 완성 초안 지원과 불필요 제약·자산 제거는 승인된 목표 상태이며 PR #327로 구현이 머지됐다. 후속 runtime·정책·계약 검사 변경은 PR #334로 통합됐고 PR #330에는 평가 기록·준비기·회귀 검사와 문서가 남아 있다. 검토 기준과 과거 실행 범위는 `tests/forward_evals/model_era/followup-plan.md` 상단을 따른다. 2026-09-09 runtime `8fad7d8`의 필수20건 스모크 실행은 완료됐으나 의미 위반이 남아 출시 게이트는 미충족이며, 미실행 상태와 혼동하지 않는다. 아래의 과거 hint-only/출력·저장 관련 결정은 당시 상태로 읽고, 현행 계약과 후속 #318/#323/#272에서 변경 여부를 확인한다.
+- **고급 모델 스킬 재정렬 계획 승인** (2026-09-08, 마일스톤 8): 실행·공통 인계는 [2026-09-model-era-refresh.md](2026-09-model-era-refresh.md), 작업 정의와 Agent Brief는 GitHub Issues가 정본이다. 검토용 완성 초안 지원과 불필요 제약·자산 제거는 승인된 목표 상태이며 PR #327로 구현이 머지됐다. 후속 runtime·정책·계약 검사 변경은 PR #334로 통합됐고 PR #330의 평가 기록·준비기·회귀 검사와 문서도 main `f6d0737`에 통합됐다. 검토 기준과 과거 실행 범위는 `tests/forward_evals/model_era/followup-plan.md` 상단을 따른다. 2026-09-09 runtime `8fad7d8`의 필수20건 스모크 실행은 완료됐으나 의미 위반이 남아 출시 게이트는 미충족이며, 미실행 상태와 혼동하지 않는다. 아래의 과거 hint-only/출력·저장 관련 결정은 당시 상태로 읽고, 현행 계약과 후속 #318/#323/#272에서 변경 여부를 확인한다.
 
 - **회사 맥락은 읽기 전용이다** (#259 은퇴, 2026-07-26 — 에픽 #95의 profile/matter workspace 계약을 대체): 스킬은 회사 맥락을 저장하지 않는다. 하네스 메모리·프로젝트 지침 파일·사용자가 지목한 파일에서 **읽기만** 하고, `~/.beopsuny/`는 설정(`config.yaml`)·법령 미러(`data/`)·요청 시 리포트(`reports/`)만 소유한다. 근거는 실측 — 몇 달 dogfood 후 `projects/` 0개, `practices/` 없음, `*.jsonl` 0개, 유일한 `profile.yaml`은 비어 있고 자기 스펙의 canonical shape를 위반. capability는 `company-context-trust`, 트러스트 경계의 집은 `SKILL.md` 안전 경계다(#262 — 회사 맥락만이 아니라 조회·인용·전달받은 내용 전부, 인용-only 답변 포함).
 - **workflow map 은퇴** (#109 landed → #248 retired, 2026-07-25): `references/workflow-map.md`(7개 workflow × 기존 의도·reference 매핑)는 라우팅 원칙 7(#242)로 마지막 런타임 경로가 사라져 삭제했다. 대체 집 — 의도→reference 매핑은 `SKILL.md` 의도 표, "새 의도 아님" 결정은 라우팅 원칙 4(cross-border)·7(수사·조사)과 `research-workflow.md` 분쟁 판단 구조 섹션, split 경계는 DESIGN §6. `check_workflow_map_structure` 삭제, 의도 집합 동등성·라벨 비승격은 `assert_not_router_intent()` 헬퍼로 재앵커링(#110/#112 짝 check가 호출), 재퇴적은 `check_retired_meta_surfaces_stay_retired`의 `RETIRED_SURFACES`가 차단.
@@ -49,7 +49,7 @@ dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린
 ## 2026-09 model-era 실행 인계
 
 - 현재 트랙: `2026-09-model-era-refresh.md`, 후속 검증 브랜치 `codex/milestone-8-release-validation`. e05ecda runtime과 과거 capture/human judgment는 보존했다.
-- core 구현·삭제와 통합 검증은 완료했다. 후속 검증에서 #272는 원본 실패를 보존한 교정3형식 유한 검증을 마쳤고, #325는 승인된 작은 paired 비교의 후보 NO_GO·확대 없음 판단을 마쳤다. 두 이슈는 PR 통합 전 OPEN이다. #323의 미제공 별첨→부재/법적 근거 미성립 단정 회귀와 최종 runtime 릴리즈 스모크는 미완료다. 모델 비용·법률 정확도·활용성·안전을 혼합한 GO는 없다. 최신 실행·판정은 `tests/forward_evals/model_era/followup-plan.md` 상단을 따른다.
+- core 구현·삭제와 통합 검증은 완료했다. 후속 검증에서 #272는 원본 실패를 보존한 교정3형식 유한 검증을 마쳤고, #325는 승인된 작은 paired 비교의 후보 NO_GO·확대 없음 판단을 마쳤다. 두 이슈는 PR330 증거 통합 후 2026-09-12 종료했다. #323의 미제공 별첨→부재/법적 근거 미성립 단정 회귀와 릴리즈 승인은 미완료다. 과거 스모크는 실행됐고 FAIL이 남은 상태다. 모델 비용·법률 정확도·활용성·안전을 혼합한 GO는 없다. 최신 실행·판정은 `tests/forward_evals/model_era/followup-plan.md` 상단을 따른다.
 - 의미 검토는 요청·출력 hash와 정확한 근거 구간으로 바인딩한다. 미판정은 REVIEW_REQUIRED, setup 누락은 UNSCORABLE. 병렬 CLI도 pending-only이면 비0 종료한다. 실패·검토대기의 분모는 서로 겹치지 않는다.
 - 다음 세션은 최신 이슈/댓글·quota를 다시 읽는다. 원문이 target에 제공되지 않았는데 judge에만 있었던 근거로 target의 누락을 판정하지 않는다. gold 없는 judge의 오판도 사람 검토 큐에 남긴다.
 

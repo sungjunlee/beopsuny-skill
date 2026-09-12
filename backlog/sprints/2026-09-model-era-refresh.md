@@ -34,12 +34,12 @@ component: "router-loading"
 
 - [x] #284 [eval] LLM-judge 채점 축 조사 — 오탐 하드닝 5라운드 순환과 정독 병목 해소 — 선행: #320.
 - [x] #322 [skill] 검증 증거를 유지하며 내부 절차·full 트리거를 간소화 — 선행: #321, #318, #320.
-- [~] #325 [experiment] privacy 검색 힌트 순서의 비용·누락 효과 비교 — 선행: #320, #321. [branch:codex/milestone-8-model-era-refresh] · evidence: `tests/forward_evals/model_era/integration-report.md`
+- [x] #325 [experiment] privacy 검색 힌트 순서의 비용·누락 효과 비교 — 선행: #320, #321. [branch:codex/milestone-8-model-era-refresh] · evidence: `tests/forward_evals/model_era/integration-report.md`
 
 ### 초안·표현·평가 계약 순차 정렬
 
 - [~] #323 [contract] 검토용 완성 조항 초안과 수정 제안 지원 — 선행: #318, #322, #319. [branch:codex/milestone-8-model-era-refresh] · evidence: `tests/forward_evals/model_era/integration-report.md`
-- [~] #272 [skill] fwd-11 — 절차 모양을 바꾼 답변에서 출처 권위 라벨이 빠졌다 (실위반, 경미) — 선행: #323. [branch:codex/milestone-8-model-era-refresh]
+- [x] #272 [skill] fwd-11 — 절차 모양을 바꾼 답변에서 출처 권위 라벨이 빠졌다 (실위반, 경미) — 선행: #323. [branch:codex/milestone-8-model-era-refresh]
 - [x] #324 [tests] counter-draft 금지 문자열 오탐을 의미 평가로 이관 — 선행: #323, #272, #284.
 
 ### 통합 검증과 도입 판정
@@ -165,3 +165,5 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 동일 고정 질문·원문·현재 runtime으로 Astra medium 초기 A/B와 B 반복·별첨·사건 분리 holdout을 완료했다. Grok 독립5건 PASS; root는 기준선 A의 미제공/부재 표현을 REVIEW_REQUIRED로 유지하고 현재4건에서 중대한 위반은 확인하지 않았다. 반복 초안의 조문 지칭 모호성은 편집 항목으로 보존한다. 비용·편집 부담 감소는 미측정이므로 채택 INCONCLUSIVE이며 이전 Opus/Fable·필수 스모크 실패는 변하지 않는다. #323·출시·milestone/epic은 완료 처리하지 않았다. 상세는 followup-plan의 Astra 절과 astra-profile-qualification.json.
 
 - 2026-09-12: PR330 현재 범위를 재확인했다. runtime은 #334에 이미 반영돼 main과 동일하고, 남은 평가 기록·준비기·보존 출력 회귀를 별도 통합한다. 현재/최종 표기를 당시 commit에 한정하고 main #336 테스트 분리를 합쳤다. 준비기 잠금·참조·평가 정보 비유입 CLI 회귀를 추가했다. 실행·검증 범위는 followup-plan 상단, 작업 완료 판정은 GitHub #272/#325/#323이 정본이다. #323·릴리즈는 열린 상태다.
+
+- 2026-09-12 통합 완료: PR330은 평가 기록·준비기·회귀 범위로 main f6d0737에 병합했고 main CI도 PASS다. #272·#325는 한정된 AC 근거로 종료했다. #323 AC5·에픽·milestone·릴리즈와 이 sprint는 열린 상태다. agy Gemini3.8 Flash medium 보조 리뷰는 최종 판정 없이 1055.4초 후 필요한 primary 리뷰·CI 완료에 따라 종료했다(dispatch_cli_error, interrupted); 통과 근거에 포함하지 않는다.
