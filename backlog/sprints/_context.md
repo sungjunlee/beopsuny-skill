@@ -48,6 +48,8 @@ dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린
 
 ## 2026-09 model-era 실행 인계
 
+- **2026-09-12 사용자 정정**: 주된 활용자는 변호사인 배우자이며 목표는 업무 지원과 모델 발전에도 정확히 재사용할 의미 있는 지식의 축적·컴파일이다. 가족 일반 사용/피벗을 중심으로 확장한 #341은 계획 철회로 종료했다. 지식의 정본·재개 판단은 [knowledge #79](https://github.com/sungjunlee/beopsuny-knowledge/issues/79), 작성·공급 계약을 따른다. #323의 원래 AC5를 복원했고 실제 출력 회귀로 #323/#317은 OPEN이다. #316 종료는 하위 작업 완료 근거가 있어 유지한다. 미래 외부 제공 검토 #340은 보류한다. research_hold와 과거 모델 판정은 유지하며 새 자산·실험은 없다.
+
 - 현재 트랙: `2026-09-model-era-refresh.md`, 후속 검증 브랜치 `codex/milestone-8-release-validation`. e05ecda runtime과 과거 capture/human judgment는 보존했다.
 - core 구현·삭제와 통합 검증은 완료했다. 후속 검증에서 #272는 원본 실패를 보존한 교정3형식 유한 검증을 마쳤고, #325는 승인된 작은 paired 비교의 후보 NO_GO·확대 없음 판단을 마쳤다. 두 이슈는 PR330 증거 통합 후 2026-09-12 종료했다. #323의 미제공 별첨→부재/법적 근거 미성립 단정 회귀와 릴리즈 승인은 미완료다. 과거 스모크는 실행됐고 FAIL이 남은 상태다. 모델 비용·법률 정확도·활용성·안전을 혼합한 GO는 없다. 최신 실행·판정은 `tests/forward_evals/model_era/followup-plan.md` 상단을 따른다.
 - 의미 검토는 요청·출력 hash와 정확한 근거 구간으로 바인딩한다. 미판정은 REVIEW_REQUIRED, setup 누락은 UNSCORABLE. 병렬 CLI도 pending-only이면 비0 종료한다. 실패·검토대기의 분모는 서로 겹치지 않는다.
