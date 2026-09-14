@@ -1,0 +1,6 @@
+{
+  "cause": "CLI event message may be a string; observer assumed dict",
+  "change": "Guard message type before reading content; original executed supervisor preserved",
+  "validation": "Parsed every saved event with guarded expression; fixed snapshot compiles;5 boundary classifications passed before target",
+  "target_rerun": false
+}

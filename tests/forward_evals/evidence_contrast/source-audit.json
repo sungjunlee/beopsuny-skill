@@ -1,0 +1,399 @@
+{
+  "audit_version": 1,
+  "audited_at": "2026-09-12T13:59:34.322703+00:00",
+  "baseline_run": "/tmp/beopsuny-loading-study-20260912/runs/20260912T084053.922926Z-external-native",
+  "scope": {
+    "read_only_except_audit_file": true,
+    "raw_jsonl_or_thinking_read": false,
+    "external_model_or_web_called": false,
+    "new_contrast_experiment_executed": false,
+    "reported_blocker": "Claude 5h used 100%; supplied by coordinator, not independently refreshed",
+    "existing_fail_rejudged": false
+  },
+  "hash_encoding": "sha256 bytes; structured hashes UTF-8 JSON ensure_ascii=false sort_keys=true default separators",
+  "argv": {
+    "expected_sha256": "5ee5d2fe96a31f0e33a280ace5c202bdd7a95326ae69437e0d473d2ebf0b2b76",
+    "recomputed_sha256": "5ee5d2fe96a31f0e33a280ace5c202bdd7a95326ae69437e0d473d2ebf0b2b76",
+    "matches": true,
+    "public_summary_matches": true,
+    "model": "claude-opus-5",
+    "effort": "high"
+  },
+  "inputs": {
+    "context": {
+      "path": "/private/tmp/beopsuny-loading-study-20260912/external/fwd-12-cross-matter-scope-boundary/context.md",
+      "exists": true,
+      "bytes": 52768,
+      "sha256": "61783d958ed241aa0c561915d464840a119d1251dbf897b835da486024c3ac85",
+      "expected_sha256": "61783d958ed241aa0c561915d464840a119d1251dbf897b835da486024c3ac85",
+      "matches_expected": true,
+      "expected_bytes": 52768,
+      "summary_matches_record": true
+    },
+    "preregistered": {
+      "path": "/private/tmp/beopsuny-loading-study-20260912/preregistered.json",
+      "exists": true,
+      "bytes": 4356,
+      "sha256": "01de02ea924eb67566bc0d7d3f764b95741a9f881f54be6af5a76e8d327ebec3",
+      "expected_sha256": "01de02ea924eb67566bc0d7d3f764b95741a9f881f54be6af5a76e8d327ebec3",
+      "matches_expected": true,
+      "expected_bytes": 4356,
+      "summary_matches_record": true
+    },
+    "prompt": {
+      "path": "/private/tmp/beopsuny-loading-study-20260912/external/fwd-12-cross-matter-scope-boundary/prompt.txt",
+      "exists": true,
+      "bytes": 114,
+      "sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "expected_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "matches_expected": true,
+      "expected_bytes": 114,
+      "summary_matches_record": true
+    },
+    "settings": {
+      "path": "/private/tmp/beopsuny-loading-study-20260912/session-settings.json",
+      "exists": true,
+      "bytes": 363,
+      "sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "expected_sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "matches_expected": true,
+      "expected_bytes": 363,
+      "summary_matches_record": true
+    }
+  },
+  "plugin": {
+    "path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin",
+    "recorded_file_count": 43,
+    "current_file_count": 43,
+    "recorded_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+    "recorded_manifest_recomputed_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+    "current_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+    "all_recorded_files_match": true,
+    "added_files": [],
+    "missing_files": [],
+    "mismatched_files": [],
+    "files": [
+      {
+        "relative_path": ".claude-plugin/marketplace.json",
+        "sha256": "726dd706ba5cfe4f9aace533955d6e8b371532ed5727b55ee4320a98207dde6b",
+        "matches_expected": true
+      },
+      {
+        "relative_path": ".claude-plugin/plugin.json",
+        "sha256": "cc5975c3d1e15241cac6bb8def5f3a8ce2a3d5a4d5699b1c76561bb84c476701",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/SKILL.md",
+        "sha256": "cc5d55885377c41f94c8b7b7b4b65f8d5b046d7addbde3bdfc6a14b0383e6237",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/data/clause_references.yaml",
+        "sha256": "7df5f63a974bc9debf66712550ff184cc1fb2eb44bee5ec1a4c74b2dd5b492a6",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/data/legal_terms.yaml",
+        "sha256": "2b403abaf78a883e6558b86d64bac81cf26897243520c701fa745cacc22176fd",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/contract_review.yaml",
+        "sha256": "ef8ae1726d269dbbb341df2442373511f27721ac29134fadd554c6f663e806c7",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/fair_trade.yaml",
+        "sha256": "7c205f8ac25ec9ca8c6e70e96289e57bb4aa24a92b464f9fda11e30a0b041b6d",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/food_business.yaml",
+        "sha256": "7b3073ae20c05414aec2456dffe02882b5e7633f72cb46ac80521406d6ab2833",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/healthcare.yaml",
+        "sha256": "a8f43d521ede0d612431cffc9c943f208fafd98653f7e9c18ff1683091ca88e4",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/investment_due_diligence.yaml",
+        "sha256": "13ac9ae44a6cd76f4db9b4db89112b0076d5e97f1ad0ad07b7a793302ea9bc40",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/labor_hr.yaml",
+        "sha256": "6f803a1ae9810da319c5dfa5f23e9e4bf133fa8ed625aa3e57632eba39421034",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/mobility.yaml",
+        "sha256": "9770acd54cc29d5504ab766ca1c6ea52405d3aa8b1df5aa14b27eb2991f52549",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/privacy_compliance.yaml",
+        "sha256": "8437bb85df2c004fab81bcae69374e63eda0e306d3d9dafdd5adbd739d522324",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/realestate.yaml",
+        "sha256": "03eb070485646fb3cf65a58801e0696cdd70ec0b844ca0d61245b70e7c0354b0",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/serious_accident.yaml",
+        "sha256": "35ed16aa121900790e4fa6f68e61be67d14d9b40220fa026a75cca70a16a52de",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/checklists/startup.yaml",
+        "sha256": "93208584dd9c60f08387eab1433422f98f5eb2eca5fb972b74abd708b5c104de",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/freshness_debt.yaml",
+        "sha256": "747d001598a3d53b004fcde8084accc345e0c9778cb3462f5fd85a4cb1930209",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/knowledge_manifest.yaml",
+        "sha256": "24b7bf1fce492772b5ae9a6e07c2c86542088382936403e8545f9f91985c2830",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/review_mode.yaml",
+        "sha256": "710c73d5b434f5af14f683d108ef65fa07a00f63c5ec0cf08733bd749048788e",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/policies/source_grades.yaml",
+        "sha256": "e542bf7bc32e7aba07b5fa7a12d488796fc7fea57d2727e640179879254b9c61",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/schemas/freshness_metadata.yaml",
+        "sha256": "5cf3ed405734fb76ea5915e6bf131a4de4f3482010def54e7899e2000d9685a4",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/schemas/freshness_revalidation.yaml",
+        "sha256": "4a609e8f754ef396045c1fef0aadb2a4ce1024153e6ecc71f514887d4620088b",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/schemas/legal_verification_packet.yaml",
+        "sha256": "d8a234a201f2de6c37a7fd83826904373dc25ddffc57d7b645f1e79188ac65e4",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/schemas/output_contract.yaml",
+        "sha256": "2edb8af9eae164175616e99aeeaf14ff129b8601cb0d1cc68be8b7ec0dec2d04",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/templates/report_bulk_grid.html",
+        "sha256": "6cf022737f7b9992005cf7017cd7e500420ac0e058bf52f2ae9d2179d188b29f",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/templates/report_contract_review.html",
+        "sha256": "4469e0daa459f266a1abca349abb28b00aa1d6673f4433f11240a63e1263c027",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
+        "sha256": "9b27d2bb49852037e82d86e69ed806c3d8e50023e318c6f19f7a4b92accc67f7",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/beopmang-api.md",
+        "sha256": "1cfb7734200a5ae2aab9c61d6eaf22cabaac2020d665f995f2c69d30a2876a99",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/bulk-tabular-review.md",
+        "sha256": "aa5d32733b5536202092b090cbaf8478751abed2c4c1e52a03fcdc5515c96182",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/checklist-routing.md",
+        "sha256": "7b9d0958bb94004af0517d3c82ad2a343cb3de4bed3d9499e4b8e92af169b23b",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/citation-verification-contract.md",
+        "sha256": "2cd26c3d608ce533dac093500ffc6f29dd667e6623a9edb35d6ebe7c3d2b3729",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/contract_review_guide.md",
+        "sha256": "12f4fd0034d86861f5d0c9403d6d9ea52d55e4831588a9fa277cb814200e1999",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/enforcement-response.md",
+        "sha256": "b05cc6b483936cef23c598af0d59c51389541acd5d64c65ae8672c7e8b86dd79",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/freshness-governance.md",
+        "sha256": "92b593f01ddb653e43ce20a7747623518eff1a4063e4efc91f7e7ffb375a0092",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/international_guide.md",
+        "sha256": "6f2d78a6f2401c761c116af8161b60fa9b828be5bdc41b4eb221ee36802fa0a7",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/knowledge-injection.md",
+        "sha256": "c02d16c1eed7d49b99b086a8aa47c4a4968566ca00368700e3e1e821841cadb3",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/law-change-detection.md",
+        "sha256": "a0b533c95b1dcae14434129ec59e0bfa57eb0579410c562641c3534aaa9233cd",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/output-formats.md",
+        "sha256": "717d6015824f205b6e9fc896588f043ce04078918a6f520ed286d51c5a20be20",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/report-deliverable.md",
+        "sha256": "406269b2aefbb5decdacc30db4dd93ba087e344d6b69977a24152d6aea03a8cc",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/research-workflow.md",
+        "sha256": "8fe87a0e6c4a7376b2ddc7ab0f6a240f74886812587473830f1bf56e8ccd4e55",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/self-verification.md",
+        "sha256": "cc7502a52dfad405c4dfae1f08d404cce4c863fac976ebd8c4a96a727abfcbe6",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/source-access.md",
+        "sha256": "87251a9be06eb01e47c619bf329f40be33d1a5330caa10faf65ac624685381c9",
+        "matches_expected": true
+      },
+      {
+        "relative_path": "skills/beopsuny/references/source-grading.md",
+        "sha256": "dd06c86524b2ce1caab2af7419476730eb8d9833b6dc21698dedf86b3a862ff8",
+        "matches_expected": true
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "/tmp/beopsuny-loading-study-20260912/runs/20260912T084053.922926Z-external-native/pre-execution.local.json",
+      "exists": true,
+      "bytes": 9477,
+      "sha256": "e68efa97410ea8ad9c1a4615d5a256c716cff0de414644690cc278ab53bdc94c"
+    },
+    {
+      "path": "/tmp/beopsuny-loading-study-20260912/runs/20260912T084053.922926Z-external-native/public/summary.json",
+      "exists": true,
+      "bytes": 4116,
+      "sha256": "e6fcdd63e07f18f66c43322f1ff4486eb757e905f5bb97fcccf7025e93fda17e"
+    },
+    {
+      "path": "/tmp/beopsuny-loading-study-20260912/runs/20260912T084053.922926Z-external-native/public/tool-trace.jsonl",
+      "exists": true,
+      "bytes": 55977,
+      "sha256": "16cd8651a9da435a7cb9e792326b7359b35633e6475da795c5cac95192cf7c13"
+    }
+  ],
+  "settings_controls": {
+    "disableAllHooks": true,
+    "autoMemoryEnabled": false,
+    "disableBundledSkills": true,
+    "claudeMdExcludes": [
+      "**"
+    ],
+    "skillOverrides": {
+      "aside-browser": "off",
+      "peon-ping-config": "off",
+      "peon-ping-log": "off",
+      "peon-ping-toggle": "off",
+      "peon-ping-use": "off",
+      "splay": "off",
+      "design": "off",
+      "doctor": "off"
+    }
+  },
+  "mirrors": [
+    {
+      "name": "legalize-kr",
+      "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr",
+      "head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "clean": true,
+      "status_entry_count": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "historical_head_in_pre_execution": false
+    },
+    {
+      "name": "precedent-kr",
+      "path": "/tmp/beopsuny-release09/fresh-mirrors/data/precedent-kr",
+      "head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "clean": true,
+      "status_entry_count": 0,
+      "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "historical_head_in_pre_execution": false
+    }
+  ],
+  "successful_law_files": [
+    {
+      "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+      "exists": true,
+      "bytes": 42563,
+      "sha256": "db39d97d0b3532ea4bedb6dc62106d25eb47c24ef67392e5cd28827497097f79",
+      "git_head_blob_sha256": "db39d97d0b3532ea4bedb6dc62106d25eb47c24ef67392e5cd28827497097f79",
+      "working_file_matches_git_head": true,
+      "historical_file_sha256_in_pre_execution": false,
+      "accesses": [
+        {
+          "tool": "Grep",
+          "tool_use_id": "toolu_01Dk7dV167aXgop7TfMMmr4M",
+          "result_event_line": 46,
+          "input_sha256": "722a9770e0264f1303a2ed7d36386ff340f67bdad894454b15456877bfc32bfe",
+          "result_sha256": "b61e21b6535dc4460843a0a38f3614dcf150fff3953c20859a0250348532fc4a"
+        },
+        {
+          "tool": "Grep",
+          "tool_use_id": "toolu_013H5btTLsZcqFeri7QxhboL",
+          "result_event_line": 48,
+          "input_sha256": "03c002ec7b9198483cb05227c440068916a4ce6b391a66c38dab3c2bdc6a3eb2",
+          "result_sha256": "8ec81cb1b8964f5b82ee0076817b8d1fd729a9e21fa68691417ca31a08ca891c"
+        },
+        {
+          "tool": "Read",
+          "tool_use_id": "toolu_01E34uwWnebtsqCdYLc689nb",
+          "result_event_line": 51,
+          "input_sha256": "955d0a2353ec7243303297b8564b7b5c4cd5e6f53cb401400c1425c2845b340e",
+          "result_sha256": "0b46e8ebb64a59034d97efe400e20d8ec278050a01d011059bfdb2e660364685"
+        }
+      ]
+    }
+  ],
+  "readiness": {
+    "current_baseline_inputs_and_plugin_intact": true,
+    "current_mirrors_clean": true,
+    "ready_to_freeze_current_sources": true,
+    "historical_source_identity_proven": false,
+    "ready_to_claim_completed_contrast": false,
+    "missing_controls": [
+      "Baseline pre-execution record does not pin the mirrors HEAD or the law file bytes; current clean HEAD and SHA establish a present snapshot, not historical byte identity.",
+      "Before a new contrast run, record both mirror HEADs, source file SHA256, full plugin/input/settings hashes and resolved command hash in its own preregistered manifest.",
+      "Keep the same explicit tool scope and settings; tool grants are not OS sandbox proof.",
+      "Pin one intended contrast variable and blind evaluation criteria before execution; distinguish inherited baseline failure from new evidence.",
+      "Confirm sufficient fresh provider quota before any model run; no run was performed in this audit."
+    ]
+  }
+}
