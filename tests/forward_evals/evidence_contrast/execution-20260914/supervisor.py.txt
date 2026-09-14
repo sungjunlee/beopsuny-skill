@@ -1,0 +1,51 @@
+from pathlib import Path
+import subprocess,json,hashlib,shutil,os,time,signal,datetime,importlib.util
+r=Path(__file__).parent;src=r/'tests/forward_evals/evidence_contrast';p=json.loads((src/'candidate-plan.json').read_text());out=r/'target';out.mkdir(exist_ok=False)
+stage=Path('/private/tmp/beopsuny-loading-study-20260912');data=Path('/tmp/beopsuny-release09/fresh-mirrors/data')
+assert not stage.exists(), 'Existing stage must be audited, not overwritten'
+shutil.copytree(r/'restored-stage',stage);(stage/'native/workspace').mkdir()
+data.mkdir(parents=True,exist_ok=True)
+for n in ['legalize-kr','precedent-kr']:
+ assert not (data/n).exists()
+ shutil.copytree(r/'mirrors'/n,data/n)
+for n,h in p['plugin_manifest'].items():assert hashlib.sha256((stage/'native/plugin'/n).read_bytes()).hexdigest()==h
+for x in p['unchanged_inputs'].values():assert hashlib.sha256(Path(x['path']).read_bytes()).hexdigest()==x['sha256']
+assert subprocess.check_output(['claude','--version'],text=True).strip()=='2.1.270 (Claude Code)'
+now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat()
+amend={'at':now(),'authorization':'2026-09-13 coordinator reservation950d4ed22bf046fb9d1a86be7cc46f30; user2026-09-14 continue','baseline_cli':'2.1.269','target_cli':'2.1.270','limit':'CLI version difference and historical baseline confound attribution; no baseline rerun','unchanged':'Exact candidate argv/question/setup/runtime/grants; only approved CLI installed version differs','max_calls':1,'deadline_seconds':600,'kill_grace_seconds':10,'max_cli_list_usd':2,'restored_mirrors':'Exact recorded git commits, clean law trees; reconstructed git metadata not claimed byte-identical','target_calls_before_launch':0}
+(out/'amendment.json').write_text(json.dumps(amend,ensure_ascii=False,indent=2)+'\n');(out/'plan.json').write_text(json.dumps(p,ensure_ascii=False,indent=2)+'\n')
+start=time.monotonic();execution={'started_at':now()};reason=None
+with (out/'stdout.raw.jsonl').open('wb') as stdout,(out/'stderr.raw.log').open('wb') as stderr:
+ proc=subprocess.Popen(p['argv'],cwd=p['cwd'],env={**os.environ,**p['environment_overrides']},stdin=subprocess.DEVNULL,stdout=stdout,stderr=stderr,start_new_session=True)
+ offset=0
+ while proc.poll() is None:
+  time.sleep(.5)
+  raw=(out/'stdout.raw.jsonl').read_bytes();lines=raw[offset:].splitlines(keepends=True)
+  for line in lines:
+   if not line.endswith(b'\n'):break
+   offset+=len(line)
+   try:e=json.loads(line)
+   except ValueError:continue
+   if e.get('type')=='user':
+    blocks=e.get('message',{}).get('content',[])
+    for block in blocks if isinstance(blocks,list) else []:
+     if isinstance(block,dict) and block.get('type')=='tool_result' and block.get('is_error'):
+      txt=json.dumps(block.get('content','')).lower()
+      if any(t in txt for t in ['permission','restricted','denied','approval']):reason='STOP_PERMISSION_ERROR'
+   if e.get('type')=='result' and e.get('is_error'):reason='STOP_PROVIDER_OR_BUDGET_ERROR'
+  tail=(out/'stderr.raw.log').read_bytes()[-4096:].decode(errors='replace').lower()
+  if any(t in tail for t in ['insufficient credits','authentication failed','rate limit exceeded','invalid api key']):reason='STOP_AUTH_QUOTA_ERROR'
+  if time.monotonic()-start>612:reason='STOP_OUTER_TIMEOUT'
+  if reason:
+   os.killpg(proc.pid,signal.SIGTERM)
+   try:proc.wait(timeout=10)
+   except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL)
+   break
+ proc.wait()
+execution.update(returncode=proc.returncode,ended_at=now(),elapsed_seconds=time.monotonic()-start,stop_reason=reason)
+(out/'execution.json').write_text(json.dumps(execution,indent=2)+'\n')
+# Use the preserved allowlist extractor without executing its main.
+f=r/'extractor.py';f.write_bytes((r/'baseline-records/tests/forward_evals/loading_comparison/runner-snapshots/run_case.py.txt').read_bytes());spec=importlib.util.spec_from_file_location('extractor',f);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+plan={**p,'arm':'native','case':'external','plugin':str(stage/'native/plugin'),'inputs':p['unchanged_inputs']};(out/'public').mkdir()
+summary=mod.extract(out/'stdout.raw.jsonl',out/'public',plan,execution)
+print(json.dumps({'execution':execution,'setup_candidates':summary['setup_candidates'],'skill_body':summary['target_skill_body_proven']},ensure_ascii=False))

@@ -1,0 +1,62 @@
+{
+  "status": "STOPPED_PERMISSION_ERROR",
+  "target_calls": 1,
+  "completed_quality_outputs": 0,
+  "quality": "NOT_MEASURED",
+  "independent_result_review_calls": 0,
+  "baseline_replayed": false,
+  "requested_model": "claude-opus-5",
+  "effort": "high",
+  "init_metadata": [
+    {
+      "mcp_servers": [],
+      "model": "claude-opus-5",
+      "permissionMode": "auto",
+      "plugins": [
+        {
+          "name": "beopsuny",
+          "path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin",
+          "source": "beopsuny@inline",
+          "version": "0.8.0"
+        }
+      ],
+      "skills": [
+        "beopsuny:beopsuny"
+      ],
+      "tools": [
+        "Glob",
+        "Grep",
+        "Read",
+        "Skill"
+      ]
+    }
+  ],
+  "final_model_usage": "unavailable; process stopped before result telemetry",
+  "actual_cli": "2.1.270",
+  "baseline_cli": "2.1.269",
+  "skill_loaded": true,
+  "mirrors": [
+    {
+      "repo": "legalize-kr",
+      "head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "clean": true
+    },
+    {
+      "repo": "precedent-kr",
+      "head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "clean": true
+    }
+  ],
+  "runtime_hash_check": "43 plugin files including41 runtime match preserved manifest",
+  "actual_input_hash_check": "4/4 match; original candidate argv used verbatim",
+  "cost": {
+    "actual_usd": "unknown, no final CLI cost telemetry",
+    "configured_cli_list_cap_usd": 2,
+    "cash_charge": "unknown; existing Max auth used"
+  },
+  "cause": "Grep attempted mirror parent outside granted data root; restricted denial triggered mandatory stop. Concurrent data Glob also returned timeout. No permission expansion or retry.",
+  "baseline_comparison_limit": "Original native baseline also had denied parent searches and recovered. Current preregistration mandates immediate stop, so historical output cannot serve as an uncensored efficacy comparison here.",
+  "extractor_correction": "Initial offline extraction failed because public directory was precreated. Re-extracted same raw stream into public-extracted only; no model rerun.",
+  "next_decision": "Current one-call diagnostic consumed and stopped. If continuing, explicitly choose a new diagnostic with same file permissions but nonfatal denied out-of-scope probes, or end this hypothesis. No additional call authorized by this record.",
+  "no_runtime_change": true
+}
