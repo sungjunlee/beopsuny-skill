@@ -1,0 +1,106 @@
+[
+  {
+    "snapshot": "next-claude-private.json",
+    "provider": "claude",
+    "account_label": "Max/default",
+    "at": "2026-09-14T12:58:38Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "windows": {
+      "primary": {
+        "resetsAt": "2026-09-14T17:30:00Z",
+        "usedPercent": 8,
+        "windowMinutes": 300,
+        "resetDescription": "Resets2:30am(Asia/Seoul)",
+        "remainingPercent": 92
+      },
+      "secondary": {
+        "resetsAt": "2026-09-19T16:00:00Z",
+        "usedPercent": 36,
+        "windowMinutes": 10080,
+        "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+        "remainingPercent": 64
+      },
+      "tertiary": "unknown"
+    },
+    "pace": {
+      "primary": {
+        "willLastToReset": true,
+        "stage": "onTrack",
+        "expectedUsedPercent": 10,
+        "summary": "On pace | Expected 10% used | Lasts until reset",
+        "deltaPercent": -2
+      },
+      "secondary": {
+        "willLastToReset": false,
+        "stage": "ahead",
+        "etaSeconds": 287855,
+        "expectedUsedPercent": 27,
+        "summary": "9% in deficit | Expected 27% used | Runs out in 3d 7h",
+        "deltaPercent": 9
+      }
+    }
+  },
+  {
+    "snapshot": "next-codex-private.json",
+    "provider": "codex",
+    "account_label": "Pro/default",
+    "at": "2026-09-14T12:58:02Z",
+    "source": "oauth",
+    "dataConfidence": "exact",
+    "windows": {
+      "primary": "unknown",
+      "secondary": {
+        "usedPercent": 100,
+        "windowMinutes": 10080,
+        "resetsAt": "2026-09-19T08:10:30Z",
+        "resetDescription": "Sep 19 at 5:10 PM",
+        "remainingPercent": 0
+      },
+      "tertiary": "unknown"
+    },
+    "pace": "unknown"
+  },
+  {
+    "snapshot": "recoverable-after-claude-private.json",
+    "provider": "claude",
+    "account_label": "Max/default",
+    "at": "2026-09-14T13:06:08Z",
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "windows": {
+      "primary": {
+        "resetsAt": "2026-09-14T17:30:00Z",
+        "resetDescription": "Resets2:30am(Asia/Seoul)",
+        "windowMinutes": 300,
+        "usedPercent": 10,
+        "remainingPercent": 90
+      },
+      "secondary": {
+        "resetsAt": "2026-09-19T16:00:00Z",
+        "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+        "windowMinutes": 10080,
+        "usedPercent": 36,
+        "remainingPercent": 64
+      },
+      "tertiary": "unknown"
+    },
+    "pace": {
+      "secondary": {
+        "expectedUsedPercent": 27,
+        "stage": "ahead",
+        "etaSeconds": 288654,
+        "deltaPercent": 9,
+        "willLastToReset": false,
+        "summary": "9% in deficit | Expected 27% used | Runs out in 3d 8h"
+      },
+      "primary": {
+        "expectedUsedPercent": 12,
+        "stage": "slightlyBehind",
+        "deltaPercent": -2,
+        "willLastToReset": true,
+        "summary": "2% in reserve | Expected 12% used | Lasts until reset"
+      }
+    }
+  }
+]

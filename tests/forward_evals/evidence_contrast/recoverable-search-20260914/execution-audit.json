@@ -1,0 +1,27 @@
+{
+  "returncode": null,
+  "runner_error": "Observer AttributeError on string message; target was not restarted; exact child exit code not collected",
+  "provider_result": {
+    "subtype": "success",
+    "is_error": false,
+    "duration_ms": 97753,
+    "duration_api_ms": 98123,
+    "total_cost_usd": 0.5065244999999999,
+    "stop_reason": "end_turn",
+    "num_turns": 14
+  },
+  "external_supervisor": "timeout -k10s600s remained independent of Python observer; target reported success within97.753s",
+  "retrospective_fatal_violations": [],
+  "tool_errors": [
+    {
+      "tool_use_id": "toolu_01RM1pBLvo3HRpTnmXKKDy5Z",
+      "content": "/tmp/beopsuny-release09/fresh-mirrors is outside /private/tmp/beopsuny-loading-study-20260912/native/workspace, /private/tmp/beopsuny-loading-study-20260912/native/plugin, /tmp/beopsuny-release09/fresh-mirrors/data; --restricted confines the file tools to the working directory."
+    },
+    {
+      "tool_use_id": "toolu_016qTgW7qA7qTgvr9obasssS",
+      "content": "/private/tmp/beopsuny-loading-study-20260912/native is outside /private/tmp/beopsuny-loading-study-20260912/native/workspace, /private/tmp/beopsuny-loading-study-20260912/native/plugin, /tmp/beopsuny-release09/fresh-mirrors/data; --restricted confines the file tools to the working directory."
+    }
+  ],
+  "target_calls": 1,
+  "validity": "CONTENT_COMPLETE_WITH_OBSERVER_LIMITATION"
+}
