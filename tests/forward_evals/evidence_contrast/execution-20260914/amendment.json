@@ -1,0 +1,14 @@
+{
+  "at": "2026-09-14T12:52:01.025072+00:00",
+  "authorization": "2026-09-13 coordinator reservation950d4ed22bf046fb9d1a86be7cc46f30; user2026-09-14 continue",
+  "baseline_cli": "2.1.269",
+  "target_cli": "2.1.270",
+  "limit": "CLI version difference and historical baseline confound attribution; no baseline rerun",
+  "unchanged": "Exact candidate argv/question/setup/runtime/grants; only approved CLI installed version differs",
+  "max_calls": 1,
+  "deadline_seconds": 600,
+  "kill_grace_seconds": 10,
+  "max_cli_list_usd": 2,
+  "restored_mirrors": "Exact recorded git commits, clean law trees; reconstructed git metadata not claimed byte-identical",
+  "target_calls_before_launch": 0
+}

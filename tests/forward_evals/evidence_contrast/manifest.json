@@ -6,5 +6,16 @@
   "candidate-plan.json": "38f18e81580bdb9a7e8671ca2e42cfe99d80e1723fecd9d4fb0182427dd2c8ec",
   "condition.txt": "d6d64f4f7b070a4acadac524436da859255dd05e949ec2d0f8c3603a686dea55",
   "root-preparation-check.json": "12eda58cbc202f9877a4477975c062405e9b5a30babec8abbe8706f2425b9f5e",
-  "resume-stop-20260913.json": "4e04d93a3df8856e16244ed70ec6f30e2ae7bf3b75d87f29f3b4fea19d9bc536"
+  "resume-stop-20260913.json": "4e04d93a3df8856e16244ed70ec6f30e2ae7bf3b75d87f29f3b4fea19d9bc536",
+  "execution-20260914/stage-verification.json": "b2fcb2c454753ccf6258667dee7c169e8faf5ee530df33eda1b515d3c5262b42",
+  "execution-20260914/quota.json": "033a3a1d6a55f63143fb25e0cdf43cf57df3c82f99d454b136ec344b888fef6d",
+  "execution-20260914/summary.json": "d423a4f90e7a8a243e8c501a894073b24c7cd44be112fc1e10112dd73b33ac4f",
+  "execution-20260914/result.json": "7287d72ef7040f4949f0a27ddd95952d5ffd1340cab85a58846e89925e446230",
+  "execution-20260914/tool-trace.jsonl": "fafb0894e14cc788d66e9425da381d6b7373a1cacc951fdf43451469a6bde926",
+  "execution-20260914/skill-load-proof.json": "392b543edf3e155f4a99ee82b858e741464cc75eec05657dff07d97b1e7883a6",
+  "execution-20260914/README.md": "974f53da6c7c05466485bddecb012a3be64a66a36d6a94cba80b60c1ab946806",
+  "execution-20260914/supervisor.py.txt": "8fad60844c0e97eb2cf58d83dddda9e60e98bbbe3f214bc387a9e0f00d34150d",
+  "execution-20260914/execution.json": "9d55895b2eba507b35cf33a27372bf5687a3d6a4b60c9b093019afcbc746844b",
+  "execution-20260914/amendment.json": "19773f57cd45bef16139a0ab38478db11148c083c2969f420c406b142c9b8e8a",
+  "execution-20260914/final-answer.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
