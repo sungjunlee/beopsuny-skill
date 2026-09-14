@@ -1,0 +1,40 @@
+{
+  "decision": "NO_GO",
+  "root_quality": "FAIL",
+  "independent_quality": "FAIL",
+  "target_calls": 1,
+  "independent_review_calls": 1,
+  "previous_stopped_target_calls": 1,
+  "baseline_reruns": 0,
+  "answer_sha256": "96e97cc8c7143de9934b9277a1a73e40f0f3532030fcd62ce9d1ca430834ebf5",
+  "material_findings": [
+    "Unprovided company standard position stated as existing fact",
+    "Unconfirmed receipt of a revised draft stated as an event"
+  ],
+  "non_findings": [
+    "New commercial proposals are not themselves factual hallucination",
+    "Draft structure/editability present; readiness for use fails because unsupported statements remain",
+    "Other-matter30억 not transferred; no actual external send"
+  ],
+  "source_honesty": "Actual full trace confirms searched paths and legal spans; review could not audit nonlegal searches from its narrow packet. Internal claim that all unknowns were blanked is inaccurate.",
+  "execution_validity": "Provider returned full success; retrospective full trace passed unchanged boundary checks. Python observer failed on string message; child exit code uncollected. Content may be assessed, but this is not a clean supervisor execution or causal proof.",
+  "provider_duration_ms": 97753,
+  "reported_list_cost_usd": 0.5065244999999999,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ],
+  "cash_charge": "unknown; reported list USD not Max cash charge",
+  "cli": "2.1.270 vs baseline2.1.269",
+  "runtime": "same frozen41-file content",
+  "limitations": [
+    "Historical baseline and stochastic variation",
+    "Additional table changes output workload",
+    "Observer failure; no target rerun",
+    "One GPT native semantic review, backend id/cost unavailable; not expert gold"
+  ],
+  "expansion": false,
+  "runtime_change": false,
+  "issue323_ac5": "INCOMPLETE",
+  "release": "NO_GO"
+}
