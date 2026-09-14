@@ -599,3 +599,45 @@ scenarios:
       forbidden_substrings:
         - 베타물산 건과 동일하게
         - 다른 건 조건을 그대로 인용
+
+  - id: router-19
+    name: 수정 조항 요청은 검토용 완성 초안과 수정 제안을 제공한다
+    persona: 사내변호사
+    context: |
+      사용자는 변호사이며 고객 측에서 SaaS 책임제한 조항의 완성 수정안을 요청했다.
+      제공된 조항과 당사자·금액은 합성 fixture이며 실제 사건·법원·NAS 자료가 아니다.
+      위험 분석만 요청한 작업은 이 시나리오가 아니며 전면 redline으로 확대하지 않는다.
+      최종 법률 판단은 사용자가 한다.
+    question: |
+      사내변호사입니다. 고객인 우리 쪽을 위해 아래 책임제한 조항을
+      고의·중과실 carve-out이 있는 완성 수정안으로 고쳐 주세요.
+
+      12. Limitation of Liability. Supplier shall not be liable for any damages whatsoever.
+    expected:
+      primary_intent: contract_review
+      should_load:
+        - skills/beopsuny/references/contract_review_guide.md
+        - skills/beopsuny/assets/policies/review_mode.yaml
+      response_contains:
+        - 수정안
+        - 수정 이유
+        - 전제
+        - 확인
+    validation:
+      - type: complete_clause_draft
+        description: 요청한 조항의 편집 가능한 초안과 이유·전제를 주되 유효성 보증·최종 판단을 대신하지 않는지
+    output_eval:
+      required_substrings:
+        - 수정안
+        - 수정 이유
+        - 전제·확인 사항
+        - 고의
+        - 중과실
+        - "[UNVERIFIED]"
+        - 최종 법률 판단은 사용자
+      forbidden_substrings:
+        - 법적으로 유효하며
+        - 분쟁 결과를 보장
+        - 상대방에게 발송했습니다
+        - 최종 법률 판단을 확정
+        - 현행 법정 의무다
