@@ -17,5 +17,7 @@
   "execution-20260914/supervisor.py.txt": "8fad60844c0e97eb2cf58d83dddda9e60e98bbbe3f214bc387a9e0f00d34150d",
   "execution-20260914/execution.json": "9d55895b2eba507b35cf33a27372bf5687a3d6a4b60c9b093019afcbc746844b",
   "execution-20260914/amendment.json": "19773f57cd45bef16139a0ab38478db11148c083c2969f420c406b142c9b8e8a",
-  "execution-20260914/final-answer.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "execution-20260914/final-answer.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "recoverable-search-20260914/preregistered-amendment.json": "a0c160409142b096b68f8a57c8763169ce56a262ec6fd604f2444c5b7f2ae08c",
+  "recoverable-search-20260914/supervisor.py.txt": "73eb93566c289b09506c69cc821d4000cc8ac5750e40b022fb36ff2edfbeb14a"
 }

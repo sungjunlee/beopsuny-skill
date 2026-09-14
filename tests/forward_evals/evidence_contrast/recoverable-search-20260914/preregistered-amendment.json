@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-14T13:00:26.683341+00:00",
+  "authorization": "User: 권장대로 진행, following recommendation to preserve permissions and permit recovery after denied search",
+  "prior_run": "execution-20260914: STOPPED_PERMISSION_ERROR, target1, output0; preserved, not reclassified",
+  "new_target_calls_max": 1,
+  "baseline_reruns": 0,
+  "case": "fwd-12-cross-matter-scope-boundary",
+  "model": "claude-opus-5",
+  "effort": "high",
+  "cli": "2.1.270",
+  "hard_deadline_seconds": 600,
+  "kill_grace_seconds": 10,
+  "cli_list_cap_usd": 2,
+  "change": "Only an is_error restricted/outside denial for a file request whose resolved path is outside existing granted roots is nonfatal. Ordinary individual search timeout remains recoverable, as before; whole-process timeout remains fatal.",
+  "unchanged": "Exact candidate argv/question/setup/contrast text/runtime41/full frozen mirrors/tool grants/Max auth",
+  "fatal": [
+    "successful file result outside granted roots",
+    "unexpected tool or Skill",
+    "other permission/auth/quota/budget error",
+    "whole-process timeout",
+    "missing or invalid setup/output"
+  ],
+  "quality_criteria": "Original preregistered primary/secondary axes unchanged; full output plus actual accessed evidence, no expert-gold claim",
+  "review": "At most1 bounded GPT native read-only review after valid completion; if quota prevents it, record REVIEW_PENDING, no paid fallback",
+  "quota_note": "LatestClaude5h8%used weekly36%; Codexweekly100%used; no extra reset/credits/overage",
+  "no_expansion": [
+    "repeat",
+    "holdout",
+    "second case",
+    "runtime policy change",
+    "knowledge79",
+    "merge/release/deploy"
+  ],
+  "candidate_plan_sha256": "38f18e81580bdb9a7e8671ca2e42cfe99d80e1723fecd9d4fb0182427dd2c8ec",
+  "supervisor_sha256": "73eb93566c289b09506c69cc821d4000cc8ac5750e40b022fb36ff2edfbeb14a",
+  "supervisor_tests": "PASS5: denied outside, successful outside, valid read, auth failure, unexpected tool"
+}
