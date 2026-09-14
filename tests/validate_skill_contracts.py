@@ -750,8 +750,26 @@ def check_contract_review_guide() -> None:
         assert_contains(text, required, label)
 
     counter_drafting = section_body(text, "## Counter-drafting")
-    for obligation in ["공식 원문", "강행규정", "예외", "적용 시점", "미확인 사실", "외부 행동"]:
+    for obligation in [
+        "공식 원문",
+        "강행규정",
+        "예외",
+        "적용 시점",
+        "미확인 사실",
+        "외부 행동",
+        "최종 법률 판단",
+        "stale",
+    ]:
         assert_contains(counter_drafting, obligation, f"{label} Counter-drafting")
+    assert_ordered_tokens(
+        counter_drafting,
+        ["최종 법률 판단", "사용자"],
+        f"{label} Counter-drafting user judgment",
+    )
+
+    mode_text = read_text("skills/beopsuny/assets/policies/review_mode.yaml")
+    for stale in ["include_alt_wording_hint", "include_draft_clause"]:
+        assert_not_contains(mode_text, stale, "review_mode.yaml")
 
 
 def check_legal_verification_packet_schema() -> None:
@@ -2576,6 +2594,25 @@ def check_readme_quality_contract_map() -> None:
                 f"{destination_row!r}"
             )
 
+    contract_row = next(
+        (
+            line
+            for line in text.splitlines()
+            if line.startswith("| Contract review |")
+        ),
+        None,
+    )
+    if contract_row is None:
+        raise AssertionError("README.md: 품질 계약 지도에 Contract review 행이 없다")
+    for required in [
+        "check_contract_review_guide",
+        "router-19",
+    ]:
+        if required not in contract_row:
+            raise AssertionError(
+                f"README.md Contract review 행에 {required!r}가 없다: {contract_row!r}"
+            )
+
 
 def check_readme_asset_inventory_counts() -> None:
     text = read_text("README.md")
@@ -3359,6 +3396,7 @@ def check_router_guardrail_scenarios() -> None:
         "router-16",
         "router-17",
         "router-18",
+        "router-19",
     }
     missing = expected - scenario_ids
     if missing:
@@ -3480,6 +3518,7 @@ def check_router_fixture_integrity() -> None:
         "router-16",
         "router-17",
         "router-18",
+        "router-19",
     }
     if expected_output_ids != expected_guardrail_ids:
         raise AssertionError(

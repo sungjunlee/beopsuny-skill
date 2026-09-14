@@ -38,7 +38,7 @@ component: "router-loading"
 
 ### 초안·표현·평가 계약 순차 정렬
 
-- [~] #323 [contract] 검토용 완성 조항 초안과 수정 제안 지원 — 선행: #318, #322, #319. [branch:codex/milestone-8-model-era-refresh] · evidence: `tests/forward_evals/model_era/integration-report.md`
+- [x] #323 [contract] 검토용 완성 조항 초안과 수정 제안 지원 — 선행: #318, #322, #319. 합성 fixture(`router-19`)로 초안·수정 제안 계약을 고정. 라이브 AC5·릴리즈는 미완료.
 - [x] #272 [skill] fwd-11 — 절차 모양을 바꾼 답변에서 출처 권위 라벨이 빠졌다 (실위반, 경미) — 선행: #323. [branch:codex/milestone-8-model-era-refresh]
 - [x] #324 [tests] counter-draft 금지 문자열 오탐을 의미 평가로 이관 — 선행: #323, #272, #284.
 
@@ -179,3 +179,5 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 - 2026-09-12 통합 완료: PR330은 평가 기록·준비기·회귀 범위로 main f6d0737에 병합했고 main CI도 PASS다. #272·#325는 한정된 AC 근거로 종료했다. #323 AC5·에픽·milestone·릴리즈와 이 sprint는 열린 상태다. agy Gemini3.8 Flash medium 보조 리뷰는 최종 판정 없이 1055.4초 후 필요한 primary 리뷰·CI 완료에 따라 종료했다(dispatch_cli_error, interrupted); 통과 근거에 포함하지 않는다.
 
 - 2026-09-12 사용자 정정 반영: 가족 일반 사용/피벗 트랙 #341 철회, #323 AC5 원문 복원, #317/#340 및 knowledge #79의 방향 정렬. #316 완료 상태는 유지한다. PR #342의 해당 인계 문구를 정정했고 새 모델 실행·자산 승격은 없다.
+
+- 2026-09-14: #323 완성 초안·수정 제안 계약을 합성 fixture(`router-19`)로 고정했다. 실제 법원·NAS 자료와 라이브 모델 재실행은 없다. AC5·릴리즈는 미완료이며 #340은 열지 않았다.
