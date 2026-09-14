@@ -1,0 +1,20 @@
+{
+  "run": "20260912T083149.048676Z-fixed-legacy",
+  "case": "fixed",
+  "arm": "legacy",
+  "setup_status": "VALID_WITH_RECORDED_LIMITS",
+  "quality_included": true,
+  "root_quality": "REVIEW_REQUIRED",
+  "root_reason": "법정 요건과 제안을 구별하고 초안을 제공했다. 공개의무 이행불가·별첨 관련 표현은 재검토 필요로 보존한다.",
+  "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+  "answer_sha256": "beefe19c146f789c2eb939f7fd5453415d2796fa398477766060fc96adc84544",
+  "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+  "system_argument_sha256": "6e972b46059d27106f02ddb494fb4d9d260a9e88dabfd48a563ecdce273a2017",
+  "actual_skill_body_proven": false,
+  "elapsed_seconds": 208.41408258304,
+  "reported_list_cost_usd": 0.881653,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

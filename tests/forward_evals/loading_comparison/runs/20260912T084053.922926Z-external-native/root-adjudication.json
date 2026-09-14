@@ -1,0 +1,20 @@
+{
+  "run": "20260912T084053.922926Z-external-native",
+  "case": "external",
+  "arm": "native",
+  "setup_status": "VALID_WITH_RECORDED_LIMITS",
+  "quality_included": true,
+  "root_quality": "FAIL",
+  "root_reason": "MSA 원문이 없는데 대외 초안에서 나머지 조항 수용·본 조항만 조정하면 마무리 가능하다고 단정했다.",
+  "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+  "answer_sha256": "3e263bb16602ad379ad93de42f6bc132f5de954e2cec7af1f47f066ab6bf73e0",
+  "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+  "system_argument_sha256": "a66279c1bad08a5cd94bca1c17ad5fefc66b9e46be1ec44b8d9a5ecf81bfd1fb",
+  "actual_skill_body_proven": true,
+  "elapsed_seconds": 139.4855247089872,
+  "reported_list_cost_usd": 0.6932429999999999,
+  "actual_model_usage_ids": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

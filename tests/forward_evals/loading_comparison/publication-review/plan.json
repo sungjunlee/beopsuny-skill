@@ -1,0 +1,15 @@
+{
+  "route": "grok",
+  "model": "grok-4.6",
+  "effort": "high",
+  "deadline_seconds": 240,
+  "prompt_sha256": "fe2dde2174e0523bc64001187f0ea138aa34ca89c14204b9ee56f03f3ec15517",
+  "files": {
+    "README.md": "af9456a9a1061225089b8f12148c35167a7b7ae7857c785ad0a08a3c6f00ba29",
+    "result.json": "09c59bdfd862c2fcad7467f22a31acb5161940bdc563fa47fb3d733455c15425",
+    "corrected-control-audit.json": "0a564c8ec98c36a0d115f4cb3a82e39d7b94ce1a1e60c5d36e9f7d503147e501",
+    "verification.json": "f1b11ef70d78ab7444f41f5518d8f5a2530801b9ca91ababb2bc99f3eb9fabb1"
+  },
+  "prompt_bytes": 16836,
+  "retries": 0
+}

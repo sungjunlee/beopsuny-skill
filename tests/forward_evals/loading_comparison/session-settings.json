@@ -1,0 +1,18 @@
+{
+  "disableAllHooks": true,
+  "autoMemoryEnabled": false,
+  "disableBundledSkills": true,
+  "claudeMdExcludes": [
+    "**"
+  ],
+  "skillOverrides": {
+    "aside-browser": "off",
+    "peon-ping-config": "off",
+    "peon-ping-log": "off",
+    "peon-ping-toggle": "off",
+    "peon-ping-use": "off",
+    "splay": "off",
+    "design": "off",
+    "doctor": "off"
+  }
+}

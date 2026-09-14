@@ -56,3 +56,5 @@ dev-backlog 세션 시작 시 읽는 프로젝트 수준 컨텍스트. 스프린
 - 다음 세션은 최신 이슈/댓글·quota를 다시 읽는다. 원문이 target에 제공되지 않았는데 judge에만 있었던 근거로 target의 누락을 판정하지 않는다. gold 없는 judge의 오판도 사람 검토 큐에 남긴다.
 
 - **PR #327 추가 리뷰**: Sol·Grok·Opus의 독립 리뷰→최소 수정→LGTM 완료. false PASS 경로와 고정 템플릿/자산 잔재를 수정했다. 최신 인계는 `tests/forward_evals/model_era/review-cycle.md`; #272/#323/#325의 남은 AC는 유지한다.
+
+- 2026-09-12 최신 로딩 진단: `tests/forward_evals/loading_comparison/README.md` 및 `result.json`. 정상 Claude Skill 로딩 성공과 품질 FAIL을 분리한다. 유효2쌍으로 개선 불충분·확대 없음; setup 누락 원본은 분모 제외, 교정1회 보존. #323 AC5·릴리즈는 미완료이며 runtime 금지 문구 추가 근거가 아니다. 외부 knowledge 현재 usage/hash는 일치하지만 품질 GO와 구별한다.

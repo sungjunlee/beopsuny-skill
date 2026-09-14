@@ -1,0 +1,28 @@
+{
+  "stopReason": "end_turn",
+  "usage": {
+    "input_tokens": 13734,
+    "cache_read_input_tokens": 1152,
+    "cache_creation_input_tokens": 0,
+    "output_tokens": 5339,
+    "reasoning_tokens": 4881,
+    "total_tokens": 20225
+  },
+  "num_turns": 1,
+  "total_cost_usd": 0.02042652,
+  "modelUsage": {
+    "grok-4.6-build": {
+      "inputTokens": 13734,
+      "outputTokens": 5339,
+      "cacheReadInputTokens": 1152,
+      "cacheCreationInputTokens": 0,
+      "modelCalls": 1,
+      "costUSD": 0.02042652
+    }
+  },
+  "scope": "Supplied README/result and bounded control/verification excerpts; not full artifacts, legal gold, or runner implementation",
+  "actual_model_id": "grok-4.6-build",
+  "requested_model": "grok-4.6",
+  "effort": "high",
+  "cash_charge": "unknown; CLI-reported USD"
+}

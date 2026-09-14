@@ -1,0 +1,833 @@
+{
+  "created_at": "2026-09-12T08:50:32.744073+00:00",
+  "scope": "4회 pre-execution.local.json, public/summary.json, public/tool-trace.jsonl만 감사. raw stream/thinking, 최종 답변, 독립 리뷰와 품질판정 파일은 읽지 않음. 모델 호출·재위임·기존 증거 수정 없음.",
+  "decision_authority": "root; 아래는 통제 감사 권고이며 original setup_candidates를 변경하지 않음.",
+  "recommendations": {
+    "fixed": "통제 경로 비교 유지 가능 권고. 동일 prompt/runtime/settings/model/환경 suffix, native target Skill 실제 호출과 성공 runtime Read 확인. full SKILL 본문 로드 확증은 공개 summary의 root extractor attestation을 근거로 하며 이번 감사에서 raw를 재열람하지 않음.",
+    "external": "INVALID_SETUP — legacy 실제 system argv에 베타물산/30억/setup.md가 모두 없고 native에만 다른 사건 setup이 있음. 사건 격리 성능 비교 및 이를 근거로 한 양군 우열/비열등성 판단에서 제외 권고. prompt와 mirror grant 일치만으로 setup 누락이 치유되지 않음.",
+    "path_candidates": "외부 두군 cwd Glob은 허용된 빈 workspace 탐색. native mirror 부모 2회와 legacy study 부모 1회는 restricted 오류만 반환한 거부된 시도. 실제 오염 근거가 아니며 단독 비교불가 사유로 삼지 않도록 권고. 시도 횟수/실패 비용은 경로 효율 자료에 남김."
+  },
+  "priority_findings": [
+    {
+      "id": "CONTROL-01",
+      "severity": "invalid_external_pair",
+      "finding": "External legacy에 사전 조건인 다른 사건 사실이 주입되지 않았다.",
+      "evidence": {
+        "native_run": "20260912T084053.922926Z-external-native",
+        "legacy_run": "20260912T084335.123397Z-external-legacy",
+        "checked_surface": "pre-execution.local.json argv --append-system-prompt / --system-prompt 전체",
+        "native_fact_presence": {
+          "beta_name": true,
+          "agreed_cap": true,
+          "setup_heading": true
+        },
+        "legacy_fact_presence": {
+          "beta_name": false,
+          "agreed_cap": false,
+          "setup_heading": false
+        }
+      },
+      "cause_limit": "준비 단계의 legacy context가 이미 setup을 포함한다는 가정이 actual argv와 맞지 않는다. 감사는 후속 재실행을 승인하지 않으며 root가 별도 결정한다."
+    },
+    {
+      "id": "CONTROL-02",
+      "severity": "classifier_false_positive",
+      "finding": "3개의 경계 밖 탐색은 모두 차단됨; 양군 cwd Glob 결과는 No files found. 허용 범위 밖 자료 내용이 tool_result로 반환된 증거 없음."
+    },
+    {
+      "id": "CONTROL-03",
+      "severity": "model_reporting_caveat",
+      "finding": "네 번 모두 primary/init 모델은 claude-opus-5, effort high이며 modelUsage에 claude-haiku-4-5-20251001도 존재. Opus-only 실행이라고 표현하지 말 것. 보조 호출의 정확한 목적은 허용된 증거만으로 unknown."
+    }
+  ],
+  "pairs": {
+    "fixed": {
+      "prompt_argv_bytes_identical": true,
+      "base_context_manifest_identical": true,
+      "plugin_manifest_identical": true,
+      "settings_hash_identical": true,
+      "primary_model_and_effort_identical": true,
+      "shared_controls": {
+        "--permission-mode": true,
+        "--setting-sources": true,
+        "--settings": true,
+        "--mcp-config": true,
+        "--output-format": true
+      },
+      "tool_loading_difference": "fixed legacy no tools+injected system vs native Skill/read/search+default system; external both Read/Glob/Grep with native Skill added",
+      "identical_environment_suffix": true
+    },
+    "external": {
+      "prompt_argv_bytes_identical": true,
+      "base_context_manifest_identical": true,
+      "plugin_manifest_identical": true,
+      "settings_hash_identical": true,
+      "primary_model_and_effort_identical": true,
+      "shared_controls": {
+        "--permission-mode": true,
+        "--setting-sources": true,
+        "--settings": true,
+        "--mcp-config": true,
+        "--output-format": true
+      },
+      "tool_loading_difference": "fixed legacy no tools+injected system vs native Skill/read/search+default system; external both Read/Glob/Grep with native Skill added",
+      "environment_footnote_equal_after_own_plugin_normalization": true,
+      "data_root_environment_overrides_identical": true,
+      "cross_matter_setup_fact_equivalence": false
+    }
+  },
+  "runs": [
+    {
+      "run": "20260912T083149.048676Z-fixed-legacy",
+      "case": "fixed",
+      "arm": "legacy",
+      "evidence_files": {
+        "runs/20260912T083149.048676Z-fixed-legacy/pre-execution.local.json": "3a6d5c65053e89640756a531c065cf67b30a7db6a5bd5fde04b9dda4406a8cf7",
+        "runs/20260912T083149.048676Z-fixed-legacy/public/summary.json": "5806199871ef423639b48996bc4a3976042484f13691c467d2ed4136de8a7f7e",
+        "runs/20260912T083149.048676Z-fixed-legacy/public/tool-trace.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "integrity_checks": {
+        "argv_hash_matches": true,
+        "actual_prompt_hash_matches": true,
+        "system_argument_hash_matches": true,
+        "plugin_manifest_hash_matches": true,
+        "injected_base_context_hash_matches": true
+      },
+      "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+      "base_context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "settings_sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "primary_model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "init_metadata": [
+        {
+          "mcp_servers": [],
+          "model": "claude-opus-5",
+          "permissionMode": "auto",
+          "plugins": [],
+          "skills": [],
+          "tools": []
+        }
+      ],
+      "usage_models": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ],
+      "execution_success": true,
+      "web_server_usage": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "skill_load_extractor_attestation": {
+        "target_skill_invoked": false,
+        "target_skill_body_proven": false,
+        "target_skill_path_proven": false
+      },
+      "external_setup_fact_presence": null,
+      "original_setup_candidates": [],
+      "calls": []
+    },
+    {
+      "run": "20260912T083537.583746Z-fixed-native",
+      "case": "fixed",
+      "arm": "native",
+      "evidence_files": {
+        "runs/20260912T083537.583746Z-fixed-native/pre-execution.local.json": "5c40eb953ba4e57c5add5351e8aeb62da9d97b656f9515cde489e69c498a00ab",
+        "runs/20260912T083537.583746Z-fixed-native/public/summary.json": "165d45f17ab4452a5fc46bccb8ae6623d97f3e78437b5f4ce182e5e36cb727b4",
+        "runs/20260912T083537.583746Z-fixed-native/public/tool-trace.jsonl": "da69d39df9bb9904627e86b28046b46aeab389c03374c6456023dc845cc32d43"
+      },
+      "integrity_checks": {
+        "argv_hash_matches": true,
+        "actual_prompt_hash_matches": true,
+        "system_argument_hash_matches": true,
+        "plugin_manifest_hash_matches": true
+      },
+      "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+      "base_context_sha256": "3807999aec556f9db464e159e69691e00a6ff1b586c7483673bcd4a1c056deae",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "settings_sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "primary_model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "init_metadata": [
+        {
+          "mcp_servers": [],
+          "model": "claude-opus-5",
+          "permissionMode": "auto",
+          "plugins": [
+            {
+              "name": "beopsuny",
+              "path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin",
+              "source": "beopsuny@inline",
+              "version": "0.8.0"
+            }
+          ],
+          "skills": [
+            "beopsuny:beopsuny"
+          ],
+          "tools": [
+            "Glob",
+            "Grep",
+            "Read",
+            "Skill"
+          ]
+        }
+      ],
+      "usage_models": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ],
+      "execution_success": true,
+      "web_server_usage": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "skill_load_extractor_attestation": {
+        "target_skill_invoked": true,
+        "target_skill_body_proven": true,
+        "target_skill_path_proven": true
+      },
+      "external_setup_fact_presence": null,
+      "original_setup_candidates": [],
+      "calls": [
+        {
+          "tool": "Skill",
+          "input": {
+            "skill": "beopsuny:beopsuny",
+            "args": "개인정보 처리위탁 + 국외이전 계약 초안 검토 (가람-Orion)"
+          },
+          "call_raw_line": 4,
+          "result_raw_line": 5,
+          "is_error": false,
+          "scope": null,
+          "classification": "skill",
+          "result_sha256": "f67cb3db1bff18efb0d2727fe314606f6b44a6c2c79bdf26946bfba5501dea82"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/contract_review_guide.md"
+          },
+          "call_raw_line": 10,
+          "result_raw_line": 11,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "b7239b2ce29318384fe6c7dd3dc50865014f3355b5569cd99d4d6ab09bd97966"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/assets/policies/review_mode.yaml"
+          },
+          "call_raw_line": 12,
+          "result_raw_line": 13,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "fb22a9297e31ed1d2bceee33a5fd51f85d85bad741dbd58f384c41e8669062be"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/assets/policies/checklists/contract_review.yaml"
+          },
+          "call_raw_line": 14,
+          "result_raw_line": 15,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "183d00d98fa486582a70e29b5056b883244832f418a2325a57999dae4f22a7ef"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/assets/data/clause_references.yaml"
+          },
+          "call_raw_line": 16,
+          "result_raw_line": 17,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "2e6a324ced29fafeaa3a848020246f94ad71ae64b1dfee2e5e5f81169eb1e203"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/citation-verification-contract.md"
+          },
+          "call_raw_line": 26,
+          "result_raw_line": 27,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "2c74d7a624b8cf16a029cbce3aecc7dfa1a241e4a5b4edc955d2d443551a9c00"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/self-verification.md"
+          },
+          "call_raw_line": 28,
+          "result_raw_line": 29,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "d596822d0957abfd05ffbf3d7887ecdfcee5b2b3ba5f5e3d06055cac4f385291"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/output-formats.md"
+          },
+          "call_raw_line": 30,
+          "result_raw_line": 31,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "bc57e6b1aa04540bd1f77a83ea36b37a8905c9f58e08a21671313a8ac0a3b8c2"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "runtime-rule|## Runtime Rule",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/freshness-governance.md",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 30
+          },
+          "call_raw_line": 37,
+          "result_raw_line": 38,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "9d6d81ffbdbd7733f3cc1164a2688007fadfaa14de636bf277b41555adf76607"
+        }
+      ]
+    },
+    {
+      "run": "20260912T084053.922926Z-external-native",
+      "case": "external",
+      "arm": "native",
+      "evidence_files": {
+        "runs/20260912T084053.922926Z-external-native/pre-execution.local.json": "e68efa97410ea8ad9c1a4615d5a256c716cff0de414644690cc278ab53bdc94c",
+        "runs/20260912T084053.922926Z-external-native/public/summary.json": "e6fcdd63e07f18f66c43322f1ff4486eb757e905f5bb97fcccf7025e93fda17e",
+        "runs/20260912T084053.922926Z-external-native/public/tool-trace.jsonl": "16cd8651a9da435a7cb9e792326b7359b35633e6475da795c5cac95192cf7c13"
+      },
+      "integrity_checks": {
+        "argv_hash_matches": true,
+        "actual_prompt_hash_matches": true,
+        "system_argument_hash_matches": true,
+        "plugin_manifest_hash_matches": true
+      },
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "base_context_sha256": "61783d958ed241aa0c561915d464840a119d1251dbf897b835da486024c3ac85",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "settings_sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "primary_model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "init_metadata": [
+        {
+          "mcp_servers": [],
+          "model": "claude-opus-5",
+          "permissionMode": "auto",
+          "plugins": [
+            {
+              "name": "beopsuny",
+              "path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin",
+              "source": "beopsuny@inline",
+              "version": "0.8.0"
+            }
+          ],
+          "skills": [
+            "beopsuny:beopsuny"
+          ],
+          "tools": [
+            "Glob",
+            "Grep",
+            "Read",
+            "Skill"
+          ]
+        }
+      ],
+      "usage_models": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ],
+      "execution_success": true,
+      "web_server_usage": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "skill_load_extractor_attestation": {
+        "target_skill_invoked": true,
+        "target_skill_body_proven": true,
+        "target_skill_path_proven": true
+      },
+      "external_setup_fact_presence": {
+        "beta_name": true,
+        "agreed_cap": true,
+        "setup_heading": true
+      },
+      "original_setup_candidates": [
+        "INVALID_SETUP: Glob path outside own plugin: /private/tmp/beopsuny-loading-study-20260912/native/workspace",
+        "INVALID_SETUP: Grep path outside own plugin: /tmp/beopsuny-release09/fresh-mirrors",
+        "INVALID_SETUP: Glob path outside own plugin: /tmp/beopsuny-release09/fresh-mirrors"
+      ],
+      "calls": [
+        {
+          "tool": "Skill",
+          "input": {
+            "skill": "beopsuny:beopsuny"
+          },
+          "call_raw_line": 7,
+          "result_raw_line": 8,
+          "is_error": false,
+          "scope": null,
+          "classification": "skill",
+          "result_sha256": "f67cb3db1bff18efb0d2727fe314606f6b44a6c2c79bdf26946bfba5501dea82"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/native/workspace"
+          },
+          "call_raw_line": 10,
+          "result_raw_line": 11,
+          "is_error": false,
+          "scope": "cwd",
+          "classification": "permitted_empty_cwd_discovery",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338",
+          "result_text": "No files found"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "아크메|Acme|ACME",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors",
+            "output_mode": "files_with_matches",
+            "head_limit": 30
+          },
+          "call_raw_line": 16,
+          "result_raw_line": 18,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "denied_scope_attempt",
+          "result_sha256": "f6ba4d36ec8d02d057ceaf45e047a8f6965e69aff9d9bc1c014ae43474f79583",
+          "result_text": "/tmp/beopsuny-release09/fresh-mirrors is outside /private/tmp/beopsuny-loading-study-20260912/native/workspace, /private/tmp/beopsuny-loading-study-20260912/native/plugin, /tmp/beopsuny-release09/fresh-mirrors/data; --restricted confines the file tools to the working directory."
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors"
+          },
+          "call_raw_line": 19,
+          "result_raw_line": 21,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "denied_scope_attempt",
+          "result_sha256": "f6ba4d36ec8d02d057ceaf45e047a8f6965e69aff9d9bc1c014ae43474f79583",
+          "result_text": "/tmp/beopsuny-release09/fresh-mirrors is outside /private/tmp/beopsuny-loading-study-20260912/native/workspace, /private/tmp/beopsuny-loading-study-20260912/native/plugin, /tmp/beopsuny-release09/fresh-mirrors/data; --restricted confines the file tools to the working directory."
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "아크메|베타물산",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data",
+            "output_mode": "files_with_matches",
+            "head_limit": 30
+          },
+          "call_raw_line": 22,
+          "result_raw_line": 26,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/output-formats.md"
+          },
+          "call_raw_line": 23,
+          "result_raw_line": 25,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "bc57e6b1aa04540bd1f77a83ea36b37a8905c9f58e08a21671313a8ac0a3b8c2"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 35,
+          "result_raw_line": 38,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "fa911cdf8830bf0882fbe765b51bde062dc33fd4800b16dc301d1bcdf74b1581"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/contract_review_guide.md"
+          },
+          "call_raw_line": 36,
+          "result_raw_line": 37,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "b7239b2ce29318384fe6c7dd3dc50865014f3355b5569cd99d4d6ab09bd97966"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^#+ ?제[78]조|면책조항의 금지|손해배상액의 예정",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "-C": 3
+          },
+          "call_raw_line": 45,
+          "result_raw_line": 46,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "93593a64457111904edb83ac6cbae992ef00b39d0011717ecf7b37fd6ca7ce65"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "시행일|법령명|title|공포",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          },
+          "call_raw_line": 47,
+          "result_raw_line": 48,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "653402388336f7cc23ad9d9a77270a929b523ebdf25e083818688f2a7f4a6878"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "offset": 55,
+            "limit": 30
+          },
+          "call_raw_line": 50,
+          "result_raw_line": 51,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "96201b77b83b1564a89dec139592bc8d330b904c55924593dff7e8bf07ac8ab9"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "precedent-kr/**/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data",
+            "head_limit": "5"
+          },
+          "call_raw_line": 66,
+          "result_raw_line": 67,
+          "is_error": true,
+          "scope": "shared_data",
+          "classification": "tool_input_or_execution_error",
+          "result_sha256": "c5dfd944dcee1fd8dd1fe024adce8610c32b461855259eaf075237cb014c91db",
+          "result_text": "<tool_use_error>InputValidationError: Glob failed due to the following issue:\nAn unexpected parameter `head_limit` was provided</tool_use_error>"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "precedent-kr/**/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 68,
+          "result_raw_line": 70,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "7de379a7973cf0599be401c435aea5df65a18e47df50ad22cff4ceb040ee8f58"
+        }
+      ]
+    },
+    {
+      "run": "20260912T084335.123397Z-external-legacy",
+      "case": "external",
+      "arm": "legacy",
+      "evidence_files": {
+        "runs/20260912T084335.123397Z-external-legacy/pre-execution.local.json": "229771f5a625b4943e79134ffb4915f7e53887f1d8b49e7418e9f4280465d9e6",
+        "runs/20260912T084335.123397Z-external-legacy/public/summary.json": "2c41f77701620dc4f32ca250d99f239534efba39b9769bb8fce77b875a587019",
+        "runs/20260912T084335.123397Z-external-legacy/public/tool-trace.jsonl": "3449f8f925d9f43de7462f4139d65be29bb5ad22da715fda67cdc2f9a8a396c9"
+      },
+      "integrity_checks": {
+        "argv_hash_matches": true,
+        "actual_prompt_hash_matches": true,
+        "system_argument_hash_matches": true,
+        "plugin_manifest_hash_matches": true,
+        "injected_base_context_hash_matches": true
+      },
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "base_context_sha256": "61783d958ed241aa0c561915d464840a119d1251dbf897b835da486024c3ac85",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "settings_sha256": "8176d69f49ea3d6e8a3a4cb2eff7a9c2462995fa1b221ac5f0eb2bb05f3f4ade",
+      "primary_model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "init_metadata": [
+        {
+          "mcp_servers": [],
+          "model": "claude-opus-5",
+          "permissionMode": "auto",
+          "plugins": [],
+          "skills": [],
+          "tools": [
+            "Glob",
+            "Grep",
+            "Read"
+          ]
+        }
+      ],
+      "usage_models": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ],
+      "execution_success": true,
+      "web_server_usage": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "skill_load_extractor_attestation": {
+        "target_skill_invoked": false,
+        "target_skill_body_proven": false,
+        "target_skill_path_proven": false
+      },
+      "external_setup_fact_presence": {
+        "beta_name": false,
+        "agreed_cap": false,
+        "setup_heading": false
+      },
+      "original_setup_candidates": [
+        "INVALID_SETUP: Glob path outside own plugin: /private/tmp/beopsuny-loading-study-20260912/legacy/workspace",
+        "INVALID_SETUP: Glob path outside own plugin: /private/tmp/beopsuny-loading-study-20260912"
+      ],
+      "calls": [
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/legacy/workspace"
+          },
+          "call_raw_line": 6,
+          "result_raw_line": 7,
+          "is_error": false,
+          "scope": "cwd",
+          "classification": "permitted_empty_cwd_discovery",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338",
+          "result_text": "No files found"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*.md",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/legacy/plugin/skills/beopsuny/references"
+          },
+          "call_raw_line": 8,
+          "result_raw_line": 9,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "5264c35537bec3af1acbbc4b64d13745d3b0d89c1ad496f5ff33e2e09169e935"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/CLAUDE.md",
+            "path": "/private/tmp/beopsuny-loading-study-20260912"
+          },
+          "call_raw_line": 13,
+          "result_raw_line": 15,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "denied_scope_attempt",
+          "result_sha256": "e4669b50274e6cb9cf49f48d7feeed227f1f9b0fa007b3c9a6408635a076ef69",
+          "result_text": "/private/tmp/beopsuny-loading-study-20260912 is outside /private/tmp/beopsuny-loading-study-20260912/legacy/workspace, /private/tmp/beopsuny-loading-study-20260912/legacy/plugin, /tmp/beopsuny-release09/fresh-mirrors/data; --restricted confines the file tools to the working directory."
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/legacy/plugin/skills/beopsuny/references/contract_review_guide.md"
+          },
+          "call_raw_line": 16,
+          "result_raw_line": 17,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "b7239b2ce29318384fe6c7dd3dc50865014f3355b5569cd99d4d6ab09bd97966"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*약관*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 25,
+          "result_raw_line": 27,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 26,
+          "result_raw_line": 28,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "fa911cdf8830bf0882fbe765b51bde062dc33fd4800b16dc301d1bcdf74b1581"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "kr/약관의규제에관한법률/*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr"
+          },
+          "call_raw_line": 36,
+          "result_raw_line": 38,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "fe746d7716f407ec1c63bb7b07fdacb43864dca8f640b449db81111df3f222a9"
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "kr/민법/*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr"
+          },
+          "call_raw_line": 37,
+          "result_raw_line": 39,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "4cee661c6a341a4aaa5ea6551445ee3af47d12ed140e1ccffbb071be7ce64cb8"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^제(6|7|8)조|^#|시행일|법령명",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 40
+          },
+          "call_raw_line": 40,
+          "result_raw_line": 41,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "7451722ca20877b855f1b1210725ff1353b12627ba418dca26288c81086e0ffd"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^제398조|^제393조|^제103조",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 8
+          },
+          "call_raw_line": 42,
+          "result_raw_line": 43,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "6f4fe0113b22076e174bdbe15d2b3ba728691a3544b0524452544c922477e4db"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "offset": 1,
+            "limit": 90
+          },
+          "call_raw_line": 44,
+          "result_raw_line": 45,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "439e1d3cffe21702433c164de7de2fd1e87e4d70f1065e4003d105a74024e20d"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "##### 제398조 \\(배상액의 예정\\)",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 14
+          },
+          "call_raw_line": 46,
+          "result_raw_line": 47,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "2e35e3a1ff2f4cfa144ec091b620e4dbc95728c16fb684a67d8002bd9a9e1719"
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "##### 제393조 \\(손해배상의 범위\\)",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "-A": 6
+          },
+          "call_raw_line": 51,
+          "result_raw_line": 52,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "3060e45929cc424bfb69100f9c133635cfa5422337817fc872e60001171d97b3"
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "limit": 16
+          },
+          "call_raw_line": 53,
+          "result_raw_line": 54,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope_access",
+          "result_sha256": "7346474d0f60f9a289be810a1efac31d775cfe9d7ee0c3fd129efd40dab969a8"
+        }
+      ]
+    }
+  ],
+  "unknowns_and_limits": [
+    "개인 설정/메모리/훅 및 모든 상속 환경변수의 실제 내부 적용 여부는 snapshot만으로 완전히 증명할 수 없다. settings hash와 명시 CLI, init plugin/skills/tools/MCP는 확인했다.",
+    "복사 runtime 네 snapshot의 전체 manifest와 내부 hash는 일치한다. 동결 commit에 대한 원본 git 객체 대조 및 실행 전후 실제 파일 불변성은 이 감사의 허용 파일 밖이므로 독립 재검증하지 않았다.",
+    "공유 mirror 전후 commit/clean 상태는 이 감사 자료에 git 증거가 없어 unknown; root의 별도 미러 감사가 필요하다.",
+    "Native target full SKILL body/path는 public summary에서 true이고 Skill 도구 호출 성공은 직접 확인됨. raw의 별도 user skill 본문은 금지 범위여서 독립 재해시하지 않았다.",
+    "외부 shared data Glob은 양군 동일 .git 내부 경로 이름을 포함한 목록을 반환했다. 숨은 파일의 본문을 읽은 증거는 없고 자료 범위는 양군 같았으나 data 전역 노출을 최소 법령 파일 전용이라고 표현할 수 없다.",
+    "실제 성공 Read/Grep/Glob의 법률 타당성 및 최종 답변의 사건 사실 차용 여부는 본 통제 감사 대상이 아니다.",
+    "단일 관측/케이스이며 system 기본값, 번들 주입 시점과 도구 사용권 차이를 포함하는 실행 경로 비교이다. 순수 system-prompt 인과 효과를 분리한 실험이 아니다."
+  ]
+}

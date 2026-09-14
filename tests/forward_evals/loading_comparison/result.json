@@ -1,0 +1,129 @@
+{
+  "date": "2026-09-12",
+  "base_commit": "4022d86034859f27c9afd40b91d200739395cb1c",
+  "runtime_content_commit": "9c03725115ccec130fb01e1f464b7858729d5924",
+  "runtime_files": 41,
+  "decision": "NO_GO_LOADING_FIX",
+  "release": "NO_GO",
+  "expansion": false,
+  "valid_quality_observations": 4,
+  "excluded_setup_runs": 1,
+  "quality_counts": {
+    "PASS": 0,
+    "REVIEW_REQUIRED": 1,
+    "FAIL": 3
+  },
+  "rows": [
+    {
+      "run": "20260912T083149.048676Z-fixed-legacy",
+      "case": "fixed",
+      "arm": "legacy",
+      "setup_status": "VALID_WITH_RECORDED_LIMITS",
+      "quality_included": true,
+      "root_quality": "REVIEW_REQUIRED",
+      "root_reason": "법정 요건과 제안을 구별하고 초안을 제공했다. 공개의무 이행불가·별첨 관련 표현은 재검토 필요로 보존한다.",
+      "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+      "answer_sha256": "beefe19c146f789c2eb939f7fd5453415d2796fa398477766060fc96adc84544",
+      "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+      "system_argument_sha256": "6e972b46059d27106f02ddb494fb4d9d260a9e88dabfd48a563ecdce273a2017",
+      "actual_skill_body_proven": false,
+      "elapsed_seconds": 208.41408258304,
+      "reported_list_cost_usd": 0.881653,
+      "actual_model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ]
+    },
+    {
+      "run": "20260912T083537.583746Z-fixed-native",
+      "case": "fixed",
+      "arm": "native",
+      "setup_status": "VALID_WITH_RECORDED_LIMITS",
+      "quality_included": true,
+      "root_quality": "FAIL",
+      "root_reason": "한 달 책임한도 변경을 강행규정(non-negotiable)으로 분류하고 미제공 교육·감독·감사 수단을 없다고 서술했다. 독립 F2는 root 확정 veto로 채택하지 않는다.",
+      "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+      "answer_sha256": "46bf959ad8d7042940db842c910fe2ddf532f3b8395f3072f738eecc8bfaa413",
+      "prompt_sha256": "f19e9388e90233df3de69b123a03e2afde655eb022b607927c6b34af27732ed6",
+      "system_argument_sha256": "594da61953df8a6285ce7e5bf836685f19b9304b679f8bbf2a0eb2b410bdd098",
+      "actual_skill_body_proven": true,
+      "elapsed_seconds": 300.17822079203324,
+      "reported_list_cost_usd": 1.35893,
+      "actual_model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ]
+    },
+    {
+      "run": "20260912T084053.922926Z-external-native",
+      "case": "external",
+      "arm": "native",
+      "setup_status": "VALID_WITH_RECORDED_LIMITS",
+      "quality_included": true,
+      "root_quality": "FAIL",
+      "root_reason": "MSA 원문이 없는데 대외 초안에서 나머지 조항 수용·본 조항만 조정하면 마무리 가능하다고 단정했다.",
+      "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+      "answer_sha256": "3e263bb16602ad379ad93de42f6bc132f5de954e2cec7af1f47f066ab6bf73e0",
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "system_argument_sha256": "a66279c1bad08a5cd94bca1c17ad5fefc66b9e46be1ec44b8d9a5ecf81bfd1fb",
+      "actual_skill_body_proven": true,
+      "elapsed_seconds": 139.4855247089872,
+      "reported_list_cost_usd": 0.6932429999999999,
+      "actual_model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ]
+    },
+    {
+      "run": "20260912T084335.123397Z-external-legacy",
+      "case": "external",
+      "arm": "legacy",
+      "setup_status": "INVALID_SETUP",
+      "quality_included": false,
+      "root_quality": null,
+      "root_reason": "실제 target에 다른 사건 setup 누락. judge에는 제공돼 original review도 INVALID_REVIEW_INPUT; 품질 분모에서 제외.",
+      "review_status": "INVALID_REVIEW_INPUT",
+      "answer_sha256": "a26c803e02fc0818fb5cc5b137358c933cb1499ef019d3811af48484eb086b5d",
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "system_argument_sha256": "2ceb44bb80d4d1c3936638c46007ec789488d3a9a491d7cbc81b93924def2df0",
+      "actual_skill_body_proven": false,
+      "elapsed_seconds": 117.45357545901788,
+      "reported_list_cost_usd": 0.77937,
+      "actual_model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ]
+    },
+    {
+      "run": "20260912T085034.461065Z-external-legacy",
+      "case": "external",
+      "arm": "legacy",
+      "setup_status": "VALID_WITH_RECORDED_LIMITS",
+      "quality_included": true,
+      "root_quality": "FAIL",
+      "root_reason": "MSA 원문·cap을 모른다고 밝히고도 대외 초안에서 기존 한도의 불균형·일방성을 단정했다.",
+      "review_status": "ADMISSIBLE_MODEL_REVIEW_NOT_EXPERT_GOLD",
+      "answer_sha256": "d48d7df796c352b9b79ed61e15c478ef1c011f6989d7b84240b1ad98a96eed32",
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "system_argument_sha256": "61fbc76f469de7fe5a21ff9b4ddd5c438fc4b00019e8fa38164b341b5dce2e57",
+      "actual_skill_body_proven": false,
+      "elapsed_seconds": 108.83997987501789,
+      "reported_list_cost_usd": 0.7038159999999999,
+      "actual_model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5"
+      ]
+    }
+  ],
+  "review_limits": [
+    "Independent GPT-native reviewers; backend model id and cost unavailable",
+    "Model semantic review, not legal expert gold",
+    "Whole loading-path comparison, not isolated system-prompt causality",
+    "One observation per arm/case; no stochastic generalization",
+    "Summary setup_candidates are heuristic hints, adjudicated in control audits",
+    "Raw summary pending adjudication is original extractor state; root-adjudication.json is final",
+    "All target modelUsage also includes Haiku auxiliary calls; purpose unknown",
+    "Reported list USD is not subscription cash charge",
+    "Native default system content not captured; no physical/global isolation guarantee"
+  ]
+}

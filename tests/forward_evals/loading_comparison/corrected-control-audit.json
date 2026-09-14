@@ -1,0 +1,483 @@
+{
+  "created_at": "2026-09-12T09:00:15.385625+00:00",
+  "scope": "교정 legacy와 기존 native의 pre-execution.local.json actual argv 및 public/tool-trace.jsonl만 읽음. 허용된 mirror git HEAD/status 확인. raw/thinking/최종답변/리뷰본문/public summary는 이번 추가 감사에서 읽지 않음.",
+  "original_audit": "control-audit.json 보존; 원본 external legacy 실행의 INVALID_SETUP 판정은 유지됨.",
+  "recommendation": "교정 legacy + 기존 native external pair는 점검한 입력/도구 통제 범위에서 비교 가능한 것으로 root 판정 권고. 이전 missing-setup 결함은 실제 system argv에서 해소됨. 자동 PASS 변경이나 법률/품질 판정은 수행하지 않음.",
+  "decision_authority": "root",
+  "pair_checks": {
+    "same_actual_prompt_bytes": true,
+    "same_actual_setup_bytes": true,
+    "same_environment_after_own_plugin_normalization": true,
+    "same_runtime_manifest": true,
+    "same_settings_hash": true,
+    "same_data_root": true,
+    "same_data_environment": true,
+    "same_normalized_file_grants": true,
+    "same_normalized_add_dirs": true,
+    "same_model_effort": true,
+    "same_timeout_and_kill_grace": true,
+    "same_no_session_persistence": true,
+    "same_restricted": true,
+    "same_permission_mode": true
+  },
+  "key_hashes": {
+    "prompt": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+    "identical_actual_setup": "09668541e809755d395f0916b220756ea061d891a799f10a6af56db3ed08b00f",
+    "runtime_manifest": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+    "corrected_legacy_full_system": "61fbc76f469de7fe5a21ff9b4ddd5c438fc4b00019e8fa38164b341b5dce2e57"
+  },
+  "candidate_adjudication": {
+    "corrected_legacy": [
+      "raw line8 Glob cwd → line9 No files found: 허용된 빈 cwd 탐색이며 실제 자료 오염 없음.",
+      "raw line10 Glob legacy 부모 **/CLAUDE.md → line12 restricted 오류: 파일 내용/목록 미반환. 성공한 경계 밖 읽기가 아님.",
+      "후속 line18 Read contract_review_guide 및 line20 이후 shared data Glob/Grep/Read는 허용 범위에서 성공."
+    ],
+    "native": [
+      "cwd Glob은 빈 결과. mirror 부모 Grep/Glob 2회는 restricted 거부.",
+      "shared data Glob의 head_limit 오류 1회 후 해당 인자 없이 재시도 성공.",
+      "성공한 파일 접근은 own plugin/shared data 내부이며 다른 Skill 호출 없음."
+    ]
+  },
+  "mirrors": [
+    {
+      "repo": "legalize-kr",
+      "checked_at": "2026-09-12T09:00:13.348447+00:00",
+      "head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "expected_head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "head_matches": true,
+      "worktree_clean": true,
+      "status_porcelain": ""
+    },
+    {
+      "repo": "precedent-kr",
+      "checked_at": "2026-09-12T09:00:15.385485+00:00",
+      "head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "expected_head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "head_matches": true,
+      "worktree_clean": true,
+      "status_porcelain": ""
+    }
+  ],
+  "runs": {
+    "native": {
+      "run": "20260912T084053.922926Z-external-native",
+      "source_hashes": {
+        "runs/20260912T084053.922926Z-external-native/pre-execution.local.json": "e68efa97410ea8ad9c1a4615d5a256c716cff0de414644690cc278ab53bdc94c",
+        "runs/20260912T084053.922926Z-external-native/public/tool-trace.jsonl": "16cd8651a9da435a7cb9e792326b7359b35633e6475da795c5cac95192cf7c13"
+      },
+      "integrity": {
+        "argv_hash_matches": true,
+        "prompt_hash_matches": true,
+        "full_system_argument_hash_matches": true,
+        "actual_setup_hash_matches": true,
+        "actual_environment_hash_matches": true,
+        "manifest_hash_matches": true
+      },
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "actual_setup_sha256": "09668541e809755d395f0916b220756ea061d891a799f10a6af56db3ed08b00f",
+      "system_argument_sha256": "a66279c1bad08a5cd94bca1c17ad5fefc66b9e46be1ec44b8d9a5ecf81bfd1fb",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "setup_fact_presence": {
+        "beta_name": true,
+        "cap_30_eok": true,
+        "setup_occurrences": 1
+      },
+      "model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "tool_trace": [
+        {
+          "tool": "Skill",
+          "input": {
+            "skill": "beopsuny:beopsuny"
+          },
+          "call_raw_line": 7,
+          "result_raw_line": 8,
+          "is_error": false,
+          "scope": "skill",
+          "classification": "successful_in_scope",
+          "result_sha256": "f67cb3db1bff18efb0d2727fe314606f6b44a6c2c79bdf26946bfba5501dea82",
+          "result_content_chars": 34
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/native/workspace"
+          },
+          "call_raw_line": 10,
+          "result_raw_line": 11,
+          "is_error": false,
+          "scope": "own_cwd",
+          "classification": "permitted_empty_cwd_glob",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338",
+          "result_content_chars": 14
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "아크메|Acme|ACME",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors",
+            "output_mode": "files_with_matches",
+            "head_limit": 30
+          },
+          "call_raw_line": 16,
+          "result_raw_line": 18,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "restricted_denial_no_file_content",
+          "result_sha256": "f6ba4d36ec8d02d057ceaf45e047a8f6965e69aff9d9bc1c014ae43474f79583",
+          "result_content_chars": 278
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors"
+          },
+          "call_raw_line": 19,
+          "result_raw_line": 21,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "restricted_denial_no_file_content",
+          "result_sha256": "f6ba4d36ec8d02d057ceaf45e047a8f6965e69aff9d9bc1c014ae43474f79583",
+          "result_content_chars": 278
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "아크메|베타물산",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data",
+            "output_mode": "files_with_matches",
+            "head_limit": 30
+          },
+          "call_raw_line": 22,
+          "result_raw_line": 26,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338",
+          "result_content_chars": 14
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/output-formats.md"
+          },
+          "call_raw_line": 23,
+          "result_raw_line": 25,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope",
+          "result_sha256": "bc57e6b1aa04540bd1f77a83ea36b37a8905c9f58e08a21671313a8ac0a3b8c2",
+          "result_content_chars": 5359
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 35,
+          "result_raw_line": 38,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "fa911cdf8830bf0882fbe765b51bde062dc33fd4800b16dc301d1bcdf74b1581",
+          "result_content_chars": 8887
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/native/plugin/skills/beopsuny/references/contract_review_guide.md"
+          },
+          "call_raw_line": 36,
+          "result_raw_line": 37,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope",
+          "result_sha256": "b7239b2ce29318384fe6c7dd3dc50865014f3355b5569cd99d4d6ab09bd97966",
+          "result_content_chars": 7239
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^#+ ?제[78]조|면책조항의 금지|손해배상액의 예정",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "-C": 3
+          },
+          "call_raw_line": 45,
+          "result_raw_line": 46,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "93593a64457111904edb83ac6cbae992ef00b39d0011717ecf7b37fd6ca7ce65",
+          "result_content_chars": 484
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "시행일|법령명|title|공포",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-n": true,
+            "head_limit": 20
+          },
+          "call_raw_line": 47,
+          "result_raw_line": 48,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "653402388336f7cc23ad9d9a77270a929b523ebdf25e083818688f2a7f4a6878",
+          "result_content_chars": 717
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "offset": 55,
+            "limit": 30
+          },
+          "call_raw_line": 50,
+          "result_raw_line": 51,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "96201b77b83b1564a89dec139592bc8d330b904c55924593dff7e8bf07ac8ab9",
+          "result_content_chars": 973
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "precedent-kr/**/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data",
+            "head_limit": "5"
+          },
+          "call_raw_line": 66,
+          "result_raw_line": 67,
+          "is_error": true,
+          "scope": "shared_data",
+          "classification": "tool_validation_error_no_file_content",
+          "result_sha256": "c5dfd944dcee1fd8dd1fe024adce8610c32b461855259eaf075237cb014c91db",
+          "result_content_chars": 144
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "precedent-kr/**/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 68,
+          "result_raw_line": 70,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "7de379a7973cf0599be401c435aea5df65a18e47df50ad22cff4ceb040ee8f58",
+          "result_content_chars": 8764
+        }
+      ]
+    },
+    "legacy_corrected": {
+      "run": "20260912T085034.461065Z-external-legacy",
+      "source_hashes": {
+        "runs/20260912T085034.461065Z-external-legacy/pre-execution.local.json": "623f597514f81201c07741001bc3dc025e9dd0caa257709cd012a4d7e659e4ea",
+        "runs/20260912T085034.461065Z-external-legacy/public/tool-trace.jsonl": "4bdb813c0b3fc0f223df0c150fa99d7096c346dc7f46749cd495c8132948060f"
+      },
+      "integrity": {
+        "argv_hash_matches": true,
+        "prompt_hash_matches": true,
+        "full_system_argument_hash_matches": true,
+        "actual_setup_hash_matches": true,
+        "actual_environment_hash_matches": true,
+        "manifest_hash_matches": true,
+        "base_context_prefix_hash_matches": true
+      },
+      "prompt_sha256": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2",
+      "actual_setup_sha256": "09668541e809755d395f0916b220756ea061d891a799f10a6af56db3ed08b00f",
+      "system_argument_sha256": "61fbc76f469de7fe5a21ff9b4ddd5c438fc4b00019e8fa38164b341b5dce2e57",
+      "plugin_manifest_sha256": "63687360f2f00b23f29a2243e24eae237e15a237416030bacec2acaa0da2e48e",
+      "runtime_commit_claim": "9c03725115ccec130fb01e1f464b7858729d5924",
+      "setup_fact_presence": {
+        "beta_name": true,
+        "cap_30_eok": true,
+        "setup_occurrences": 1
+      },
+      "model_argv": "claude-opus-5",
+      "effort_argv": "high",
+      "tool_trace": [
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/legacy/workspace"
+          },
+          "call_raw_line": 8,
+          "result_raw_line": 9,
+          "is_error": false,
+          "scope": "own_cwd",
+          "classification": "permitted_empty_cwd_glob",
+          "result_sha256": "949d59b7ee8dabf8c14f26bb88463d19a331f38aa2542534727cb77fc3b94338",
+          "result_content_chars": 14
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/CLAUDE.md",
+            "path": "/private/tmp/beopsuny-loading-study-20260912/legacy"
+          },
+          "call_raw_line": 10,
+          "result_raw_line": 12,
+          "is_error": true,
+          "scope": "outside_allowed_roots",
+          "classification": "restricted_denial_no_file_content",
+          "result_sha256": "dd4ff5b566645b10b087c796cb8fcb362f66d1d46c2629055ae7be820c3e0b85",
+          "result_content_chars": 292
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/private/tmp/beopsuny-loading-study-20260912/legacy/plugin/skills/beopsuny/references/contract_review_guide.md"
+          },
+          "call_raw_line": 18,
+          "result_raw_line": 19,
+          "is_error": false,
+          "scope": "own_plugin",
+          "classification": "successful_in_scope",
+          "result_sha256": "b7239b2ce29318384fe6c7dd3dc50865014f3355b5569cd99d4d6ab09bd97966",
+          "result_content_chars": 7239
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "**/*",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data"
+          },
+          "call_raw_line": 20,
+          "result_raw_line": 21,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "fa911cdf8830bf0882fbe765b51bde062dc33fd4800b16dc301d1bcdf74b1581",
+          "result_content_chars": 8887
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "kr/약관의규제에관한법률/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr"
+          },
+          "call_raw_line": 28,
+          "result_raw_line": 29,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "fe746d7716f407ec1c63bb7b07fdacb43864dca8f640b449db81111df3f222a9",
+          "result_content_chars": 150
+        },
+        {
+          "tool": "Glob",
+          "input": {
+            "pattern": "kr/민법/*.md",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr"
+          },
+          "call_raw_line": 30,
+          "result_raw_line": 32,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "4cee661c6a341a4aaa5ea6551445ee3af47d12ed140e1ccffbb071be7ce64cb8",
+          "result_content_chars": 66
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^제7조|^제6조|^제8조|시행일|법령명|^---|^제2조",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-A": 14,
+            "head_limit": 90
+          },
+          "call_raw_line": 33,
+          "result_raw_line": 34,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "7717b4a6069702dfb76a06712fcc3e59458ce58988bc4631044295ad8c929c5b",
+          "result_content_chars": 1789
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^제393조|^제398조|^제103조",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "output_mode": "content",
+            "-A": 12
+          },
+          "call_raw_line": 35,
+          "result_raw_line": 36,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "b5bf71bc9d023cf78b27ca0fa9f6fd70e7ad8290953dd870a2c7b8cf01160eb7",
+          "result_content_chars": 736
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^##### 제7조|^##### 제6조|^##### 제14조",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/약관의규제에관한법률/법률.md",
+            "output_mode": "content",
+            "-A": 14
+          },
+          "call_raw_line": 40,
+          "result_raw_line": 41,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "f5326ae7de074522054076fe49d150dcd2cc88c5f47b6903ffa7beab6f9cf8d3",
+          "result_content_chars": 1375
+        },
+        {
+          "tool": "Grep",
+          "input": {
+            "pattern": "^##### 제393조|^##### 제398조",
+            "path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "output_mode": "content",
+            "-A": 12
+          },
+          "call_raw_line": 42,
+          "result_raw_line": 43,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "99517121ce3483d1ce925c37074b890906a1aadd253bff5a9a8f7c9d7cc9ae8d",
+          "result_content_chars": 769
+        },
+        {
+          "tool": "Read",
+          "input": {
+            "file_path": "/tmp/beopsuny-release09/fresh-mirrors/data/legalize-kr/kr/민법/법률.md",
+            "limit": 16
+          },
+          "call_raw_line": 48,
+          "result_raw_line": 49,
+          "is_error": false,
+          "scope": "shared_data",
+          "classification": "successful_in_scope",
+          "result_sha256": "7346474d0f60f9a289be810a1efac31d775cfe9d7ee0c3fd129efd40dab969a8",
+          "result_content_chars": 219
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "주 모델/effort는 argv상 일치; 이번 허용 범위에서 corrected 실제 init/modelUsage를 재검증하지 않았으므로 root의 실행 메타데이터 검토가 별도로 필요함.",
+    "글로벌 설정/메모리/훅의 실제 내부 적용과 모든 상속 환경변수는 unknown. 명시 argv/settings hash의 일치까지만 확인됨.",
+    "현시점 mirror HEAD와 clean 확인은 통과. 전체 실행 기간의 순간적 파일 변경 부재를 단일 사후 snapshot만으로 증명하지는 않음.",
+    "runtime manifest 네트워크/원본 git 객체 대조는 하지 않음. 두 실행 snapshot의 manifest 완전 일치 및 내부 hash 검증 범위임.",
+    "두 경로는 기본 system/주입 방식/Skill 가용성/로딩 타이밍이 다르므로 순수 system-prompt 인과 실험이 아님.",
+    "동일 setup 바이트가 제공됐다는 사실과 최종 답변이 사건 간 사실을 올바르게 분리했다는 품질 판단은 별개임."
+  ]
+}
