@@ -185,3 +185,5 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 - 2026-09-15 평가 설계 감사: router-19 lexical 회귀를 기존 의미 검토로 이관한다. fwd12 평가 메타지시/5행 제한을 덜어낸 비교를 사전등록했으나 Claude5h 소진으로 target0이다. #323 CLOSED와 라이브 AC5 미충족을 구별한다. 상세: `tests/forward_evals/design_audit/README.md`.
 
 - 2026-09-16 입력 단순화 대조2건 완료: 양군 rc0/provider success, root·독립 모두 기존사실정직성 FAIL. 별건격리·편집가능초안·실제 외부행동 경계는 PASS, 법률정확도 REVIEW_REQUIRED. 채택 NO_GO, 확대/릴리즈 없음. `tests/forward_evals/design_audit/execution-20260916/README.md`.
+
+- 2026-09-16 평가 설명 정렬: fwd11 인용 줄·고정 면책 기대를 현행 출처 추적/형식 자유 계약에 맞췄다. Grok4.6 high LGTM, O1 PASS, corpus19/messages94 재채점 변화0. 입력/과거 출력/판정은 유지하며 모델 실행 없음.

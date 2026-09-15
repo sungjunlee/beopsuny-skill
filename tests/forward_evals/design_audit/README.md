@@ -9,7 +9,7 @@
 | router-19의 정확문자 요구·금지어 재도입 | scenarios/16_router_regression.yaml, evaluate_scenario_outputs.py의 evaluate_one_output | 이 PR에서 literal 목록을 삭제하고 기존 contract_counter_draft_boundary 의미 수신처 재사용 |
 | fwd-12 실행자 지시가 대상 입력에 섞임 | beopsuny_guardrails.yaml setup → forward_eval_harness.py context builder → run_claude_live.sh | 기존 실행 보존, 별도 단순화 비교 입력 준비 |
 | fwd-12는 사건 격리와 정보 부족 초안의 복합 사례 | 아크메 자료 없음, 별건 베타 30억 메모만 제공 | 사건 격리와 기존 사실 정직성을 별도 판정; 한 사례로 전체 업무 품질 일반화 금지 |
-| fwd-11 인용 줄·면책 기대가 현행 자유 형식 계약과 불일치 | beopsuny_guardrails.yaml expected_guardrails, output-formats.md | 후속 정렬 대상. 자동 procedure_shape_freedom 검사는 이미 은퇴했으므로 새 자동 결함으로 보고하지 않음 |
+| fwd-11 인용 줄·면책 기대가 현행 자유 형식 계약과 불일치 | beopsuny_guardrails.yaml expected_guardrails, output-formats.md | 기대 설명을 현행 출처 추적 의무와 형식 자유에 맞춤. 자동 procedure_shape_freedom 검사는 이미 은퇴했으며 원본 실패/독립 판정은 변경하지 않음 |
 | bulk 일부 검사에 영어 필드명 등 대리 지표 잔존 | forward_eval_harness.py bulk 검증 | 후속 의미 검증 이관 대상. 자료·셀별 근거 추적 의무는 보존 |
 
 유지: 미제공 사실·별첨의 창작 방지, 다른 사건 전용 방지, 실제 확인 경로·적용 시점의 정직성, 편집 가능한 요청 산출물, 작성과 송부 권한 구별. FAIL을 후보 채택 veto로 쓸 수 있으나 모든 축의 실패를 뜻하지 않는다.
