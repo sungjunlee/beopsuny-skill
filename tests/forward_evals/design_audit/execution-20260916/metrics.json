@@ -1,0 +1,23 @@
+{
+  "arms": {
+    "control": {
+      "returncode": 0,
+      "elapsed_seconds": 110.92104362501414,
+      "provider_duration_ms": 109361,
+      "list_price_usd": 0.550622,
+      "tool_calls": 9,
+      "provider_success": true,
+      "fatal_boundary_violations": []
+    },
+    "simplified": {
+      "returncode": 0,
+      "elapsed_seconds": 132.022166499999,
+      "provider_duration_ms": 130841,
+      "list_price_usd": 0.7347980000000001,
+      "tool_calls": 13,
+      "provider_success": true,
+      "fatal_boundary_violations": []
+    }
+  },
+  "notes": "n=1 per arm, sequential order/cache; time/tools/list price descriptive only, no causal cost claim or Max cash charge. Historic extractor flags preserved separately from effective permission audit."
+}

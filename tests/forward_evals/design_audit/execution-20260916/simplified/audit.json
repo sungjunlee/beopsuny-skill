@@ -1,0 +1,41 @@
+{
+  "retrospective_boundary_violations": [],
+  "provider": {
+    "is_error": false,
+    "duration_ms": 130841,
+    "total_cost_usd": 0.7347980000000001,
+    "stop_reason": "end_turn",
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 944,
+        "outputTokens": 28,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001084,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5": {
+        "inputTokens": 20,
+        "outputTokens": 7898,
+        "cacheReadInputTokens": 278108,
+        "cacheCreationInputTokens": 39711,
+        "webSearchRequests": 0,
+        "costUSD": 0.733714,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 2723,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "postrun_frozen_hash_check": "PASS",
+  "extractor_note": "Historical extractor flags workspace Glob and denied parent search outside plugin; preregistered effective roots include workspace/data and denied-search recovery. Flags preserved, full tool-result audit has no fatal violation."
+}

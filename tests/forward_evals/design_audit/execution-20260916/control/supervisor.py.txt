@@ -1,0 +1,56 @@
+from pathlib import Path
+import subprocess,json,hashlib,os,time,signal,datetime,importlib.util
+R=Path(__file__).parent
+P=json.loads((R/'design-control-plan.json').read_text())
+ROOTS=[Path('/private/tmp/beopsuny-loading-study-20260912/native/plugin').resolve(),Path('/tmp/beopsuny-release09/fresh-mirrors/data').resolve(),Path(P['cwd']).resolve()]
+def check_result(call,block):
+ name=call.get('name');arg=call.get('input',{})
+ if name=='Skill':return None if arg.get('skill')=='beopsuny:beopsuny' else 'UNEXPECTED_SKILL'
+ if name not in ['Read','Glob','Grep']:return 'UNEXPECTED_TOOL'
+ p=Path(arg.get('file_path') or arg.get('path') or P['cwd']);p=(Path(P['cwd'])/p if not p.is_absolute() else p).resolve()
+ inside=any(p.is_relative_to(root) for root in ROOTS)
+ if not block.get('is_error'):return None if inside else 'SUCCESS_OUTSIDE_SCOPE'
+ txt=json.dumps(block.get('content','')).lower()
+ if not inside and 'outside' in txt and '--restricted confines' in txt:return None
+ if any(x in txt for x in ['permission','denied','approval','restricted','authentication','quota','budget']):return 'OTHER_PERMISSION_AUTH_ERROR'
+ return None
+
+def verify():
+ assert subprocess.check_output(['claude','--version'],text=True).strip()=='2.1.271 (Claude Code)'
+ a=json.loads(subprocess.check_output(['claude','auth','status'],text=True));assert a.get('loggedIn') and a.get('subscriptionType')=='max' and a.get('authMethod')=='claude.ai'
+ for n,h in P['plugin_manifest'].items():assert hashlib.sha256((ROOTS[0]/n).read_bytes()).hexdigest()==h,n
+ for x in P['unchanged_inputs'].values():assert hashlib.sha256(Path(x['path']).read_bytes()).hexdigest()==x['sha256']
+ for n,h in [('legalize-kr','99d67dea732b6f4d6614023f7bb062f4064aab13'),('precedent-kr','d0db51cb99834ab3d2813dc37673b4534d46bb42')]:
+  d=ROOTS[1]/n;assert subprocess.check_output(['git','-C',str(d),'rev-parse','HEAD'],text=True).strip()==h;assert not subprocess.check_output(['git','-C',str(d),'status','--porcelain'],text=True).strip()
+
+def run():
+ verify();out=R/'design-control-20260916';out.mkdir(exist_ok=False);now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat();began=time.monotonic();calls={};recoveries=[];reason=None
+ (out/'plan.json').write_text(json.dumps(P,ensure_ascii=False,indent=2)+'\n');execution={'started_at':now(),'target_calls':1}
+ with (out/'stdout.raw.jsonl').open('wb') as stdout,(out/'stderr.raw.log').open('wb') as stderr:
+  proc=subprocess.Popen(P['argv'],cwd=P['cwd'],env={**os.environ,**P['environment_overrides']},stdin=subprocess.DEVNULL,stdout=stdout,stderr=stderr,start_new_session=True);offset=0
+  while proc.poll() is None:
+   time.sleep(.5);raw=(out/'stdout.raw.jsonl').read_bytes()
+   for line in raw[offset:].splitlines(keepends=True):
+    if not line.endswith(b'\n'):break
+    offset+=len(line)
+    try:e=json.loads(line)
+    except ValueError:continue
+    for b in (e.get('message',{}).get('content',[]) if isinstance(e.get('message'),dict) and isinstance(e['message'].get('content'),list) else []):
+     if b.get('type')=='tool_use':calls[b['id']]=b
+     if b.get('type')=='tool_result':
+      why=check_result(calls.get(b.get('tool_use_id'),{}),b)
+      if why:reason=why
+      elif b.get('is_error'):recoveries.append({'id':b.get('tool_use_id'),'classification':'recoverable_tool_error'})
+    if e.get('type')=='result' and e.get('is_error'):reason='PROVIDER_BUDGET_ERROR'
+   tail=(out/'stderr.raw.log').read_bytes()[-4096:].decode(errors='replace').lower()
+   if any(x in tail for x in ['insufficient credits','authentication failed','rate limit exceeded','invalid api key']):reason='AUTH_QUOTA_ERROR'
+   if time.monotonic()-began>612:reason='OUTER_TIMEOUT'
+   if reason:
+    os.killpg(proc.pid,signal.SIGTERM)
+    try:proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL)
+    break
+  proc.wait()
+ execution.update(returncode=proc.returncode,ended_at=now(),elapsed_seconds=time.monotonic()-began,stop_reason=reason,recoveries=recoveries);(out/'execution.json').write_text(json.dumps(execution,indent=2)+'\n')
+ spec=importlib.util.spec_from_file_location('extractor',R/'extractor.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod);plan={**P,'arm':'native','case':'external','plugin':str(ROOTS[0]),'inputs':P['unchanged_inputs']};s=mod.extract(out/'stdout.raw.jsonl',out/'public',plan,execution);print(json.dumps({'execution':execution,'skill_body':s['target_skill_body_proven'],'setup_candidates':s['setup_candidates']},ensure_ascii=False))
+if __name__=='__main__':run()
