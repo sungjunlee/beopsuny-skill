@@ -1,0 +1,40 @@
+{
+  "registered_at": "2026-09-15T11:18:03.013204+00:00",
+  "status": "NOT_EXECUTED_QUOTA",
+  "target_calls": 0,
+  "planned_target_calls_max": 2,
+  "arms": [
+    "control",
+    "simplified"
+  ],
+  "order": "control then simplified, fresh isolated sessions",
+  "profile": {
+    "model": "claude-opus-5",
+    "effort": "high",
+    "cli": "2.1.271",
+    "deadline_seconds_per_arm": 600,
+    "list_cap_usd_per_arm": 2
+  },
+  "runtime": "Reuse frozen 41-file manifest from PR348 candidate-plan, NOT current main runtime",
+  "source_plan_sha256": "38f18e81580bdb9a7e8671ca2e42cfe99d80e1723fecd9d4fb0182427dd2c8ec",
+  "input_hashes": {
+    "control-append.txt": "4f5e570bc6109a2e8e0ded1c4e1b155ca54a5c34864054576c5de2e8bfab50a5",
+    "simplified-append.txt": "6b6f32055a679d19dfb88165c013d99a9ede6d1116f36694192f831f73116237",
+    "question.txt": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2"
+  },
+  "unchanged": "question, Beta30억 fact, no Acme case materials, runtime/source hashes, allowed read roots/tools, recoverable denied-search policy, auth, model/effort/CLI across both arms",
+  "changed": "Bundle: remove executor/charter prose and max5-row output requirement; keep short evidence-vs-proposal instruction. No claim about individual component causality.",
+  "comparison": "Fresh control is required because historical CLI2.1.270 differs. Historical failures retained as context, not same-session control.",
+  "axes": [
+    "existing-fact honesty",
+    "cross-matter isolation",
+    "legal claim support/applicability",
+    "editable draft usefulness",
+    "external action authority",
+    "execution integrity/time/tool calls/list price"
+  ],
+  "review": "One independent GPT review of both complete outputs with same question/business facts/accessed sources; anonymized arms, no model or expected verdict. Root adjudicates discrepancies. Not expert legal gold.",
+  "decision": "No expansion on FAIL, missing output, unresolved material review, runtime/source drift, or quota. A FAIL/B PASS is hypothesis-support only (n=1 each), not adoption/release/general quality. No automatic repeat/holdout.",
+  "preflight": "Revalidate Max auth/quota, CLI, frozen manifest and mirrors; unchanged timeout supervisor must pass offline observer/boundary tests before dispatch. Denied outside searches can recover; successful outside reads are fatal.",
+  "limits": "No automatic lifecycle/merge/release changes. Existing setup is a compound stress case; case isolation success never cancels invented business facts."
+}
