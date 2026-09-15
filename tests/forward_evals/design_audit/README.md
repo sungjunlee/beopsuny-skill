@@ -25,3 +25,5 @@ router-19의 합성 출력과 독립 검토 원문/hash는 변경하지 않았�
 Claude CLI는 2.1.271로 바뀌어 과거 2.1.270 출력과의 직접 인과 비교를 피한다. 동일 새 CLI의 fresh control/candidate 각1회가 필요하다. 2026-09-15 20:15 KST Claude Max 5h used100%/remaining0%, reset22:30 KST; weekly56%/44%, reset9/20 01:00 KST. source=claude, dataConfidence=percentOnly, weekly pace 소진 약2일4시간으로 reset 전이지만 이번 bounded 작업 자체는 짧다. 현재 target0이며 소진을 모델 FAIL로 기록하지 않는다. 리셋 후 fresh quota/preflight 확인이 필요하다.
 
 독립 읽기 감사: native GPT eval_design_audit. 교차 코드 리뷰와 정적 검증은 PR에 기록한다. 최근 모델 일반 성능의 실측 비교나 전문가 법률 정확도 검증을 수행한 보고서는 아니다.
+
+대조군 출처는 9월9일 final-runtime-smoke가 아니라 PR348 commit `ccbc631`의 `evidence_contrast/candidate-plan.json` 실제 append다. 5행 조건은 그 실패 실행에 이미 있었으며 새 처치가 아니다. 별건이라는 기존 명시도 업무 메모 표제로 재서술했으므로 표현 변화 자체는 묶음 처치에 포함한다.

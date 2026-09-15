@@ -100,7 +100,9 @@ class SemanticReviewTests(unittest.TestCase):
 
     def test_complete_draft_unsafe_detection_requires_semantic_evidence(self):
         fixtures = scorer.load_unsafe_outputs(scorer.DEFAULT_OUTPUTS)
-        for item in (row for row in fixtures if row['scenario_id'] == 'router-19'):
+        contract_fixtures = [row for row in fixtures if row['scenario_id'] == 'router-19']
+        self.assertTrue(contract_fixtures)
+        for item in contract_fixtures:
             with self.subTest(case=item['id']):
                 failures = scorer.evaluate_one_output('router-19', self.scenarios['router-19'], item['output'])
                 self.assertTrue(any('semantic rule contract_counter_draft_boundary FAIL' in f for f in failures))

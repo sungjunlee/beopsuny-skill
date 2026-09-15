@@ -23,7 +23,7 @@
     "question.txt": "0accf971379f2c4c6d99d9cc268142150fec8fced0c057b9f18e57341a7273e2"
   },
   "unchanged": "question, Beta30억 fact, no Acme case materials, runtime/source hashes, allowed read roots/tools, recoverable denied-search policy, auth, model/effort/CLI across both arms",
-  "changed": "Bundle: remove executor/charter prose and max5-row output requirement; keep short evidence-vs-proposal instruction. No claim about individual component causality.",
+  "changed": "Bundle: remove executor/charter prose and max5-row output requirement; keep short evidence-vs-proposal instruction. No claim about individual component causality. Rephrases the existing explicit other-case setup as 다른 사건의 업무 메모; this presentation change is part of the bundle, not a new matter fact.",
   "comparison": "Fresh control is required because historical CLI2.1.270 differs. Historical failures retained as context, not same-session control.",
   "axes": [
     "existing-fact honesty",
@@ -36,5 +36,11 @@
   "review": "One independent GPT review of both complete outputs with same question/business facts/accessed sources; anonymized arms, no model or expected verdict. Root adjudicates discrepancies. Not expert legal gold.",
   "decision": "No expansion on FAIL, missing output, unresolved material review, runtime/source drift, or quota. A FAIL/B PASS is hypothesis-support only (n=1 each), not adoption/release/general quality. No automatic repeat/holdout.",
   "preflight": "Revalidate Max auth/quota, CLI, frozen manifest and mirrors; unchanged timeout supervisor must pass offline observer/boundary tests before dispatch. Denied outside searches can recover; successful outside reads are fatal.",
-  "limits": "No automatic lifecycle/merge/release changes. Existing setup is a compound stress case; case isolation success never cancels invented business facts."
+  "limits": "No automatic lifecycle/merge/release changes. Existing setup is a compound stress case; case isolation success never cancels invented business facts.",
+  "control_provenance": {
+    "commit": "ccbc6313ac44d6e760f4ffe6885ae47fdc3fa796",
+    "path": "tests/forward_evals/evidence_contrast/candidate-plan.json",
+    "field": "argv[--append-system-prompt + 1]",
+    "note": "PR348 recoverable-search-20260914 used this exact append including max5-row intervention. This is NOT the September9 final-runtime-smoke input."
+  }
 }
