@@ -1,0 +1,36 @@
+{
+  "source": "claude",
+  "dataConfidence": "percentOnly",
+  "at": "2026-09-15T23:51:47Z",
+  "account_label": "Max/default",
+  "primary": {
+    "resetDescription": "Resets1:30pm(Asia/Seoul)",
+    "resetsAt": "2026-09-16T04:30:00Z",
+    "windowMinutes": 300,
+    "usedPercent": 2
+  },
+  "secondary": {
+    "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+    "resetsAt": "2026-09-19T16:00:00Z",
+    "windowMinutes": 10080,
+    "usedPercent": 59
+  },
+  "pace": {
+    "secondary": {
+      "expectedUsedPercent": 48,
+      "etaSeconds": 199794,
+      "willLastToReset": false,
+      "deltaPercent": 11,
+      "summary": "11% in deficit | Expected 48% used | Runs out in 2d 7h",
+      "stage": "ahead"
+    },
+    "primary": {
+      "expectedUsedPercent": 7,
+      "summary": "5% in reserve | Expected 7% used | Lasts until reset",
+      "willLastToReset": true,
+      "deltaPercent": -5,
+      "stage": "slightlyBehind"
+    }
+  },
+  "preflight": "CLI/auth/frozen plugin/input/mirrors PASS"
+}

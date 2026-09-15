@@ -1,0 +1,18 @@
+{
+  "metrics.json": "eff57436b4389bb0c61552d2d51cececd4f75d7b3cb7e234dd94318ba61d85c9",
+  "summary.json": "55616dc55a64d2a7931d06fd4de620a81edb92e93b37f58e7f4140ebc9dea737",
+  "audit.json": "4490f42ce5d88a9b7d45ab565f4547fef70f8ca956b71989c7758451b1f6d2bf",
+  "independent-review.json": "7ada525818eb5d6a072d3f36809034255c76659739c747c90689c9ed873ef337",
+  "result.json": "e7ff5f271044f2d882c16c291e0997e43ec01d54bb6c27de066a9a6c544bec90",
+  "tool-trace.jsonl": "38d185eb25be5228dcad31ff2146920238bdc67fd872f5072c33244d37843ac0",
+  "quota-after.json": "d75c7a7ce481e0c1bc2cc918b6ba376b6586210acb392fa8b67e600d599d105f",
+  "preregistered.json": "03a045175a25ee84cdbb7ec8eeaacc3582a262015a30aafbdd899cd4310f3811",
+  "prompt.txt": "2f66c6b11da65f2d9109b8c628b3225dde368894371cc6f45d9e2947575ca9cb",
+  "review-input.json": "7bf5bee19e3f79d7a5085e74831a2da2de86eadb4b8afb20a18eee81a805cd50",
+  "README.md": "be350039e8aec4570c5d044900b8d603247480bdfb230f5be8daa716af920443",
+  "execution-plan.json": "f6ded0f6b8c7faba51380c329463a3bcbce21b49f894b9d57cf22387490c1754",
+  "preflight.json": "57ab8ecc62daf0f0f6a032364d468b2dccf08682c8e2785d53465e912bca2b5f",
+  "supervisor.py.txt": "d30879c5c8a147e0c8059350c287a26b8373b5365d9a12c873e62374cc73f7ac",
+  "execution.json": "d1398dd1557530f9c0dd173ce427c9deb27f6099d783fdb374d0c9115f7e5032",
+  "final-answer.md": "9db655cfb96928fcf31ed16860263e35eef72bd92511a39e8e240e0e4fe48ff0"
+}
