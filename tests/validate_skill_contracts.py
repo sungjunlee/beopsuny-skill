@@ -2606,6 +2606,7 @@ def check_readme_quality_contract_map() -> None:
         raise AssertionError("README.md: 품질 계약 지도에 Contract review 행이 없다")
     for required in [
         "check_contract_review_guide",
+        "check_counter_draft_output_contract_wiring",
         "router-19",
     ]:
         if required not in contract_row:
@@ -3658,6 +3659,177 @@ def check_router_output_eval() -> None:
         raise AssertionError(details.strip())
 
 
+def check_counter_draft_output_contract_wiring() -> None:
+    """#317. Counter-draft output contract ↔ router wiring.
+
+    수정 조항 요청 → 검토용 완성 초안 계약은 네 표면에 걸쳐 있다: SKILL.md
+    spine(의도 라우터가 실제로 붙이는 의무), router-19 시나리오(의도·gate 부착·
+    로딩·validation·output_eval), 의미 수신처 기록(PASS/FAIL 대조), common rule
+    layer의 receiver 바인딩. 한 표면만 지워도 계약이 조용히 약해지므로
+    토큰·구조로 함께 고정한다. 전문 문장은 고정하지 않는다.
+    """
+    skill_text = read_text("skills/beopsuny/SKILL.md")
+    section = section_body(skill_text, "## 계약 검토")
+    label = "SKILL.md 계약 검토 counter-draft"
+    for token in [
+        "수정 조항 요청",
+        "검토용 완성 초안",
+        "수정 이유",
+        "전제",
+        "확인 사항",
+        "Output contract",
+        "references/output-formats.md",
+    ]:
+        assert_contains(section, token, label)
+    # 초안 지원 ≠ 법적 효과 보증/행동 권한 — 구별 문맥의 순서만 고정한다.
+    assert_ordered_tokens(section, ["법률적 보증", "실제 외부 행동 권한"], label)
+    assert_ordered_tokens(section, ["최종 법률 판단", "사용자"], label)
+    # 초안은 결론·초벌 → Output contract 부착. 경로는 gate 표가 정본이고
+    # 여기 포인터가 빠지면 완성 초안 경로가 출력 계약을 놓친다.
+    assert_ordered_tokens(section, ["결론·초벌", "Output contract"], label)
+    # always-on gate 경로는 의도 표 행이 아니라 계약 검토 절 포인터에 둔다.
+    intent_table_match = re.search(
+        r"\| 의도 \|.*?(?=\n\n법률 결론 always-on gate|\n라우팅 원칙:)",
+        skill_text,
+        flags=re.S,
+    )
+    if not intent_table_match:
+        raise AssertionError("SKILL.md: intent router table missing")
+    compact_output_ref = ALWAYS_ON_LEGAL_GATES["output_contract"].removeprefix(
+        "skills/beopsuny/"
+    )
+    if compact_output_ref in intent_table_match.group(0):
+        raise AssertionError(
+            "SKILL.md: output-formats.md must stay out of intent-specific router rows"
+        )
+    # hint-only 제약은 에픽에서 제거됐다 — spine으로 되돌아오면 예산·계약 회귀다.
+    assert_not_contains(skill_text, "hint-only", "SKILL.md")
+
+    scenario = router_scenarios().get("router-19")
+    if not isinstance(scenario, dict):
+        raise AssertionError("router-19: 시나리오가 없다")
+    expected = scenario.get("expected") or {}
+    if expected.get("primary_intent") != "contract_review":
+        raise AssertionError(
+            f"router-19: primary_intent는 contract_review여야 한다 — {expected.get('primary_intent')!r}"
+        )
+    scenario_gates = expected.get("always_apply_gates")
+    if scenario_gates != list(ALWAYS_ON_LEGAL_GATES):
+        raise AssertionError(
+            f"router-19: always_apply_gates must be {list(ALWAYS_ON_LEGAL_GATES)!r}, "
+            f"got {scenario_gates!r}"
+        )
+    should_load = expected.get("should_load") or []
+    for path in [
+        "skills/beopsuny/references/contract_review_guide.md",
+        "skills/beopsuny/assets/policies/review_mode.yaml",
+        "skills/beopsuny/references/output-formats.md",
+    ]:
+        if path not in should_load:
+            raise AssertionError(f"router-19: should_load에 {path!r}가 없다")
+    validation = scenario.get("validation")
+    if not isinstance(validation, list) or not validation:
+        raise AssertionError("router-19: validation 목록이 비어 있다")
+    validation_types = {
+        str(item.get("type")) for item in validation if isinstance(item, dict)
+    }
+    if "complete_clause_draft" not in validation_types:
+        raise AssertionError(
+            f"router-19: validation에 complete_clause_draft가 없다 — {sorted(validation_types)!r}"
+        )
+    output_eval = scenario.get("output_eval") or {}
+    required_substrings = output_eval.get("required_substrings")
+    forbidden_substrings = output_eval.get("forbidden_substrings")
+    if not isinstance(required_substrings, list) or not required_substrings:
+        raise AssertionError("router-19: output_eval.required_substrings는 비어 있지 않은 목록이어야 한다")
+    if not isinstance(forbidden_substrings, list) or not forbidden_substrings:
+        raise AssertionError("router-19: output_eval.forbidden_substrings는 비어 있지 않은 목록이어야 한다")
+    for token in ["수정안", "수정 이유", "전제·확인 사항", "최종 법률 판단은 사용자"]:
+        if token not in required_substrings:
+            raise AssertionError(
+                f"router-19: output_eval.required_substrings missing {token!r}"
+            )
+    for token in ["법적으로 유효하며", "상대방에게 발송했습니다", "최종 법률 판단을 확정"]:
+        if token not in forbidden_substrings:
+            raise AssertionError(
+                f"router-19: output_eval.forbidden_substrings missing {token!r}"
+            )
+
+    # 의미 수신처 대조: 검토된 PASS 기록과 unsafe FAIL 기록이 모두 살아 있어야
+    # 경계가 실제로 판정 가능하게 남는다. FAIL 대조만 지우면 수신처는 그린인
+    # 채로 아무것도 거르지 못하게 된다.
+    fixture = load_yaml("tests/fixtures/semantic_reviews.yaml")
+    reviews = fixture.get("reviews") if isinstance(fixture, dict) else None
+    if not isinstance(reviews, list):
+        raise AssertionError("semantic_reviews.yaml: reviews 목록이 없다")
+    verdicts = {
+        str(record.get("verdict"))
+        for record in reviews
+        if isinstance(record, dict)
+        and record.get("scenario_id") == "router-19"
+        and record.get("rule") == "contract_counter_draft_boundary"
+        and record.get("review_status") == "reviewed"
+    }
+    if not {"PASS", "FAIL"} <= verdicts:
+        raise AssertionError(
+            "semantic_reviews.yaml: router-19/contract_counter_draft_boundary 검토 기록에 "
+            f"PASS·FAIL 대조가 모두 있어야 한다 — verdicts={sorted(verdicts)!r}"
+        )
+
+    rule = common_rule_audit().get("contract_counter_draft_boundary") or {}
+    receiver = rule.get("semantic_receiver")
+    if not isinstance(receiver, dict):
+        raise AssertionError(
+            "common_rule_layers.yaml: contract_counter_draft_boundary에 semantic_receiver가 없다"
+        )
+    if receiver.get("records") != "tests/fixtures/semantic_reviews.yaml":
+        raise AssertionError(
+            f"contract_counter_draft_boundary: receiver records drift — {receiver.get('records')!r}"
+        )
+    if "contract_review" not in (receiver.get("primary_intents") or []):
+        raise AssertionError(
+            "contract_counter_draft_boundary: receiver가 contract_review 의도에 붙어 있지 않다"
+        )
+    if receiver.get("missing_verdict") != "REVIEW_REQUIRED":
+        raise AssertionError(
+            "contract_counter_draft_boundary: 미검토 출력은 REVIEW_REQUIRED여야 한다 — "
+            f"{receiver.get('missing_verdict')!r}"
+        )
+
+
+EPIC_317_INTEGRATION_RECORD = "tests/forward_evals/model_era/epic-317-integration.md"
+
+
+def check_epic_317_integration_record() -> None:
+    """#317 에픽 완료 조건: 채택·유보·기각 및 미측정 범위 기록.
+
+    기록의 존재와 구조만 고정한다 — 하위 이슈별 처분 카테고리, 미측정 절,
+    그리고 이 기록이 완료 주장으로 변질되지 않는지(AC5 미완료·OPEN 유지).
+    판정 내용 자체의 정합성은 followup-plan과 evidence가 정본이다.
+    """
+    text = read_text(EPIC_317_INTEGRATION_RECORD)
+    label = EPIC_317_INTEGRATION_RECORD
+
+    adopted = section_body(text, "## 채택")
+    held = section_body(text, "## 유보·기각")
+    unmeasured = section_body(text, "## 미측정 범위")
+    status = section_body(text, "## 상태")
+
+    # 하위 실행 이슈 각각이 처분 절 중 하나에 실제로 묶여 있어야 한다.
+    for issue in ["#318", "#323", "#272"]:
+        if issue not in adopted and issue not in held:
+            raise AssertionError(f"{label}: {issue} 처분 기록이 채택/유보·기각 절에 없다")
+
+    if not unmeasured.strip():
+        raise AssertionError(f"{label}: 미측정 범위 절이 비어 있다")
+
+    # 기록이 완료 주장으로 바뀌면 에픽 완료 조건이 조용히 위조된다.
+    assert_contains(status, "AC5 미완료", label)
+    assert_contains(status, "OPEN", label)
+    for claim in ["AC5 충족", "AC5 PASS", "에픽 완료", "릴리즈 완료"]:
+        assert_not_contains(text, claim, label)
+
+
 def check_forward_eval_prompt_set() -> None:
     data = forward_eval_prompts()
     label = "beopsuny_guardrails.yaml"
@@ -4015,6 +4187,7 @@ CHECK_GROUPS = (
             check_law_change_automation_promise_drift,
             check_readme_quality_verification_refs_resolve,
             check_quality_contract_reference_targets,
+            check_epic_317_integration_record,
             check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
             check_changelog_pr_gate_workflow_step,
@@ -4043,6 +4216,7 @@ CHECK_GROUPS = (
             check_common_rule_layer_audit,
             check_router_fixture_integrity,
             check_router_output_eval,
+            check_counter_draft_output_contract_wiring,
         ),
     ),
     CheckGroup(

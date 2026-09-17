@@ -615,9 +615,14 @@ scenarios:
       12. Limitation of Liability. Supplier shall not be liable for any damages whatsoever.
     expected:
       primary_intent: contract_review
+      always_apply_gates:
+        - citation_verification
+        - self_verification
+        - output_contract
       should_load:
         - skills/beopsuny/references/contract_review_guide.md
         - skills/beopsuny/assets/policies/review_mode.yaml
+        - skills/beopsuny/references/output-formats.md
       response_contains:
         - 수정안
         - 수정 이유
