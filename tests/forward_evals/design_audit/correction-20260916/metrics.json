@@ -1,0 +1,13 @@
+{
+  "extra_correction": {
+    "elapsed_seconds": 166.43582545800018,
+    "tool_calls": 16,
+    "list_price_usd": 0.9240650000000001
+  },
+  "generation_plus_correction": {
+    "elapsed_seconds_sum": 277.3568690830143,
+    "tool_calls": 25,
+    "list_price_usd_sum": 1.474687
+  },
+  "limits": "One selected initial control output, no causal cost estimate. List prices not Max cash charges; excludes independent review cost and user edit burden."
+}

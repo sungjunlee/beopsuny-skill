@@ -1,0 +1,21 @@
+{
+  "at": "2026-09-15T23:51:29.661675+00:00",
+  "authorization": "User 승인 for one separate correction call plus independent review",
+  "status": "PREREGISTERED_NOT_EXECUTED",
+  "target_calls_max": 1,
+  "source_selection": "First valid output in preregistered control-then-simplified pair (control). No regenerate/cherry-pick.",
+  "source_answer_sha256": "6353196ff5ee81091898ed485ed4b2480efa18d5652acb2755d8e9346fc29cd4",
+  "prompt_sha256": "2f66c6b11da65f2d9109b8c628b3225dde368894371cc6f45d9e2947575ca9cb",
+  "source_execution": "../execution-20260916/control",
+  "model": "claude-opus-5",
+  "effort": "high",
+  "cli": "2.1.271",
+  "hard_deadline_seconds": 600,
+  "list_cap_usd": 2,
+  "setup": "Fresh session; frozen runtime/mirrors/permissions unchanged. simplified append reused; original answer is supplied as data, no reviewer verdicts or exact error list. Allowed to re-read existing legal mirrors.",
+  "task_difference": "Post-generation correction, not a new generation arm. Compare to immutable input answer; cannot isolate extra tokens/time versus independent-review framing.",
+  "review": "One independent GPT review of input/output with original facts and actual source spans, no expected verdict. Separate eliminated errors, retained errors, new errors, unjustified deletions, draft usefulness, legal support and observed external action.",
+  "adoption": "Any material existing/new factual error or useful draft collapse -> NO_GO. If clean within evidence -> limited feasibility signal only; legal uncertainty remains REVIEW_REQUIRED. No runtime adoption/release from n=1.",
+  "stop": "No automatic target retry/repeat/holdout. Setup/auth/quota/timeout failure is not model quality FAIL.",
+  "supervisor_sha256": "d30879c5c8a147e0c8059350c287a26b8373b5365d9a12c873e62374cc73f7ac"
+}

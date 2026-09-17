@@ -1,0 +1,18 @@
+{
+  "probe": "검토용 조항안과 변경 근거를 제시합니다. “법적으로 유효하며”라고 보증하지 않습니다.",
+  "scope": "scorer classification, not a complete useful answer or legal gold",
+  "before": [
+    "router-19: missing required substring '수정안'",
+    "router-19: missing required substring '수정 이유'",
+    "router-19: missing required substring '전제·확인 사항'",
+    "router-19: missing required substring '고의'",
+    "router-19: missing required substring '중과실'",
+    "router-19: missing required substring '[UNVERIFIED]'",
+    "router-19: missing required substring '최종 법률 판단은 사용자'",
+    "router-19: contains forbidden substring '법적으로 유효하며'",
+    "REVIEW_REQUIRED: router-19: semantic rule contract_counter_draft_boundary REVIEW_REQUIRED — missing or unreviewed semantic record"
+  ],
+  "after": [
+    "REVIEW_REQUIRED: router-19: semantic rule contract_counter_draft_boundary REVIEW_REQUIRED — missing or unreviewed semantic record"
+  ]
+}

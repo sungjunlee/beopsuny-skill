@@ -1,0 +1,42 @@
+{
+  "provider": {
+    "is_error": false,
+    "duration_ms": 164973,
+    "total_cost_usd": 0.9240650000000001,
+    "stop_reason": "end_turn",
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 4056,
+        "outputTokens": 32,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.004215999999999999,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5": {
+        "inputTokens": 22,
+        "outputTokens": 10437,
+        "cacheReadInputTokens": 371648,
+        "cacheCreationInputTokens": 47299,
+        "webSearchRequests": 0,
+        "costUSD": 0.9198490000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 3774,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "boundary_violations": [],
+  "tool_calls": 16,
+  "postrun_hashes": "PASS",
+  "extractor_flags": "Preserved old plugin-only flags. Effective preregistered roots include workspace and data; denied parent search recovered. All successful results within allowed roots."
+}

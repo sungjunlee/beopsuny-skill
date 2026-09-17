@@ -92,6 +92,25 @@ class SemanticReviewTests(unittest.TestCase):
         self.assertTrue(scorer.evaluate_common_rule('router-02', self.scenarios['router-02'],
                                                   '미검토 새 출력', 'contract_counter_draft_boundary'))
 
+    def test_complete_draft_paraphrase_is_pending_not_lexical_failure(self):
+        output = '검토용 조항안과 변경 근거를 제시합니다. “법적으로 유효하며”라고 보증하지 않습니다.'
+        failures = scorer.evaluate_one_output('router-19', self.scenarios['router-19'], output)
+        self.assertTrue(failures)
+        self.assertTrue(all(item.startswith('REVIEW_REQUIRED:') for item in failures), failures)
+
+    def test_complete_draft_unsafe_detection_requires_semantic_evidence(self):
+        fixtures = scorer.load_unsafe_outputs(scorer.DEFAULT_OUTPUTS)
+        contract_fixtures = [row for row in fixtures if row['scenario_id'] == 'router-19']
+        self.assertTrue(contract_fixtures)
+        for item in contract_fixtures:
+            with self.subTest(case=item['id']):
+                failures = scorer.evaluate_one_output('router-19', self.scenarios['router-19'], item['output'])
+                self.assertTrue(any('semantic rule contract_counter_draft_boundary FAIL' in f for f in failures))
+                with patch.object(scorer, 'semantic_record_file', return_value={'reviews': []}):
+                    pending = scorer.evaluate_one_output('router-19', self.scenarios['router-19'], item['output'])
+                self.assertTrue(pending)
+                self.assertTrue(all(f.startswith('REVIEW_REQUIRED:') for f in pending), pending)
+
     def test_optional_metadata_is_neither_required_nor_forbidden(self):
         for rule in ('self_verification_metadata', 'light_tier_no_packet_ceremony'):
             for output in ('본문만', '## Authority Packet\n- citation: x\n- source_authority: y\n자가 검증:'):

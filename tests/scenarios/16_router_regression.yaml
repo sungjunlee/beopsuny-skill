@@ -631,18 +631,7 @@ scenarios:
     validation:
       - type: complete_clause_draft
         description: 요청한 조항의 편집 가능한 초안과 이유·전제를 주되 유효성 보증·최종 판단을 대신하지 않는지
+    # Contract intent selects the existing hash-bound semantic review receiver.
+    # Equivalent prose and quoted/negated guarantees are not lexical failures.
     output_eval:
-      required_substrings:
-        - 수정안
-        - 수정 이유
-        - 전제·확인 사항
-        - 고의
-        - 중과실
-        - "[UNVERIFIED]"
-        - 최종 법률 판단은 사용자
-      forbidden_substrings:
-        - 법적으로 유효하며
-        - 분쟁 결과를 보장
-        - 상대방에게 발송했습니다
-        - 최종 법률 판단을 확정
-        - 현행 법정 의무다
+      common_rules: []

@@ -1,0 +1,14 @@
+{
+  "started_at": "2026-09-15T23:30:51.893011+00:00",
+  "target_calls": 1,
+  "returncode": 0,
+  "ended_at": "2026-09-15T23:32:42.814731+00:00",
+  "elapsed_seconds": 110.92104362501414,
+  "stop_reason": null,
+  "recoveries": [
+    {
+      "id": "toolu_01F9CAap6Z5dUHYBf2vasD5d",
+      "classification": "recoverable_tool_error"
+    }
+  ]
+}

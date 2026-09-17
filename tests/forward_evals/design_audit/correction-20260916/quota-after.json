@@ -1,0 +1,35 @@
+{
+  "account_label": "Max/default",
+  "source": "claude",
+  "dataConfidence": "percentOnly",
+  "at": "2026-09-15T23:56:20Z",
+  "primary": {
+    "resetsAt": "2026-09-16T04:30:00Z",
+    "resetDescription": "Resets1:30pm(Asia/Seoul)",
+    "usedPercent": 4,
+    "windowMinutes": 300
+  },
+  "secondary": {
+    "resetsAt": "2026-09-19T16:00:00Z",
+    "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+    "usedPercent": 59,
+    "windowMinutes": 10080
+  },
+  "pace": {
+    "primary": {
+      "willLastToReset": true,
+      "expectedUsedPercent": 9,
+      "summary": "5% in reserve | Expected 9% used | Lasts until reset",
+      "stage": "slightlyBehind",
+      "deltaPercent": -5
+    },
+    "secondary": {
+      "willLastToReset": false,
+      "expectedUsedPercent": 48,
+      "summary": "11% in deficit | Expected 48% used | Runs out in 2d 7h",
+      "etaSeconds": 199983,
+      "stage": "ahead",
+      "deltaPercent": 11
+    }
+  }
+}

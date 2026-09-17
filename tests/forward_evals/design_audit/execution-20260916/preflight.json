@@ -1,0 +1,39 @@
+{
+  "at": "2026-09-15T23:31:08.059272+00:00",
+  "CLI": "2.1.271",
+  "auth": "Max/claude.ai existing authenticated session",
+  "plugin_and_input_hashes": "PASS all frozen entries",
+  "mirrors": "PASS exact preregistered HEADs clean",
+  "boundary_tests": "PASS5",
+  "quota": {
+    "source": "claude",
+    "dataConfidence": "percentOnly",
+    "updatedAt": "2026-09-15T23:30:14Z",
+    "primary": {
+      "resetsAt": "2026-09-15T23:30:00Z",
+      "resetDescription": "Resets8:30am(Asia/Seoul)",
+      "usedPercent": 15,
+      "windowMinutes": 300
+    },
+    "secondary": {
+      "resetsAt": "2026-09-19T16:00:00Z",
+      "resetDescription": "ResetsSep20at1am(Asia/Seoul)",
+      "usedPercent": 59,
+      "windowMinutes": 10080
+    },
+    "pace": {
+      "secondary": {
+        "willLastToReset": false,
+        "summary": "12% in deficit | Expected 47% used | Runs out in 2d 7h",
+        "etaSeconds": 198894,
+        "expectedUsedPercent": 47,
+        "stage": "ahead",
+        "deltaPercent": 12
+      }
+    }
+  },
+  "supervisor_hashes": {
+    "control": "6cef0a437d99706117b9521e58ede7d9eb9772a98f9f40d64be801e3d74f8261",
+    "simplified": "e639e739009e80a5309a18452edb046a2e29bc9f2da76f5581005f976daaa979"
+  }
+}

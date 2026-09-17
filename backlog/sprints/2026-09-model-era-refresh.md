@@ -181,3 +181,11 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 - 2026-09-12 사용자 정정 반영: 가족 일반 사용/피벗 트랙 #341 철회, #323 AC5 원문 복원, #317/#340 및 knowledge #79의 방향 정렬. #316 완료 상태는 유지한다. PR #342의 해당 인계 문구를 정정했고 새 모델 실행·자산 승격은 없다.
 
 - 2026-09-14: #323 완성 초안·수정 제안 계약을 합성 fixture(`router-19`)로 고정했다. 실제 법원·NAS 자료와 라이브 모델 재실행은 없다. AC5·릴리즈는 미완료이며 #340은 열지 않았다.
+
+- 2026-09-15 평가 설계 감사: router-19 lexical 회귀를 기존 의미 검토로 이관한다. fwd12 평가 메타지시/5행 제한을 덜어낸 비교를 사전등록했으나 Claude5h 소진으로 target0이다. #323 CLOSED와 라이브 AC5 미충족을 구별한다. 상세: `tests/forward_evals/design_audit/README.md`.
+
+- 2026-09-16 입력 단순화 대조2건 완료: 양군 rc0/provider success, root·독립 모두 기존사실정직성 FAIL. 별건격리·편집가능초안·실제 외부행동 경계는 PASS, 법률정확도 REVIEW_REQUIRED. 채택 NO_GO, 확대/릴리즈 없음. `tests/forward_evals/design_audit/execution-20260916/README.md`.
+
+- 2026-09-16 평가 설명 정렬: fwd11 인용 줄·고정 면책 기대를 현행 출처 추적/형식 자유 계약에 맞췄다. Grok4.6 high LGTM, O1 PASS, corpus19/messages94 재채점 변화0. 입력/과거 출력/판정은 유지하며 모델 실행 없음.
+
+- 2026-09-16 승인 교정1회 완료: rc0/provider success, root·독립 FAIL. 수정안 검토 단정 잔존 및 과거 검색 부재의 새 오류. 추가166.436초/$0.924065 list, 채택NO_GO·확대없음. `tests/forward_evals/design_audit/correction-20260916/README.md`.

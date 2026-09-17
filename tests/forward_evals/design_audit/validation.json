@@ -1,0 +1,58 @@
+{
+  "unit": "138 tests OK, final configuration; 18 targeted tests OK after nonempty-fixture assertion",
+  "O1": "PASS after removing retired common rule attachment; intent-based semantic receiver retained",
+  "O2": "PASS 12 outputs,16 unsafe fixtures",
+  "rescore": "PASS corpus19/messages94 delta0",
+  "changelog_gate": "PASS actual base49a2253",
+  "cross_review": {
+    "provider": "grok",
+    "model": "grok-4.6",
+    "effort": "high",
+    "initial_seconds": 374.542,
+    "rereview_seconds": 68.776,
+    "result": "LGTM; initial baseline-confusion P1 withdrawn, P2 fixture assertion and bundled presentation disclosure fixed",
+    "legal_gold": false
+  },
+  "quota": {
+    "claude": {
+      "at": "2026-09-15T11:15:02Z",
+      "account_label": "Max/default",
+      "source": "claude",
+      "dataConfidence": "percentOnly",
+      "5h_used": 100,
+      "5h_remaining": 0,
+      "5h_reset": "2026-09-15T13:30:00Z",
+      "weekly_used": 56,
+      "weekly_remaining": 44,
+      "weekly_reset": "2026-09-19T16:00:00Z",
+      "monthly": "unknown",
+      "pace_eta_seconds": 190223
+    },
+    "codex": {
+      "at": "2026-09-15T11:13:37Z",
+      "account_label": "Pro/default",
+      "source": "oauth",
+      "dataConfidence": "exact",
+      "weekly_used": 47,
+      "weekly_remaining": 53,
+      "weekly_reset": "2026-09-21T13:03:36Z",
+      "5h": "unknown",
+      "monthly": "unknown",
+      "pace_eta_seconds": 89995
+    },
+    "grok": {
+      "at": "2026-09-15T11:25:51Z",
+      "account_label": "default",
+      "source": "grok-cli-proxy",
+      "dataConfidence": "unknown",
+      "provided_window_used": 40,
+      "provided_window_remaining": 60,
+      "window_duration": "unknown",
+      "reset": "2026-09-20T15:42:04Z",
+      "5h_weekly_monthly": "not separately identified",
+      "pace_eta_seconds": 236141,
+      "cash_cost": "not measured"
+    }
+  },
+  "target_calls": 0
+}

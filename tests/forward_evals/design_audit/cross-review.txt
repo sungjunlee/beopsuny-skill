@@ -1,0 +1,41 @@
+평가 설계 리뷰부터 하겠습니다. 스킬과 현재 diff·design_audit를 읽고, 라우터 리터럴 제거·사전등록 입력 단순화가 FAIL/REVIEW_REQUIRED와 기존 PR348 실패를 지키는지 확인합니다.요청이 이 세션에서 직접 읽기 전용 리뷰이므로 위임 없이 diff와 `design_audit`를 확인합니다.diff와 `design_audit` 산출물을 읽고, 라우터 리터럴·사전등록 입력·기존 FAIL 유지 여부를 대조합니다.라우터-19 의미 검토, 시나리오 연결, PR348 실패 유지 여부를 코드에서 추적합니다.`common_rules: []`가 실제 의미 수신처를 어떻게 고르는지, router-19 unsafe fixture와 PR348 실패가 어디에 묶이는지 확인합니다.PR348 실패 기록과 fwd-12 입력이 사전등록 단순화와 어떻게 연결되는지 확인합니다.fwd-12 실제 컨텍스트 조립과 PR348 실패 기록, 해시 정합을 대조합니다.해시와 하네스 경로를 대조했습니다. 라우터-19 의미 FAIL 유지는 테스트가 잡고, 사전등록 비교의 5행 표는 기존 실패 입력에 없는 새 처치입니다.
+
+**P1 1건.** 라우터-19 리터럴 제거·기존 PR348 FAIL 보존·미실행 표기는 문제 없습니다.
+
+## P1
+
+**`tests/forward_evals/design_audit/control-append.txt:12-13`** — 대조군에 5행 근거표를 새로 넣었습니다.
+
+인용한 경로(`beopsuny_guardrails.yaml` setup → `forward_eval_harness.py` context builder → `run_claude_live.sh`)와 보존된 fwd-12 재구성 입력(`final-runtime-smoke-outputs.json`의 `reconstructed_context`, `prompt_sha256` = `question.txt`)에는 이 문장이 없습니다. setup.md와 환경 suffix만 있습니다.
+
+이 문장은 미제공 사실을 표로 대조하라고 해서, PR348의 기존 사실 정직성 FAIL을 가릴 수 있습니다. 지금 설계는 「실패한 입력에서 실행자 문구를 덜어낸 비교」가 아니라 「실패 입력 + 새 5행 처치 vs 단순화」입니다. `preregistered.json`의 `changed`와 README 23행의 「5행 표 강제만 묶어서 덜어낸다」는 이 점을 숨깁니다. 실측 결과는 주장하지 않습니다(`status: NOT_EXECUTED_QUOTA`, `target_calls: 0`).
+
+최소 수정: 대조군에서 5행 블록을 빼서 setup + 공통 환경 suffix만 남기거나, 5행을 별도 처치 팔로 표시하고 기존 실패 입력이 아니라고 적습니다. 문구는 고정하지 않아도 됩니다.
+
+## P2
+
+**`tests/forward_evals/design_audit/simplified-append.txt:1`** — 베타 30억을 「다른 사건의 업무 메모」로 바꿨습니다. `preregistered.json` `changed`에는 실행자/헌장 산문과 5행 제거만 있습니다. 이 표지는 사건 격리를 쉽게 만듭니다. 역사 입력과 같은 사실 한 줄만 두거나, 추가 표지를 `changed`에 적습니다.
+
+**`tests/test_semantic_reviews.py:103-110`** — `router-19` unsafe fixture가 없으면 루프가 빈 채로 통과합니다. 필터 결과가 비어 있지 않은지만 확인하면 됩니다. 개수·문구 고정은 필요 없습니다.
+
+## 유지되는 것
+
+리터럴 삭제 후 `primary_intent: contract_review`가 기존 `contract_counter_draft_boundary` 수신처를 고릅니다. 해시가 맞는 unsafe 3건은 의미 FAIL, 미검토 출력은 `REVIEW_REQUIRED`입니다. 합성 출력·검토 원문/hash는 그대로입니다.
+
+추가 테스트가 이를 증명합니다.
+
+- `test_complete_draft_paraphrase_is_pending_not_lexical_failure` (95-99): 환언·부정 인용은 금지어 FAIL이 아니라 전부 `REVIEW_REQUIRED:`입니다.
+- `test_complete_draft_unsafe_detection_requires_semantic_evidence` (101-110): 기록이 있으면 의미 FAIL, 비우면 `REVIEW_REQUIRED`입니다.
+
+fwd-12 증거·판정 파일은 이 diff가 건드리지 않아 PR348 FAIL은 그대로입니다. 사전등록은 실측 비교를 주장하지 않습니다.
+
+
+--- Re-review: earlier P1 withdrawn; P2 fixes accepted ---
+
+**LGTM.** 잘못된 베이스라인으로 잡았던 이전 P1은 철회한다.
+
+PR348 `ccbc631` 제어 append와 현재 control-append는 붙여넣은 전문이 같다. 최대 5행 개입, charter Decision, 건 B 설정, 평가 환경/도구 제약이 그대로다. `control_provenance`가 이 출처를 명시하고 September9 final-runtime-smoke가 아님을 밝힌 점도 맞다.
+
+이전 P2도 해소됐다. 다른 사건 업무 메모 재서술은 `changed` 번들에 포함되고, 새 사건 사실이 아니라고 적혀 있다. `router-19` 픽스처는 빈 목록이면 더 이상 통과하지 않는다.
+
+남은 구체적 결함은 이 재료만으로는 없다. 미실행·쿼터, n=1, 번들 인과 비주장, 법률 gold 비주장은 계획 문면과 같다.
