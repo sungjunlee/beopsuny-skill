@@ -3737,23 +3737,14 @@ def check_counter_draft_output_contract_wiring() -> None:
         raise AssertionError(
             f"router-19: validation에 complete_clause_draft가 없다 — {sorted(validation_types)!r}"
         )
-    output_eval = scenario.get("output_eval") or {}
-    required_substrings = output_eval.get("required_substrings")
-    forbidden_substrings = output_eval.get("forbidden_substrings")
-    if not isinstance(required_substrings, list) or not required_substrings:
-        raise AssertionError("router-19: output_eval.required_substrings는 비어 있지 않은 목록이어야 한다")
-    if not isinstance(forbidden_substrings, list) or not forbidden_substrings:
-        raise AssertionError("router-19: output_eval.forbidden_substrings는 비어 있지 않은 목록이어야 한다")
-    for token in ["수정안", "수정 이유", "전제·확인 사항", "최종 법률 판단은 사용자"]:
-        if token not in required_substrings:
-            raise AssertionError(
-                f"router-19: output_eval.required_substrings missing {token!r}"
-            )
-    for token in ["법적으로 유효하며", "상대방에게 발송했습니다", "최종 법률 판단을 확정"]:
-        if token not in forbidden_substrings:
-            raise AssertionError(
-                f"router-19: output_eval.forbidden_substrings missing {token!r}"
-            )
+    # #349: router-19는 lexical 체크 대신 hash-bound semantic review를 사용한다.
+    # output_eval 필드가 존재하고(배선 확인용), common_rules가 빈 목록이어야 한다.
+    output_eval = scenario.get("output_eval")
+    if not isinstance(output_eval, dict):
+        raise AssertionError("router-19: output_eval이 없다")
+    common_rules = output_eval.get("common_rules")
+    if not isinstance(common_rules, list) or common_rules:
+        raise AssertionError("router-19: output_eval.common_rules는 빈 목록이어야 한다 (semantic review only)")
 
     # 의미 수신처 대조: 검토된 PASS 기록과 unsafe FAIL 기록이 모두 살아 있어야
     # 경계가 실제로 판정 가능하게 남는다. FAIL 대조만 지우면 수신처는 그린인
