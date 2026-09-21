@@ -1,0 +1,116 @@
+{
+  "snapshots": [
+    {
+      "provider": "claude",
+      "account_label": "Max/default",
+      "at": "2026-09-12T08:47:03Z",
+      "source": "claude",
+      "dataConfidence": "percentOnly",
+      "windows": {
+        "primary": {
+          "usedPercent": 28,
+          "windowMinutes": 300,
+          "resetsAt": "2026-09-12T10:30:00Z",
+          "resetDescription": "Resets7:30pm(Asia/Seoul)",
+          "remainingPercent": 72
+        },
+        "secondary": {
+          "usedPercent": 62,
+          "windowMinutes": 10080,
+          "resetsAt": "2026-09-12T16:00:00Z",
+          "resetDescription": "ResetsSep13at1am(Asia/Seoul)",
+          "remainingPercent": 38
+        },
+        "tertiary": "unknown"
+      },
+      "pace": {
+        "primary": {
+          "willLastToReset": true,
+          "summary": "38% in reserve | Expected 66% used | Lasts until reset",
+          "stage": "farBehind",
+          "deltaPercent": -38,
+          "expectedUsedPercent": 66
+        },
+        "secondary": {
+          "willLastToReset": true,
+          "summary": "34% in reserve | Expected 96% used | Lasts until reset",
+          "stage": "farBehind",
+          "deltaPercent": -34,
+          "expectedUsedPercent": 96
+        }
+      }
+    },
+    {
+      "provider": "codex",
+      "account_label": "Pro/default",
+      "at": "2026-09-12T08:24:15Z",
+      "source": "oauth",
+      "dataConfidence": "exact",
+      "windows": {
+        "primary": "unknown",
+        "secondary": {
+          "usedPercent": 3,
+          "resetsAt": "2026-09-19T08:10:30Z",
+          "windowMinutes": 10080,
+          "resetDescription": "Sep 19 at 5:10 PM",
+          "remainingPercent": 97
+        },
+        "tertiary": "unknown"
+      },
+      "pace": "unknown"
+    },
+    {
+      "provider": "grok",
+      "account_label": "SuperGrok Heavy/default",
+      "at": "2026-09-12T08:59:36Z",
+      "source": "grok-cli-proxy",
+      "dataConfidence": "unknown",
+      "windows": {
+        "primary": {
+          "usedPercent": 92,
+          "resetsAt": "2026-09-13T15:42:04Z",
+          "remainingPercent": 8
+        },
+        "secondary": "unknown",
+        "tertiary": "unknown"
+      },
+      "pace": "unknown"
+    }
+  ],
+  "later_claude_query": "2026-09-12T08:59Z query timed out at 45s with empty output; current unknown, not exhaustion",
+  "selection": "Grok 8% remaining: one bounded metadata/document consistency review only, no exploration/retry/large review",
+  "missing_window_length": "unknown; not assumed to be 5h/week/month",
+  "after_native_reviews": {
+    "provider": "codex",
+    "account_label": "Pro/default",
+    "at": "2026-09-12T09:06:34Z",
+    "source": "oauth",
+    "dataConfidence": "exact",
+    "weekly": {
+      "windowMinutes": 10080,
+      "resetDescription": "Sep 19 at 5:10 PM",
+      "usedPercent": 12,
+      "resetsAt": "2026-09-19T08:10:30Z",
+      "remainingPercent": 88
+    },
+    "five_hour": "unknown",
+    "monthly": "unknown",
+    "pace": "unknown"
+  },
+  "after_publication_review": {
+    "provider": "grok",
+    "account_label": "SuperGrok Heavy/default",
+    "at": "2026-09-12T09:07:17Z",
+    "source": "grok-cli-proxy",
+    "dataConfidence": "unknown",
+    "window": {
+      "usedPercent": 92,
+      "resetsAt": "2026-09-13T15:42:04Z",
+      "remainingPercent": 8
+    },
+    "window_duration": "unknown",
+    "other_windows": "unknown",
+    "pace": "unknown",
+    "execution": "1 call, grok-4.6-build, high, 96.782s, CLI USD0.02042652; cash charge unknown"
+  }
+}

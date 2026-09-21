@@ -1,0 +1,22 @@
+{
+  "at": "2026-09-12",
+  "evidence_commit": "ecdcb55",
+  "integrated_main": "66920ef",
+  "integration_commit": "b828a3f",
+  "runtime_changed_on_main": [
+    "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
+    "skills/beopsuny/assets/tools/knowledge_manifest_validate.py"
+  ],
+  "own_runtime_diff_against_main": [],
+  "quality_evaluation_base": "4022d86",
+  "runtime_limit": "Original41-file manifest belongs to study runtime; integrated main has42 runtime files. No fresh quality claim for helper extraction. All original input/output/review files unchanged.",
+  "merge_resolution": "Preserved both appended sprint handoffs; user direction correction and loading result coexist.",
+  "review_scope": "Grok reviewed immutable README/result and selected audit/verification excerpts before integration; hashes in publication-review/plan.json still match. Not whole final-head code review.",
+  "checks": {
+    "unit": "PASS136 in14.433s",
+    "O1": "PASS",
+    "O2": "PASS11 outputs/13 unsafe",
+    "rescore": "PASS19 corpus/94 messages delta0"
+  },
+  "release": "NO_GO"
+}
