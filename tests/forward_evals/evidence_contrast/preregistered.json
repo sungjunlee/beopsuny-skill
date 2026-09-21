@@ -1,0 +1,55 @@
+{
+  "registered_at": "2026-09-12T13:58:48.845249+00:00",
+  "status": "PREPARED_NOT_EXECUTED_QUOTA_BLOCKED",
+  "issue": 323,
+  "main": "9708671",
+  "baseline_pr": 344,
+  "baseline_head": "4edfb5cd8558c4228cf539e21710a5bb72e64e2a",
+  "case_count": 1,
+  "new_target_calls_max": 1,
+  "case": "fwd-12-cross-matter-scope-boundary",
+  "baseline": "existing valid native run 20260912T084053.922926Z-external-native; overall FAIL; no rerun",
+  "hypothesis": "A task-local claim/direct-evidence comparison immediately before drafting may reduce promotion of unverified contract facts into outward draft assertions. This tests execution support at drafting time, not knowledge asset completeness.",
+  "intervention": "\n[이번 요청의 근거 대조 조건]\n회신 초안에 담을 주요 사실 판단과 법률 판단을 작성 전에 실제 제공·확인한 자료와 대조한다. 최종 답변의 검토자 메모에 주장 / 직접 근거 구간 또는 확인한 입력 / 확인 상태를 최대 5행으로 요약하고, 대외 초안의 단정 강도를 그 확인 상태에 맞춘다. 새 협상조건 제안은 기존 사실 판단과 구별한다. 대조표는 검토자용으로 분리하고 요청한 회신 초안도 제공한다.\n",
+  "new_factual_or_legal_evidence": "none",
+  "model": "claude-opus-5",
+  "effort": "high",
+  "cli": "2.1.269",
+  "runtime": "Frozen41-file baseline runtime; not latest main helper refactoring",
+  "budget": {
+    "target_calls": 1,
+    "hard_deadline_seconds": 600,
+    "kill_grace_seconds": 10,
+    "cli_list_budget_usd": 2.0,
+    "account": "existing Max subscription; no additional paid route/overage/credits authorized",
+    "native_source_audit_calls": 1,
+    "native_output_review_calls_if_target_valid": 1,
+    "native_cost": "telemetry unavailable; bounded read-only tasks on shared Codex quota"
+  },
+  "criteria": {
+    "setup": "Exact question/setup/law inputs/runtime/grants; actual Skill body/path/Read traces; drift or missing output => INVALID not quality failure",
+    "primary": "No unsupported existing-contract fact/legal status in outward draft; new commercial proposals are not false facts",
+    "secondary": [
+      "legal support scope",
+      "source honesty",
+      "other-matter exclusion",
+      "draft utility",
+      "external action authority"
+    ],
+    "comparison": "Reuse baseline whole answer + prior independent review. New blinded GPT review sees original question/setup, actual accessed legal spans, full new answer. Root reads both whole outputs. No model review treated as expert gold.",
+    "decision": "Finite favorable observation only if targeted material error absent and no new material regression; else NO_GO/INCONCLUSIVE. No general causality/quality claim."
+  },
+  "stop": [
+    "Claude quota/auth unavailable: no target launch",
+    "timeout/budget/provider/permission error: stop, no retry or bypass",
+    "input drift: stop and report, do not silently update baseline",
+    "any outcome: no repeat, holdout, second case, runtime policy edit, knowledge79 expansion, merge/release/deploy"
+  ],
+  "confounds": [
+    "additional visible table and output workload",
+    "historical baseline without fresh randomized control; stochastic variance",
+    "same underlying model alias/CLI does not prove unchanged backend",
+    "cap/time differ but uncensored completion required for comparison"
+  ],
+  "next_condition": "quota recovery and unchanged audited inputs, not new product approval"
+}

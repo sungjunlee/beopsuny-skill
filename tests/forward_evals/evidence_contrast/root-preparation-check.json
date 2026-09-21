@@ -1,0 +1,40 @@
+{
+  "status": "READY_INPUTS_EXECUTION_BLOCKED_QUOTA",
+  "baseline_pre_execution_mirror_declaration": {
+    "data_root": "/tmp/beopsuny-release09/fresh-mirrors",
+    "legalize_commit": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+    "precedent_commit": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+    "pre_run_git_status": "both clean",
+    "mirror_policy": "Shared frozen snapshot; no update during pair. Verify git state and actual read-file hashes after both arms.",
+    "setup_surface": "Same fixture setup text: legacy injected context, native append-system-prompt as harness context, not personal memory.",
+    "tools": "Read,Glob,Grep both; Skill additionally native. No web in either new arm. Previous live run allowed web; this fresh pair isolates against shared frozen sources and is not a byte-exact reproduction of that entire historical adapter.",
+    "read_grant_root": "/tmp/beopsuny-release09/fresh-mirrors/data"
+  },
+  "baseline_post_execution_mirrors": [
+    {
+      "repo": "legalize-kr",
+      "checked_at": "2026-09-12T09:00:13.348447+00:00",
+      "head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "expected_head": "99d67dea732b6f4d6614023f7bb062f4064aab13",
+      "head_matches": true,
+      "worktree_clean": true,
+      "status_porcelain": ""
+    },
+    {
+      "repo": "precedent-kr",
+      "checked_at": "2026-09-12T09:00:15.385485+00:00",
+      "head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "expected_head": "d0db51cb99834ab3d2813dc37673b4534d46bb42",
+      "head_matches": true,
+      "worktree_clean": true,
+      "status_porcelain": ""
+    }
+  ],
+  "audit_scope_correction": "The independent audit inspected the per-run plan only; baseline mirror HEAD/clean evidence also exists in PR344 preregistered-amendment and corrected-control-audit. Those HEADs match the current audit.",
+  "limit": "Pre/post clean HEAD evidence and preserved actual tool-result spans support frozen-source reuse, but do not prove absence of transient modifications throughout the historical process. Preserve this observational limit.",
+  "source_audit_sha256": "cafcb88b84c1a75c56046a855b22e2c529ef6058cdc01c5829620bb4c40cd0c8",
+  "pre_execution_verification": "Original argv exactly reconstructed after removing contrast condition and budget/time caps; prompt/context/setup/grants unchanged",
+  "actual_target_calls": 0,
+  "model_quality_verdict": "NOT_MEASURED",
+  "new_runtime_changes": []
+}

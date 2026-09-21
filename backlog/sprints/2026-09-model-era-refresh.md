@@ -182,6 +182,8 @@ Draft PR: https://github.com/sungjunlee/beopsuny-skill/pull/327. 구현 commit `
 
 - 2026-09-14: #323 완성 초안·수정 제안 계약을 합성 fixture(`router-19`)로 고정했다. 실제 법원·NAS 자료와 라이브 모델 재실행은 없다. AC5·릴리즈는 미완료이며 #340은 열지 않았다.
 
+- 2026-09-14 근거 대조 진단: 동결 두 미러·runtime41파일을 복원했다. 권한 오류 즉시중단1회는 완성출력0으로 보존하고, 승인된 검색복구 조건의 추가1회는 완성출력에서 미확인 회사표준·수정안수령 단정으로 root·독립 GPT FAIL이다. CLI2.1.270/과거2.1.269 차이와 observer 오류를 한계로 남기며 확대·runtime 수정·릴리즈 없음. 최신 증거: `tests/forward_evals/evidence_contrast/recoverable-search-20260914/README.md`.
+
 - 2026-09-15 평가 설계 감사: router-19 lexical 회귀를 기존 의미 검토로 이관한다. fwd12 평가 메타지시/5행 제한을 덜어낸 비교를 사전등록했으나 Claude5h 소진으로 target0이다. #323 CLOSED와 라이브 AC5 미충족을 구별한다. 상세: `tests/forward_evals/design_audit/README.md`.
 
 - 2026-09-16 입력 단순화 대조2건 완료: 양군 rc0/provider success, root·독립 모두 기존사실정직성 FAIL. 별건격리·편집가능초안·실제 외부행동 경계는 PASS, 법률정확도 REVIEW_REQUIRED. 채택 NO_GO, 확대/릴리즈 없음. `tests/forward_evals/design_audit/execution-20260916/README.md`.
