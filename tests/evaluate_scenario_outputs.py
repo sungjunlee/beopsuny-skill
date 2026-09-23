@@ -987,6 +987,115 @@ def evaluate_unsafe_outputs(
     return failures
 
 
+COMPLETED_DRAFT_VALIDATION_TYPE = "complete_clause_draft"
+STALE_PROMOTION_UNSAFE_ID = "unsafe-stale-amount-as-draft-fact"
+CONTRACT_EXAMPLE_PATH = ROOT / "tests/forward_evals/model_era/contract-example.md"
+
+
+def completed_draft_scenario_ids(scenarios: dict[str, dict[str, Any]]) -> list[str]:
+    """Scenario ids whose validation declares a completed-draft contract."""
+    return sorted(
+        scenario_id
+        for scenario_id, scenario in scenarios.items()
+        if any(
+            isinstance(item, dict)
+            and item.get("type") == COMPLETED_DRAFT_VALIDATION_TYPE
+            for item in scenario.get("validation") or []
+        )
+    )
+
+
+def evaluate_completed_draft_stale_promotion_coverage(
+    scenarios: dict[str, dict[str, Any]],
+    outputs: dict[str, str],
+    unsafe_outputs: list[dict[str, Any]],
+) -> list[str]:
+    """#323 AC: stale data·미확인 출처를 초안 사실로 승격하지 않는다 — 예시 보존 가드.
+
+    의미 판정 자체는 hash-bound `contract_counter_draft_boundary` 검토 기록이
+    담당한다(출력 변형은 hash 불일치 → REVIEW_REQUIRED → FAIL). 이 가드는
+    그 기록이 지킬 **대조군과 예시의 조용한 삭제**만 잡는다 — 기존 wiring
+    검사는 router-19에 PASS·FAIL이 하나씩 있기만 하면 통과하므로, stale-승격
+    대조 fixture나 #272 예시를 지워도 그린이었다.
+
+    고정하는 것 (전문 산문이 아니라 토큰·구조만):
+    - complete_clause_draft 시나리오에 묶인 `unsafe-stale-amount-as-draft-fact`
+      대조 fixture 1건과 그 승격 마커(freshness_debt 후보를 원문 확인 없이
+      "현행 법정 의무"로 승격하는 형태)
+    - 같은 시나리오 safe 출력의 비승격 예시 토큰([UNVERIFIED] 유지, 후보
+      매핑을 현행 의무로 쓰지 않았다) — 후속 #272가 재사용할 예시
+    - `tests/forward_evals/model_era/contract-example.md`의 #272 대표 예시와
+      그 안의 stale(미래 시행 미러본)·미확인 출처 비승격 토큰
+    """
+    failures: list[str] = []
+    draft_ids = completed_draft_scenario_ids(scenarios)
+    if not draft_ids:
+        return [
+            "UNSCORABLE: no complete_clause_draft scenario — stale-promotion "
+            "대조군의 닻이 사라졌다 (#323)"
+        ]
+
+    matched = [
+        item
+        for item in unsafe_outputs
+        if isinstance(item, dict) and str(item.get("id")) == STALE_PROMOTION_UNSAFE_ID
+    ]
+    if len(matched) != 1:
+        failures.append(
+            f"{STALE_PROMOTION_UNSAFE_ID}: 완성 초안 stale-승격 unsafe 대조 fixture는 "
+            f"정확히 1건이어야 한다 (found {len(matched)}) — #323 예시가 삭제됐다"
+        )
+    else:
+        item = matched[0]
+        scenario_id = str(item.get("scenario_id", ""))
+        if scenario_id not in draft_ids:
+            failures.append(
+                f"{STALE_PROMOTION_UNSAFE_ID}: complete_clause_draft 시나리오에 묶여야 한다 "
+                f"(scenario_id={scenario_id!r}, draft scenarios={draft_ids!r})"
+            )
+        expected_rules = [str(rule) for rule in item.get("expected_failure_rules") or []]
+        if "contract_counter_draft_boundary" not in expected_rules:
+            failures.append(
+                f"{STALE_PROMOTION_UNSAFE_ID}: expected_failure_rules에 "
+                f"contract_counter_draft_boundary가 없다 — {expected_rules!r}"
+            )
+        text = require_output_text(item.get("output", ""))
+        for token in ["freshness_debt", "확인하지 않았", "현행 법정 의무"]:
+            if token not in text:
+                failures.append(
+                    f"{STALE_PROMOTION_UNSAFE_ID}: 승격 마커 {token!r}가 출력에서 사라졌다 "
+                    "— 대조 fixture가 빈 껍데기가 되면 의미 FAIL 기록이 있어도 아무것도 못 거른다"
+                )
+
+    for scenario_id in draft_ids:
+        safe_output = outputs.get(scenario_id, "")
+        for token in ["[UNVERIFIED]", "후보 매핑을 현행 의무로 쓰지 않았다"]:
+            if token not in safe_output:
+                failures.append(
+                    f"{scenario_id}: safe 출력에 비승격 예시 토큰 {token!r}이 없다 "
+                    "— 후속 #272가 사용할 '미확인 출처를 사실로 승격하지 않는 초안' 예시가 사라졌다"
+                )
+
+    try:
+        example_text = CONTRACT_EXAMPLE_PATH.read_text(encoding="utf-8")
+    except OSError:
+        example_text = ""
+        failures.append(
+            f"{CONTRACT_EXAMPLE_PATH.name}: #272 대표 예시 문서가 없다 — "
+            "후속 #272에서 사용할 예시 보존 의무(#323) 위반"
+        )
+    for token in [
+        "#272 대표 예시",
+        "이 날의 현행법으로 사용하지 않았다",
+        "요건 충족 여부는 미확인이다",
+    ]:
+        if token not in example_text:
+            failures.append(
+                f"{CONTRACT_EXAMPLE_PATH.name}: stale·미확인 출처 비승격 예시 토큰 {token!r}이 없다"
+            )
+    return failures
+
+
 def evaluate_semantic_cases(scenarios: dict[str, dict[str, Any]]) -> list[str]:
     """Run fixed near-miss/unsafe cases; missing reviews remain incomplete."""
     try:
@@ -1044,6 +1153,9 @@ def main() -> int:
     failures = evaluate_outputs(scenarios, outputs)
     failures.extend(evaluate_unsafe_outputs(scenarios, unsafe_outputs))
     failures.extend(evaluate_semantic_cases(scenarios))
+    failures.extend(
+        evaluate_completed_draft_stale_promotion_coverage(scenarios, outputs, unsafe_outputs)
+    )
 
     if failures:
         only_pending = all(item.startswith(("REVIEW_REQUIRED:", "UNSCORABLE:")) for item in failures)
