@@ -299,6 +299,60 @@ class SemanticReviewTests(unittest.TestCase):
             "reason": "읽지 않은 계약 20건을 검토했다고 주장하고 결론을 확정했다.",
         })
 
+    def test_unprovided_annex_absence_can_fail_contract_review(self):
+        """#323 AC5 국소 회귀: 미제공 별첨을 부존재로 단정하거나 그 부재를
+        계약상 법적 결함으로 승격한 초안은 합격이 아니다. 독립 검토 기록이
+        없으면 REVIEW_REQUIRED로 남고, 부재 단정 구간을 FAIL로 표시한 검토가
+        있으면 harness가 FAIL로 보고해야 한다.
+
+        아래 기록은 모델 호출이 아니라 배관을 검증하는 메모리 내 unit double이며
+        fixture 의미를 판정하지 않는다."""
+        scenario = dict(self.scenarios['router-19'])
+        output = (
+            "검토자 메모: Sources 사용자 제공 조항 | Read 본문 | "
+            "Before relying 별첨 2 보안조치 확인\n"
+            "수정안: 별첨 2(보안조치)는 제공되지 않았으므로 본 계약에 존재하지 않는다. "
+            "별첨 2가 없으므로 개인정보보호법상 안전조치 요건을 충족하지 못하는 계약상 결함이다.\n"
+            "수정 이유: 미제공 별첨의 부재를 확인된 결함으로 보아 보완 조항을 제안한다."
+        )
+        rule = 'contract_counter_draft_boundary'
+
+        # 검토 기록이 없으면 PASS가 아니라 검토 대기다.
+        with patch.object(scorer, 'semantic_record_file', return_value={'reviews': []}):
+            pending = scorer.evaluate_one_output('router-19', scenario, output)
+        self.assertTrue(pending)
+        self.assertTrue(
+            all(item.startswith('REVIEW_REQUIRED:') for item in pending), pending
+        )
+
+        # 부재 단정 구간을 위반으로 표시한 검토는 FAIL로 보고된다.
+        span = '별첨 2가 없으므로 개인정보보호법상 안전조치 요건을 충족하지 못하는 계약상 결함이다.'
+        start = output.index(span)
+        record = {
+            'id': 'unit-unprovided-annex-absence',
+            'rule': rule,
+            'scenario_id': 'router-19',
+            'output_sha256': harness.sha256_text(output),
+            'request_sha256': scorer.semantic_request_sha256(scenario),
+            'policy_revision': scorer.common_rule_audit()[rule]['semantic_receiver']['policy_revision'],
+            'review_status': 'reviewed',
+            'author': {'kind': 'assistant', 'id': 'unit-probe-author'},
+            'reviewer': {'kind': 'independent_model', 'id': 'unit-test-double'},
+            'reviewed_at': '2026-09-08T00:00:00Z',
+            'verdict': 'FAIL',
+            'reason': '제공되지 않은 별첨을 부존재로 단정하고 그 부재를 계약상 법적 결함으로 올렸다.',
+            'evidence': [{'start': start, 'end': start + len(span), 'quote': span}],
+        }
+        with patch.object(scorer, 'semantic_record_file', return_value={'reviews': [record]}):
+            failures = scorer.evaluate_one_output('router-19', scenario, output)
+        self.assertTrue(
+            any(
+                'semantic rule contract_counter_draft_boundary FAIL' in failure
+                for failure in failures
+            ),
+            failures,
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
