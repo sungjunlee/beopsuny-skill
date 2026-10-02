@@ -186,7 +186,8 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py \
-  tests/test_rescore_baseline.py
+  tests/test_rescore_baseline.py \
+  tests/test_eval_pack_validation.py
 $PYTHON -m py_compile \
   tests/validate_skill_contracts.py \
   tests/evaluate_scenario_outputs.py \
@@ -204,7 +205,8 @@ $PYTHON -m py_compile \
   tests/test_common_rule_layers.py \
   tests/test_suppression_window_limits.py \
   tests/test_source_reachability_outage.py \
-  tests/test_rescore_baseline.py
+  tests/test_rescore_baseline.py \
+  tests/test_eval_pack_validation.py
 git diff --check
 ```
 
