@@ -4,6 +4,7 @@
 
 ### Added
 
+- 20-scenario evaluation pack validation test (`tests/test_eval_pack_validation.py`) — 최근 추가된 20개 시나리오 평가 팩의 구조적 무결성을 자동 검증한다: scenarios와 outputs 간 ID 일관성, 필수 필드 존재, YAML 구조, 공식 링크 도메인 검증 등 12개 검사를 포함하며 CI에서 실행된다
 - 20-scenario evaluation pack for reproducible citation/retrieval testing (`tests/scenarios/20_scenario_eval_pack.yaml`, `tests/fixtures/eval_pack_outputs.yaml`)
 - Failure report sample artifact (`tests/fixtures/failure_report_sample.yaml`)
 

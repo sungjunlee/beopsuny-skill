@@ -52,6 +52,7 @@ jobs:
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
           tests/test_rescore_baseline.py
+          tests/test_eval_pack_validation.py
 
       # 스코어러/하네스 판정 로직이 바뀌면 커밋된 evidence corpus 재채점 결과가
       # baseline과 어긋난다 — 완화든 조임든 조용한 통과를 구조적으로 막는다 (#294).
@@ -79,3 +80,4 @@ jobs:
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
           tests/test_rescore_baseline.py
+          tests/test_eval_pack_validation.py
