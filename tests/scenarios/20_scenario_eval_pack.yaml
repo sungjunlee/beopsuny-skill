@@ -1,0 +1,431 @@
+# 20-scenario evaluation pack for beopsuny skill
+# 법순이 스킬의 검색/인용 재현성 평가를 위한 20개 시나리오
+#
+# 이 팩은 법령 조회, 판례 검색, 계약 검토, 컴플라이언스 체크리스트 등
+# 법순이의 핵심 워크플로우를 커버하며, 각 시나리오는 예상되는 법령/링크 계약을
+# 포함합니다. 법적 결론의 정답이 아니라 검색/인용의 재현성만 검증합니다.
+
+name: 20개 시나리오 평가 팩
+description: |
+  법순이 스킬의 검색/인용 재현성을 검증하는 20개 시나리오.
+  각 시나리오는 예상되는 법령명, 조문, 공식 링크, 출처 권위 라벨을 계약으로 가지며,
+  법적 결론의 정확성이 아니라 검색/인용의 구조적 재현성을 검증합니다.
+
+scenarios:
+  - id: eval-01
+    name: 민법 불법행위 기본 조문 확인
+    persona: 사내변호사
+    context: |
+      단순 조문 번호와 내용 확인 요청
+    question: "민법 제750조 내용과 공식 링크를 알려주세요."
+    expected:
+      primary_intent: legal_research
+      verification_tier: light
+      always_apply_gates:
+        - citation_verification
+      must_cite:
+        - law_name: 민법
+        - article: 제750조
+        - official_link_domain: law.go.kr
+    validation:
+      - type: statute_citation_reproducibility
+        description: 법령명, 조문, 공식 링크가 재현되는지
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 민법
+        - "제750조"
+        - law.go.kr
+        - "[공식 원문"
+        - "[VERIFIED]"
+
+  - id: eval-02
+    name: 개인정보보호법 동의 조항 확인
+    persona: 개인정보 담당자
+    context: |
+      개인정보 수집 시 동의 요건 확인
+    question: "개인정보 수집할 때 동의를 받아야 하는 법적 근거를 알려주세요."
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_cite:
+        - law_name: 개인정보 보호법
+        - article: 제15조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 개인정보 보호법
+        - "제15조"
+        - law.go.kr
+        - "[공식 원문"
+
+  - id: eval-03
+    name: 상법 상사소멸시효 확인
+    persona: 법무팀 실무자
+    context: |
+      상사채권 소멸시효 기간 확인
+    question: "상법상 상사채권의 소멸시효는 몇 년인가요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 상법
+        - article: 제64조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 상법
+        - "제64조"
+        - "5년"
+        - law.go.kr
+
+  - id: eval-04
+    name: 근로기준법 해고 예고 기간
+    persona: 인사 담당자
+    context: |
+      직원 해고 시 예고 기간 확인
+    question: "근로자를 해고하려면 며칠 전에 예고해야 하나요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 근로기준법
+        - article: 제26조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 근로기준법
+        - "제26조"
+        - "30일"
+        - law.go.kr
+
+  - id: eval-05
+    name: 하도급법 부당한 하도급대금 결정 금지
+    persona: 구매팀 담당자
+    context: |
+      하도급 거래 시 대금 결정 제약 확인
+    question: "하도급법에서 부당하게 낮은 하도급대금을 정하면 안 된다는 조항이 있나요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 하도급거래 공정화에 관한 법률
+        - article: 제4조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 하도급
+        - "제4조"
+        - law.go.kr
+        - 부당
+
+  - id: eval-06
+    name: 표준계약서 권장 조회
+    persona: 법무팀 실무자
+    context: |
+      공정거래위원회 표준계약서 존재 여부 확인
+    question: "소프트웨어 거래 표준계약서가 공정위에서 제공되나요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_check:
+        - source: 공정거래위원회
+        - content_type: 표준계약서
+    output_eval:
+      common_rules: []
+      required_substrings:
+        - 표준계약서
+        - 공정거래위원회
+
+  - id: eval-07
+    name: 부가가치세법 세율 확인
+    persona: 회계 담당자
+    context: |
+      일반적인 부가가치세 세율 확인
+    question: "현행 부가가치세 세율은 몇 퍼센트인가요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 부가가치세법
+        - article: 제30조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 부가가치세법
+        - "제30조"
+        - "10"
+        - law.go.kr
+
+  - id: eval-08
+    name: 공익신고자보호법 신고 대상
+    persona: 컴플라이언스 담당자
+    context: |
+      공익신고 대상 범위 확인
+    question: "공익신고자보호법상 공익침해행위란 무엇인가요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 공익신고자 보호법
+        - article: 제2조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 공익신고자 보호법
+        - "제2조"
+        - 공익침해행위
+        - law.go.kr
+
+  - id: eval-09
+    name: 전자상거래법 청약철회 기간
+    persona: CS 담당자
+    context: |
+      온라인 구매 취소 가능 기간 확인
+    question: "전자상거래에서 소비자가 청약을 철회할 수 있는 기간은 며칠인가요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 전자상거래 등에서의 소비자보호에 관한 법률
+        - article: 제17조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 전자상거래
+        - "제17조"
+        - "7일"
+        - law.go.kr
+
+  - id: eval-10
+    name: 약관규제법 불공정조항 심사 기준
+    persona: 사내변호사
+    context: |
+      계약서 약관의 불공정성 판단 기준 확인
+    question: "약관규제법상 불공정한 조항이란 무엇인가요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 약관의 규제에 관한 법률
+        - article: 제6조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 약관
+        - "제6조"
+        - 불공정
+        - law.go.kr
+
+  - id: eval-11
+    name: 중대재해처벌법 적용 대상
+    persona: 안전 담당자
+    context: |
+      중대재해처벌법 적용 사업장 규모 확인
+    question: "중대재해처벌법은 상시근로자 몇 명 이상 사업장에 적용되나요?"
+    expected:
+      primary_intent: legal_research
+      must_cite:
+        - law_name: 중대재해 처벌 등에 관한 법률
+        - article: 부칙
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 중대재해
+        - 상시근로자
+        - law.go.kr
+
+  - id: eval-12
+    name: 출처 확인 불가 시 유보 처리
+    persona: 스타트업 운영 담당자
+    context: |
+      사용자가 블로그 정보를 전제로 질문
+    question: "블로그에서 본 건데 개인정보 과징금이 무조건 10억이라던데 맞나요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_check:
+        - official_source_controls_amount
+        - blog_not_conclusion_source
+    output_eval:
+      common_rules:
+        - legal_status_tag
+        - no_verified_uncertainty
+      required_substrings:
+        - 사용자 전제
+        - 공식 근거
+        - 개인정보 보호법
+      forbidden_substrings:
+        - 무조건 10억입니다
+        - 블로그 내용이 맞습니다
+
+  - id: eval-13
+    name: 법인세법 세율 확인
+    persona: 회계 담당자
+    context: |
+      법인세 세율 확인 요청
+    question: "법인세 세율은 몇 퍼센트인가요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: light
+      must_cite:
+        - law_name: 법인세법
+        - article: 제55조
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 법인세법
+        - law.go.kr
+        - 세율
+
+  - id: eval-14
+    name: 식품 온라인 판매 인허가 요건
+    persona: 식품 커머스 창업자
+    context: |
+      온라인 식품 판매 시작 전 필요한 인허가 확인
+    question: "온라인으로 가공식품을 팔려면 어떤 신고나 인허가가 필요한가요?"
+    expected:
+      primary_intent: compliance_checklist
+      must_check:
+        - industry: 식품
+        - regulatory_items: 인허가, 신고
+    output_eval:
+      common_rules: []
+      required_substrings:
+        - 식품
+        - 신고
+        - 인허가
+
+  - id: eval-15
+    name: 법령 시행일 확인
+    persona: 법무팀 실무자
+    context: |
+      특정 법령의 시행일 확인
+    question: "개인정보 보호법 제28조의8(개인정보의 국외 이전) 조항의 시행일은 언제인가요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_cite:
+        - law_name: 개인정보 보호법
+        - article: 제28조의8
+        - effective_date: 확인 필요
+        - official_link_domain: law.go.kr
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 개인정보 보호법
+        - 제28조의8
+        - 시행
+        - law.go.kr
+
+  - id: eval-16
+    name: 하위 규범 연쇄 확인
+    persona: 컴플라이언스 담당자
+    context: |
+      법률과 시행령, 시행규칙 연계 확인
+    question: "개인정보 국외이전 시 고지사항은 어디에 나와 있나요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_check:
+        - hierarchy: 법률, 시행령, 시행규칙
+        - source: 개인정보 보호법 시행령
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 개인정보 보호법
+        - 시행령
+        - 고지
+
+  - id: eval-17
+    name: 여러 법령 교차 확인
+    persona: 사내변호사
+    context: |
+      복수 법령이 관련된 복합 질문
+    question: "SaaS 도입 시 개인정보보호법과 전자상거래법, 약관규제법을 모두 고려해야 하나요?"
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_cite:
+        - law_name: 개인정보 보호법
+        - law_name: 전자상거래 등에서의 소비자보호에 관한 법률
+        - law_name: 약관의 규제에 관한 법률
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      required_substrings:
+        - 개인정보 보호법
+        - 전자상거래
+        - 약관
+
+  - id: eval-18
+    name: 법령 변경 확인 요청
+    persona: 법무팀장
+    context: |
+      최근 개정 여부 확인
+    question: "개인정보보호법이 최근에 개정된 적이 있나요?"
+    expected:
+      primary_intent: law_change_detection
+      must_check:
+        - law_name: 개인정보 보호법
+        - check_type: recent_amendments
+    output_eval:
+      common_rules: []
+      required_substrings:
+        - 개인정보 보호법
+        - 개정
+
+  - id: eval-19
+    name: 판례 검색 요청
+    persona: 사내변호사
+    context: |
+      특정 쟁점에 대한 판례 확인
+    question: "약관 불공정조항에 관한 대법원 판례를 찾아주세요."
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_check:
+        - content_type: 판례
+        - court: 대법원
+        - topic: 약관 불공정조항
+    output_eval:
+      common_rules: []
+      required_substrings:
+        - 판례
+        - 대법원
+        - 약관
+
+  - id: eval-20
+    name: 환각 방지 - 확인 불가 시 명시적 유보
+    persona: 법무팀 실무자
+    context: |
+      확인할 수 없는 정보에 대한 질문
+    question: "중소기업 특례법 제99조의 내용을 알려주세요."
+    expected:
+      primary_intent: legal_research
+      verification_tier: full
+      must_handle:
+        - unverifiable_article: true
+        - no_hallucination: true
+    output_eval:
+      common_rules:
+        - legal_status_tag
+      forbidden_substrings:
+        - "제99조는 다음과 같습니다"
+        - "제99조의 내용은 다음과 같습니다"
