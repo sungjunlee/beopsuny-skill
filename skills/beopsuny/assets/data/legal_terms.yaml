@@ -25,17 +25,18 @@
 #       en: 영문 예시
 #       ko: 한국어 예시
 
-version: "1.0.1"
-last_updated: "2025-12-07"
+version: "1.0.2"
+last_updated: "2026-10-02"
 total_terms: 99
 
 maintenance:
   review_cycle: "annual"
-  next_review: "2025-12-07"
-  last_verified: "2024-12-07"
+  next_review: "2026-12-31"
+  last_verified: "2026-10-02"
   source_url: "https://www.law.go.kr/"
   freshness_days: 365
   must_reverify: true
+  verification_notes: "legalize-kr 로컬 미러로 관련 법령 조문 확인 (2026-10-02). 용어 자체는 안정적이며, 법률 결론에는 항상 live source를 별도로 확인함."
 
 categories:
   - id: contract_formation

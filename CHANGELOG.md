@@ -4,6 +4,9 @@
 
 ### Added
 
+- 20-scenario evaluation pack for reproducible citation/retrieval testing (`tests/scenarios/20_scenario_eval_pack.yaml`, `tests/fixtures/eval_pack_outputs.yaml`)
+- Failure report sample artifact (`tests/fixtures/failure_report_sample.yaml`)
+
 - 완성 초안 평가 fixture가 오래된·미확인 출처를 초안 사실로 승격하지 않는 회귀를 고정한다. 스킬 조항 본문과 릴리즈 AC5는 그대로 미완료다 (#323).
 
 - 수정 조항을 요청하면 검토용 완성 초안에 Output contract gate가 붙는다. 라우터 배선과 출력 모양·유효성 보증·무단 송부·판단 대체의 실패 형태를 정적 검사로 고정했고, 채택·유보·기각과 미측정 범위는 통합 기록에 남겼다. #323 AC5와 릴리즈는 미완료이며 에픽은 OPEN이다 (#317).
@@ -28,6 +31,13 @@
 - **법령 변경 감지에 "파급·공백 분석 레시피"가 추가된다** — 단건 개정 요약을 넘어 (1) 같은 공포번호를 가진 커밋을 묶어 "타법개정 묶음"을 인식하고 원인 개정부터 설명하고, (2) 폐지·개정 대상 법령을 인용하는 다른 법령을 전수 grep해 위험도 3단계(🔴 하위 법령 / 🟡 특수 목적법 / 🟡 일반 법률) 공백 위험 지도를 만들고, (3) 미러에 아직 없는 신설 법령은 "미러 갱신 전"으로 보고 웹(법제처·로펌 뉴스레터)으로 보완하도록 했다. 사용자 관점 — 조직 개편 같은 파급형 개정과 시행 전 미정비 법령 리스크를 놓치지 않는다.
 - **조사 워크플로우의 Contradiction scan에 "로펌 해설 날짜 검증"이 추가된다** — 로펌 뉴스레터·해설은 발행일 기준 스냅샷이므로 "개정 예정·후속 입법 과제" 같은 진행형 표현은 발행일 이후 입법이 완료됐을 수 있고, 결론 전 1차 소스(법령 원문·미러 diff·공식 발표)로 현재 상태를 재확인하며, 입법 완료 여부가 다르면 `[STALE]`로 낮춘다. 사용자 관점 — 최신 입법을 못 따라가는 2차 해설을 그대로 결론 근거로 쓰는 오류를 막는다.
 - **데이터 소스에 "국회 의안 추적(assembly-api-mcp)"이 추가된다** — 미러·law.go.kr은 공포된 법령만 있어서 잡지 못하는 "입법 중(未공포) 법안"의 실시간 경로로, 국회 진행 중인 의안·심사경과·발의자를 공식 열린국회정보 API로 조회한다. `assembly_bill(bill_name=...)` 검색, `bill_id+include_history`로 심사경과. 사용자 관점 — "이 법안 지금 국회에서 어디까지 왔지?"가 실시간으로 답해진다. (주의: `keyword` 단수 파라미터 없음 — `keywords` 또는 `bill_name` 사용)
+
+### Fixed
+
+- Resolved overdue freshness_debt entries per policy (do not extend expired `overdue_resolve_by`)
+  - Retired `legal_terms.yaml` from freshness_debt after revalidation
+  - Added overdue declarations to 6 expired checklists (fair_trade, food_business, healthcare, labor_hr, privacy_compliance, serious_accident, startup)
+  - All tracked in issues #243 and #180
 
 ### Changed
 
