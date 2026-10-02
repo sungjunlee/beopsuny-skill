@@ -1,0 +1,46 @@
+asset_path: "skills/beopsuny/assets/data/legal_terms.yaml"
+checked_at: "2026-10-02"
+checked_by: "cursor-agent (PR #356 CI fix)"
+tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/243"
+
+source_families_checked:
+  - "local_legalize_kr"
+  - "law.go.kr"
+
+official_sources:
+  - title: "legalize-kr 로컬 미러 민법/상법/민사소송법"
+    url: "https://github.com/legalize-kr/legalize-kr"
+    source_authority: "공식 원문 기반 로컬 미러"
+    verification_status: "[VERIFIED]"
+    retrieved_at: "2026-10-02"
+    notes: "legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님); 주요 계약법 용어의 한국법 대응 개념 확인. 민법 제750조(불법행위), 제544조(해제), 상법 제64조(소멸시효) 등 핵심 조문 확인. 용어 사전은 triage-only 용도이며, 실제 법률 결론에는 항상 live source를 별도로 확인함."
+
+volatile_items_checked:
+  - item: "threshold"
+    previous_value: "N/A (법률 용어 사전)"
+    refreshed_value: "법률 용어는 금액/기한/임계값이 아니므로 volatile item 없음"
+    source_ref: "legalize-kr 로컬 미러 민법/상법/민사소송법"
+    result: "unchanged"
+  - item: "authority"
+    previous_value: "민법 제750조, 상법 제64조 등 관련 법령 참조"
+    refreshed_value: "주요 법령 조문 번호와 법령명 확인 완료. 조문 내용은 변경 없음."
+    source_ref: "legalize-kr 로컬 미러 민법/상법/민사소송법"
+    result: "unchanged"
+
+asset_update:
+  updated: true
+  maintenance_next_review_before: "2025-12-07"
+  maintenance_next_review_after: "2026-12-31"
+  summary: "법률 용어 사전의 관련 법령 조문 번호를 legalize-kr 미러로 확인. 용어 자체는 안정적이고 자주 변경되지 않으므로 next_review를 2026년 말로 갱신. 이 자산은 triage-only 용도이며, 실제 법률 결론에는 live 법령 확인을 별도로 수행함."
+
+retirement_decision:
+  decision: "retire"
+  reason: "법률 용어 사전의 관련 법령 조문은 legalize-kr 미러로 확인 완료. 용어 자체는 법령과 달리 자주 변경되지 않으며, 실제 법률 결론에는 항상 live source를 확인하는 구조이므로 freshness_debt registry에서 retire 가능."
+  remaining_stale_scope: "없음. 용어 사전은 triage-only이며, 법률 결론에는 항상 live 법령 확인을 별도로 수행함."
+
+self_check:
+  official_source_used: true
+  volatile_items_reviewed: true
+  next_review_advanced: true
+  freshness_debt_updated: true
+  no_current_obligation_from_stale_only: true
