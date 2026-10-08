@@ -44,8 +44,8 @@
 
 ```bash
 # legalize-kr Read: "외국환거래법"
-# 법망 API search: "외국환거래규정" --type admrul
-# 법망 API search: "해외직접투자" --type admrul
+# 행정규칙 검색: "외국환거래규정"
+# 행정규칙 검색: "해외직접투자"
 ```
 
 ### 신고 기관
@@ -73,7 +73,7 @@
 
 ```bash
 # legalize-kr Read: "대외무역법"
-# 법망 API search: "전략물자" --type admrul
+# 행정규칙 검색: "전략물자"
 ```
 
 ### 판정/허가 기관
@@ -113,7 +113,7 @@
 
 ```bash
 # legalize-kr Read: "국제조세조정에 관한 법률"
-# 법망 API search: "이전가격" --type admrul
+# 행정규칙 검색: "이전가격"
 ```
 
 ### 관할 기관
@@ -165,7 +165,7 @@
 
 ```bash
 # legalize-kr Read: "해외이주법"
-# 법망 API search: "해외파견" --type admrul
+# 행정규칙 검색: "해외파견"
 ```
 
 ### 주요 확인 사항
@@ -183,7 +183,7 @@
 ### 확인할 법령
 
 ```bash
-# 법망 API search: "아포스티유" --type admrul
+# 행정규칙 검색: "아포스티유"
 # legalize-kr Read: "재외공관 공증법"
 ```
 
@@ -249,7 +249,7 @@
 
 ```bash
 # legalize-kr Read: "산업기술의 유출방지 및 보호에 관한 법률"
-# 법망 API search: "국가핵심기술" --type admrul
+# 행정규칙 검색: "국가핵심기술"
 ```
 
 ### 관할 기관
@@ -281,7 +281,7 @@
 
 ```bash
 # legalize-kr Read: "개인정보 보호법"
-# 법망 API search: "국외이전" --type admrul
+# 행정규칙 검색: "국외이전"
 ```
 
 ### 관할 기관
@@ -359,7 +359,7 @@
 
 ```bash
 # legalize-kr Read: "독점규제 및 공정거래에 관한 법률"
-# 법망 API search: "기업결합" --type admrul
+# 행정규칙 검색: "기업결합"
 ```
 
 ### 신고 기관
@@ -395,8 +395,8 @@ EU 등 해외 시장에 일정 규모 이상 매출이 있는 경우.
 ### 확인할 법령
 
 ```bash
-# 법망 API search: "공급망" --type admrul
-# 법망 API search: "ESG" --type admrul
+# 행정규칙 검색: "공급망"
+# 행정규칙 검색: "ESG"
 ```
 
 ### 주요 확인 사항
@@ -444,7 +444,7 @@ EU 등 해외 시장에 일정 규모 이상 매출이 있는 경우.
 # legalize-kr Read: "수출용원재료에대한관세등환급에관한특례법"
 
 # 해외송금/결제
-# 법망 API search: "외국환거래" --type admrul
+# 행정규칙 검색: "외국환거래"
 
 # 지식재산권
 # legalize-kr Read: "특허법"

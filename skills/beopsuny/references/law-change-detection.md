@@ -4,11 +4,11 @@
 
 ## Supported Queries
 
-| 질의 | 로컬 미러 있음 | 로컬 미러 없음 (degradation) |
+| 질의 | 기본 (legalize 도구·korean-law-mcp) | 로컬 미러 있음 |
 |------|-----------|-----------|
-| 최근 한 달 개정된 법령 | `git log --since`로 discovery 후 법령별 재조회 | 직접 discovery 미지원, 지정 법령 또는 관심 법령만 조회 |
-| 특정 법령 변경 | `git log` -> SHA -> `git show` | 법망 API `law?action=history&law_id=...` 또는 `law?action=diff&law_id=...` |
-| 관심 법령 일괄 | 회사 맥락의 관심 법령 순회 | 동일, 가능한 소스로 조회 |
+| 최근 한 달 개정된 법령 | 전체 discovery 미지원 — 지정 법령 또는 관심 법령만 조회 | `git log --since`로 discovery 후 법령별 재조회 |
+| 특정 법령 변경 | legalize `laws diff --semantic 시행일자`, korean-law-mcp `search_law`(시행예정 병기)·`legal_research(task=amendment_track)` | `git log` -> SHA -> `git show` |
+| 관심 법령 일괄 | 회사 맥락의 관심 법령 순회 | 동일 |
 
 ## Local Mirror Commands
 
@@ -62,11 +62,11 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 
 미러에 아직 없는 신설 법령(예: 새로 제정된 법)은 `git grep`으로 안 나온다고 "없음"이 아니다 — **미러 갱신 전일 뿐**이다. law.go.kr·법제처 입법예고·로펌 뉴스레터로 본문과 입법 경과를 확인하고, 미러 반영 후 조문 레벨 재검증을 추적 대상으로 남긴다.
 
-## 로컬 미러 없을 때 (degradation)
+## 로컬 미러 없을 때
 
-로컬 미러가 없으면 사용자가 특정 법령을 지정했거나 회사 맥락의 관심 법령이 있을 때 법망 API history/diff를 사용한다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다.
+기본 경로에서는 사용자가 특정 법령을 지정했거나 회사 맥락의 관심 법령이 있을 때 legalize 도구의 시점 비교와 korean-law-mcp의 개정·시행예정 정보를 쓴다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다. 위 변경 분석 레시피처럼 본문 전수 검색이 필요하면 `references/source-access.md`의 `## 로컬 미러 (선택)`에 따라 사용자에게 받기를 제안한다.
 
-법령명만 있으면 먼저 `law?action=search&q={법령명}`으로 `law_id`를 확인한 뒤 `law?action=history&law_id={law_id}` 또는 `law?action=diff&law_id={law_id}&from={이전기준}`을 호출한다. 오류 응답(`ok: false`), timeout, 5xx, 빈 응답은 조회 실패이며 개정 없음이 아니다. `error` 값이 무엇이든, 서비스가 장기 중단을 알리더라도 같다 — 확인하지 못한 기간을 "개정 없음"으로 바꾸지 않는다.
+도구 응답이 오류 응답, timeout, 5xx, 빈 응답, 호출 한도 초과면 조회 실패이며 개정 없음이 아니다. 오류 값이 무엇이든, 서비스가 장기 중단을 알리더라도 같다 — 확인하지 못한 기간을 "개정 없음"으로 바꾸지 않는다.
 
 ## Output Fields
 
@@ -83,7 +83,7 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 아래는 모두 실패로 표시한다.
 
 - `git` non-zero exit
-- 법망 API timeout/error
+- legalize 도구·korean-law-mcp timeout/error/호출 한도 초과
 - 법령명과 legalize-kr 디렉토리명 mismatch
 - diff/history endpoint가 빈 값이지만 원인 불명
 

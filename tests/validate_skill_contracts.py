@@ -1463,7 +1463,8 @@ def check_citation_verification_contract_single_source() -> None:
         "단일 citation verification contract",
         "VERIFIED minimum conditions",
         "출처 권위 라벨과 verification status는 서로 다른 축",
-        "법망 API wrapper",
+        "korean-law-mcp",
+        "legalize 도구",
         "law.go.kr",
         "local legalize-kr / precedent-kr",
         "WebSearch",
@@ -1485,7 +1486,6 @@ def check_citation_verification_contract_single_source() -> None:
         "research-workflow.md": read_text("skills/beopsuny/references/research-workflow.md"),
         "source-access.md": read_text("skills/beopsuny/references/source-access.md"),
         "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
-        "beopmang-api.md": read_text("skills/beopsuny/references/beopmang-api.md"),
     }
     for doc_label, doc_text in docs.items():
         assert_contains(doc_text, "references/citation-verification-contract.md", doc_label)
@@ -1709,7 +1709,7 @@ def check_admin_rule_provenance_examples_split_search_and_original_confirmation(
     """Search/original distinction is a source contract, not an output literal."""
     contract = read_text("skills/beopsuny/references/citation-verification-contract.md")
     label = "citation-verification-contract.md"
-    for token in ["법망 API 원문 필드 확인", "법망 API search 결과만 확인",
+    for token in ["원문 필드 확인", "검색 결과만 확인",
                   "law.go.kr 원문 확인", "요약·스니펫", "[VERIFIED]"]:
         assert_contains(contract, token, label)
     output = read_text("skills/beopsuny/references/output-formats.md")
@@ -3911,33 +3911,9 @@ def check_forward_eval_prompt_set() -> None:
 
 
 def check_volatile_api_docs() -> None:
-    text = read_text("skills/beopsuny/references/beopmang-api.md")
-    label = "beopmang-api.md"
-
-    for required in [
-        "운영 정보",
-        "운영 정보는 변동될 수 있으므로",
-        "문서에 고정하지 않는다",
-        "help?action=schema",
-        "`q`",
-        "`law_id`",
-        "`article`",
-        "`ok: false`",
-        "조회 실패",
-        "개정 없음",
-    ]:
-        assert_contains(text, required, label)
-    for stale in [
-        "분당 100회",
-        "❌ 503",
-        "법령 5,573",
-    ]:
-        assert_not_contains(text, stale, label)
-
+    # 법망 API 전용 문서는 서비스 중단으로 은퇴했다(#268). 남는 계약은 실패 구조다:
+    # 도구 응답을 못 받은 것을 부존재·개정 없음으로 바꾸지 않는다.
     docs = {
-        "skills/beopsuny/references/beopmang-api.md": read_text(
-            "skills/beopsuny/references/beopmang-api.md"
-        ),
         "skills/beopsuny/references/source-access.md": read_text(
             "skills/beopsuny/references/source-access.md"
         ),

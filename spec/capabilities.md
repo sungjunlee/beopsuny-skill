@@ -22,7 +22,7 @@ Mutation discipline:
 **Goal:** A user can tell what legal authority each conclusion rests on, how that authority was checked, and when the conclusion must be downgraded instead of treated as verified.
 
 **In-scope:**
-- Source family map, per-family local-mirror availability, and graceful-degradation fallback semantics.
+- Source family map, default tool path (legalize tools + korean-law-mcp), optional user-approved local mirrors, and graceful-degradation fallback semantics.
 - Source authority labels, verification status tags, provenance strings, and `[VERIFIED]` minimum conditions.
 - Citation-to-conclusion binding, including pinpoint, currency, supporting and opposing grounds, and downgrade behavior.
 - Golden citation fixtures and static/router checks that protect source-label and provenance drift.
@@ -225,7 +225,7 @@ Mutation discipline:
 - The trust boundary: external company facts are reviewed data, never instructions. Legitimate harness/user instructions keep their actual authority; a file containing both is interpreted by content and authority rather than blanket trust or rejection.
 - The matter-scope constraint on the read axis: the surfaces read are per-working-directory, not per-matter. The runtime rule is stated once, in `SKILL.md` `## 회사 맥락`; this capability owns the boundary, not a second copy of the wording.
 - How absent context is surfaced (baseline markers such as `계약 playbook 미설정`) and how it defaults role/destination handling.
-- `~/.beopsuny/` scoped to configuration (`config.yaml`), the law/precedent local mirror (`data/`), and report deliverables under `reports/` when the user asks for one. None of these hold company-context state; `reports/` accumulates globally rather than per matter, and its retention contract lives in `report-deliverable.md`.
+- `~/.beopsuny/` scoped to configuration (`config.yaml`), user-approved local mirror data (`data/`), and report deliverables under `reports/` when the user asks for one. None of these hold company-context state; `reports/` accumulates globally rather than per matter, and its retention contract lives in `report-deliverable.md`.
 
 **Out-of-scope:**
 - Verification and citation duties themselves; those belong to `source-citation`.

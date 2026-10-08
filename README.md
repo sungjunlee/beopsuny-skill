@@ -49,7 +49,7 @@ You: "이 계약서 검토해줘"
 
 원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다. 본문 횡단 검색이나 대량 조회처럼 도구로 풀리지 않는 작업은 legalize-kr 원본 저장소에서 필요한 부분만 받아 처리한다. 과업별 도구와 주의점은 [`source-access.md`](skills/beopsuny/references/source-access.md)가 정본이다.
 
-> ⚠️ **법망 API 중단** — 이전 2순위였던 [법망](https://api.beopmang.org/) API는 2026-07부터 서버 장애로 중단되어 기본 경로에서 뺐다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 확인할 수 있다.
+> ⚠️ **법망 API 중단** — 이전 2순위였던 [법망](https://api.beopmang.org/) API는 2026-07부터 서버 장애로 중단되어 기본 경로에서 뺐다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 확인할 수 있다. 이 스크립트는 아직 기본 도구(legalize·korean-law-mcp)를 점검하지 않는다.
 
 ## 설치
 

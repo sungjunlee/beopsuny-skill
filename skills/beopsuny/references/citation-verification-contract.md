@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | 출처 권위 라벨 | 소스 자체의 법적 성격과 사용 가능성 | 공식 원문 law.go.kr 원문, 공식 원문 기반 로컬 미러 legalize-kr/admrule-kr, 해설/의견 로펌 해설 |
 | verification status | 이번 응답에서 해당 법률 사실을 실제로 확인했는지 | `[VERIFIED]`, `[UNVERIFIED]`, `[INSUFFICIENT]` |
-| provenance | 이번 응답에서 실제로 확인한 경로 | `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`, `web — verify` |
+| provenance | 이번 응답에서 실제로 확인한 경로 | `law.go.kr 원문 확인`, `korean-law-mcp 원문 필드 확인`, `web — verify` |
 
 `[VERIFIED]`는 공식 원문이라는 뜻이 아니다. `[VERIFIED]`는 이번 응답에서 특정 citation과 pinpoint를 실제 원문 또는 공식 응답으로 대조했고, 그 확인 경로와 최신성 한계를 답변에 남겼다는 뜻이다.
 
@@ -21,7 +21,7 @@
 1. **대상 특정**: 법령명 + 조/항/호, 판례 선고일 + 사건번호, 행정규칙명 + 발령기관처럼 재조회 가능한 citation과 pinpoint가 있다.
 2. **원문 대조**: 원문 필드 또는 공식 원문 화면, 또는 공식 원문 기반 로컬 미러 파일에서 실제 문구, 조문 구조, 판시사항, 시행일, 발령기관 중 답변 결론에 필요한 부분을 확인했다.
 3. **최신성 표시**: 현행, 시행 예정, 미시행, 조회 실패, 검토일 중 해당 상태를 드러냈다. 금액, 기한, 과징금, 서식, 구비서류처럼 변동성이 큰 사실은 freshness gate를 통과해야 한다.
-4. **provenance 표시**: provenance는 이번 응답에서 실제로 확인한 경로로 적는다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`, `법망 API 원문 필드 확인`.
+4. **provenance 표시**: provenance는 이번 응답에서 실제로 확인한 경로로 적는다. 예: `legalize-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `admrule-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `ordinance-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `precedent-kr 로컬 미러 확인 (직접 공식 사이트 확인 아님)`, `legalize 조회, 시행일자 기준 {날짜} (직접 공식 사이트 확인 아님)`, `korean-law-mcp 원문 필드 확인 (법제처 API 경유, 직접 공식 사이트 확인 아님)`, `law.go.kr 원문 확인`.
 
 하나라도 빠지면 `[VERIFIED]`를 쓰지 않는다. 결론 강도는 `[UNVERIFIED]`, `[INSUFFICIENT]`, `[STALE]`, `[CONTRADICTED]`, `[EDITORIAL]` 중 실제 상태로 낮춘다.
 
@@ -31,17 +31,16 @@
 | --- | --- | --- |
 | local legalize-kr / precedent-kr / admrule-kr / ordinance-kr | 법령·판례·행정규칙·자치법규 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일, 발령기관, 지자체 식별자 중 결론에 필요한 부분을 직접 읽고 provenance를 `{source_family} 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
 | legalize 도구 (CLI/MCP) | 같은 legalize-kr 데이터를 clone 없이 조회 | 조회·본문 응답(`content`, `body`)에서 결론에 필요한 부분을 읽고, 시행일 기준 조회였는지와 warning을 확인한 경우. provenance는 `legalize 조회, 시행일자 기준 {날짜} (직접 공식 사이트 확인 아님)`. 검색·목록 결과만으로는 불가 |
-| korean-law-mcp | 법제처 API 원문 필드 (조문, 별표, 부칙, 결정문 전문) | 원문 필드를 읽은 경우. provenance는 `korean-law-mcp 원문 필드 확인`. 축약본, 검색 결과, 응답에 붙은 해설, `verify_citations`의 실존 판정만으로는 불가 |
-| 법망 API wrapper | (2026-07부터 중단) 응답 시 행정규칙·해석례·판례 discovery 보조 | 검색 결과나 요약이 아니라 `law?action=get`, `case?action=get`, `tools?action=verify` 등에서 원문 필드 또는 공식 식별자 검증 결과를 확인한 경우 |
+| korean-law-mcp | 법제처 API 원문 필드 (조문, 별표, 부칙, 결정문 전문) | 원문 필드를 읽은 경우. provenance는 `korean-law-mcp 원문 필드 확인 (법제처 API 경유, 직접 공식 사이트 확인 아님)`. 축약본, 검색 결과, 응답에 붙은 해설, `verify_citations`의 실존 판정만으로는 불가 |
 | law.go.kr | 법령, 행정규칙, 판례 공식 원문 화면 | 실제 원문 화면 또는 공식 원문 응답을 열어 citation과 pinpoint를 확인한 경우. 판례는 frontmatter `출처`(precSeq) 또는 `판례/({사건번호})` |
 | WebSearch | 공식 API와 로컬 데이터로 닿지 않는 정책·집행 동향 보조 | WebSearch 자체만으로는 원칙적으로 `[VERIFIED]`가 아니다. 검색 결과에서 공식 원문으로 들어가 확인했을 때 그 공식 원문 provenance로 기록한다. |
 | 번들 YAML 후보 | issue spotting, 체크리스트, 용어·조항 후보 | official source 확인 없이 `[VERIFIED]`로 승격하지 않는다. 후보로만 쓰거나 live source 확인 뒤 별도 provenance를 남긴다. |
 
-법망 API wrapper는 공식 데이터를 감싸는 접근 경로지만, wrapper의 요약·스니펫, 검색 result title, 유사도 결과만으로는 원문 대조가 아니다. `법망 API 확인`이라고만 쓰지 말고 `법망 API 원문 필드 확인`, `법망 API search 결과만 확인`, `법망 API 장애로 조회 실패`처럼 확인 수준을 적는다.
+legalize 도구와 korean-law-mcp는 공식 데이터를 감싸는 접근 경로지만, 요약·스니펫, 검색 결과 title, 축약본만으로는 원문 대조가 아니다. 도구 이름만 쓰지 말고 `korean-law-mcp 원문 필드 확인`, `korean-law-mcp 검색 결과만 확인`, `legalize 호출 한도 초과로 조회 실패`처럼 확인 수준을 적는다. 중단된 법망 API가 응답하는 경우에도 같은 기준이다.
 
 local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 로컬 미러다. 이번 응답에서 로컬 파일만 읽었다면 source_authority는 `공식 원문 기반 로컬 미러` 또는 `공식 원문 기반 로컬 미러: 하급심`이고, provenance는 직접 공식 사이트 확인이 아님을 명시한다. `law.go.kr 원문 확인`은 해당 공식 사이트나 공식 응답을 실제로 연 경우에만 쓴다.
 
-미러 frontmatter `시행일자`가 미래인 시행 전 공포본의 currency 표기는 `references/source-access.md`의 미러 시행일 확인 규칙을 단일 기준으로 따른다.
+미러 frontmatter 또는 legalize 도구 응답의 `시행일자`가 미래인 시행 전 공포본의 currency 표기는 `references/source-access.md`의 미러 시행일 확인 규칙을 단일 기준으로 따른다.
 
 `admrule-kr`와 `ordinance-kr` 파일에서 `본문출처: parsing-failed`처럼 본문 원문이 비어 있거나 첨부파일로만 제공되는 경우, frontmatter만으로는 원문 대조 조건을 충족하지 않는다. 이때는 첨부파일 또는 law.go.kr 공식 화면을 추가 확인하거나 `[UNVERIFIED]`/`[INSUFFICIENT]`로 낮춘다.
 
