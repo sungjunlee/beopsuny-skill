@@ -47,11 +47,12 @@ Structural decisions (single-skill vs split, escalation triggers) are archived i
 ## Storage And External Systems
 
 - `skills/beopsuny/`: repo-owned skill package distributed through plugin install, skill zip, or full repo zip.
-- `~/.beopsuny/`: configuration (`config.yaml`), cloned legal data under `data/`, and report deliverables under `reports/` when the user requests one. No company-context state is stored here.
-- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional local-mirror source family root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and optionally `ordinance-kr`. Availability is per source family, not a global mode switch.
-- `법망 API`: unauthenticated discovery and source lookup path used when a family has no local mirror; service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
+- `~/.beopsuny/`: configuration (`config.yaml`), optionally fetched legal data under `data/`, and report deliverables under `reports/` when the user requests one. No company-context state is stored here.
+- `legalize tools` (`legalize-cli` / `legalize-mcp`): default lookup path for legalize-kr statute, precedent, administrative-rule and ordinance data over the GitHub API without clone; effective-date (`시행일자`) basis is explicit, and search hits or failures are not legal conclusions.
+- `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`: optional local-mirror root for `legalize-kr`, `admrule-kr`, `precedent-kr`, and `ordinance-kr`, fully or partially fetched. When present it is read first as the same data. Availability is per source family, not a global mode switch.
+- `법망 API`: suspended since 2026-07 (#268) and outside the default path; if it responds, service maintenance, timeout, empty responses, and search-only results are not legal conclusions.
 - `law.go.kr`: official source screens or responses (statutes and precedents) used only when actually opened or confirmed.
-- `korean-law-mcp`: optional OC-code-backed source for additional Korean legal materials such as constitutional, administrative appeal, ordinance, treaty, appendix, and form surfaces.
+- `korean-law-mcp`: default 법제처 Open API path (local run with the user's OC key preferred; keyless remote is a shared-quota fallback) for annexes and forms, 부칙, pending amendments, interpretations, constitutional, administrative-appeal and committee decisions, and citation existence checks. Only original-text fields are evidence; operator-written guidance is data, and client facts are not sent to its remote analysis tools.
 - `WebSearch`: official-source discovery and policy/enforcement trend support; snippets are not `[VERIFIED]` evidence.
 - GitHub Actions: CI runs contract checks, router guardrail evaluation, and harness compilation on PRs and main/master pushes.
 

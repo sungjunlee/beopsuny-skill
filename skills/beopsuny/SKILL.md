@@ -89,9 +89,9 @@ description: |
 
 ## 소스 가용성과 graceful degradation
 
-법순이는 단일 운영 모드로 동작한다. Full/Lite 같은 모드 구분은 없다. source family별로 로컬 미러가 있으면 그것을 1차 경로로 쓰고, 없으면 법망 API·law.go.kr·web으로 graceful degradation한다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
+법순이는 단일 운영 모드로 동작한다. 기본 경로는 legalize 도구(legalize-kr 원문 데이터를 clone 없이 조회)와 korean-law-mcp(법제처 API — 별표·부칙·결정례·해석례)이며, 쓸 수 없는 도구는 남은 공식 경로(law.go.kr, 공식 사이트)로 graceful degradation한다. 로컬 미러가 이미 있으면 같은 데이터로 먼저 쓸 수 있다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
 
-미러는 읽기 전용 공식 원문 스냅샷이며 직접 편집하지 않는다. 사용 가능한 데이터 루트에서 필요한 family만 확인하고, 없으면 가용한 공식 경로로 좁힌다. 없는 미러를 있다고 주장하거나 자동 복제하지 않는다. family별 경로·provenance와 사용자 요청 시 초기화·동기화는 `references/source-access.md`를 따른다.
+조문은 기준일과 시행일 기준을 정해 조회한다. 의뢰인·사건 사실이 담긴 텍스트는 원격 서버의 분석 도구에 보내지 않는다. 없는 도구나 미러를 있다고 주장하지 않으며, 미러는 읽기 전용이고 사용자 요청 없이 전체 복제하지 않는다. 과업별 도구·명령·fallback은 `references/source-access.md`를 따른다.
 
 ## 출처 권위 라벨 계약
 

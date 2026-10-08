@@ -1099,8 +1099,9 @@ def check_source_access_fallbacks() -> None:
 
     for required in [
         "Capability Matrix",
-        "로컬 데이터 없음",
-        "법망 API 접근 불가",
+        # 기본 도구가 CLI+MCP로 바뀌어 행 이름도 도구 부재 기준이다.
+        "legalize 도구 없음",
+        "korean-law-mcp 없음",
         "WebSearch 없음",
         "네트워크 없음",
         "[INSUFFICIENT]",
