@@ -124,5 +124,69 @@ class BeopmangAxisTest(unittest.TestCase):
         self.assertEqual("OK", result["status"])
 
 
+
+class DefaultToolAxesTest(unittest.TestCase):
+    """기본 도구 경로 축: 응답 shape으로 판정하고 네트워크는 쓰지 않는다."""
+
+    def run_axis(self, fn, responses):
+        original = health.http_get
+
+        def fake(url, timeout=15, max_bytes=4096):
+            for prefix, value in responses.items():
+                if url.startswith(prefix):
+                    return value
+            raise AssertionError(f"unexpected url {url}")
+
+        health.http_get = fake
+        try:
+            return fn()
+        finally:
+            health.http_get = original
+
+    def legalize(self, repo=(200, b'{"archived": false, "pushed_at": "2026-10-07T00:00:00Z"}', ""),
+                 pypi=(200, b'{"info": {"version": "0.5.1"}}', "")):
+        return self.run_axis(health.check_legalize_data, {
+            health.GITHUB_API_REPOS: repo,
+            health.LEGALIZE_CLI_PYPI_URL: pypi,
+        })
+
+    def test_legalize_healthy_is_ok(self) -> None:
+        result = self.legalize()
+        self.assertEqual("OK", result["status"])
+        self.assertIn("0.5.1", result["detail"])
+
+    def test_github_rate_limit_is_deferred_not_failed(self) -> None:
+        for code in (403, 429):
+            with self.subTest(code):
+                result = self.legalize(repo=(code, b"{}", f"HTTP {code}"))
+                self.assertEqual("WARN", result["status"])
+                self.assertIn("조회 실패 ≠ 데이터 없음", result["detail"])
+
+    def test_archived_repo_or_missing_package_fails(self) -> None:
+        self.assertEqual("FAIL", self.legalize(repo=(200, b'{"archived": true}', ""))["status"])
+        self.assertEqual("FAIL", self.legalize(repo=(404, b"{}", "HTTP 404"))["status"])
+        self.assertEqual("FAIL", self.legalize(pypi=(404, b"{}", "HTTP 404"))["status"])
+
+    def klm(self, health_resp, npm=(200, b'{"version": "4.15.6"}', "")):
+        return self.run_axis(health.check_korean_law_mcp, {
+            health.KOREAN_LAW_MCP_HEALTH_URL: health_resp,
+            health.KOREAN_LAW_MCP_NPM_URL: npm,
+        })
+
+    def test_korean_law_mcp_healthy_is_ok(self) -> None:
+        result = self.klm((200, b'{"status": "ok"}', ""))
+        self.assertEqual("OK", result["status"])
+        self.assertIn("4.15.6", result["detail"])
+
+    def test_korean_law_mcp_unhealthy_fails(self) -> None:
+        for label, resp in [
+            ("down", (None, b"", "timeout")),
+            ("5xx", (503, b"{}", "HTTP 503")),
+            ("not ok", (200, b'{"status": "degraded"}', "")),
+        ]:
+            with self.subTest(label):
+                self.assertEqual("FAIL", self.klm(resp)["status"])
+
+
 if __name__ == "__main__":
     unittest.main()
