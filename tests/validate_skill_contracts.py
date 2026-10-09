@@ -450,9 +450,20 @@ def check_skill_frontmatter_minimal() -> None:
     frontmatter = skill_frontmatter()
     if frontmatter.get("name") != "beopsuny":
         raise AssertionError(f"unexpected skill name: {frontmatter.get('name')!r}")
-    # The description's wording is free; only its presence is a contract.
-    if not str(frontmatter.get("description", "")).strip():
+    # The description's wording is free; its presence and the "not from memory"
+    # honesty boundary are the contract.
+    description = frontmatter.get("description")
+    if not isinstance(description, str) or not description.strip():
         raise AssertionError("SKILL.md frontmatter description is empty")
+    if not re.search(r"기억[^.\n]{0,16}(?:않|금지)", description):
+        raise AssertionError("SKILL.md description: 기억만으로 답하지 않는다는 경계가 없다")
+    skill = read_text("skills/beopsuny/SKILL.md")
+    research_contract = re.search(r"^## 기본 조사 계약\n(?:.*\n)*?(?=^## )", skill, re.MULTILINE)
+    if not research_contract:
+        raise AssertionError("SKILL.md: 기본 조사 계약 절이 없다")
+    assert_ordered_tokens(
+        research_contract.group(0), ["환각 방지", "[INSUFFICIENT]", "[UNVERIFIED]"], "SKILL.md 환각 방지"
+    )
     if "metadata" in frontmatter:
         raise AssertionError("SKILL.md frontmatter metadata should stay in plugin metadata")
 
@@ -2522,6 +2533,17 @@ def check_cross_border_overlay_roadmap() -> None:
     assert_not_router_intent(skill_text, "cross-border", "#112")
 
 
+# 안전 행은 핵심 회귀 참조를 행 안에 둔다. 지도 행 이름은 상단 기능 불릿과 어순이
+# 달라 불릿 핀으로는 행 삭제를 못 잡는다(#261, #283) — 행 구조로 바인드한다.
+REQUIRED_MAP_REFS = {
+    "Always-on legal conclusion gates": ["router-01", "router-05"],
+    "Freshness governance": ["check_freshness_debt_registry", "router-15"],
+    "Company context trust": ["check_skill_company_context_read_only_and_trust_boundary"],
+    "Output role/destination gate": ["check_output_role_destination_contracts", "router-14"],
+    "Contract review": ["check_contract_review_guide", "check_counter_draft_output_contract_wiring", "router-19"],
+}
+
+
 def check_readme_quality_contract_map() -> None:
     # #285 AC5(capabilities.md ↔ 지도 행 파티션 검사)는 의도적으로 생략했다.
     # 지도 행 8개와 capability 6개는 1:1이 아니라서 — 한 capability가 여러 행에 걸친다 —
@@ -2550,57 +2572,27 @@ def check_readme_quality_contract_map() -> None:
         row = rows.get(required_row)
         if row is None:
             raise AssertionError(f"{label}: 품질 계약 지도에 {required_row!r} 행이 없다")
-        if len(row) < 3 or not re.search(r"check_\w+|router-\d+", row[2]):
+        # Only backticked refs count — check_readme_quality_verification_refs_resolve
+        # resolves exactly those, so a bare name cannot stand in for a real check.
+        refs = set(re.findall(r"`([^`]+)`", row[2])) if len(row) >= 3 else set()
+        if not any(ref.startswith(("check_", "router-")) for ref in refs):
             raise AssertionError(f"{label}: {required_row!r} 행에 회귀 검증 참조가 없다")
+        for required_ref in REQUIRED_MAP_REFS.get(required_row, []):
+            if required_ref not in refs:
+                raise AssertionError(f"{label}: {required_row!r} 행에 {required_ref!r}가 없다")
+
     # Public honesty boundary: the static evaluator is not a legal-gold scorer.
-    assert_contains(text, "법률 정답 채점기가 아니라", label)
+    evaluator_line = re.search(r"^`tests/evaluate_scenario_outputs.py`.*$", text, re.MULTILINE)
+    if not evaluator_line:
+        raise AssertionError(f"{label}: evaluator 설명 문단이 없다")
+    assert_ordered_tokens(
+        evaluator_line.group(0), ["법률 정답 채점기가 아니라", "guardrail 회귀"], f"{label} evaluator 한계"
+    )
     assert_contains(text, "품질 계약 변경 체크리스트", label)
-
-    # 지도 행 이름은 상단 기능 불릿("Role / destination output gate", README
-    # 상단)과 어순이 다르다 — 불릿을 핀 채로는 지도 행을 통째로 지워도 그린이다
-    # (#261의 "README가 삭제된 기능을 계속 광고" 형태, #283). 행을 구조적으로
-    # 바인드하고 검증 항목을 행 안에서 확인한다.
-    destination_row = next(
-        (
-            line
-            for line in text.splitlines()
-            if line.startswith("| Output role/destination gate |")
-        ),
-        None,
-    )
-    if destination_row is None:
-        raise AssertionError(
-            "README.md: 품질 계약 지도에 Output role/destination gate 행이 없다"
-        )
-    for required in [
-        "check_output_role_destination_contracts",
-        "router-14",
-    ]:
-        if required not in destination_row:
-            raise AssertionError(
-                f"README.md Output role/destination gate 행에 {required!r}가 없다: "
-                f"{destination_row!r}"
-            )
-
-    contract_row = next(
-        (
-            line
-            for line in text.splitlines()
-            if line.startswith("| Contract review |")
-        ),
-        None,
-    )
-    if contract_row is None:
-        raise AssertionError("README.md: 품질 계약 지도에 Contract review 행이 없다")
-    for required in [
-        "check_contract_review_guide",
-        "check_counter_draft_output_contract_wiring",
-        "router-19",
-    ]:
-        if required not in contract_row:
-            raise AssertionError(
-                f"README.md Contract review 행에 {required!r}가 없다: {contract_row!r}"
-            )
+    bypass_line = re.search(r"^.*기존 gate를.*$", text, re.MULTILINE)
+    if not bypass_line:
+        raise AssertionError(f"{label}: gate 우회 금지 문단이 없다")
+    assert_ordered_tokens(bypass_line.group(0), ["우회하지", "결론 강도를 낮추"], f"{label} gate 우회 금지")
 
 
 def check_readme_asset_inventory_counts() -> None:
@@ -2645,9 +2637,14 @@ def check_readme_investigation_assist_posture() -> None:
     label = "README.md"
 
     # Public examples must show reserved (not confirmed) status; which example
-    # sentences carry the tags is free.
+    # sentences carry the tags is free. Scope: the first example block after the
+    # posture paragraph — a [VERIFIED] there would advertise confirmed answers.
+    example = re.search(r"^\[legalize-kr\].*?\n```\n(?P<body>.*?)\n```", text, re.MULTILINE | re.DOTALL)
+    if not example:
+        raise AssertionError(f"{label}: 도입 예시 블록이 없다")
     for status_tag in ["[INSUFFICIENT]", "[UNVERIFIED]"]:
-        assert_contains(text, status_tag, label)
+        assert_contains(example.group("body"), status_tag, f"{label} 도입 예시")
+    assert_not_contains(example.group("body"), "[VERIFIED]", f"{label} 도입 예시")
     assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
 
     # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "확인 가능한 1차 소스 중심의
