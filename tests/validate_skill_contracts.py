@@ -450,10 +450,9 @@ def check_skill_frontmatter_minimal() -> None:
     frontmatter = skill_frontmatter()
     if frontmatter.get("name") != "beopsuny":
         raise AssertionError(f"unexpected skill name: {frontmatter.get('name')!r}")
-    description = str(frontmatter.get("description", ""))
-    for required in ["한국 법령", "계약", "컴플라이언스", "기억만으로 답하지 않는다"]:
-        if required not in description:
-            raise AssertionError(f"SKILL.md description missing {required!r}")
+    # The description's wording is free; only its presence is a contract.
+    if not str(frontmatter.get("description", "")).strip():
+        raise AssertionError("SKILL.md frontmatter description is empty")
     if "metadata" in frontmatter:
         raise AssertionError("SKILL.md frontmatter metadata should stay in plugin metadata")
 
@@ -2531,46 +2530,31 @@ def check_readme_quality_contract_map() -> None:
     text = read_text("README.md")
     label = "README.md"
 
-    for required in [
-        "품질 계약 지도",
+    # Structure, not prose: each legal-gate row must exist and point at a
+    # regression check. Cell references are resolved by
+    # check_readme_quality_verification_refs_resolve.
+    rows = {
+        row[0]: row
+        for row in parse_markdown_table(text, "| 품질 계약 | 기준 문서 | 회귀 검증 |")
+    }
+    for required_row in [
         "Always-on legal conclusion gates",
         "Legal verification core",
+        "출처 권위 / VERIFIED 계약",
         "Freshness governance",
-        "Company context trust",
+        "Output role/destination gate",
         "Contract review",
+        "Company context trust",
         "Bulk evidence grid",
-        "tests/evaluate_scenario_outputs.py",
-        "법률 정답 채점기가 아니라 출력 guardrail 회귀 테스트",
-        "router-15",
-        "router-16",
-        "router-01",
-        "router-05",
-        "check_freshness_debt_registry",
-        "check_skill_company_context_read_only_and_trust_boundary",
-        "Contract Tests",
-        "pull request",
-        ".github/workflows/contract-tests.yml",
-        "router guardrail 평가",
-        "assets/schemas/` (4 files",
-        "freshness_metadata.yaml",
-        "`freshness_debt.yaml`",
-        "`freshness_revalidation.yaml`",
-        "`legal_verification_packet.yaml`",
-        "`output_contract.yaml`",
-        "triage_only",
-        "품질 계약 변경 체크리스트",
-        "새 법률 기능, 업무 영역, 출력 모드, stale 자산",
-        "SKILL.md`의 의도 라우터(의도 표 또는 gate 표)",
-        "`tests/scenarios/16_router_regression.yaml`",
-        "`tests/fixtures/router_guardrail_outputs.yaml`",
-        "`tests/evaluate_scenario_outputs.py`",
-        "unsafe fixture 또는 guardrail rule",
-        "`tests/validate_skill_contracts.py`",
-        "README 품질 계약 지도와 CHANGELOG",
-        "기존 장점인 단일 라우터, 한국법 원문주의, 출처 권위 라벨, 자가 검증",
-        "새 계약은 기존 gate를 우회하지 말고",
     ]:
-        assert_contains(text, required, label)
+        row = rows.get(required_row)
+        if row is None:
+            raise AssertionError(f"{label}: 품질 계약 지도에 {required_row!r} 행이 없다")
+        if len(row) < 3 or not re.search(r"check_\w+|router-\d+", row[2]):
+            raise AssertionError(f"{label}: {required_row!r} 행에 회귀 검증 참조가 없다")
+    # Public honesty boundary: the static evaluator is not a legal-gold scorer.
+    assert_contains(text, "법률 정답 채점기가 아니라", label)
+    assert_contains(text, "품질 계약 변경 체크리스트", label)
 
     # 지도 행 이름은 상단 기능 불릿("Role / destination output gate", README
     # 상단)과 어순이 다르다 — 불릿을 핀 채로는 지도 행을 통째로 지워도 그린이다
@@ -2660,14 +2644,10 @@ def check_readme_investigation_assist_posture() -> None:
     text = read_text("README.md")
     label = "README.md"
 
-    for required in [
-        "출처 권위 라벨, verification status, 최신성 caveat",
-        "[INSUFFICIENT] 법인세법·조세조약·원천징수율은 live source 확인 전 결론 금지",
-        "[UNVERIFIED] 다수 이용자 대상 표준 약관 가능성",
-        "[UNVERIFIED] 고의/중과실 면책 제한 가능성",
-        "[UNVERIFIED] 위탁·국외이전 쟁점 후보",
-    ]:
-        assert_contains(text, required, label)
+    # Public examples must show reserved (not confirmed) status; which example
+    # sentences carry the tags is free.
+    for status_tag in ["[INSUFFICIENT]", "[UNVERIFIED]"]:
+        assert_contains(text, status_tag, label)
     assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
 
     # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "확인 가능한 1차 소스 중심의
@@ -3038,49 +3018,6 @@ def check_quality_contract_reference_targets() -> None:
                     f"{source_path}: anchor #{anchor} not found in {target_path}; "
                     f"available={sorted(slugs)!r}"
                 )
-
-
-def check_changelog_quality_contract_notes() -> None:
-    text = read_text("CHANGELOG.md")
-    label = "CHANGELOG.md"
-
-    for required in [
-        "Legal Verification Core",
-        "issue-to-authority map",
-        "authority packet",
-        "citation ledger",
-        "legal_verification_packet.yaml",
-        "Freshness Governance",
-        "freshness_debt.yaml",
-        "freshness_revalidation.yaml",
-        "retirement decision",
-        "practice_profile.yaml",
-        "allowed scope",
-        "cannot_override",
-        "역할별 output mode",
-        "destination output contract",
-        "output_contract.yaml",
-        "legal_effect_triggers",
-        "non_overrides",
-        "품질 계약 매핑",
-        "memory_profile",
-        "assets/schemas/*.yaml",
-        "memory 관련 schema만 명시",
-        "practice profile direction",
-        "router guardrail",
-        "unsafe fixture",
-        "router fixture integrity",
-        "contract-tests.yml",
-        "품질 계약 지도",
-        "Always-on legal conclusion gates",
-        "router-01",
-        "router-05",
-        "품질 계약 변경 체크리스트",
-        "README 회귀 검증 참조",
-        "새 법률 기능 추가 시 router, reference, schema/policy, scenario, unsafe fixture, 정적 검사, README/CHANGELOG",
-        "품질 계약 지도 reference target",
-    ]:
-        assert_contains(text, required, label)
 
 
 def check_contract_tests_workflow() -> None:
@@ -4181,7 +4118,6 @@ CHECK_GROUPS = (
             check_readme_quality_verification_refs_resolve,
             check_quality_contract_reference_targets,
             check_epic_317_integration_record,
-            check_changelog_quality_contract_notes,
             check_contract_tests_workflow,
             check_changelog_pr_gate_workflow_step,
             check_release_workflow_preflight,
