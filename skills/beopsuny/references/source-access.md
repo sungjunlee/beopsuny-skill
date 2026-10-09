@@ -42,7 +42,7 @@
 | 현행 조문 | legalize `laws article {법령} {조} --date {오늘} --semantic 시행일자` (MCP `laws_article`, `semantic="시행일자"`) | korean-law-mcp `search_law` → `get_law_text(mst, jo)` | 공통 원칙 1 |
 | 특정 시점 조문·행위시법 | korean-law-mcp `legal_analysis(mode=applicable_law, lawName, date, jo)` | legalize `--date {사건일} --semantic 시행일자` | 부칙 적용례·경과조치는 korean-law-mcp만 발췌한다 |
 | 시행예정 개정 | korean-law-mcp `search_law` (시행예정 병기) | legalize 공포일자 기준 조회 + warning | 시행 전 공포본은 현행 의무로 쓰지 않는다 |
-| 개정 이력·신구 비교 | legalize `laws diff {법령} {법령} --date-a {이전} --date-b {기준일} --semantic 시행일자` (MCP `laws_diff`) | korean-law-mcp `legal_research(task=amendment_track)` | 공통 원칙 1 |
+| 개정 이력·신구 비교 | legalize `laws diff {법령} {법령} --date-a {이전} --date-b {기준일} --semantic 시행일자` (MCP `laws_diff`) | korean-law-mcp `legal_research(task=amendment_track)` | 공통 원칙 1. 시행예정 개정은 위 행 |
 | 별표·서식 (금액·과태료·기준표) | korean-law-mcp `get_annexes(lawName, query)` | law.go.kr 별표 화면 | legalize 데이터에는 별표 본문이 없다. 변환된 표가 판단을 좌우하면 원본과 대조한다 |
 | 행정규칙 (고시·훈령·예규) | legalize `admrules get {정확한 명칭}` | korean-law-mcp `search_law` (행정규칙 폴백) | `본문출처: parsing-failed` 처리는 아래 미러 규칙과 같다 |
 | 자치법규 | legalize `ordinances get` | korean-law-mcp | 지역을 먼저 좁힌다 |
