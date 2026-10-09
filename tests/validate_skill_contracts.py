@@ -1099,8 +1099,9 @@ def check_source_access_fallbacks() -> None:
 
     for required in [
         "Capability Matrix",
-        "로컬 데이터 없음",
-        "법망 API 접근 불가",
+        # 기본 도구가 CLI+MCP로 바뀌어 행 이름도 도구 부재 기준이다.
+        "legalize 도구 없음",
+        "korean-law-mcp 없음",
         "WebSearch 없음",
         "네트워크 없음",
         "[INSUFFICIENT]",
@@ -1118,12 +1119,15 @@ def check_source_access_mirror_promulgation_currency() -> None:
     text = read_text("skills/beopsuny/references/source-access.md")
     label = "source-access.md"
 
+    # 비교 기준은 오늘이 아니라 기준일이다(행위시법 조회). 절 안에서만 본다 —
+    # "기준일"은 공통 원칙 1에도 있어 문서 전체 검사로는 삭제를 못 잡는다.
+    section = re.search(r"^## 미러 시행일 확인 \(공포본 vs 현행본\)\n(?:.*\n)*?(?=^## )", text, re.MULTILINE)
+    if not section:
+        raise AssertionError(f"{label}: 미러 시행일 확인 절이 없다")
+    assert_ordered_tokens(section.group(0), ["`시행일자`", "기준일", "보다 미래", "시행 전 공포본"], f"{label} 미러 시행일 판정")
+
     for required in [
         "미러 시행일 확인 (공포본 vs 현행본)",
-        # 미래 시행일자 -> 시행 전 공포본 판정
-        "`시행일자`",
-        "오늘보다 미래",
-        "시행 전 공포본",
         # 표시 문구는 고정하지 않는다. 실제 확인 범위는 live 의미 검토가 맡는다.
         "[VERIFIED]",
         # 현행 조문은 law.go.kr 현행본으로 별도 확인
@@ -1462,7 +1466,8 @@ def check_citation_verification_contract_single_source() -> None:
         "단일 citation verification contract",
         "VERIFIED minimum conditions",
         "출처 권위 라벨과 verification status는 서로 다른 축",
-        "법망 API wrapper",
+        "korean-law-mcp",
+        "legalize 도구",
         "law.go.kr",
         "local legalize-kr / precedent-kr",
         "WebSearch",
@@ -1484,7 +1489,6 @@ def check_citation_verification_contract_single_source() -> None:
         "research-workflow.md": read_text("skills/beopsuny/references/research-workflow.md"),
         "source-access.md": read_text("skills/beopsuny/references/source-access.md"),
         "output-formats.md": read_text("skills/beopsuny/references/output-formats.md"),
-        "beopmang-api.md": read_text("skills/beopsuny/references/beopmang-api.md"),
     }
     for doc_label, doc_text in docs.items():
         assert_contains(doc_text, "references/citation-verification-contract.md", doc_label)
@@ -1708,7 +1712,7 @@ def check_admin_rule_provenance_examples_split_search_and_original_confirmation(
     """Search/original distinction is a source contract, not an output literal."""
     contract = read_text("skills/beopsuny/references/citation-verification-contract.md")
     label = "citation-verification-contract.md"
-    for token in ["법망 API 원문 필드 확인", "법망 API search 결과만 확인",
+    for token in ["원문 필드 확인", "검색 결과만 확인",
                   "law.go.kr 원문 확인", "요약·스니펫", "[VERIFIED]"]:
         assert_contains(contract, token, label)
     output = read_text("skills/beopsuny/references/output-formats.md")
@@ -3910,33 +3914,29 @@ def check_forward_eval_prompt_set() -> None:
 
 
 def check_volatile_api_docs() -> None:
-    text = read_text("skills/beopsuny/references/beopmang-api.md")
-    label = "beopmang-api.md"
-
-    for required in [
-        "운영 정보",
-        "운영 정보는 변동될 수 있으므로",
-        "문서에 고정하지 않는다",
-        "help?action=schema",
-        "`q`",
-        "`law_id`",
-        "`article`",
-        "`ok: false`",
-        "조회 실패",
-        "개정 없음",
-    ]:
-        assert_contains(text, required, label)
-    for stale in [
-        "분당 100회",
-        "❌ 503",
-        "법령 5,573",
-    ]:
-        assert_not_contains(text, stale, label)
-
+    # 법망 API 전용 문서는 서비스 중단으로 은퇴했다(#268). 남는 계약은 실패 구조다:
+    # 도구 응답을 못 받은 것을 부존재·개정 없음으로 바꾸지 않는다. 그 문장의 집은
+    # source-access 공통 원칙 4와 law-change-detection Failure Handling이다.
+    source_access = read_text("skills/beopsuny/references/source-access.md")
+    principle = re.search(r"^4\. 도구 응답이.*$", source_access, re.MULTILINE)
+    if not principle:
+        raise AssertionError("source-access.md: 공통 원칙 4(조회 실패) 문단이 없다")
+    # 순서 토큰 + 부정 활용형(아니/아닌/아님/아닙). 문장 다듬기는 허용하고 삭제·반전은 막는다.
+    negation = r"(?:아니|아닌|아님|아닙)"
+    if not re.search(r"조회 실패.*개정 없음의 근거가\s*" + negation, principle.group(0)):
+        raise AssertionError("source-access.md 공통 원칙 4: 조회 실패 → 개정 없음 근거 부정이 없다")
+    law_change = read_text("skills/beopsuny/references/law-change-detection.md")
+    failure = re.search(r"^## Failure Handling\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
+    if not failure:
+        raise AssertionError("law-change-detection.md: Failure Handling 절이 없다")
+    if not re.search(r"조회 실패[^\n]*개정 없음이\s*" + negation, failure.group(0)):
+        raise AssertionError("law-change-detection.md Failure Handling: 조회 실패 ≠ 개정 없음 문장이 없다")
+    # 시행일자 diff는 시행된 변경만 보인다. "개정 없음" 생략 전에 시행예정 개정을 보게 한다.
+    base_path = re.search(r"^## 기본 경로\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
+    if not base_path:
+        raise AssertionError("law-change-detection.md: 기본 경로 절이 없다")
+    assert_ordered_tokens(base_path.group(0), ["시행된 변경만", "개정 없음", "시행예정"], "law-change-detection.md 기본 경로")
     docs = {
-        "skills/beopsuny/references/beopmang-api.md": read_text(
-            "skills/beopsuny/references/beopmang-api.md"
-        ),
         "skills/beopsuny/references/source-access.md": read_text(
             "skills/beopsuny/references/source-access.md"
         ),
@@ -3961,6 +3961,8 @@ def check_volatile_api_docs() -> None:
             assert_not_contains(doc_text, pattern, doc_label)
         for required in failure_terms:
             assert_contains(doc_text, required, doc_label)
+        # beopmang-api.md가 지던 "실패 ≠ 개정 없음" 금지는 이제 이 두 문서가 진다.
+        assert_contains(doc_text, "개정 없음", doc_label)
         assert_not_contains(doc_text, "service_maintenance", doc_label)
         assert_not_contains(doc_text, "service_paused", doc_label)
 

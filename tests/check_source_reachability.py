@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""소스 도달성 헬스체크 (로컬 미러 / 법망 API / law.go.kr 링크).
+"""소스 도달성 헬스체크 (기본 도구 / 로컬 미러 / 법망 API / law.go.kr 링크).
 
-세 축을 점검한다:
+다섯 축을 점검한다:
+0. 기본 도구 경로 — legalize 데이터(GitHub 저장소 4개 + PyPI `legalize-cli`)와
+   korean-law-mcp(원격 `/health` + npm 패키지). GitHub API 한도(403/429)는
+   도구 고장이 아니라 판정 보류(WARN)다.
 1. 로컬 미러 동기화 — legalize-kr, precedent-kr, admrule-kr, ordinance-kr
    (upstream HEAD 해시 비교; 커밋 날짜는 정보용 — precedent-kr은 판례
    선고일을 커밋 날짜로 쓰는 합성 히스토리라 날짜 기반 판정이 무의미하다)
@@ -21,12 +24,15 @@ CI vs 로컬 커버리지 — 이 도크스트링이 이 계약의 집이다 (#2
 `.github/workflows/source-reachability.yml` cron·이슈 메커닉).
 - CI (`--dns-links`, 미러 clone 안 함): ① 미러 축은 항상 `NOT_INSTALLED`
   (FAIL 아님, 조용히 넘어감). ② 법망 축은 서비스가 공지한 중단 동안 자기만료
-  WARN (아래 `BEOPMANG_PAUSE_ACCEPTED_UNTIL`). ③ 링크 축은 DNS 해석만. 그러므로
-  CI의 그린은 "3축 정상"이 아니라 "law.go.kr 도메인 1개 생존"이다 — 수용 기한
-  `2027-06-30`까지 이 상태가 유지된다. 이 워크플로의 원래 목적은 glaw류 도메인
-  사망 감지이고, CI는 그 목적을 유지한다.
+  WARN (아래 `BEOPMANG_PAUSE_ACCEPTED_UNTIL`). ③ 링크 축은 DNS 해석만.
+  ④ 기본 도구 축(GitHub·PyPI·npm·korean-law-mcp 원격)은 국외 호스팅이라 CI에서도
+  HTTP로 돈다. 러너가 IP를 공유해 GitHub API 한도에 걸리면 WARN(판정 보류)이다.
+  그러므로 CI의 그린은 "기본 도구 도달 + law.go.kr 도메인 생존"이지 전 축 정상이
+  아니다 — 법망 수용 기한 `2027-06-30`까지 이 상태가 유지된다. 이 워크플로의 원래
+  목적인 glaw류 도메인 사망 감지는 그대로다.
 - 로컬 릴리즈 체크 (`README.md` `### 릴리즈 체크리스트` 2번, 미러 설치된 국내
-  vantage): 위 3축이 전부 실제로 돈다. 릴리즈 전 3축 확인은 이 경로가 기준이다.
+  vantage): 모든 축이 실제로 돈다(미러 축은 설치된 경우). 릴리즈 전 도달성
+  판정은 이 경로가 기준이다.
 - 미러 축을 CI에서 돌릴지: **돌리지 않는다** — clone 비용·weekly cron 시간
   예산이 크고, CI의 역할은 도메인 사망 감지(DNS로 충분)이지 미러 freshness가
   아니다. 미러 staleness는 로컬 릴리즈 체크가 담당한다. 번복하려면 clone 비용과
@@ -57,6 +63,10 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/120.0.0.0 Safari/537.36"
 )
+GITHUB_API_REPOS = "https://api.github.com/repos/legalize-kr"
+LEGALIZE_CLI_PYPI_URL = "https://pypi.org/pypi/legalize-cli/json"
+KOREAN_LAW_MCP_HEALTH_URL = "https://mcp.gomdori.app/health"
+KOREAN_LAW_MCP_NPM_URL = "https://registry.npmjs.org/korean-law-mcp/latest"
 BEOPMANG_SEARCH_URL = (
     "https://api.beopmang.org/law?action=search&q="
     + urllib.parse.quote("개인정보보호법")
@@ -159,13 +169,15 @@ def check_mirror(family: str) -> dict[str, Any]:
     }
 
 
-def http_get(url: str, timeout: int = HTTP_TIMEOUT) -> tuple[int | None, bytes, str]:
+def http_get(
+    url: str, timeout: int = HTTP_TIMEOUT, max_bytes: int | None = 4096
+) -> tuple[int | None, bytes, str]:
     """Return (status_or_None, body_or_empty, error_reason)."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            # 링크 rot 검사용으로 본문 일부만 읽는다.
-            return resp.getcode(), resp.read(4096), ""
+            # 링크 rot 검사는 본문 일부면 된다. JSON 축은 max_bytes=None으로 전체를 읽는다.
+            return resp.getcode(), resp.read(max_bytes), ""
     except urllib.error.HTTPError as exc:
         body = exc.read() if exc.fp is not None else b""
         return exc.code, body, f"HTTP {exc.code}"
@@ -260,6 +272,58 @@ def summarize_beopmang(payload: Any) -> str:
     return "200 + JSON"
 
 
+def get_json(url: str) -> tuple[int | None, Any, str]:
+    status, body, err = http_get(url, max_bytes=None)
+    if status is None:
+        return None, None, err
+    try:
+        return status, json.loads(body.decode("utf-8", errors="replace")), err
+    except json.JSONDecodeError:
+        return status, None, err or "non-JSON body"
+
+
+def check_legalize_data() -> dict[str, Any]:
+    """기본 경로 1: legalize 도구가 읽는 GitHub 저장소와 배포 패키지."""
+    axis = "기본 도구/legalize 데이터"
+    pushed = []
+    deferred = ""
+    for family in SOURCE_FAMILIES:
+        status, payload, err = get_json(f"{GITHUB_API_REPOS}/{family}")
+        message = str(payload.get("message", "")) if isinstance(payload, dict) else ""
+        if status == 429 or (status == 403 and "rate limit" in message.lower()):
+            # 한도는 판정 보류다. 독립적인 PyPI 축은 그래도 확인해야 패키지 장애를 놓치지 않는다.
+            deferred = f"GitHub API 한도 ({family}, HTTP {status}) — 판정 보류, 조회 실패 ≠ 데이터 없음"
+            break
+        if status != 200 or not isinstance(payload, dict):
+            return {"status": "FAIL", "axis": axis, "detail": f"{family}: {err or f'HTTP {status}'} (조회 실패)"}
+        if payload.get("archived") or payload.get("disabled"):
+            return {"status": "FAIL", "axis": axis, "detail": f"{family}: archived/disabled — 기본 경로 재검토"}
+        pushed.append(f"{family} {str(payload.get('pushed_at', '?'))[:10]}")
+
+    status, payload, err = get_json(LEGALIZE_CLI_PYPI_URL)
+    if status != 200 or not isinstance(payload, dict):
+        return {"status": "FAIL", "axis": axis, "detail": f"PyPI legalize-cli: {err or f'HTTP {status}'}"}
+    info = payload.get("info")
+    if not isinstance(info, dict):
+        return {"status": "FAIL", "axis": axis, "detail": "PyPI legalize-cli: 예상 밖 응답 형태 (info)"}
+    version = info.get("version", "?")
+    if deferred:
+        return {"status": "WARN", "axis": axis, "detail": f"legalize-cli {version}; {deferred}"}
+    return {"status": "OK", "axis": axis, "detail": f"legalize-cli {version}; pushed " + ", ".join(pushed)}
+
+
+def check_korean_law_mcp() -> dict[str, Any]:
+    """기본 경로 2: korean-law-mcp 원격 서버와 로컬 실행용 npm 패키지."""
+    axis = "기본 도구/korean-law-mcp"
+    status, payload, err = get_json(KOREAN_LAW_MCP_HEALTH_URL)
+    if status != 200 or not isinstance(payload, dict) or payload.get("status") != "ok":
+        return {"status": "FAIL", "axis": axis, "detail": f"원격 /health: {err or f'HTTP {status}'} (조회 실패)"}
+    status, payload, err = get_json(KOREAN_LAW_MCP_NPM_URL)
+    if status != 200 or not isinstance(payload, dict):
+        return {"status": "FAIL", "axis": axis, "detail": f"npm korean-law-mcp: {err or f'HTTP {status}'}"}
+    return {"status": "OK", "axis": axis, "detail": f"원격 health ok; npm {payload.get('version', '?')}"}
+
+
 def check_link(label: str, url: str, dns_only: bool = False) -> dict[str, Any]:
     axis = f"링크/{label}"
     if dns_only:
@@ -309,7 +373,7 @@ def summarize(checks: list[dict[str, Any]]) -> tuple[str, int]:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="소스 도달성 헬스체크 (미러 / 법망 / 링크)",
+        description="소스 도달성 헬스체크 (기본 도구 / 미러 / 법망 / 링크)",
     )
     parser.add_argument(
         "--json",
@@ -325,7 +389,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def run_checks(dns_links: bool = False) -> list[dict[str, Any]]:
-    checks = [check_mirror(family) for family in SOURCE_FAMILIES]
+    checks = [check_legalize_data(), check_korean_law_mcp()]
+    checks.extend(check_mirror(family) for family in SOURCE_FAMILIES)
     beopmang = check_beopmang()
     if dns_links and beopmang["status"] == "FAIL":
         # 국외 vantage에서는 법망의 HTTP 판정이 신뢰 불가(geo 차이) — 보류.

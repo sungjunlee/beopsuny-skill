@@ -2,7 +2,7 @@
 
 법순이의 번들 YAML과 reference 문서의 dated claim은 빠른 triage와 issue spotting을 위한 로컬 지식이다. 현행 법령, 시행령, 고시, 서식, 수수료, 과징금, 신고기한, 인허가 요건, treaty/source count, 단계적 시행일, statutory threshold를 대신하지 않는다.
 
-stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/revalidation)은 이 문서가 단일 소스다. 미러 공포본·시행일 특수 규칙은 `references/source-access.md#freshness-gate`, 체크리스트 특수 처리는 `references/checklist-routing.md#freshness-routing`을 본다. 공통 freshness metadata는 `assets/schemas/freshness_metadata.yaml`, stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
+stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/revalidation)은 이 문서가 단일 소스다. 미러·legalize 공포본·시행일 특수 규칙은 `references/source-access.md`의 `## 미러 시행일 확인 (공포본 vs 현행본)`, 변동성 값 재확인은 `references/source-access.md#freshness-gate`, 체크리스트 특수 처리는 `references/checklist-routing.md#freshness-routing`을 본다. 공통 freshness metadata는 `assets/schemas/freshness_metadata.yaml`, stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
 
 ## Runtime Rule
 
@@ -23,7 +23,7 @@ stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/reva
 
 ## Verification Before Answering
 
-stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live legal research를 수행한다. 우선순위: (1) law.go.kr 법령·시행령·시행규칙·행정규칙, (2) 소관 기관 공식 고시·예규·가이드라인·민원안내, (3) 법망 API 또는 로컬 legalize-kr/admrule-kr/ordinance-kr/precedent-kr 원문, (4) 공식 원문에 접근할 수 없을 때만 해설/의견을 보조 자료로 사용.
+stale 등록 자산에서 나온 항목이 결론에 들어가려면 먼저 live legal research를 수행한다. 도구 순서는 `references/source-access.md` 과업별 도구 지도를 따르고, 지도에 없는 소관 기관 고시·예규·가이드라인·민원안내는 그 기관 공식 화면에서 확인한다. 공식 원문에 닿지 못할 때만 해설/의견을 보조 자료로 쓴다.
 
 확인 실패 시 결론을 유보하고, 해당 항목을 `[STALE]` 또는 `[INSUFFICIENT]`로 표시하며, 답변의 관련 위치에 재확인 필요 범위를 적는다.
 

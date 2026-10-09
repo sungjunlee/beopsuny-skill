@@ -7,7 +7,7 @@
 # 사용법:
 #   1. Claude가 계약서 조항 유형 식별
 #   2. 해당 조항의 korean_law 섹션 참조
-#   3. # legalize-kr 또는 법망 API로 상세 조문 확인
+#   3. # legalize 도구 또는 korean-law-mcp로 상세 조문 확인
 #   4. 판례는 case_search 키워드로 실시간 검색 (하드코딩 X)
 #
 # 설계 원칙:
@@ -56,7 +56,7 @@ runtime_contract:
   output_behavior: "investigation_plan"
   verify_with:
     - "law.go.kr 법령·시행령·시행규칙·행정규칙"
-    - "법망 API 또는 local legalize-kr/admrule-kr/precedent-kr 원문"
+    - "legalize 도구·korean-law-mcp 원문 필드 또는 local legalize-kr/admrule-kr/precedent-kr 원문"
     - "대법원/헌법재판소/소관 기관 공식 자료"
   volatile_fields:
     - "deadline"
@@ -107,7 +107,7 @@ clauses:
         - 한국법 선택 시 영문 해석 문제 발생 가능
       case_search:
         keywords: ["준거법", "국제사법", "당사자 자치"]
-        data_source: "법망 API cases: '준거법' --court 대법원"
+        data_source: "판례 검색: '준거법' (대법원)"
         note: 판례는 변경될 수 있으므로 항상 최신 검색 권장
     review_points:
       - 한국법 강행규정 적용 여부 (예: 대리점법, 하도급법)
@@ -692,7 +692,7 @@ clauses:
           note: 2020년 데이터3법 개정으로 정보통신망법 개인정보 규정이 개인정보보호법으로 통합됨
       admin_rules:
         - name: 개인정보의 안전성 확보조치 기준
-          data_source: "법망 API search: '안전성 확보조치' --type admrul"
+          data_source: "행정규칙 검색: '안전성 확보조치'"
         - name: 표준 개인정보 처리위탁 계약서
           authority: 개인정보보호위원회
         - name: 개인정보 국외 이전 운영 등에 관한 규정
@@ -885,7 +885,7 @@ clauses:
           description: 직업선택의 자유
       case_search:
         keywords: ["경업금지", "전직금지", "경쟁업체 취업"]
-        data_source: "법망 API cases: '경업금지' --court 대법원"
+        data_source: "판례 검색: '경업금지' (대법원)"
         note: 경업금지 판례는 사안별로 다름, 최신 판례 반드시 확인
       considerations:
         - 한국 판례상 경업금지 제한적 인정

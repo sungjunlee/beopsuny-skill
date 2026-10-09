@@ -4,7 +4,7 @@
 
 A Claude Code skill for Korean legal work — statute/case law research, contract review, and compliance checks.
 
-[legalize-kr](https://github.com/legalize-kr/legalize-kr)의 법령 데이터와 [법망](https://api.beopmang.org/) API를 활용하여, 외부 API 키 없이 확인 가능한 1차 소스 중심의 법률 조사를 보조한다. 최종 답변은 출처 권위 라벨, verification status, 최신성 caveat를 함께 표시한다.
+[legalize-kr](https://github.com/legalize-kr/legalize-kr)의 공개 법령·판례 데이터와 법제처 API 기반 [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)를 활용하여, 확인 가능한 1차 소스 중심의 법률 조사를 보조한다. 최종 답변은 출처 권위 라벨, verification status, 최신성 caveat를 함께 표시한다.
 
 ```
 You: "이 계약서 검토해줘"
@@ -28,30 +28,28 @@ You: "이 계약서 검토해줘"
 - **판례 조회** — 대법원/하급심 판례 검색 + [law.go.kr 판례](https://www.law.go.kr/) 원문 링크
 - **계약서 검토** — 유형별 체크리스트 + 조항 위험 분석 + 강행규정 충돌 탐지
 - **컴플라이언스** — 업종별 규제, 연간 법정 의무 일정, 인허가 요건
-- **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력 추적 (`git log` + 법망 API)
+- **법령 변경 감지** — 회사 맥락의 관심 법령에 대한 개정 이력·시행예정 개정 확인 (legalize 시점 비교 + korean-law-mcp)
 - **근거와 확인 범위** — 핵심 인용에 출처 성격·실제 확인 경로·상태·적용 시점을 표시. `[VERIFIED]`는 원문 대조 표시이며 법률 정답 보증이 아님
 - **Legal verification core** — 결론별 인용·근거 대응, 반대근거 검토와 결론 강도 조정
 - **Freshness governance** — stale 번들 자산은 triage 후보로만 사용하고, live source 확인 전 현행 의무로 승격 금지
 - **Role / destination output gate** — 비법무 사용자·외부 송부·기관 제출 문안은 법무 검토 전 단계와 실제 외부 행동을 분리
-- **소스 graceful degradation** — 단일 운영 모드. source family별로 로컬 미러가 있으면 조문·판례 전문을 직접 열고, 없으면 법망 API·law.go.kr로 자동 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
+- **소스 graceful degradation** — 단일 운영 모드. legalize 도구와 korean-law-mcp를 기본으로 쓰고, 쓸 수 없는 도구는 law.go.kr·공식 사이트로 fallback하며 어느 경로로 확인했는지는 provenance 라벨이 나른다
 - **지식 자산 보강 경계** — `beopsuny-knowledge` privacy manifest는 필요한 경우 recall 확장과 audit 보강에만 사용
 - **전문 리뷰어** — 컴플라이언스/계약/노동/개인정보/공정거래/분쟁 영역별 관점
 - **회사 맥락과 사건 격리** — 필요한 회사 사실을 읽고, 명시적인 저장 요청은 현재 하네스 권한과 지정 사건 범위에 따른다. 회사 데이터베이스는 만들지 않는다
 
 ## 데이터 소스
 
-기본 관점은 “Git으로 받은 공식 원문 기반 로컬 미러를 먼저 파일로 탐색하고, 없는 family나 discovery·교차확인이 필요한 범위는 법망 API와 공식 링크로 fallback”이다. 1·2순위는 외부 API 키 없이 바로 동작한다. 3순위는 OC 코드(법제처 Open API 무료 인증키)가 있을 때 추가로 사용한다.
+기본 도구는 둘이다. 전체 데이터를 내려받을 필요가 없다.
 
-| 순위 | 소스 | 내용 |
-|------|------|------|
-| 1 | [legalize-kr](https://github.com/legalize-kr/legalize-kr) + [admrule-kr](https://github.com/legalize-kr/admrule-kr) + [precedent-kr](https://github.com/legalize-kr/precedent-kr) | 법령·행정규칙·판례 공식 원문 기반 로컬 미러 Markdown (직접 공식 사이트 확인과 provenance 분리; 최신 개수는 upstream repo 확인) |
-| 선택 | [ordinance-kr](https://github.com/legalize-kr/ordinance-kr) | 자치법규 로컬 미러. 파일 수가 커서 지역·지자체 질문이 많은 환경에서 선택 설치 |
-| 2 | [법망 API](https://api.beopmang.org/) | 법령·행정규칙·해석례·의안·자치법규 discovery 및 로컬 미러가 없는 family의 원문 조회 (무인증) — **2026-07-27 현재 서비스 중단**, 아래 참조 |
-| 3 | [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 헌재·행정심판·자치법규·조약 등 (OC 코드 필요) |
+| 도구 | 맡는 범위 |
+|------|-----------|
+| [legalize-cli / legalize-mcp](https://github.com/legalize-kr/cli-tools) | [legalize-kr](https://github.com/legalize-kr)의 법령·판례·행정규칙·자치법규 원문을 clone 없이 조회. 시행일 기준 조문, 개정 이력, 두 시점 비교 |
+| [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 법제처 Open API. 별표·서식, 부칙 경과조치, 시행예정 개정, 해석례·헌재·행정심판·위원회 결정, 인용 실존 점검 |
 
-원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다.
+원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다. 본문 횡단 검색이나 대량 조회처럼 도구로 풀리지 않는 작업은 사용자 승인을 받아 legalize-kr 원본 저장소 데이터를 받아 처리한다(범위·용량은 `source-access.md`의 로컬 미러 절). 과업별 도구와 주의점은 [`source-access.md`](skills/beopsuny/references/source-access.md)가 정본이다.
 
-> ⚠️ **법망 API 중단 (2026-07-27 확인)** — 서비스가 서버 물리 장애로 중단을 공지했고 복구 예상 시점은 2027년 1분기다. 법령·판례는 1순위 로컬 미러로 그대로 동작한다. 영향을 받는 것은 **로컬 미러를 설치하지 않은 family의 discovery**이며, 그 범위는 law.go.kr·korean-law-mcp·웹검색으로 내려간다 — 행정규칙을 자주 다룬다면 `admrule-kr` 미러 설치를 권한다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 직접 확인할 수 있다.
+> ⚠️ **법망 API 중단** — 이전 2순위였던 [법망](https://api.beopmang.org/) API는 2026-07부터 서버 장애로 중단되어 기본 경로에서 뺐다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 확인할 수 있다.
 
 ## 설치
 
@@ -85,11 +83,24 @@ npx skills add sungjunlee/beopsuny-skill -g -y
 
 ### 방법 3: Claude Desktop (Chat 탭) / claude.ai 웹 — 제한적·비권장
 
-> ⚠️ Chat 환경은 로컬 영속 파일시스템이 없어 **graceful degradation으로만 동작**(법망 API·웹검색)하고, 로컬 미러를 쓸 수 없습니다. 로컬 미러·git 변경감지를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
+> ⚠️ Chat 환경은 CLI를 실행할 수 없어 **연결된 MCP 커넥터와 웹검색으로만 동작**합니다. legalize CLI와 로컬 MCP를 쓰려면 **방법 1·2의 로컬 앱(Claude Code / Codex 데스크톱·CLI)을 권장**합니다.
 
 Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전제조건** Settings → Capabilities에서 **Code execution and file creation** 활성화 → [Releases](https://github.com/sungjunlee/beopsuny-skill/releases)에서 최신 `beopsuny-skill-vX.X.X.zip` 다운로드 → **Customize → Skills → + Create skill → Upload a skill** → **beopsuny** 토글 ON → 새 대화에서 법무 질문(예: `"이 계약서 봐줘"`).
 
 > UI 경로는 Anthropic이 자주 바꾼다. 다르면 공식 가이드 참고: [KO](https://support.claude.com/ko/articles/12512180-claude에서-스킬-사용하기) · [EN](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
+
+### 도구 연결 (권장)
+
+Claude Code · Codex CLI처럼 명령을 실행할 수 있는 환경에서는 두 도구를 연결한다.
+
+1. **legalize-cli** — Python 3.10+. `pipx install legalize-cli==0.5.1` 또는 설치 없이 `uvx --from legalize-cli==0.5.1 legalize`. MCP로 쓰려면 `uvx --from 'legalize-cli[mcp]==0.5.1' legalize-mcp`. 검증한 버전은 0.5.1이다. GitHub API를 쓰므로 토큰이 없으면 시간당 60회로 묶인다 — 자주 쓰면 권한 없는 읽기 전용 fine-grained 토큰을 `LEGALIZE_GITHUB_TOKEN`으로 둔다.
+2. **korean-law-mcp** — [법제처 Open API](https://open.law.go.kr/LSO/openApi/guideList.do)에서 인증키(OC)를 무료로 발급받아 `LAW_OC`로 두고 로컬에서 실행한다(`npx korean-law-mcp`, Node 20.19+). 조회가 법제처로 직접 간다. 키 없이 원격 `https://mcp.gomdori.app/law`도 응답하지만 모든 무키 사용자가 한도를 나눠 쓰는 보조 경로다.
+
+출력에서 legalize 데이터는 `공식 원문 기반 로컬 미러` 라벨을 쓰고 provenance로 직접 공식 사이트 확인과 구분한다.
+
+### 로컬 미러 (선택)
+
+전체 미러 clone은 기본 전제가 아니다(네 저장소 합계 수 GB). 받는 경우와 범위는 `source-access.md`의 로컬 미러 절이 정하며, 법순이가 제안하고 사용자가 승인하면 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`에 받는다. 이미 있으면 법순이가 그 데이터를 쓰고, 최신화(`git pull --ff-only`)는 요청한 경우에만 한다.
 
 ## 고급 설정 (선택)
 
@@ -217,30 +228,11 @@ git diff --check
 마일스톤 8의 보존된 실행 결과와 통합 범위는 [검증 기록](tests/forward_evals/model_era/followup-plan.md)에서 확인한다. 기록된 스모크는 해당 runtime의 관측이며 새 태깅 대상 커밋의 릴리즈 검증을 대신하지 않는다.
 
 1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
-2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage, 미러 설치됨)에서** 로컬 미러 staleness / 법망 API / law.go.kr 링크 3축을 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 3축의 기준이다 — 주간 CI(`--dns-links`)가 실제로 감지하는 것은 law.go.kr DNS 1축뿐이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
+2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage)에서** 기본 도구(legalize 데이터·korean-law-mcp) / 로컬 미러 staleness(설치된 경우) / 법망 API / law.go.kr 링크를 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 도달성 판정의 기준이다 — 주간 CI(`--dns-links`)는 기본 도구 도달과 law.go.kr DNS만 실제로 판정하며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
 3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
 4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
 5. plugin 버전 범프: 정본은 `.claude-plugin/plugin.json` 하나다 — version·description·keywords를 여기만 고치고, `.claude-plugin/marketplace.json` plugins[0]의 복사본을 일치시킨다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 세 필드 모두의 drift를 잡는다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
 6. CHANGELOG의 Unreleased를 버전 절로 분리하고 태깅.
-
-### 로컬 미러 셋업 (권장)
-
-Claude Code · Codex CLI처럼 영속 파일시스템이 있는 환경에서는 **로컬 미러 셋업을 권장한다**. 공식 원문 기반 로컬 미러 Markdown을 직접 읽어서 조문 맥락·판례 전문·`git log` 개정 이력까지 다각도로 조회할 수 있고, 오프라인에서도 원문 기반 자료를 열어볼 수 있다. 출력에서는 `공식 원문 기반 로컬 미러`와 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 사용해 law.go.kr 직접 확인과 구분한다.
-
-미러는 별도 모드가 아니라 source family별 가용성이다 — 받아둔 family는 로컬에서 열고, 없는 family는 법망 API·law.go.kr로 degradation한다.
-
-법순이에게 요청하면 된다:
-
-> "법령·판례·행정규칙 데이터 받아줘"
-
-법순이가 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data` 경로에 필요한 source family를 clone한다. 기본 권장은 법령(`legalize-kr`), 판례(`precedent-kr`), 행정규칙(`admrule-kr`)이고, 자치법규(`ordinance-kr`)는 파일 수가 커서 지역 규제 업무가 많을 때 선택한다. 이미 있으면 `git pull --ff-only`로 최신화를 시도한다. 경로를 바꾸려면 `BEOPSUNY_DATA_ROOT` 환경변수로 override.
-
-### OC 코드 발급 (무료)
-
-[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)를 통해 헌재 결정·행정심판·자치법규·조약 등 추가 데이터가 필요할 때만 발급받는다. 1·2순위 데이터 소스만으로도 대부분의 법무 업무는 커버된다.
-
-1. [법제처 Open API 신청 페이지](https://open.law.go.kr/LSO/openApi/guideList.do) → 회원가입 → "Open API 사용 신청"
-2. 신청서 작성 시 인증키(OC) 즉시 발급
 
 ## 사용 예시
 
@@ -334,11 +326,12 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 한국 법률 정보를 오픈 데이터로 만들어온 프로젝트들 위에 만들어졌다.
 
 - **[legalize-kr](https://github.com/legalize-kr/legalize-kr)** — 대한민국 법령 전문을 Git으로 관리하는 오픈소스 (MIT). 공식 원문 기반 로컬 미러 데이터 소스
+- **[legalize-kr/cli-tools](https://github.com/legalize-kr/cli-tools)** — legalize-kr 데이터를 clone 없이 조회하는 CLI·MCP (Apache-2.0/MIT)
 - **[admrule-kr](https://github.com/legalize-kr/admrule-kr)** — 고시·훈령·예규 등 행정규칙 Markdown (MIT). 공식 원문 기반 로컬 미러
 - **[precedent-kr](https://github.com/legalize-kr/precedent-kr)** — 대법원/하급심 판례 Markdown (MIT). 공식 원문 기반 로컬 미러; 최신 개수는 upstream repo 확인
 - **[ordinance-kr](https://github.com/legalize-kr/ordinance-kr)** — 조례·규칙 등 자치법규 Markdown (MIT). 공식 원문 기반 로컬 미러, 선택 설치 권장
-- **[법망 (Beopmang)](https://api.beopmang.org/)** — 법령·행정규칙·해석례·의안·자치법규 discovery와 무인증 API
-- **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** — 법제처 API를 AI 친화적으로 래핑한 MCP (MIT). 헌재·행정심판·자치법규·조약까지 91개 도구
+- **[법망 (Beopmang)](https://api.beopmang.org/)** — 법령·행정규칙·해석례·의안·자치법규 discovery와 무인증 API (2026-07부터 중단)
+- **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** — 법제처 API를 AI 친화적으로 래핑한 MCP (MIT). 별표·부칙·결정례·인용 검증 등
 - **[국가법령정보센터 (law.go.kr)](https://www.law.go.kr/)** — 법제처 공식 서비스. 모든 법률 데이터의 원천
 
 법령 텍스트는 대한민국 정부 공공저작물로서 자유롭게 이용할 수 있다.

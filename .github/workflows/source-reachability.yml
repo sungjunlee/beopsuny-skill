@@ -28,9 +28,9 @@ jobs:
           # docstring. CI (--dns-links, no mirror clone) means the mirror axis is
           # NOT_INSTALLED (NOT FAIL), beopmang stays WARN during the vendor-declared
           # outage, and the link axis is DNS resolution only. So a green here is
-          # "law.go.kr DNS resolves", not "3 axes healthy" — mirror staleness is
+          # "default tools reachable + law.go.kr DNS resolves", not "all axes healthy" — mirror staleness is
           # intentionally NOT run in CI (clone cost vs weekly DNS-death-detection
-          # role); the full 3-axis run is the local release checklist (README). This
+          # role); the full run is the local release checklist (README). This
           # file owns only cron + auto issue mechanics, not the coverage contract.
           # Retry once after 5m on FAIL to damp transient network blips.
           set +e

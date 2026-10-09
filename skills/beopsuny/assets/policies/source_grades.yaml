@@ -45,11 +45,11 @@ source_classes:
 
   official_primary_local_mirror:
     label: "공식 원문 기반 로컬 미러"
-    description: "법제처·대법원 등 공식 원문을 Markdown으로 변환한 로컬 Git 미러. 원문 성격의 자료이지만 이번 응답의 확인 경로는 직접 공식 사이트/API가 아니라 로컬 미러다."
+    description: "법제처·대법원 등 공식 원문을 Markdown으로 변환한 로컬 Git 미러. 원문 성격의 자료이지만 이번 응답의 확인 경로는 직접 공식 사이트/API가 아니라 로컬 미러 파일 또는 같은 데이터를 조회하는 legalize 도구다."
     trust_level: "authoritative_mirror"
     use_allowed: "conclusion_basis"
     can_be_sole_basis: true
-    requires_note: "provenance에 로컬 미러 확인과 직접 공식 사이트 확인 아님을 표시한다. 최신 개정·변동성 쟁점은 law.go.kr 원문 확인으로 교차확인한다."
+    requires_note: "provenance에 로컬 미러 확인 또는 legalize 조회와 직접 공식 사이트 확인 아님을 표시한다. 최신 개정·변동성 쟁점은 law.go.kr 또는 korean-law-mcp 원문으로 교차확인한다(source-access.md 기본 접근 경로·미러 시행일 확인 절)."
     examples:
       - "legalize-kr 로컬 미러 법령 Markdown"
       - "admrule-kr 로컬 미러 행정규칙 Markdown"
@@ -187,35 +187,20 @@ default_labels:
     label: "공식 원문 기반 로컬 미러: 하급심"
     rationale: "하급심 판례 원문의 Markdown 로컬 미러 — 직접 공식 사이트 확인 아님. 상급심에 의해 변경 가능"
 
-  "법망 API — 행정규칙 (type=admrul)":
-    source_class: official_primary
-    label: "공식 원문"
-    rationale: "고시·훈령·예규 공식 원문"
+  "legalize 도구 (legalize-kr 데이터 원격 조회)":
+    source_class: official_primary_local_mirror
+    label: "공식 원문 기반 로컬 미러"
+    rationale: "legalize-cli/legalize-mcp로 같은 로컬 미러 데이터를 GitHub에서 원격 조회 — 로컬 파일·직접 공식 사이트 확인 아님"
 
-  "법망 API — 해석례 (type=expc)":
-    source_class: official_primary
-    label: "공식 원문"
-    rationale: "법제처 공식 유권해석"
-
-  "법망 API — 의안 (type=bill)":
+  "국회 계류 의안":
     source_class: official_practice_pending
     label: "공식 실무자료: 미확정"
     rationale: "계류 의안은 확정 법령이 아님 — 시행 여부 미확정"
 
-  "법망 API — 판례 (대법원)":
-    source_class: official_primary
-    label: "공식 원문"
-    rationale: "대법원 종합법률정보 데이터의 API 래핑 — 공식 판례 원문"
-
-  "법망 API — 판례 (하급심)":
-    source_class: official_primary_lower_court
-    label: "공식 원문: 하급심"
-    rationale: "하급심 판례는 상급심에 의해 변경 가능"
-
   "korean-law-mcp (법제처 API 래핑)":
     source_class: official_primary
     label: "공식 원문"
-    rationale: "법제처 공식 API 기반 — 헌재 결정, 행정심판, 자치법규 포함"
+    rationale: "법제처 공식 API의 원문 필드에 한함 — 축약본·검색 결과·운영자 해설은 원문 대조가 아님. 원격 서버 경유 조건은 citation-verification-contract.md korean-law-mcp 행"
 
   "law.go.kr":
     source_class: official_primary

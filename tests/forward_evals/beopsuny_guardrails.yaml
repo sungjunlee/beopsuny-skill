@@ -24,7 +24,6 @@ prompts:
     guardrail_category: beopmang_api_maintenance_fallback
     source_router_scenario: router-16
     source_references:
-      - skills/beopsuny/references/beopmang-api.md
       - skills/beopsuny/references/source-access.md
     prompt: |
       법망 API로 개인정보보호법 제15조를 찾았는데 응답이 {"ok": false, "error": "service_maintenance", "retry_after": 3600}야.

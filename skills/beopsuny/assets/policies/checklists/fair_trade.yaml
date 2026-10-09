@@ -111,8 +111,8 @@ items:
       경쟁 민감 정보의 교환은 부당 공동행위 추정 근거가 될 수 있음.
       업종, 시장 구조, 정보의 성격에 따라 판단이 달라짐.
     research_actions:
-      - "# 법망 API search: '정보교환 부당공동행위' --type prec"
-      - "# 법망 API search: '공동행위' --type admrul"
+      - "# 판례 검색: '정보교환 부당공동행위'"
+      - "# 행정규칙 검색: '공동행위'"
       - "WebSearch: '{업종} 정보교환 담합 최신 판례 공정위 심결'"
     related_laws:
       - name: "공정거래법"
@@ -136,7 +136,7 @@ items:
       시장을 좁게 정의하면 점유율이 올라가고, 넓게 정의하면 내려감.
     research_actions:
       - "# legalize-kr Read: '공정거래법' --with-admrul"
-      - "# 법망 API search: '시장획정' --type prec"
+      - "# 판례 검색: '시장획정'"
       - "WebSearch: '관련시장 획정 {업종} 최신 공정위 심결 판례'"
     related_laws:
       - name: "공정거래법"
@@ -156,7 +156,7 @@ items:
       자본금, 매출액 기준이 있으나 업종별로 다르게 적용될 수 있음.
     research_actions:
       - "# legalize-kr Read: '하도급거래 공정화에 관한 법률'"
-      - "# 법망 API search: '원사업자 수급사업자' --type prec"
+      - "# 판례 검색: '원사업자 수급사업자'"
       - "WebSearch: '하도급법 적용대상 기준 최신 공정위'"
     related_laws:
       - name: "하도급법"
@@ -172,7 +172,7 @@ items:
       지급 기한(60일)은 하도급법 제13조에서 확인됐지만, 지연이자율은 KFTC 고시로 정해져 변동될 수 있음.
       현행 이자율은 반드시 별도 확인해야 함.
     research_actions:
-      - "# 법망 API search: '하도급대금 지연이자' --type admrul"
+      - "# 행정규칙 검색: '하도급대금 지연이자'"
       - "WebSearch: '하도급대금 지연이자율 현행 고시'"
     related_laws:
       - name: "하도급법"
@@ -186,7 +186,7 @@ items:
       단가 인하 자체는 불법이 아님. '부당한' 인하인지가 쟁점.
       원가 변동, 협상 과정, 거래 관행 등 맥락에 따라 판단.
     research_actions:
-      - "# 법망 API search: '부당단가인하' --type prec"
+      - "# 판례 검색: '부당단가인하'"
       - "WebSearch: '하도급 단가인하 부당성 판단기준 판례'"
     related_laws:
       - name: "하도급법"
@@ -224,8 +224,8 @@ items:
       허위/과장 판단은 '일반 소비자의 인식'을 기준으로 함.
       업종별 세부 기준이 다르고, 최신 심결례 확인 필요.
     research_actions:
-      - "# 법망 API search: '부당광고' --type prec"
-      - "# 법망 API search: '표시광고' --type admrul"
+      - "# 판례 검색: '부당광고'"
+      - "# 행정규칙 검색: '표시광고'"
       - "WebSearch: '{업종} 부당광고 공정위 심결 2024 2025'"
     related_laws:
       - name: "표시광고법"
@@ -244,8 +244,8 @@ items:
       거래처 선택의 자유는 원칙적으로 보장됨.
       '불공정'으로 위법해지려면 경쟁제한 효과나 부당성이 인정되어야 함.
     research_actions:
-      - "# 법망 API search: '거래거절 불공정' --type prec"
-      - "# 법망 API search: '차별취급' --type prec"
+      - "# 판례 검색: '거래거절 불공정'"
+      - "# 판례 검색: '차별취급'"
     related_laws:
       - name: "공정거래법"
         articles: ["제45조 (불공정거래행위의 금지)"]
@@ -264,7 +264,7 @@ items:
       해외기업 결합도 국내 매출 기준 충족 시 신고 대상.
     research_actions:
       - "# legalize-kr Read: '공정거래법'"
-      - "# 법망 API search: '기업결합 신고' --type admrul"
+      - "# 행정규칙 검색: '기업결합 신고'"
       - "WebSearch: '기업결합 신고기준 현행 공정거래위원회'"
     related_laws:
       - name: "공정거래법"
@@ -283,10 +283,10 @@ research_workflow:
     action: "위 질문 목록에서 해당되는 이슈 파악"
   step2:
     name: "법령 확인"
-    action: "# legalize-kr 또는 법망 API로 관련 법령 조문 확인"
+    action: "# legalize 도구 또는 korean-law-mcp로 관련 법령 조문 확인"
   step3:
     name: "행정규칙 확인"
-    action: "고시/지침에서 세부 기준 확인 (--type admrul)"
+    action: "고시/지침에서 세부 기준 확인"
   step4:
     name: "최신 판례/심결례"
     action: "WebSearch로 최근 2년 내 판례/공정위 심결 확인"
