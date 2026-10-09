@@ -2610,7 +2610,7 @@ def check_readme_quality_contract_map() -> None:
         raise AssertionError(f"{label}: gate 우회 금지 문단이 없다")
     assert_ordered_tokens(
         bypass_line.group(0),
-        ["약화시키는", "기능 추가로 보지 않", "우회하지 말", "결론 강도를 낮추"],
+        ["출처 권위 라벨", "자가 검증", "약화시키는", "기능 추가로 보지 않", "우회하지 말", "결론 강도를 낮추"],
         f"{label} gate 우회 금지",
     )
 
@@ -2666,13 +2666,20 @@ def check_readme_investigation_assist_posture() -> None:
         assert_contains(example.group("body"), status_tag, f"{label} 도입 예시")
     assert_not_contains(example.group("body"), "[VERIFIED]", f"{label} 도입 예시")
     assert_not_contains(example.group("body"), "확정", f"{label} 도입 예시")
-    issue_lines = [
-        line
-        for line in example.group("body").splitlines()
-        if re.match(r"\s*[-|]", line)
-        and "위험도" not in line
-        and not re.match(r"^\s*\|[\s:|-]+\|\s*$", line)
-    ]
+    # Issue lines by structure: every list item, and every table row except the
+    # first row of each table run (its header) and separator rows.
+    issue_lines = []
+    in_table = False
+    for line in example.group("body").splitlines():
+        is_row = bool(re.match(r"\s*\|", line))
+        if is_row and not in_table:
+            in_table = True
+            continue  # header row of this table run
+        in_table = is_row
+        if is_row and re.match(r"^\s*\|[\s:|-]+\|\s*$", line):
+            continue
+        if is_row or re.match(r"\s*(?:[-*+]|\d+[.)])\s", line):
+            issue_lines.append(line)
     for line in issue_lines:
         if "[INSUFFICIENT]" not in line and "[UNVERIFIED]" not in line:
             raise AssertionError(f"{label} 도입 예시: 쟁점 줄에 유보 태그가 없다: {line.strip()!r}")
