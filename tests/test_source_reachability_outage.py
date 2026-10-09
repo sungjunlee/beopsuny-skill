@@ -162,6 +162,32 @@ class DefaultToolAxesTest(unittest.TestCase):
                 self.assertEqual("WARN", result["status"])
                 self.assertIn("조회 실패 ≠ 데이터 없음", result["detail"])
 
+    def test_json_axes_read_the_whole_body(self) -> None:
+        """잘린 JSON이 non-JSON FAIL로 보이지 않게, JSON 축은 본문 전체를 읽는다."""
+        big = json.dumps({"info": {"version": "9.9.9"}, "pad": "x" * 600_000}).encode()
+
+        class Resp:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def getcode(self):
+                return 200
+
+            def read(self, n=-1):
+                return big if n is None or n < 0 else big[:n]
+
+        original = health.urllib.request.urlopen
+        health.urllib.request.urlopen = lambda req, timeout=15: Resp()
+        try:
+            status, payload, err = health.get_json(health.LEGALIZE_CLI_PYPI_URL)
+        finally:
+            health.urllib.request.urlopen = original
+        self.assertEqual(200, status)
+        self.assertEqual("9.9.9", payload["info"]["version"])
+
     def test_rate_limit_does_not_hide_a_package_failure(self) -> None:
         result = self.legalize(repo=(403, b"{}", "HTTP 403"), pypi=(404, b"{}", "HTTP 404"))
         self.assertEqual("FAIL", result["status"])

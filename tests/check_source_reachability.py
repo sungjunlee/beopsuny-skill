@@ -170,13 +170,13 @@ def check_mirror(family: str) -> dict[str, Any]:
 
 
 def http_get(
-    url: str, timeout: int = HTTP_TIMEOUT, max_bytes: int = 4096
+    url: str, timeout: int = HTTP_TIMEOUT, max_bytes: int | None = 4096
 ) -> tuple[int | None, bytes, str]:
     """Return (status_or_None, body_or_empty, error_reason)."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            # 링크 rot 검사는 본문 일부면 된다. JSON 축은 max_bytes를 늘려 읽는다.
+            # 링크 rot 검사는 본문 일부면 된다. JSON 축은 max_bytes=None으로 전체를 읽는다.
             return resp.getcode(), resp.read(max_bytes), ""
     except urllib.error.HTTPError as exc:
         body = exc.read() if exc.fp is not None else b""
@@ -273,7 +273,7 @@ def summarize_beopmang(payload: Any) -> str:
 
 
 def get_json(url: str) -> tuple[int | None, Any, str]:
-    status, body, err = http_get(url, max_bytes=262144)
+    status, body, err = http_get(url, max_bytes=None)
     if status is None:
         return None, None, err
     try:

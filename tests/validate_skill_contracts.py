@@ -1119,12 +1119,15 @@ def check_source_access_mirror_promulgation_currency() -> None:
     text = read_text("skills/beopsuny/references/source-access.md")
     label = "source-access.md"
 
+    # 비교 기준은 오늘이 아니라 기준일이다(행위시법 조회). 절 안에서만 본다 —
+    # "기준일"은 공통 원칙 1에도 있어 문서 전체 검사로는 삭제를 못 잡는다.
+    section = re.search(r"^## 미러 시행일 확인 \(공포본 vs 현행본\)\n(?:.*\n)*?(?=^## )", text, re.MULTILINE)
+    if not section:
+        raise AssertionError(f"{label}: 미러 시행일 확인 절이 없다")
+    assert_ordered_tokens(section.group(0), ["`시행일자`", "기준일", "보다 미래", "시행 전 공포본"], f"{label} 미러 시행일 판정")
+
     for required in [
         "미러 시행일 확인 (공포본 vs 현행본)",
-        # 미래 시행일자 -> 시행 전 공포본 판정
-        "`시행일자`",
-        "오늘보다 미래",
-        "시행 전 공포본",
         # 표시 문구는 고정하지 않는다. 실제 확인 범위는 live 의미 검토가 맡는다.
         "[VERIFIED]",
         # 현행 조문은 law.go.kr 현행본으로 별도 확인
@@ -3912,7 +3915,20 @@ def check_forward_eval_prompt_set() -> None:
 
 def check_volatile_api_docs() -> None:
     # 법망 API 전용 문서는 서비스 중단으로 은퇴했다(#268). 남는 계약은 실패 구조다:
-    # 도구 응답을 못 받은 것을 부존재·개정 없음으로 바꾸지 않는다.
+    # 도구 응답을 못 받은 것을 부존재·개정 없음으로 바꾸지 않는다. 그 문장의 집은
+    # source-access 공통 원칙 4와 law-change-detection Failure Handling이다.
+    source_access = read_text("skills/beopsuny/references/source-access.md")
+    principle = re.search(r"^4\. 도구 응답이.*$", source_access, re.MULTILINE)
+    if not principle:
+        raise AssertionError("source-access.md: 공통 원칙 4(조회 실패) 문단이 없다")
+    assert_ordered_tokens(
+        principle.group(0), ["조회 실패", "개정 없음", "근거가 아니"], "source-access.md 공통 원칙 4"
+    )
+    law_change = read_text("skills/beopsuny/references/law-change-detection.md")
+    failure = re.search(r"^## Failure Handling\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
+    if not failure:
+        raise AssertionError("law-change-detection.md: Failure Handling 절이 없다")
+    assert_contains(failure.group(0), "조회 실패는 개정 없음이 아니다", "law-change-detection.md Failure Handling")
     docs = {
         "skills/beopsuny/references/source-access.md": read_text(
             "skills/beopsuny/references/source-access.md"
@@ -3938,6 +3954,8 @@ def check_volatile_api_docs() -> None:
             assert_not_contains(doc_text, pattern, doc_label)
         for required in failure_terms:
             assert_contains(doc_text, required, doc_label)
+        # beopmang-api.md가 지던 "실패 ≠ 개정 없음" 금지는 이제 이 두 문서가 진다.
+        assert_contains(doc_text, "개정 없음", doc_label)
         assert_not_contains(doc_text, "service_maintenance", doc_label)
         assert_not_contains(doc_text, "service_paused", doc_label)
 

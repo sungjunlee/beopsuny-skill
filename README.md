@@ -47,7 +47,7 @@ You: "이 계약서 검토해줘"
 | [legalize-cli / legalize-mcp](https://github.com/legalize-kr/cli-tools) | [legalize-kr](https://github.com/legalize-kr)의 법령·판례·행정규칙·자치법규 원문을 clone 없이 조회. 시행일 기준 조문, 개정 이력, 두 시점 비교 |
 | [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | 법제처 Open API. 별표·서식, 부칙 경과조치, 시행예정 개정, 해석례·헌재·행정심판·위원회 결정, 인용 실존 점검 |
 
-원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다. 본문 횡단 검색이나 대량 조회처럼 도구로 풀리지 않는 작업은 legalize-kr 원본 저장소에서 필요한 부분만 받아 처리한다. 과업별 도구와 주의점은 [`source-access.md`](skills/beopsuny/references/source-access.md)가 정본이다.
+원문 확인 링크는 [law.go.kr](https://www.law.go.kr/)로 제공한다. 본문 횡단 검색이나 대량 조회처럼 도구로 풀리지 않는 작업은 사용자 승인을 받아 legalize-kr 원본 저장소 데이터를 받아 처리한다(범위·용량은 `source-access.md`의 로컬 미러 절). 과업별 도구와 주의점은 [`source-access.md`](skills/beopsuny/references/source-access.md)가 정본이다.
 
 > ⚠️ **법망 API 중단** — 이전 2순위였던 [법망](https://api.beopmang.org/) API는 2026-07부터 서버 장애로 중단되어 기본 경로에서 뺐다. 스킬은 조회 실패를 "규범 부존재·개정 없음"으로 바꾸지 않는다. 현재 상태는 `python3 tests/check_source_reachability.py`로 확인할 수 있다.
 
@@ -228,7 +228,7 @@ git diff --check
 마일스톤 8의 보존된 실행 결과와 통합 범위는 [검증 기록](tests/forward_evals/model_era/followup-plan.md)에서 확인한다. 기록된 스모크는 해당 runtime의 관측이며 새 태깅 대상 커밋의 릴리즈 검증을 대신하지 않는다.
 
 1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
-2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage)에서** 기본 도구(legalize 데이터·korean-law-mcp) / 로컬 미러 staleness(설치된 경우) / 법망 API / law.go.kr 링크를 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 도달성 판정의 기준이다 — 주간 CI(`--dns-links`)가 실제로 감지하는 것은 law.go.kr DNS 1축뿐이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
+2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage)에서** 기본 도구(legalize 데이터·korean-law-mcp) / 로컬 미러 staleness(설치된 경우) / 법망 API / law.go.kr 링크를 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 도달성 판정의 기준이다 — 주간 CI(`--dns-links`)는 기본 도구 도달과 law.go.kr DNS만 실제로 판정하며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
 3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
 4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
 5. plugin 버전 범프: 정본은 `.claude-plugin/plugin.json` 하나다 — version·description·keywords를 여기만 고치고, `.claude-plugin/marketplace.json` plugins[0]의 복사본을 일치시킨다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 세 필드 모두의 drift를 잡는다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
