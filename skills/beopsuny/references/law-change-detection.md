@@ -12,7 +12,7 @@
 
 ## 기본 경로
 
-법령이 지정되어 있거나 회사 맥락에 관심 법령이 있으면 위 표의 기본 열을 쓰고, 도구 순서와 시행일 기준은 `references/source-access.md`를 따른다. 시간 범위 전체 discovery는 지원하지 않으므로 법령명을 좁혀 달라고 요청한다. 실패 판정은 아래 `## Failure Handling`을 따른다. 본문 전수 검색이 필요하면 `references/source-access.md`의 `## 로컬 미러 (선택)`에 따라 사용자에게 받기를 제안한다. 펼친 법령 경로의 `git log`/`git show`는 부분 받기 미러에서도 그 경로로만 쓴다. `kr/` 전체 discovery와 변경 분석 레시피의 `git grep … kr/`는 전체 미러에서만 실행한다.
+법령이 지정되어 있거나 회사 맥락에 관심 법령이 있으면 위 표의 기본 열을 쓰고, 도구 순서와 시행일 기준은 `references/source-access.md`를 따른다. 시간 범위 전체 discovery는 지원하지 않으므로 법령명을 좁혀 달라고 요청한다. 시행일자 기준 diff는 시행된 변경만 보여 준다. "개정 없음"으로 두기 전에 korean-law-mcp `search_law`의 시행예정 병기(또는 legalize 공포일자 기준 조회)로 시행 전 공포 개정을 확인하고, 있으면 공포일·시행일을 나눠 알린다. 실패 판정은 아래 `## Failure Handling`을 따른다. 본문 전수 검색이 필요하면 `references/source-access.md`의 `## 로컬 미러 (선택)`에 따라 사용자에게 받기를 제안한다. 펼친 법령 경로의 `git log`/`git show`는 부분 받기 미러에서도 그 경로로만 쓴다. `kr/` 전체 discovery와 변경 분석 레시피의 `git grep … kr/`는 전체 미러에서만 실행한다.
 
 ## Local Mirror Commands
 
@@ -22,7 +22,7 @@
 # 시간 범위 discovery
 git -c core.quotePath=false -C "$DR/legalize-kr" log --since="1 month ago" --name-only kr/
 # 특정 법령 이력과 diff
-git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md
+git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md   # 부분 받기 미러에서는 --follow 없이
 git -C "$DR/legalize-kr" show {SHA} -- kr/{법령명}/법률.md
 ```
 
@@ -74,7 +74,7 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 
 ## Interested Laws Append
 
-관심 법령에 개정 정보가 있으면 본문 뒤에 법령명·개정일·출처를 덧붙인다. 개정이 없고 조회 실패도 없으면 생략한다. 단, 미러 기반 "개정 없음"은 미러 HEAD 커밋일까지만이다 — 그 이후 구간은 기본 도구로 확인하거나 미확인 기간으로 표시하고 생략하지 않는다. 조회 실패는 개정 없음과 구별해 표시한다.
+관심 법령에 개정 정보(시행예정 개정 포함)가 있으면 본문 뒤에 법령명·개정일·출처를 덧붙인다. 시행된 개정과 시행예정 개정이 모두 없고 조회 실패도 없으면 생략한다. 단, 미러 기반 "개정 없음"은 미러 HEAD 커밋일까지만이다 — 그 이후 구간은 기본 도구로 확인하거나 미확인 기간으로 표시하고 생략하지 않는다. 조회 실패는 개정 없음과 구별해 표시한다.
 
 ## Failure Handling
 

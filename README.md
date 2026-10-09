@@ -100,7 +100,7 @@ Claude Code · Codex CLI처럼 명령을 실행할 수 있는 환경에서는 �
 
 ### 로컬 미러 (선택)
 
-전체 미러 clone은 기본 전제가 아니다(네 저장소 합계 수 GB). 오프라인 작업, 대량 조회, 조회어 자체가 민감한 사건처럼 필요할 때 법순이에게 요청하면 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`에 받는다. 이미 있으면 법순이가 그 데이터를 쓰고, 최신화(`git pull --ff-only`)는 요청한 경우에만 한다.
+전체 미러 clone은 기본 전제가 아니다(네 저장소 합계 수 GB). 받는 경우와 범위는 `source-access.md`의 로컬 미러 절이 정하며, 법순이가 제안하고 사용자가 승인하면 `${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`에 받는다. 이미 있으면 법순이가 그 데이터를 쓰고, 최신화(`git pull --ff-only`)는 요청한 경우에만 한다.
 
 ## 고급 설정 (선택)
 

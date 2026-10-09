@@ -53,7 +53,7 @@ local legalize-kr/precedent-kr/admrule-kr/ordinance-kr는 공식 원문 기반 �
 - 사용자가 제공한 조문번호, 사건번호, 법정 금액·기한 등 법률 근거를 독립 확인하지 않았다.
 - 법령 ID, 인허가 요건, 공식 서식, 법정 기한을 official source 확인 없이 기억이나 후보 데이터로 처리했다.
 - 링크 패턴이 맞아 보인다는 이유만으로 law.go.kr 원문 확인을 했다고 표시했다.
-- API timeout, 5xx, `service_maintenance`, 빈 응답을 검색 0건이나 개정 없음으로 해석했다.
+- 오류 응답, timeout, 5xx, 빈 응답, 호출 한도 초과(`references/source-access.md` 공통 원칙 4)나 경고 없는 검색 0건을 부존재나 개정 없음으로 해석했다.
 
 ## Output Binding
 

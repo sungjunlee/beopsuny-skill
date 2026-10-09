@@ -3931,6 +3931,11 @@ def check_volatile_api_docs() -> None:
         raise AssertionError("law-change-detection.md: Failure Handling 절이 없다")
     if not re.search(r"조회 실패[^\n]*개정 없음이\s*" + negation, failure.group(0)):
         raise AssertionError("law-change-detection.md Failure Handling: 조회 실패 ≠ 개정 없음 문장이 없다")
+    # 시행일자 diff는 시행된 변경만 보인다. "개정 없음" 생략 전에 시행예정 개정을 보게 한다.
+    base_path = re.search(r"^## 기본 경로\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
+    if not base_path:
+        raise AssertionError("law-change-detection.md: 기본 경로 절이 없다")
+    assert_ordered_tokens(base_path.group(0), ["시행된 변경만", "개정 없음", "시행예정"], "law-change-detection.md 기본 경로")
     docs = {
         "skills/beopsuny/references/source-access.md": read_text(
             "skills/beopsuny/references/source-access.md"
