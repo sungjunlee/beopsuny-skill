@@ -162,6 +162,10 @@ class DefaultToolAxesTest(unittest.TestCase):
                 self.assertEqual("WARN", result["status"])
                 self.assertIn("조회 실패 ≠ 데이터 없음", result["detail"])
 
+    def test_rate_limit_does_not_hide_a_package_failure(self) -> None:
+        result = self.legalize(repo=(403, b"{}", "HTTP 403"), pypi=(404, b"{}", "HTTP 404"))
+        self.assertEqual("FAIL", result["status"])
+
     def test_archived_repo_or_missing_package_fails(self) -> None:
         self.assertEqual("FAIL", self.legalize(repo=(200, b'{"archived": true}', ""))["status"])
         self.assertEqual("FAIL", self.legalize(repo=(404, b"{}", "HTTP 404"))["status"])

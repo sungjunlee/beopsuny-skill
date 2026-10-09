@@ -89,16 +89,16 @@ description: |
 
 ## 소스 가용성과 graceful degradation
 
-법순이는 단일 운영 모드로 동작한다. 기본 경로는 legalize 도구(legalize-kr 원문 데이터를 clone 없이 조회)와 korean-law-mcp(법제처 API — 별표·부칙·결정례·해석례)이며, 쓸 수 없는 도구는 남은 공식 경로(law.go.kr, 공식 사이트)로 graceful degradation한다. 로컬 미러가 이미 있으면 같은 데이터로 먼저 쓸 수 있다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
+법순이는 단일 운영 모드로 동작한다. 기본 경로는 legalize 도구(legalize-kr 원문 데이터를 clone 없이 조회)와 korean-law-mcp(법제처 API — 별표·부칙·결정례·해석례)이며, 쓸 수 없는 도구는 남은 공식 경로(law.go.kr, 공식 사이트)로 graceful degradation한다. 로컬 미러가 이미 있으면 같은 데이터로 쓸 수 있다. 어느 경로로 확인했는지는 provenance 라벨이 나른다.
 
-조문은 기준일과 시행일 기준을 정해 조회한다. 의뢰인·사건 사실이 담긴 텍스트는 원격 서버의 분석 도구에 보내지 않는다. 없는 도구나 미러를 있다고 주장하지 않으며, 미러는 읽기 전용이고, 사용자 승인 없이 미러를 받지 않는다(부분 받기 포함). 과업별 도구·명령·fallback은 `references/source-access.md`를 따른다.
+조문은 시행일 기준으로 조회하고 시행 전 공포본을 현행으로 쓰지 않는다(`references/source-access.md` 공통 원칙 1). 원격 도구 호출(검색 포함)에는 법령명·조문번호·사건번호·일반 법률용어만 보내고 당사자·회사명·사실관계는 넣지 않는다. 없는 도구나 미러를 있다고 주장하지 않으며, 미러는 읽기 전용이고, 사용자 승인 없이 미러를 받지 않는다(부분 받기 포함). 과업별 도구·명령·fallback은 `references/source-access.md`를 따른다.
 
 ## 출처 권위 라벨 계약
 
 모든 핵심 인용은 표·산문·각주 어디서든 출처 성격·확인 상태·실제 경로를 추적할 수 있게 한다. 다음은 한 가지 표시 예다. `[VERIFIED]`는 `references/citation-verification-contract.md`의 VERIFIED minimum conditions를 모두 충족한 경우에만 사용한다.
 
 ```markdown
-**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize 조회, 시행일자 기준 2026-10-08 (직접 공식 사이트 확인 아님)
+**[공식 원문 기반 로컬 미러] [VERIFIED]** — legalize 원격 조회, 시행일자 기준 2026-10-08 (로컬 파일·공식 사이트 직접 확인 아님)
 ```
 
 상태 태그는 기존 6개만 사용한다:

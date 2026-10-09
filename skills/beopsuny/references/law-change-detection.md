@@ -10,6 +10,10 @@
 | 특정 법령 변경 | legalize `laws diff --semantic 시행일자`, korean-law-mcp `search_law`(시행예정 병기)·`legal_research(task=amendment_track)` | `git log` -> SHA -> `git show` |
 | 관심 법령 일괄 | 회사 맥락의 관심 법령 순회 | 동일 |
 
+## 기본 경로
+
+법령이 지정되어 있거나 회사 맥락에 관심 법령이 있으면 위 표의 기본 열을 쓰고, 도구 순서와 시행일 기준은 `references/source-access.md`를 따른다. 시간 범위 전체 discovery는 지원하지 않으므로 법령명을 좁혀 달라고 요청한다. 실패 판정은 아래 `## Failure Handling`을 따른다. 본문 전수 검색이 필요하면 `references/source-access.md`의 `## 로컬 미러 (선택)`에 따라 사용자에게 받기를 제안한다. 아래 git 명령과 변경 분석 레시피는 미러가 있을 때만 쓴다.
+
 ## Local Mirror Commands
 
 일반 미러 탐색·clone·동기화 명령은 `references/source-access.md`가 단일 소스다. 여기는 변경 감지 특수 사용법만 둔다. 공통 prefix는 `DR=${BEOPSUNY_DATA_ROOT:-~/.beopsuny}/data`, 한국어 경로가 깨지지 않도록 `--name-only`에는 `-c core.quotePath=false`를 붙인다.
@@ -62,12 +66,6 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 
 미러에 아직 없는 신설 법령(예: 새로 제정된 법)은 `git grep`으로 안 나온다고 "없음"이 아니다 — **미러 갱신 전일 뿐**이다. law.go.kr·법제처 입법예고·로펌 뉴스레터로 본문과 입법 경과를 확인하고, 미러 반영 후 조문 레벨 재검증을 추적 대상으로 남긴다.
 
-## 로컬 미러 없을 때
-
-기본 경로에서는 사용자가 특정 법령을 지정했거나 회사 맥락의 관심 법령이 있을 때 legalize 도구의 시점 비교와 korean-law-mcp의 개정·시행예정 정보를 쓴다. 시간 범위 전체 discovery는 지원하지 않는다고 말하고, 법령명을 좁혀 달라고 요청한다. 위 변경 분석 레시피처럼 본문 전수 검색이 필요하면 `references/source-access.md`의 `## 로컬 미러 (선택)`에 따라 사용자에게 받기를 제안한다.
-
-도구 응답이 오류 응답, timeout, 5xx, 빈 응답, 호출 한도 초과면 조회 실패이며 개정 없음이 아니다. 오류 값이 무엇이든, 서비스가 장기 중단을 알리더라도 같다 — 확인하지 못한 기간을 "개정 없음"으로 바꾸지 않는다.
-
 ## Output Fields
 
 법령당 개정일자(git commit date 또는 API 변경일), 공포일자, 시행일자(YAML frontmatter 또는 공식 API로 확인), 변경 조문(diff 요약), 출처 링크(legalize-kr commit, law.go.kr 법령 링크)를 분리해 표시한다. 공포일과 시행일은 다를 수 있다 — 같은 날짜라고 가정하지 않는다.
@@ -83,9 +81,8 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 아래는 모두 실패로 표시한다.
 
 - `git` non-zero exit
-- legalize 도구·korean-law-mcp timeout/error/호출 한도 초과
+- 도구 응답의 오류 응답, timeout, 5xx, 빈 응답, 호출 한도 초과 — 오류 값이 무엇이든, 서비스가 장기 중단을 알려도 확인하지 못한 기간을 "개정 없음"으로 바꾸지 않는다
 - 법령명과 legalize-kr 디렉토리명 mismatch
-- diff/history endpoint가 빈 값이지만 원인 불명
 
 표현:
 

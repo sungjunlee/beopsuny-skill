@@ -190,7 +190,7 @@ default_labels:
   "legalize 도구 (legalize-kr 데이터 원격 조회)":
     source_class: official_primary_local_mirror
     label: "공식 원문 기반 로컬 미러"
-    rationale: "legalize-cli/legalize-mcp로 같은 로컬 미러 데이터를 GitHub에서 조회 — 직접 공식 사이트 확인 아님"
+    rationale: "legalize-cli/legalize-mcp로 같은 로컬 미러 데이터를 GitHub에서 원격 조회 — 로컬 파일·직접 공식 사이트 확인 아님"
 
   "국회 계류 의안":
     source_class: official_practice_pending
@@ -200,7 +200,7 @@ default_labels:
   "korean-law-mcp (법제처 API 래핑)":
     source_class: official_primary
     label: "공식 원문"
-    rationale: "법제처 공식 API의 원문 필드에 한함 — 축약본·검색 결과·운영자 해설은 원문 대조가 아님"
+    rationale: "법제처 공식 API의 원문 필드에 한함 — 축약본·검색 결과·운영자 해설은 원문 대조가 아님. 개인 운영 원격 서버 경유이면 결론을 좌우하는 pinpoint는 law.go.kr 또는 로컬 OC 실행으로 교차확인"
 
   "law.go.kr":
     source_class: official_primary

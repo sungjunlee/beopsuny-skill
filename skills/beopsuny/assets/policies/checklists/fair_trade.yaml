@@ -286,7 +286,7 @@ research_workflow:
     action: "# legalize 도구 또는 korean-law-mcp로 관련 법령 조문 확인"
   step3:
     name: "행정규칙 확인"
-    action: "고시/지침에서 세부 기준 확인 (--type admrul)"
+    action: "고시/지침에서 세부 기준 확인"
   step4:
     name: "최신 판례/심결례"
     action: "WebSearch로 최근 2년 내 판례/공정위 심결 확인"

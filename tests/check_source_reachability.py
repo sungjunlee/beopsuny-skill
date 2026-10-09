@@ -286,14 +286,13 @@ def check_legalize_data() -> dict[str, Any]:
     """기본 경로 1: legalize 도구가 읽는 GitHub 저장소와 배포 패키지."""
     axis = "기본 도구/legalize 데이터"
     pushed = []
+    deferred = ""
     for family in SOURCE_FAMILIES:
         status, payload, err = get_json(f"{GITHUB_API_REPOS}/{family}")
         if status in (403, 429):
-            return {
-                "status": "WARN",
-                "axis": axis,
-                "detail": f"GitHub API 한도 ({family}, HTTP {status}) — 판정 보류, 조회 실패 ≠ 데이터 없음",
-            }
+            # 한도는 판정 보류다. 독립적인 PyPI 축은 그래도 확인해야 패키지 장애를 놓치지 않는다.
+            deferred = f"GitHub API 한도 ({family}, HTTP {status}) — 판정 보류, 조회 실패 ≠ 데이터 없음"
+            break
         if status != 200 or not isinstance(payload, dict):
             return {"status": "FAIL", "axis": axis, "detail": f"{family}: {err or f'HTTP {status}'} (조회 실패)"}
         if payload.get("archived") or payload.get("disabled"):
@@ -304,6 +303,8 @@ def check_legalize_data() -> dict[str, Any]:
     if status != 200 or not isinstance(payload, dict):
         return {"status": "FAIL", "axis": axis, "detail": f"PyPI legalize-cli: {err or f'HTTP {status}'}"}
     version = (payload.get("info") or {}).get("version", "?")
+    if deferred:
+        return {"status": "WARN", "axis": axis, "detail": f"legalize-cli {version}; {deferred}"}
     return {"status": "OK", "axis": axis, "detail": f"legalize-cli {version}; pushed " + ", ".join(pushed)}
 
 
