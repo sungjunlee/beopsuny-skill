@@ -455,14 +455,15 @@ def check_skill_frontmatter_minimal() -> None:
     description = frontmatter.get("description")
     if not isinstance(description, str) or not description.strip():
         raise AssertionError("SKILL.md frontmatter description is empty")
-    if not re.search(r"기억[^.\n]{0,16}(?:않|금지)", description):
+    # 부정어는 "기억으로 답하는" 행위 자체에 붙어야 한다("답해도 제한하지 않는다" 반전 차단).
+    if not re.search(r"기억\S{0,4}\s*(?:답하지|의존하지)\s*않", description):
         raise AssertionError("SKILL.md description: 기억만으로 답하지 않는다는 경계가 없다")
     skill = read_text("skills/beopsuny/SKILL.md")
     research_contract = re.search(r"^## 기본 조사 계약\n(?:.*\n)*?(?=^## )", skill, re.MULTILINE)
     if not research_contract:
         raise AssertionError("SKILL.md: 기본 조사 계약 절이 없다")
     assert_ordered_tokens(
-        research_contract.group(0), ["환각 방지", "[INSUFFICIENT]", "[UNVERIFIED]"], "SKILL.md 환각 방지"
+        research_contract.group(0), ["환각 방지", "만들지 않", "[INSUFFICIENT]", "[UNVERIFIED]"], "SKILL.md 환각 방지"
     )
     if "metadata" in frontmatter:
         raise AssertionError("SKILL.md frontmatter metadata should stay in plugin metadata")
@@ -2537,6 +2538,7 @@ def check_cross_border_overlay_roadmap() -> None:
 # 달라 불릿 핀으로는 행 삭제를 못 잡는다(#261, #283) — 행 구조로 바인드한다.
 REQUIRED_MAP_REFS = {
     "Always-on legal conclusion gates": ["router-01", "router-05"],
+    "Legal verification core": ["router-16"],
     "Freshness governance": ["check_freshness_debt_registry", "router-15"],
     "Company context trust": ["check_skill_company_context_read_only_and_trust_boundary"],
     "Output role/destination gate": ["check_output_role_destination_contracts", "router-14"],
@@ -2589,10 +2591,28 @@ def check_readme_quality_contract_map() -> None:
         evaluator_line.group(0), ["법률 정답 채점기가 아니라", "guardrail 회귀"], f"{label} evaluator 한계"
     )
     assert_contains(text, "품질 계약 변경 체크리스트", label)
+    # 체크리스트는 새 법률 기능을 gate·fixture·검사에 묶는 절차다. 단계 번호가
+    # 1..8로 이어지고 단계별 포인터가 남아 있는지만 본다(문장은 자유).
+    steps = {row[0]: row for row in parse_markdown_table(text, "| 단계 | 대상 | 조건 |")}
+    if sorted(steps) != [str(n) for n in range(1, 9)]:
+        raise AssertionError(f"{label}: 품질 계약 변경 체크리스트 단계가 1..8이 아니다: {sorted(steps)!r}")
+    for step, pointer in {
+        "1": "SKILL.md",
+        "4": "16_router_regression.yaml",
+        "5": "router_guardrail_outputs.yaml",
+        "6": "validate_skill_contracts.py",
+        "7": "CHANGELOG",
+    }.items():
+        if pointer not in steps[step][1]:
+            raise AssertionError(f"{label}: 체크리스트 {step}단계에 {pointer!r}가 없다")
     bypass_line = re.search(r"^.*기존 gate를.*$", text, re.MULTILINE)
     if not bypass_line:
         raise AssertionError(f"{label}: gate 우회 금지 문단이 없다")
-    assert_ordered_tokens(bypass_line.group(0), ["우회하지", "결론 강도를 낮추"], f"{label} gate 우회 금지")
+    assert_ordered_tokens(
+        bypass_line.group(0),
+        ["약화시키는", "기능 추가로 보지 않", "우회하지", "결론 강도를 낮추"],
+        f"{label} gate 우회 금지",
+    )
 
 
 def check_readme_asset_inventory_counts() -> None:
@@ -2645,6 +2665,15 @@ def check_readme_investigation_assist_posture() -> None:
     for status_tag in ["[INSUFFICIENT]", "[UNVERIFIED]"]:
         assert_contains(example.group("body"), status_tag, f"{label} 도입 예시")
     assert_not_contains(example.group("body"), "[VERIFIED]", f"{label} 도입 예시")
+    assert_not_contains(example.group("body"), "확정", f"{label} 도입 예시")
+    issue_lines = [
+        line
+        for line in example.group("body").splitlines()
+        if re.match(r"\s*- .+:", line) or (re.match(r"\s*\| [A-Z]", line) and "위험도" not in line)
+    ]
+    for line in issue_lines:
+        if "[INSUFFICIENT]" not in line and "[UNVERIFIED]" not in line:
+            raise AssertionError(f"{label} 도입 예시: 쟁점 줄에 유보 태그가 없다: {line.strip()!r}")
     assert_not_contains(text, "외부 API 키 없이 정확한 법률 정보를 제공한다", label)
 
     # #306: (c) 산문 핀 → 문단 앵커 + 순서 토큰. "확인 가능한 1차 소스 중심의
