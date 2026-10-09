@@ -18,6 +18,7 @@
 #                                     unless every server connects and no tool-path call is denied.
 #   BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS comma-separated extra --allowedTools, e.g. Bash(legalize:*),Bash(uvx:*)
 #   BEOPSUNY_EVAL_EMPTY_DATA_ROOT=1   simulate a data root with no local mirror (as o4-05 does)
+#   BEOPSUNY_EVAL_CLAUDE_BIN          replace the claude executable (runner tests use a fake)
 #   BEOPSUNY_EVAL_TRACE=1             keep tool calls (stream-json) under BEOPSUNY_EVAL_TRACE_DIR
 #   BEOPSUNY_EVAL_TRACE_DIR           absolute path; default tests/forward_evals/runs/traces
 #                                     (gitignored). OC= values and $LAW_OC are masked in the
@@ -43,9 +44,7 @@ APPEND_SYSTEM="$(cat "$CONTEXT_FILE")"
 
 # Remove only what this script created (never a caller-provided data root).
 CREATED_ROOT=""
-RAW_TRACE=""
 cleanup() {
-  [[ -n "$RAW_TRACE" ]] && rm -f -- "$RAW_TRACE"
   [[ -n "$CREATED_ROOT" ]] && rm -rf -- "$CREATED_ROOT"
   return 0
 }
@@ -91,8 +90,17 @@ if [[ -n "${BEOPSUNY_EVAL_MCP_CONFIG:-}" ]]; then
   REQUIRE_MCP=1
 fi
 ALLOWED_TOOLS="Read,Glob,Grep,WebFetch,WebSearch,Bash(ls:*),Bash(find:*),Bash(cat:*),Bash(head:*),Bash(rg:*),Bash(grep:*),Bash(git:*),Bash(curl:*),Bash(test:*)"
+TOOL_PATH=$REQUIRE_MCP
 if [[ -n "${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS:-}" ]]; then
   ALLOWED_TOOLS="${ALLOWED_TOOLS},${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS}"
+  TRACE=1
+  TOOL_PATH=1
+fi
+if [[ "${BEOPSUNY_EVAL_EMPTY_DATA_ROOT:-}" == "1" ]]; then
+  TRACE=1
+fi
+if [[ "$REQUIRE_MCP" == "1" && -z "${LAW_OC:-}" ]]; then
+  echo "[eval-runner] warning: LAW_OC is not exported; only OC=... patterns can be masked" >&2
 fi
 if [[ "$REQUIRE_MCP" == "1" ]]; then
   # Headless runs deny tools that are not pre-approved, so a connected server
@@ -128,6 +136,9 @@ cd "${BEOPSUNY_EVAL_WORKSPACE:-$(dirname "$OUTPUT_FILE")}"
 # eval-target (fwd-02 automation-boundary premise needs that), but execution is
 # denied; if the CLI hides denied tools entirely, fwd-02 falls to the "no tools
 # available" contract branch — acceptable either way (judgment reads transcript).
+# BEOPSUNY_EVAL_CLAUDE_BIN replaces the claude executable (tests use a fake; never
+# rely on PATH order, which differs between shells and Windows process lookup).
+read -r -a CLAUDE_CMD <<< "${BEOPSUNY_EVAL_CLAUDE_BIN:-claude}"
 CLAUDE_ARGS=(
   -p
   --model "$MODEL"
@@ -138,35 +149,51 @@ CLAUDE_ARGS=(
 )
 
 if [[ "$TRACE" != "1" ]]; then
-  claude "${CLAUDE_ARGS[@]}" < "$PROMPT_FILE" > "$OUTPUT_FILE"
+  "${CLAUDE_CMD[@]}" "${CLAUDE_ARGS[@]}" < "$PROMPT_FILE" > "$OUTPUT_FILE"
   exit 0
 fi
 
 # Trace mode: tool-call inputs are evidence for remote-lookup boundaries (what was
-# sent to a remote tool). The answer file holds only the final text. A run whose
-# MCP servers did not all connect, or whose result is an error, fails here so it
-# is recorded as an execution error, never as a scored tool-path answer.
-RAW_TRACE="$(mktemp)"
-set +e
-claude "${CLAUDE_ARGS[@]}" --output-format stream-json --verbose < "$PROMPT_FILE" > "$RAW_TRACE"
-CLAUDE_RC=$?
-set -e
-python3 - "$RAW_TRACE" "$TRACE_FILE" "$OUTPUT_FILE" "$REQUIRE_MCP" "$CLAUDE_RC" <<'PY'
-import json, os, re, sys
+# sent to a remote tool). The answer file holds only the final text. The stream is
+# masked line by line before it touches disk, so a killed run never leaves an
+# unmasked trace. An inner timeout (shorter than the harness timeout) ends claude
+# first so the normal failure path runs. A run whose MCP servers did not all
+# connect, whose tool-path calls were denied, or whose result is an error exits
+# non-zero and is recorded as an execution error, never as a scored answer.
+INNER_TIMEOUT=$(( ${BEOPSUNY_EVAL_TIMEOUT:-300} - 30 ))
+(( INNER_TIMEOUT < 30 )) && INNER_TIMEOUT=30
+RUN_TRACED='
+import json, os, re, subprocess, sys, threading
 
-raw, trace_path, output_path, require_mcp, claude_rc = sys.argv[1:6]
+trace_path, output_path, prompt_path, require_mcp, tool_path, inner = sys.argv[1:7]
+cmd = sys.argv[7:]
 secret = os.environ.get("LAW_OC", "")
+PATTERNS = [
+    (re.compile(r"(\bOC=)[^&\"\s\\]+", re.I), r"\1REDACTED"),
+    (re.compile(r"(OC%3D)[^&\"\s\\%]+", re.I), r"\1REDACTED"),
+    # also the escaped form inside a JSON string value (\"oc\": \"...\")
+    (re.compile(r"(\\?\"(?:oc|law_oc)\\?\"\s*:\s*\\?\")[^\\\"]+", re.I), r"\1REDACTED"),
+]
 
 
 def mask(text):
-    text = re.sub(r"(OC=)[^&\"\s\\]+", r"\1REDACTED", text)
+    for pattern, repl in PATTERNS:
+        text = pattern.sub(repl, text)
     return text.replace(secret, "REDACTED") if secret else text
 
 
 servers, result_event = [], None
-with open(raw, encoding="utf-8") as src, open(trace_path, "w", encoding="utf-8") as dst:
-    for line in src:
-        dst.write(mask(line))
+with open(prompt_path, "rb") as stdin, open(trace_path, "w", encoding="utf-8") as trace:
+    proc = subprocess.Popen(cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    timed_out = []
+    timer = threading.Timer(int(inner), lambda: (timed_out.append(1), proc.kill()))
+    timer.start()
+    err_chunks = []
+    reader = threading.Thread(target=lambda: err_chunks.append(proc.stderr.read()))
+    reader.start()
+    for line in proc.stdout:
+        trace.write(mask(line))
+        trace.flush()
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
@@ -175,12 +202,19 @@ with open(raw, encoding="utf-8") as src, open(trace_path, "w", encoding="utf-8")
             servers = event.get("mcp_servers") or []
         elif event.get("type") == "result":
             result_event = event
+    rc = proc.wait()
+    timer.cancel()
+    reader.join()
+sys.stderr.write(mask("".join(err_chunks)))
 
-status = ",".join(f"{s.get('name')}:{s.get('status')}" for s in servers) or "none"
+status = ",".join(str(x.get("name")) + ":" + str(x.get("status")) for x in servers) or "none"
 print(f"[eval-runner] mcp={status}", file=sys.stderr)
-if claude_rc != "0":
-    print(f"[eval-runner] claude exited {claude_rc}; masked trace kept", file=sys.stderr)
-    sys.exit(int(claude_rc))
+if timed_out:
+    print(f"[eval-runner] inner timeout {inner}s; masked trace kept", file=sys.stderr)
+    sys.exit(124)
+if rc != 0:
+    print(f"[eval-runner] claude exited {rc}; masked trace kept", file=sys.stderr)
+    sys.exit(rc)
 if require_mcp == "1" and (not servers or any(s.get("status") != "connected" for s in servers)):
     print("[eval-runner] MCP server not connected; refusing to score a tool-less run", file=sys.stderr)
     sys.exit(1)
@@ -188,16 +222,18 @@ if result_event is None or result_event.get("is_error") or result_event.get("sub
     print("[eval-runner] no successful result event", file=sys.stderr)
     sys.exit(1)
 
+TOOL_TOKEN = re.compile(r"(?:^|[\s;&|/(])(?:legalize|uvx)(?:\s|$)")
+
 
 def tool_path_denial(denial):
     name = str(denial.get("tool_name", ""))
     command = str((denial.get("tool_input") or {}).get("command", ""))
-    return name.startswith("mcp__") or (name == "Bash" and command.lstrip().startswith(("legalize", "uvx")))
+    return name.startswith("mcp__") or (name == "Bash" and bool(TOOL_TOKEN.search(command)))
 
 
 denied = [d for d in result_event.get("permission_denials") or [] if tool_path_denial(d)]
-if require_mcp == "1" and denied:
-    print(f"[eval-runner] tool-path calls denied: {sorted({d.get('tool_name') for d in denied})}", file=sys.stderr)
+if tool_path == "1" and denied:
+    print("[eval-runner] tool-path calls denied: " + ",".join(sorted({str(x.get("tool_name")) for x in denied})), file=sys.stderr)
     sys.exit(1)
 answer = result_event.get("result") or ""
 masked = mask(answer)
@@ -205,4 +241,6 @@ if masked != answer:
     print("[eval-runner] masked a secret in the answer", file=sys.stderr)
 with open(output_path, "w", encoding="utf-8") as fh:
     fh.write(masked)
-PY
+'
+python3 -c "$RUN_TRACED" "$TRACE_FILE" "$OUTPUT_FILE" "$PROMPT_FILE" "$REQUIRE_MCP" "$TOOL_PATH" "$INNER_TIMEOUT" \
+  "${CLAUDE_CMD[@]}" "${CLAUDE_ARGS[@]}" --output-format stream-json --verbose
