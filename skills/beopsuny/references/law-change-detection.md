@@ -22,7 +22,8 @@
 # 시간 범위 discovery
 git -c core.quotePath=false -C "$DR/legalize-kr" log --since="1 month ago" --name-only kr/
 # 특정 법령 이력과 diff
-git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md   # 부분 받기 미러에서는 --follow 없이
+git -C "$DR/legalize-kr" log -n 5 --follow kr/{법령명}/법률.md   # 전체 미러
+git -C "$DR/legalize-kr" log -n 5 kr/{법령명}/법률.md            # 부분 받기 미러
 git -C "$DR/legalize-kr" show {SHA} -- kr/{법령명}/법률.md
 ```
 
@@ -74,7 +75,7 @@ git -c core.quotePath=false -C "$DR/legalize-kr" grep -c "{법령명}" HEAD -- k
 
 ## Interested Laws Append
 
-관심 법령에 개정 정보(시행예정 개정 포함)가 있으면 본문 뒤에 법령명·개정일·출처를 덧붙인다. 시행된 개정과 시행예정 개정이 모두 없고 조회 실패도 없으면 생략한다. 단, 미러 기반 "개정 없음"은 미러 HEAD 커밋일까지만이다 — 그 이후 구간은 기본 도구로 확인하거나 미확인 기간으로 표시하고 생략하지 않는다. 조회 실패는 개정 없음과 구별해 표시한다.
+관심 법령에 개정 정보(시행예정 개정 포함)가 있으면 본문 뒤에 법령명·공포일·시행일(시행 전이면 그 표시)·출처를 덧붙인다. 시행된 개정과 시행예정 개정이 모두 없고 조회 실패도 없으면 생략한다. 단, 미러 기반 "개정 없음"은 미러 HEAD 커밋일까지만이다 — 그 이후 구간은 기본 도구로 확인하거나 미확인 기간으로 표시하고 생략하지 않는다. 조회 실패는 개정 없음과 구별해 표시한다.
 
 ## Failure Handling
 

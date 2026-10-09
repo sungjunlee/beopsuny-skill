@@ -94,7 +94,7 @@ Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전
 Claude Code · Codex CLI처럼 명령을 실행할 수 있는 환경에서는 두 도구를 연결한다.
 
 1. **legalize-cli** — Python 3.10+. `pipx install legalize-cli==0.5.1` 또는 설치 없이 `uvx --from legalize-cli==0.5.1 legalize`. MCP로 쓰려면 `uvx --from 'legalize-cli[mcp]==0.5.1' legalize-mcp`. 검증한 버전은 0.5.1이다. GitHub API를 쓰므로 토큰이 없으면 시간당 60회로 묶인다 — 자주 쓰면 권한 없는 읽기 전용 fine-grained 토큰을 `LEGALIZE_GITHUB_TOKEN`으로 둔다.
-2. **korean-law-mcp** — [법제처 Open API](https://open.law.go.kr/LSO/openApi/guideList.do)에서 인증키(OC)를 무료로 발급받아 `LAW_OC`로 두고 로컬에서 실행한다(`npx korean-law-mcp`, Node 20.19+). 조회가 법제처로 직접 간다. 키 없이 원격 `https://mcp.gomdori.app/law`도 응답하지만 모든 무키 사용자가 한도를 나눠 쓰는 보조 경로다.
+2. **korean-law-mcp** — [법제처 Open API](https://open.law.go.kr/LSO/openApi/guideList.do)에서 인증키(OC)를 무료로 발급받아 `LAW_OC`로 두고 로컬에서 실행한다(`npx korean-law-mcp@4.15.6`, Node 20.19+). 조회가 법제처로 직접 간다. 검증한 버전은 4.15.6이다. 키 없이 원격 `https://mcp.gomdori.app/law`도 응답하지만 모든 무키 사용자가 한도를 나눠 쓰는 보조 경로다.
 
 출력에서 legalize 데이터는 `공식 원문 기반 로컬 미러` 라벨을 쓰고 provenance로 직접 공식 사이트 확인과 구분한다.
 
@@ -228,7 +228,7 @@ git diff --check
 마일스톤 8의 보존된 실행 결과와 통합 범위는 [검증 기록](tests/forward_evals/model_era/followup-plan.md)에서 확인한다. 기록된 스모크는 해당 runtime의 관측이며 새 태깅 대상 커밋의 릴리즈 검증을 대신하지 않는다.
 
 1. 정적 게이트 전부 그린 확인 (품질 계약 변경 체크리스트 8번 명령 재사용).
-2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage)에서** 기본 도구(legalize 데이터·korean-law-mcp) / 로컬 미러 staleness(설치된 경우) / 법망 API / law.go.kr 링크를 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 도달성 판정의 기준이다 — 주간 CI(`--dns-links`)는 기본 도구 도달과 law.go.kr DNS만 실제로 판정하며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
+2. 소스 도달성: `python3 tests/check_source_reachability.py`로 **로컬(국내 vantage)에서** 기본 도구(legalize 데이터·korean-law-mcp) / 로컬 미러 staleness(설치된 경우) / 법망 API / law.go.kr 링크를 확인한다 (네트워크 필요, FAIL 시 원인 해소 후 진행). 이것이 도달성 판정의 기준이다 — 주간 CI(`--dns-links`)의 그린은 기본 도구 FAIL 없음(GitHub 한도 초과는 판정 보류)과 law.go.kr DNS 생존이며, 그 커버리지 차이는 `tests/check_source_reachability.py` 도크스트링(CI vs 로컬 커버리지)이 집이다.
 3. 라이브 스모크: `tests/forward_evals/run_live_parallel.sh`로 guardrails + o4 두 세트를 태깅 대상 커밋에서 실행.
 4. 판정: scorer 결과와 출력 정독으로 실위반/오탐을 구분하고, 승격할 증거를 `tests/forward_evals/evidence/`에 커밋 (스코어러 오탐이 있으면 스코어러 하드닝 이슈로 분리).
 5. plugin 버전 범프: 정본은 `.claude-plugin/plugin.json` 하나다 — version·description·keywords를 여기만 고치고, `.claude-plugin/marketplace.json` plugins[0]의 복사본을 일치시킨다. `tests/validate_skill_contracts.py`의 `check_version_sync`가 세 필드 모두의 drift를 잡는다. Release 워크플로우가 tag↔plugin↔marketplace 일치를 검사해 불일치 시 GitHub Release 생성이 실패하므로, 태깅 전에 로컬에서 확인한다 (v0.5.0이 이 누락으로 Release 미발행).
