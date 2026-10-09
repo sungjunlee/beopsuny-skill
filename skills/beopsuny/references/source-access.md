@@ -46,7 +46,7 @@
 | 별표·서식 (금액·과태료·기준표) | korean-law-mcp `get_annexes(lawName, query)` | law.go.kr 별표 화면 | legalize 데이터에는 별표 본문이 없다. 변환된 표가 판단을 좌우하면 원본과 대조한다 |
 | 행정규칙 (고시·훈령·예규) | legalize `admrules get {정확한 명칭}` | korean-law-mcp `search_law` (행정규칙 폴백) | `본문출처: parsing-failed` 처리는 아래 미러 규칙과 같다 |
 | 자치법규 | legalize `ordinances get` | korean-law-mcp | 지역을 먼저 좁힌다 |
-| 판례 찾기 | korean-law-mcp `search_decisions(domain=precedent)` | WebSearch 공식 자료 | `search_decisions` 결과의 사건번호 형식이 이상하면 원문을 열기 전에 걸러 낸다. 토큰 없는 legalize 키워드 검색은 경로만 검색해 0건을 경고 없이 주므로 판례 찾기에 쓰지 않는다 |
+| 판례 찾기 | korean-law-mcp `search_decisions(domain=precedent)` | WebSearch 공식 자료 | 기본은 판례명 검색이므로 쟁점·사실관계로 찾을 때는 `options.search='both'`를 쓴다. 결과의 사건번호 형식이 이상하면 원문을 열기 전에 걸러 낸다. 토큰 없는 legalize 키워드 검색은 0건을 경고 없이 줄 수 있어 판례 찾기에 쓰지 않는다 |
 | 판례 원문 | legalize `precedents get {사건번호}` | korean-law-mcp `get_decision_text(full=true)` | korean-law-mcp 기본 응답은 축약본이다. 인용 전 전문을 연다 |
 | 해석례·헌재·행정심판·위원회 결정 | korean-law-mcp `search_decisions` / `get_decision_text` | law.go.kr, 아래 유권해석 경로 | legalize 데이터에 없는 범위다 |
 | 입법 중 의안 | assembly-api-mcp (설치 시) | 의안정보시스템 링크 | 공포 전이므로 확정 법령이 아니다 |
@@ -73,7 +73,7 @@
 없는 도구를 있다고 가정하지 않는다. 필요한 경로만 확인한다.
 
 - MCP: 이 대화에 legalize·korean-law 도구가 노출되어 있는지 본다. 플러그인을 설치했다는 사실이 이 대화에서 도구를 쓸 수 있다는 뜻은 아니다.
-- CLI: `legalize --version` 또는 `uvx --from legalize-cli legalize --version`. 실행되지 않으면 MCP·law.go.kr로 좁힌다.
+- CLI: `legalize --version`. 설치돼 있지 않으면 사용자가 승인한 경우에만 버전을 고정해 `uvx --from legalize-cli==0.5.1 legalize`로 실행한다. 실행되지 않으면 MCP·law.go.kr로 좁힌다.
 - 로컬 미러: `BEOPSUNY_DATA_ROOT`(기본 `~/.beopsuny`) 아래 `data/{family}`가 있는지 본다. 경로가 다르다는 이유로 HOME을 바꾸지 않는다. 없다고 받지 않는다(받기는 `## 로컬 미러 (선택)`).
 
 legalize 도구는 GitHub API를 쓰므로 토큰이 없으면 시간당 60회로 묶이고, 조문 몇 번 조회로 소진될 수 있다. 사용자가 원하면 권한 없는 읽기 전용 토큰을 `LEGALIZE_GITHUB_TOKEN`으로 두게 안내한다. 사용자의 일반 GitHub 토큰을 대신 넘기지 않는다.
@@ -182,14 +182,16 @@ WebSearch는 공식 API와 1차 소스로 커버되지 않는 정책 동향, 부
 
 | 대상 | URL 패턴 |
 |------|----------|
-| 법령 조문 | `https://www.law.go.kr/법령/{법령명}/제{N}조` |
-| 법령 조문 (직접 URL이 빈 응답일 때) | `https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq={lsiSeq}&joNo={조문 4자리}&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR` |
+| 법령 조문 (브라우저 링크) | `https://www.law.go.kr/법령/{법령명}/제{N}조` |
+| 법령 조문 (본문 대조) | `https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq={lsiSeq}&joNo={조문 4자리}&joBrNo=00&docCls=jo&urlMode=lsScJoRltInfoR` |
 | 법령 조문 항 | `https://www.law.go.kr/법령/{법령명}/제{N}조제{M}항` |
 | 시행령 | `https://www.law.go.kr/법령/{법령명}시행령` |
 | 판례 (정밀, 로컬 미러 `출처`) | `https://www.law.go.kr/LSW/precInfoP.do?precSeq={판례일련번호}` |
 | 판례 (사건번호) | `https://www.law.go.kr/판례/({사건번호})` |
 | 행정규칙 검색 | `https://www.law.go.kr/행정규칙/{고시명}` |
 | 의안 | `https://likms.assembly.go.kr/bill/billDetail.do?billId={의안ID}` |
+
+`법령/{법령명}/제N조`는 사람이 여는 링크다. HTTP로 받으면 조문이 없는 iframe 껍데기라 빈 응답도 원문도 아니다. 본문 대조는 `lsInfoP` URL이나 도구 응답으로 한다.
 
 주의: LSW `lsInfoP.do` URL은 해당 법령 **전체 본문**을 반환한다(조문 하나만이 아님). 추출 결과가 잘렸으면 사용 가능한 원문/캐시의 해당 구간을 더 읽고, 필요한 조문을 끝내 열지 못하면 부분 열람 범위를 밝힌다. `lsiSeq`는 현행 법령 버전마다 다르므로, 아무 조문이나 한 번 열어 화면에 노출된 lsiSeq 값을 사용한다.
 

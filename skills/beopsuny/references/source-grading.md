@@ -32,7 +32,7 @@
 
 **가능**: 이번 답변에서 원문 또는 공식 응답을 확인했고, 쟁점에 필요한 pinpoint와 현행성 정보가 있으면 결론 근거로 쓸 수 있다.
 
-**가능하되 로컬 미러 provenance 필요**: legalize-kr/admrule-kr/ordinance-kr/precedent-kr는 공식 원문 기반 로컬 미러다. 결론 근거로 쓸 수 있지만, citation 줄에는 `공식 원문 기반 로컬 미러` 라벨과 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 남긴다. law.go.kr 원문 확인을 한 경우에만 `공식 원문` 라벨과 직접 공식 사이트 provenance를 쓴다.
+**가능하되 로컬 미러 provenance 필요**: legalize-kr/admrule-kr/ordinance-kr/precedent-kr는 공식 원문 기반 로컬 미러다. 결론 근거로 쓸 수 있지만, citation 줄에는 `공식 원문 기반 로컬 미러` 라벨을 남기고, 파일을 직접 읽었으면 `로컬 미러 확인 (직접 공식 사이트 확인 아님)` provenance를 쓴다. legalize 도구 조회의 provenance는 `references/citation-verification-contract.md`를 따른다. law.go.kr 원문 확인을 한 경우에만 `공식 원문` 라벨과 직접 공식 사이트 provenance를 쓴다.
 
 **보조 가능**: 실무 적용, 기관 입장, 정책 동향을 설명하는 데 유용하지만, 법률 결론은 가능한 한 공식 원문으로 뒷받침하고 공식 실무자료와 분리해 표시한다.
 

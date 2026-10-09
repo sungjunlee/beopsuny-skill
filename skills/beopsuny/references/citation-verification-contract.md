@@ -30,7 +30,7 @@
 | Source family | 역할 | `[VERIFIED]` 가능 조건 |
 | --- | --- | --- |
 | local legalize-kr / precedent-kr / admrule-kr / ordinance-kr | 법령·판례·행정규칙·자치법규 로컬 미러 확인 | 해당 파일의 원문, 조문, 판례 본문, 시행일, 발령기관, 지자체 식별자 중 결론에 필요한 부분을 직접 읽고 provenance를 `{source_family} 로컬 미러 확인 (직접 공식 사이트 확인 아님)`으로 표시한 경우 |
-| legalize 도구 (CLI/MCP) | 같은 legalize-kr 데이터를 clone 없이 조회 | 조회·본문 응답(`content`, `body`)에서 결론에 필요한 부분을 읽은 경우. 조문·diff는 기준(semantic)과 warning을, 판례·행정규칙·자치법규 `get`은 frontmatter(`시행일자`·`현행여부`·`선고일자`)를 확인한다. provenance에는 실제로 쓴 기준을 적는다: `legalize 원격 조회, 시행일자 기준 {날짜}`, `legalize 원격 조회, 공포일자 기준 {날짜}, 시행 전 공포본`, `legalize 원격 조회, 최신 파일(frontmatter 시행일자 {날짜})` — 모두 `(로컬 파일·공식 사이트 직접 확인 아님)`. 검색·목록 결과만으로는 불가 |
+| legalize 도구 (CLI/MCP) | 같은 legalize-kr 데이터를 clone 없이 조회 | 조회·본문 응답(`content`, `body`)에서 결론에 필요한 부분을 읽은 경우. 조문·diff는 기준(semantic)과 warning을, 판례·행정규칙·자치법규 `get`은 frontmatter(`시행일자`·`현행여부`·`선고일자`)를 확인한다. provenance에는 실제로 쓴 기준을 적고 끝에 `(로컬 파일·공식 사이트 직접 확인 아님)`을 붙인다: `legalize 원격 조회, 시행일자 기준 {날짜}`, `legalize 원격 조회, 공포일자 기준 {날짜}`, `legalize 원격 조회, 최신 파일(frontmatter {시행일자 또는 선고일자} {날짜})`. `시행일자`가 기준일보다 미래일 때만 `, 시행 전 공포본`을 덧붙이고, `현행여부`가 현행이 아니면 그 상태를 밝히고 현행 본문을 따로 연다. 검색·목록 결과만으로는 불가 |
 | korean-law-mcp | 법제처 API 원문 필드 (조문, 별표, 부칙, 결정문 전문) | 원문 필드를 읽은 경우. provenance는 `korean-law-mcp 원문 필드 확인 ({로컬 OC 실행 또는 원격 서버 경유}, 직접 공식 사이트 확인 아님)`. 원격 서버 경유이면 결론을 좌우하는 pinpoint를 law.go.kr 또는 로컬 실행으로 교차확인한 경우만. 축약본, 검색 결과, 응답에 붙은 해설, `verify_citations`의 실존 판정만으로는 불가 |
 | law.go.kr | 법령, 행정규칙, 판례 공식 원문 화면 | 실제 원문 화면 또는 공식 원문 응답을 열어 citation과 pinpoint를 확인한 경우. 판례는 frontmatter `출처`(precSeq) 또는 `판례/({사건번호})` |
 | WebSearch | 공식 API와 로컬 데이터로 닿지 않는 정책·집행 동향 보조 | WebSearch 자체만으로는 원칙적으로 `[VERIFIED]`가 아니다. 검색 결과에서 공식 원문으로 들어가 확인했을 때 그 공식 원문 provenance로 기록한다. |
