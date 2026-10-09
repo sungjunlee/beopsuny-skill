@@ -456,7 +456,7 @@ def check_skill_frontmatter_minimal() -> None:
     if not isinstance(description, str) or not description.strip():
         raise AssertionError("SKILL.md frontmatter description is empty")
     # 부정어는 "기억으로 답하는" 행위 자체에 붙어야 한다("답해도 제한하지 않는다" 반전 차단).
-    if not re.search(r"기억\S{0,4}\s*(?:답하지|의존하지)\s*않", description):
+    if not re.search(r"기억\S{0,4}\s*(?:답하지|의존하지)\s*않(?:는다|음|고)", description):
         raise AssertionError("SKILL.md description: 기억만으로 답하지 않는다는 경계가 없다")
     skill = read_text("skills/beopsuny/SKILL.md")
     research_contract = re.search(r"^## 기본 조사 계약\n(?:.*\n)*?(?=^## )", skill, re.MULTILINE)
@@ -2610,7 +2610,7 @@ def check_readme_quality_contract_map() -> None:
         raise AssertionError(f"{label}: gate 우회 금지 문단이 없다")
     assert_ordered_tokens(
         bypass_line.group(0),
-        ["약화시키는", "기능 추가로 보지 않", "우회하지", "결론 강도를 낮추"],
+        ["약화시키는", "기능 추가로 보지 않", "우회하지 말", "결론 강도를 낮추"],
         f"{label} gate 우회 금지",
     )
 
@@ -2669,7 +2669,9 @@ def check_readme_investigation_assist_posture() -> None:
     issue_lines = [
         line
         for line in example.group("body").splitlines()
-        if re.match(r"\s*- .+:", line) or (re.match(r"\s*\| [A-Z]", line) and "위험도" not in line)
+        if re.match(r"\s*[-|]", line)
+        and "위험도" not in line
+        and not re.match(r"^\s*\|[\s:|-]+\|\s*$", line)
     ]
     for line in issue_lines:
         if "[INSUFFICIENT]" not in line and "[UNVERIFIED]" not in line:
@@ -2685,7 +2687,7 @@ def check_readme_investigation_assist_posture() -> None:
         raise AssertionError(f"{label}: 조사 보조 포지션 문단이 없다")
     assert_ordered_tokens(
         posture_para.group(0),
-        ["확인 가능한 1차 소스 중심", "법률 조사를 보조"],
+        ["확인 가능한 1차 소스 중심", "법률 조사를 보조", "출처 권위 라벨", "verification status", "최신성"],
         f"{label} 조사 보조 포지션",
     )
 
@@ -2990,22 +2992,13 @@ def check_readme_quality_verification_refs_resolve() -> None:
     checks = defined_check_functions()
     rules = evaluator_rule_names()
     scenario_ids = router_scenario_ids()
-    table_match = re.search(
-        r"\| 품질 계약 \| 기준 문서 \| 회귀 검증 \|\n"
-        r"\| --- \| --- \| --- \|\n"
-        r"(?P<body>(?:\| .+\n)+)",
-        text,
-    )
-    if not table_match:
-        raise AssertionError(f"{label}: quality contract table missing")
-
+    # Same parser as check_readme_quality_contract_map, so both checks see the
+    # same rows (an indented row cannot hide from the resolver).
     refs: set[str] = set()
-    for row in table_match.group("body").splitlines():
-        columns = [column.strip() for column in row.strip().strip("|").split("|")]
+    for columns in parse_markdown_table(text, "| 품질 계약 | 기준 문서 | 회귀 검증 |"):
         if len(columns) != 3:
-            raise AssertionError(f"{label}: malformed quality contract row: {row!r}")
-        verification_cell = columns[2]
-        refs.update(re.findall(r"`([^`]+)`", verification_cell))
+            raise AssertionError(f"{label}: malformed quality contract row: {columns!r}")
+        refs.update(re.findall(r"`([^`]+)`", columns[2]))
 
     for ref in refs:
         if ref.startswith("tests/"):
