@@ -24,7 +24,7 @@
 - **legalize 도구** (`legalize-cli` / `legalize-mcp`) — legalize-kr가 GitHub에 공개한 법령·판례·행정규칙·자치법규 원문 데이터를 clone 없이 조회한다. 원문과 개정 이력(commit), 기준일·시행일 기준 조회, 두 시점 비교를 맡는다.
 - **korean-law-mcp** — 법제처 Open API를 감싼 MCP 서버다. 별표·서식, 부칙 경과조치, 시행예정 개정, 해석례·헌재·행정심판·위원회 결정, 인용 실존 점검처럼 legalize 데이터에 없는 범위를 맡는다.
 
-과업 순서는 아래 과업별 도구 지도가 정한다. legalize 칸은 연결된 MCP가 있으면 MCP, 없으면 CLI다. 이미 받아 둔 미러 파일이 있으면 그 칸에서 읽어도 된다(호출 한도·네트워크에 묶이지 않는다). 마지막 pull 이후 개정은 미러에 없으므로 현행 질문에는 미러 HEAD 커밋일을 provenance에 적거나 도구·law.go.kr로 교차확인한다. 미러가 없다는 이유로 받지 않는다. law.go.kr는 사람이 여는 공식 링크와 마지막 대조 경로다.
+과업 순서는 아래 과업별 도구 지도가 정한다. legalize 칸은 연결된 MCP가 있으면 MCP, 없으면 CLI다. 이미 받아 둔 미러 파일이 있으면 그 칸에서 읽어도 된다(호출 한도·네트워크에 묶이지 않는다). 마지막 pull 이후 개정은 미러에 없으므로 현행 질문에는 미러 HEAD 커밋일을 provenance에 적거나 도구·law.go.kr로 교차확인한다. legalize 원격 조회도 upstream 반영 시점까지의 데이터이므로, 최근 공포·즉시 시행 여부가 결론을 좌우하면 korean-law-mcp `get_law_text`나 law.go.kr로 교차확인한다. 미러가 없다는 이유로 받지 않는다. law.go.kr는 사람이 여는 공식 링크와 마지막 대조 경로다.
 
 도구로 풀리지 않는 작업(본문 횡단 검색, 특정 문구의 개정 이력 추적, 대량 조회)은 사용자 승인을 받아 원본 저장소 데이터를 받은 뒤 git·grep으로 처리할 수 있다 — `## 로컬 미러 (선택)`을 따른다.
 
@@ -42,11 +42,11 @@
 | 현행 조문 | legalize `laws article {법령} {조} --date {오늘} --semantic 시행일자` (MCP `laws_article`, `semantic="시행일자"`) | korean-law-mcp `search_law` → `get_law_text(mst, jo)` | 공통 원칙 1 |
 | 특정 시점 조문·행위시법 | korean-law-mcp `legal_analysis(mode=applicable_law, lawName, date, jo)` | legalize `--date {사건일} --semantic 시행일자` | 부칙 적용례·경과조치는 korean-law-mcp만 발췌한다 |
 | 시행예정 개정 | korean-law-mcp `search_law` (시행예정 병기) | legalize 공포일자 기준 조회 + warning | 시행 전 공포본은 현행 의무로 쓰지 않는다 |
-| 개정 이력·신구 비교 | legalize `laws diff --date-a {이전} --date-b {기준일} --semantic 시행일자` | korean-law-mcp `legal_research(task=amendment_track)` | 공통 원칙 1 |
+| 개정 이력·신구 비교 | legalize `laws diff {법령} {법령} --date-a {이전} --date-b {기준일} --semantic 시행일자` (MCP `laws_diff`) | korean-law-mcp `legal_research(task=amendment_track)` | 공통 원칙 1 |
 | 별표·서식 (금액·과태료·기준표) | korean-law-mcp `get_annexes(lawName, query)` | law.go.kr 별표 화면 | legalize 데이터에는 별표 본문이 없다. 변환된 표가 판단을 좌우하면 원본과 대조한다 |
 | 행정규칙 (고시·훈령·예규) | legalize `admrules get {정확한 명칭}` | korean-law-mcp `search_law` (행정규칙 폴백) | `본문출처: parsing-failed` 처리는 아래 미러 규칙과 같다 |
 | 자치법규 | legalize `ordinances get` | korean-law-mcp | 지역을 먼저 좁힌다 |
-| 판례 찾기 | korean-law-mcp `search_decisions(domain=precedent)` | WebSearch 공식 자료 | 기본은 판례명 검색이므로 쟁점·사실관계로 찾을 때는 `options.search='both'`를 쓴다. 결과의 사건번호 형식이 이상하면 원문을 열기 전에 걸러 낸다. 토큰 없는 legalize 키워드 검색은 0건을 경고 없이 줄 수 있어 판례 찾기에 쓰지 않는다 |
+| 판례 찾기 | korean-law-mcp `search_decisions(domain=precedent)` | WebSearch 공식 자료 | 기본은 판례명 검색이므로 쟁점어로 본문까지 찾을 때는 `options.search='both'`를 쓰되, 질의어는 공통 원칙 3대로 일반 법률용어만 넣는다. 결과의 사건번호 형식이 이상하면 원문을 열기 전에 걸러 낸다. 토큰 없는 legalize 키워드 검색은 0건을 경고 없이 줄 수 있어 판례 찾기에 쓰지 않는다 |
 | 판례 원문 | legalize `precedents get {사건번호}` | korean-law-mcp `get_decision_text(full=true)` | korean-law-mcp 기본 응답은 축약본이다. 인용 전 전문을 연다 |
 | 해석례·헌재·행정심판·위원회 결정 | korean-law-mcp `search_decisions` / `get_decision_text` | law.go.kr, 아래 유권해석 경로 | legalize 데이터에 없는 범위다 |
 | 입법 중 의안 | assembly-api-mcp (설치 시) | 의안정보시스템 링크 | 공포 전이므로 확정 법령이 아니다 |
@@ -137,7 +137,7 @@ Freshness gate는 출처 권위 라벨을 대체하지 않는다. 공식 원문 
 
 ## korean-law-mcp
 
-법제처 Open API를 감싼 MCP 서버다(chrisryugj/korean-law-mcp, 개인 운영). 노출 도구 10개와 `discover_tools`/`execute_tool` 경유 전문 도구를 제공한다.
+법제처 Open API를 감싼 MCP 서버다(chrisryugj/korean-law-mcp, 개인 운영). 주요 도구와 `discover_tools`/`execute_tool` 경유 전문 도구를 제공한다.
 
 연결 방식:
 

@@ -3923,13 +3923,13 @@ def check_volatile_api_docs() -> None:
         raise AssertionError("source-access.md: 공통 원칙 4(조회 실패) 문단이 없다")
     # 순서 토큰 + 부정 활용형(아니/아닌/아님/아닙). 문장 다듬기는 허용하고 삭제·반전은 막는다.
     negation = r"(?:아니|아닌|아님|아닙)"
-    if not re.search(r"조회 실패.*개정 없음[^.]*" + negation, principle.group(0)):
+    if not re.search(r"조회 실패.*개정 없음의 근거가\s*" + negation, principle.group(0)):
         raise AssertionError("source-access.md 공통 원칙 4: 조회 실패 → 개정 없음 근거 부정이 없다")
     law_change = read_text("skills/beopsuny/references/law-change-detection.md")
     failure = re.search(r"^## Failure Handling\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
     if not failure:
         raise AssertionError("law-change-detection.md: Failure Handling 절이 없다")
-    if not re.search(r"조회 실패[^\n]*개정 없음[^\n]*" + negation, failure.group(0)):
+    if not re.search(r"조회 실패[^\n]*개정 없음이\s*" + negation, failure.group(0)):
         raise AssertionError("law-change-detection.md Failure Handling: 조회 실패 ≠ 개정 없음 문장이 없다")
     docs = {
         "skills/beopsuny/references/source-access.md": read_text(

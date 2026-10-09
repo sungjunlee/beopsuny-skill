@@ -7,7 +7,7 @@
 | 질의 | 기본 (legalize 도구·korean-law-mcp) | 로컬 미러 있음 |
 |------|-----------|-----------|
 | 최근 한 달 개정된 법령 | 전체 discovery 미지원 — 지정 법령 또는 관심 법령만 조회 | 전체 미러에서만 `git log --since`로 discovery 후 법령별 재조회 |
-| 특정 법령 변경 | legalize `laws diff --date-a {이전} --date-b {기준일} --semantic 시행일자`, korean-law-mcp `search_law`(시행예정 병기)·`legal_research(task=amendment_track)` | `git log` -> SHA -> `git show` |
+| 특정 법령 변경 | legalize `laws diff {법령} {법령} --date-a {이전} --date-b {기준일} --semantic 시행일자`(MCP `laws_diff`), korean-law-mcp `search_law`(시행예정 병기)·`legal_research(task=amendment_track)` | `git log` -> SHA -> `git show` |
 | 관심 법령 일괄 | 회사 맥락의 관심 법령 순회 | 동일 |
 
 ## 기본 경로

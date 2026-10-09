@@ -93,7 +93,7 @@ Skills를 지원하는 채팅 UI라면 zip 업로드로도 쓸 수 있다: **전
 
 Claude Code · Codex CLI처럼 명령을 실행할 수 있는 환경에서는 두 도구를 연결한다.
 
-1. **legalize-cli** — Python 3.10+. `pipx install legalize-cli` 또는 설치 없이 `uvx --from legalize-cli legalize`. MCP로 쓰려면 `uvx --from 'legalize-cli[mcp]' legalize-mcp`. GitHub API를 쓰므로 토큰이 없으면 시간당 60회로 묶인다 — 자주 쓰면 권한 없는 읽기 전용 fine-grained 토큰을 `LEGALIZE_GITHUB_TOKEN`으로 둔다.
+1. **legalize-cli** — Python 3.10+. `pipx install legalize-cli==0.5.1` 또는 설치 없이 `uvx --from legalize-cli==0.5.1 legalize`. MCP로 쓰려면 `uvx --from 'legalize-cli[mcp]==0.5.1' legalize-mcp`. 검증한 버전은 0.5.1이다. GitHub API를 쓰므로 토큰이 없으면 시간당 60회로 묶인다 — 자주 쓰면 권한 없는 읽기 전용 fine-grained 토큰을 `LEGALIZE_GITHUB_TOKEN`으로 둔다.
 2. **korean-law-mcp** — [법제처 Open API](https://open.law.go.kr/LSO/openApi/guideList.do)에서 인증키(OC)를 무료로 발급받아 `LAW_OC`로 두고 로컬에서 실행한다(`npx korean-law-mcp`, Node 20.19+). 조회가 법제처로 직접 간다. 키 없이 원격 `https://mcp.gomdori.app/law`도 응답하지만 모든 무키 사용자가 한도를 나눠 쓰는 보조 경로다.
 
 출력에서 legalize 데이터는 `공식 원문 기반 로컬 미러` 라벨을 쓰고 provenance로 직접 공식 사이트 확인과 구분한다.
@@ -331,7 +331,7 @@ Claude Code에서 자연어로 질문하면 skill이 자동으로 활성화된�
 - **[precedent-kr](https://github.com/legalize-kr/precedent-kr)** — 대법원/하급심 판례 Markdown (MIT). 공식 원문 기반 로컬 미러; 최신 개수는 upstream repo 확인
 - **[ordinance-kr](https://github.com/legalize-kr/ordinance-kr)** — 조례·규칙 등 자치법규 Markdown (MIT). 공식 원문 기반 로컬 미러, 선택 설치 권장
 - **[법망 (Beopmang)](https://api.beopmang.org/)** — 법령·행정규칙·해석례·의안·자치법규 discovery와 무인증 API (2026-07부터 중단)
-- **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** — 법제처 API를 AI 친화적으로 래핑한 MCP (MIT). 별표·부칙·결정례·인용 검증 등 99개 도구
+- **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** — 법제처 API를 AI 친화적으로 래핑한 MCP (MIT). 별표·부칙·결정례·인용 검증 등
 - **[국가법령정보센터 (law.go.kr)](https://www.law.go.kr/)** — 법제처 공식 서비스. 모든 법률 데이터의 원천
 
 법령 텍스트는 대한민국 정부 공공저작물로서 자유롭게 이용할 수 있다.
