@@ -58,7 +58,7 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 ### O4 세트 라이브 실행 (`run_claude_live.sh`)
 
-O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`일 때는 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 Lite 환경을 시뮬레이션한다. 하네스의 임시 workspace에서 실행하며 setup 본문과 SHA256, runtime context SHA256, 실행 상태와 정리 여부를 기록한다. `--runtime-root`로 보존한 runtime을 선택할 수 있다. 준비 실패·오류·미실행은 총분모에 남고 `UNSCORABLE`로 표시되며 모델 PASS/FAIL과 구별된다.
+O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`이거나 `BEOPSUNY_EVAL_EMPTY_DATA_ROOT=1`이면 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 로컬 미러가 없는 환경을 시뮬레이션한다. 기본 도구 경로를 평가할 때는 `BEOPSUNY_EVAL_MCP_CONFIG`(korean-law-mcp 등 MCP 설정), `BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS`(예: `Bash(legalize:*)`), `BEOPSUNY_EVAL_TRACE=1`(도구 호출 기록)을 넘긴다. 지정하지 않으면 MCP 없음·기존 도구 목록으로 동작한다. OC 키 같은 비밀값은 호출 환경에만 두고 커밋하지 않는다. 하네스의 임시 workspace에서 실행하며 setup 본문과 SHA256, runtime context SHA256, 실행 상태와 정리 여부를 기록한다. `--runtime-root`로 보존한 runtime을 선택할 수 있다. 준비 실패·오류·미실행은 총분모에 남고 `UNSCORABLE`로 표시되며 모델 PASS/FAIL과 구별된다.
 
 ```bash
 PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
