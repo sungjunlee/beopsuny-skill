@@ -2,7 +2,7 @@
 
 법순이의 번들 YAML과 reference 문서의 dated claim은 빠른 triage와 issue spotting을 위한 로컬 지식이다. 현행 법령, 시행령, 고시, 서식, 수수료, 과징금, 신고기한, 인허가 요건, treaty/source count, 단계적 시행일, statutory threshold를 대신하지 않는다.
 
-stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/revalidation)은 이 문서가 단일 소스다. 미러 공포본·시행일 특수 규칙은 `references/source-access.md#freshness-gate`, 체크리스트 특수 처리는 `references/checklist-routing.md#freshness-routing`을 본다. 공통 freshness metadata는 `assets/schemas/freshness_metadata.yaml`, stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
+stale 자산 처리의 일반 원칙(triage_only, 승격 금지, retirement/revalidation)은 이 문서가 단일 소스다. 미러·legalize 공포본·시행일 특수 규칙은 `references/source-access.md`의 `## 미러 시행일 확인 (공포본 vs 현행본)`, 변동성 값 재확인은 `references/source-access.md#freshness-gate`, 체크리스트 특수 처리는 `references/checklist-routing.md#freshness-routing`을 본다. 공통 freshness metadata는 `assets/schemas/freshness_metadata.yaml`, stale debt 목록은 `assets/policies/freshness_debt.yaml`을 단일 레지스트리로 삼고, 재검증 기록은 `assets/schemas/freshness_revalidation.yaml`의 evidence shape를 따른다.
 
 ## Runtime Rule
 

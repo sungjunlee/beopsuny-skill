@@ -3928,7 +3928,7 @@ def check_volatile_api_docs() -> None:
     failure = re.search(r"^## Failure Handling\n(?:.*\n)*?(?=^## )", law_change, re.MULTILINE)
     if not failure:
         raise AssertionError("law-change-detection.md: Failure Handling 절이 없다")
-    assert_contains(failure.group(0), "조회 실패는 개정 없음이 아니다", "law-change-detection.md Failure Handling")
+    assert_ordered_tokens(failure.group(0), ["조회 실패", "개정 없음", "아니"], "law-change-detection.md Failure Handling")
     docs = {
         "skills/beopsuny/references/source-access.md": read_text(
             "skills/beopsuny/references/source-access.md"

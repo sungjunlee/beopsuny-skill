@@ -156,11 +156,20 @@ class DefaultToolAxesTest(unittest.TestCase):
         self.assertIn("0.5.1", result["detail"])
 
     def test_github_rate_limit_is_deferred_not_failed(self) -> None:
-        for code in (403, 429):
+        limited = b'{"message": "API rate limit exceeded for 1.2.3.4."}'
+        for code, body in ((403, limited), (429, b"{}")):
             with self.subTest(code):
-                result = self.legalize(repo=(code, b"{}", f"HTTP {code}"))
+                result = self.legalize(repo=(code, body, f"HTTP {code}"))
                 self.assertEqual("WARN", result["status"])
                 self.assertIn("조회 실패 ≠ 데이터 없음", result["detail"])
+
+    def test_other_github_403_fails(self) -> None:
+        result = self.legalize(repo=(403, b'{"message": "Repository access blocked"}', "HTTP 403"))
+        self.assertEqual("FAIL", result["status"])
+
+    def test_malformed_pypi_payload_fails_without_crashing(self) -> None:
+        result = self.legalize(pypi=(200, b'{"info": ["unexpected"]}', ""))
+        self.assertEqual("FAIL", result["status"])
 
     def test_json_axes_read_the_whole_body(self) -> None:
         """잘린 JSON이 non-JSON FAIL로 보이지 않게, JSON 축은 본문 전체를 읽는다."""
@@ -189,7 +198,7 @@ class DefaultToolAxesTest(unittest.TestCase):
         self.assertEqual("9.9.9", payload["info"]["version"])
 
     def test_rate_limit_does_not_hide_a_package_failure(self) -> None:
-        result = self.legalize(repo=(403, b"{}", "HTTP 403"), pypi=(404, b"{}", "HTTP 404"))
+        result = self.legalize(repo=(403, b'{"message": "API rate limit exceeded"}', "HTTP 403"), pypi=(404, b"{}", "HTTP 404"))
         self.assertEqual("FAIL", result["status"])
 
     def test_archived_repo_or_missing_package_fails(self) -> None:
