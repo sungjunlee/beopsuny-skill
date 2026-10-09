@@ -10,18 +10,19 @@
 #
 # Optional, for evaluating the default tool path (legalize tools + korean-law-mcp).
 # Unset means the historical behavior (no MCP servers, base tool list, no trace).
-#   BEOPSUNY_EVAL_MCP_CONFIG          path to an MCP config file (absolute or relative to
-#                                     the caller's cwd). Inline JSON is rejected so secrets
-#                                     never reach argv or error output; reference secrets as
-#                                     ${LAW_OC} inside the file and export them in the caller
-#                                     environment. Setting this forces trace mode, and the run
-#                                     fails unless every configured server connects.
+#   BEOPSUNY_EVAL_MCP_CONFIG          absolute path to an MCP config file. Inline JSON and
+#                                     relative paths are rejected (values are never echoed);
+#                                     reference secrets as ${LAW_OC} inside the file and export
+#                                     them in the caller environment. Setting this forces trace
+#                                     mode, auto-allows mcp__<server> tools, and the run fails
+#                                     unless every server connects and no tool-path call is denied.
 #   BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS comma-separated extra --allowedTools, e.g. Bash(legalize:*),Bash(uvx:*)
 #   BEOPSUNY_EVAL_EMPTY_DATA_ROOT=1   simulate a data root with no local mirror (as o4-05 does)
 #   BEOPSUNY_EVAL_TRACE=1             keep tool calls (stream-json) under BEOPSUNY_EVAL_TRACE_DIR
-#   BEOPSUNY_EVAL_TRACE_DIR           default: tests/forward_evals/runs/traces (gitignored);
-#                                     OC= values and $LAW_OC are masked. Keep traces out of
-#                                     tests/forward_evals/evidence/ unless reviewed.
+#   BEOPSUNY_EVAL_TRACE_DIR           absolute path; default tests/forward_evals/runs/traces
+#                                     (gitignored). OC= values and $LAW_OC are masked in the
+#                                     trace and the answer. Keep traces out of evidence/ unless
+#                                     reviewed. Tool-path runs are slow: raise BEOPSUNY_EVAL_TIMEOUT.
 #
 # Usage (from repo root):
 #   PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
@@ -40,6 +41,16 @@ PROMPT_ID="${BEOPSUNY_EVAL_PROMPT_ID:-unknown}"
 
 APPEND_SYSTEM="$(cat "$CONTEXT_FILE")"
 
+# Remove only what this script created (never a caller-provided data root).
+CREATED_ROOT=""
+RAW_TRACE=""
+cleanup() {
+  [[ -n "$RAW_TRACE" ]] && rm -f -- "$RAW_TRACE"
+  [[ -n "$CREATED_ROOT" ]] && rm -rf -- "$CREATED_ROOT"
+  return 0
+}
+trap cleanup EXIT
+
 # o4-05 simulates a data root with no local mirror at all (the degradation
 # path). Point the data root at an empty temp dir so the model's availability
 # probes find nothing. The glob stays `*o4-05*` so the #240 id rename
@@ -47,8 +58,8 @@ APPEND_SYSTEM="$(cat "$CONTEXT_FILE")"
 # future o4-05-* rename keep matching.
 if [[ "$PROMPT_ID" == *o4-05* || "${BEOPSUNY_EVAL_EMPTY_DATA_ROOT:-}" == "1" ]]; then
     BEOPSUNY_DATA_ROOT="$(mktemp -d)"
+    CREATED_ROOT="$BEOPSUNY_DATA_ROOT"
     export BEOPSUNY_DATA_ROOT
-    trap 'rm -rf -- "$BEOPSUNY_DATA_ROOT"' EXIT
     # An empty data root alone was not enough: the model discovered the real
     # ~/.beopsuny outside this run and honestly reported the conflict, so the
     # pure no-mirror behavior went unexercised. State the simulation premise
@@ -70,17 +81,12 @@ MCP_CONFIG='{"mcpServers":{}}'
 TRACE="${BEOPSUNY_EVAL_TRACE:-}"
 REQUIRE_MCP=0
 if [[ -n "${BEOPSUNY_EVAL_MCP_CONFIG:-}" ]]; then
-  if [[ "$BEOPSUNY_EVAL_MCP_CONFIG" == \{* ]]; then
-    # Do not echo the value: it may carry a key.
-    echo "run_claude_live: BEOPSUNY_EVAL_MCP_CONFIG must be a file path, not inline JSON" >&2
+  # Never echo the value: it may carry a key.
+  if [[ "$BEOPSUNY_EVAL_MCP_CONFIG" != /* || ! -f "$BEOPSUNY_EVAL_MCP_CONFIG" ]]; then
+    echo "run_claude_live: BEOPSUNY_EVAL_MCP_CONFIG must be an absolute path to an existing file (value not shown)" >&2
     exit 2
   fi
-  if [[ ! -f "$BEOPSUNY_EVAL_MCP_CONFIG" ]]; then
-    echo "run_claude_live: MCP config file not found: $BEOPSUNY_EVAL_MCP_CONFIG" >&2
-    exit 2
-  fi
-  # Resolve before the cd below, so a relative path keeps meaning the caller's cwd.
-  MCP_CONFIG="$(cd "$(dirname "$BEOPSUNY_EVAL_MCP_CONFIG")" && pwd)/$(basename "$BEOPSUNY_EVAL_MCP_CONFIG")"
+  MCP_CONFIG="$BEOPSUNY_EVAL_MCP_CONFIG"
   TRACE=1
   REQUIRE_MCP=1
 fi
@@ -88,11 +94,24 @@ ALLOWED_TOOLS="Read,Glob,Grep,WebFetch,WebSearch,Bash(ls:*),Bash(find:*),Bash(ca
 if [[ -n "${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS:-}" ]]; then
   ALLOWED_TOOLS="${ALLOWED_TOOLS},${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS}"
 fi
+if [[ "$REQUIRE_MCP" == "1" ]]; then
+  # Headless runs deny tools that are not pre-approved, so a connected server
+  # would still be unusable without its mcp__<server> entry.
+  MCP_TOOLS="$(python3 -c 'import json,sys; print(",".join("mcp__"+n for n in json.load(open(sys.argv[1])).get("mcpServers",{})))' "$MCP_CONFIG")"
+  if [[ -n "$MCP_TOOLS" ]]; then
+    ALLOWED_TOOLS="${ALLOWED_TOOLS},${MCP_TOOLS}"
+  fi
+fi
 if [[ "$TRACE" == "1" ]]; then
   TRACE_DIR="${BEOPSUNY_EVAL_TRACE_DIR:-$SCRIPT_DIR/runs/traces}"
+  if [[ "$TRACE_DIR" != /* ]]; then
+    echo "run_claude_live: BEOPSUNY_EVAL_TRACE_DIR must be an absolute path" >&2
+    exit 2
+  fi
   mkdir -p "$TRACE_DIR"
-  TRACE_DIR="$(cd "$TRACE_DIR" && pwd)"
   TRACE_FILE="$TRACE_DIR/${PROMPT_ID}.trace.jsonl"
+  # Run conditions without secrets, printed before the call so failed runs carry them too.
+  echo "[eval-runner] mcp_config=$([[ $REQUIRE_MCP == 1 ]] && echo set || echo none) extra_tools=${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS:--} empty_data_root=${BEOPSUNY_EVAL_EMPTY_DATA_ROOT:-0} trace=${PROMPT_ID}.trace.jsonl" >&2
 fi
 
 # Run from the output file's directory so the model's Bash tool does not inspect
@@ -128,12 +147,14 @@ fi
 # MCP servers did not all connect, or whose result is an error, fails here so it
 # is recorded as an execution error, never as a scored tool-path answer.
 RAW_TRACE="$(mktemp)"
+set +e
 claude "${CLAUDE_ARGS[@]}" --output-format stream-json --verbose < "$PROMPT_FILE" > "$RAW_TRACE"
-python3 - "$RAW_TRACE" "$TRACE_FILE" "$OUTPUT_FILE" "$REQUIRE_MCP" \
-  "${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS:-}" "${BEOPSUNY_EVAL_EMPTY_DATA_ROOT:-0}" <<'PY'
+CLAUDE_RC=$?
+set -e
+python3 - "$RAW_TRACE" "$TRACE_FILE" "$OUTPUT_FILE" "$REQUIRE_MCP" "$CLAUDE_RC" <<'PY'
 import json, os, re, sys
 
-raw, trace_path, output_path, require_mcp, extra_tools, empty_root = sys.argv[1:7]
+raw, trace_path, output_path, require_mcp, claude_rc = sys.argv[1:6]
 secret = os.environ.get("LAW_OC", "")
 
 
@@ -154,17 +175,34 @@ with open(raw, encoding="utf-8") as src, open(trace_path, "w", encoding="utf-8")
             servers = event.get("mcp_servers") or []
         elif event.get("type") == "result":
             result_event = event
-os.unlink(raw)
 
 status = ",".join(f"{s.get('name')}:{s.get('status')}" for s in servers) or "none"
-# Run conditions without secrets, so evidence can tell tool-path runs apart.
-print(f"[eval-runner] mcp={status} extra_tools={extra_tools or '-'} empty_data_root={empty_root}", file=sys.stderr)
+print(f"[eval-runner] mcp={status}", file=sys.stderr)
+if claude_rc != "0":
+    print(f"[eval-runner] claude exited {claude_rc}; masked trace kept", file=sys.stderr)
+    sys.exit(int(claude_rc))
 if require_mcp == "1" and (not servers or any(s.get("status") != "connected" for s in servers)):
     print("[eval-runner] MCP server not connected; refusing to score a tool-less run", file=sys.stderr)
     sys.exit(1)
 if result_event is None or result_event.get("is_error") or result_event.get("subtype", "success") != "success":
     print("[eval-runner] no successful result event", file=sys.stderr)
     sys.exit(1)
+
+
+def tool_path_denial(denial):
+    name = str(denial.get("tool_name", ""))
+    command = str((denial.get("tool_input") or {}).get("command", ""))
+    return name.startswith("mcp__") or (name == "Bash" and command.lstrip().startswith(("legalize", "uvx")))
+
+
+denied = [d for d in result_event.get("permission_denials") or [] if tool_path_denial(d)]
+if require_mcp == "1" and denied:
+    print(f"[eval-runner] tool-path calls denied: {sorted({d.get('tool_name') for d in denied})}", file=sys.stderr)
+    sys.exit(1)
+answer = result_event.get("result") or ""
+masked = mask(answer)
+if masked != answer:
+    print("[eval-runner] masked a secret in the answer", file=sys.stderr)
 with open(output_path, "w", encoding="utf-8") as fh:
-    fh.write(result_event.get("result") or "")
+    fh.write(masked)
 PY

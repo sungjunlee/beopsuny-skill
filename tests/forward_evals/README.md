@@ -60,10 +60,10 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`이거나 `BEOPSUNY_EVAL_EMPTY_DATA_ROOT=1`이면 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 로컬 미러가 없는 환경을 시뮬레이션한다(기본 경로의 o4-05 전제 문구는 과거 evidence와 비교되도록 그대로 둔다). 기본 도구 경로를 평가할 때는 다음을 넘긴다. 지정하지 않으면 MCP 없음·기존 도구 목록·trace 없음으로 동작한다.
 
-- `BEOPSUNY_EVAL_MCP_CONFIG`: MCP 설정 **파일 경로**(inline JSON 거부). 비밀값은 파일 안에서 `${LAW_OC}`처럼 참조하고 호출 환경에 export한다. 지정하면 trace가 켜지고, 설정한 서버가 모두 연결되지 않으면 실행 오류로 끝난다(도구 없는 실행이 점수로 남지 않게).
+- `BEOPSUNY_EVAL_MCP_CONFIG`: MCP 설정 파일의 **절대 경로**(inline JSON·상대 경로 거부, 값은 출력하지 않음). 비밀값은 파일 안에서 `${LAW_OC}`처럼 참조하고 호출 환경에 export한다. 지정하면 trace가 켜지고 `mcp__<서버>` 도구가 자동 허용되며, 서버가 모두 연결되지 않거나 도구 경로 호출이 거부되면 실행 오류로 끝난다(도구 없는 실행이 점수로 남지 않게).
 - `BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS`: 추가 허용 도구(예: `Bash(legalize:*),Bash(uvx:*)`).
-- `BEOPSUNY_EVAL_TRACE=1`: 도구 호출(stream-json)을 `BEOPSUNY_EVAL_TRACE_DIR`(기본 `tests/forward_evals/runs/traces/`, gitignore)에 `{prompt_id}.trace.jsonl`로 남긴다. `OC=` 값과 `$LAW_OC`는 마스킹한다. 팔(arm)마다 다른 디렉토리를 지정하고, 검토 전에는 `evidence/`로 옮기지 않는다.
-- 실행 조건(MCP 서버 이름·상태, 추가 도구, 빈 데이터 루트)은 비밀값 없이 stderr 한 줄로 남아 evidence에 기록된다. 하네스의 임시 workspace에서 실행하며 setup 본문과 SHA256, runtime context SHA256, 실행 상태와 정리 여부를 기록한다. `--runtime-root`로 보존한 runtime을 선택할 수 있다. 준비 실패·오류·미실행은 총분모에 남고 `UNSCORABLE`로 표시되며 모델 PASS/FAIL과 구별된다.
+- `BEOPSUNY_EVAL_TRACE=1`: 도구 호출(stream-json)을 `BEOPSUNY_EVAL_TRACE_DIR`(절대 경로, 기본 `tests/forward_evals/runs/traces/`, gitignore)에 `{prompt_id}.trace.jsonl`로 남긴다. 실패한 실행도 trace를 남긴다. `OC=` 값과 `$LAW_OC`는 trace와 답변 모두에서 마스킹한다. 팔(arm)마다 다른 디렉토리를 지정하고, 검토 전에는 `evidence/`로 옮기지 않는다. 도구 경로 실행은 느리므로 `BEOPSUNY_EVAL_TIMEOUT`을 늘린다.
+- trace 모드에서는 실행 조건(MCP 설정 여부, 추가 도구, 빈 데이터 루트, 서버 상태)이 비밀값 없이 stderr에 남아 evidence에 기록된다. 하네스의 임시 workspace에서 실행하며 setup 본문과 SHA256, runtime context SHA256, 실행 상태와 정리 여부를 기록한다. `--runtime-root`로 보존한 runtime을 선택할 수 있다. 준비 실패·오류·미실행은 총분모에 남고 `UNSCORABLE`로 표시되며 모델 PASS/FAIL과 구별된다.
 
 ```bash
 PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
