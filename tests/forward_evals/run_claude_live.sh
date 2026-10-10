@@ -169,13 +169,18 @@ fi
 # connect, whose tool-path calls were denied, or whose result is an error exits
 # non-zero and is recorded as an execution error, never as a scored answer.
 HARNESS_TIMEOUT="${BEOPSUNY_EVAL_TIMEOUT:-300}"
-HARNESS_TIMEOUT="${HARNESS_TIMEOUT%%.*}"
-if [[ ! "$HARNESS_TIMEOUT" =~ ^[0-9]+$ ]]; then
+if [[ ! "$HARNESS_TIMEOUT" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
   echo "run_claude_live: BEOPSUNY_EVAL_TIMEOUT must be a number of seconds" >&2
   exit 2
 fi
-INNER_TIMEOUT=$(( HARNESS_TIMEOUT - 30 ))
-(( INNER_TIMEOUT < 30 )) && INNER_TIMEOUT=30
+HARNESS_TIMEOUT="${HARNESS_TIMEOUT%%.*}"
+# Finish before the harness kills the runner: 30s margin, or half below 60s.
+if (( HARNESS_TIMEOUT >= 60 )); then
+  INNER_TIMEOUT=$(( HARNESS_TIMEOUT - 30 ))
+else
+  INNER_TIMEOUT=$(( HARNESS_TIMEOUT / 2 ))
+  (( INNER_TIMEOUT < 1 )) && INNER_TIMEOUT=1
+fi
 RUN_TRACED='
 import json, os, re, subprocess, sys, threading
 
@@ -183,7 +188,7 @@ trace_path, output_path, prompt_path, require_mcp, tool_path, inner = sys.argv[1
 cmd = sys.argv[7:]
 secret = os.environ.get("LAW_OC", "")
 PATTERNS = [
-    (re.compile(r"(\bOC=)[^&\"\s\\]+", re.I), r"\1REDACTED"),
+    (re.compile(r"((?:\b|_)OC=)[^&\"\s\\]+", re.I), r"\1REDACTED"),
     (re.compile(r"(OC%3D)[^&\"\s\\%]+", re.I), r"\1REDACTED"),
     # also the escaped form inside a JSON string value (\"oc\": \"...\")
     (re.compile(r"(\\?\"(?:oc|law_oc)\\?\"\s*:\s*\\?\")[^\\\"]+", re.I), r"\1REDACTED"),
@@ -216,6 +221,7 @@ def kill_tree(proc):
 
 
 servers, result_event = [], None
+mcp_ids, mcp_calls = set(), [0, 0]
 with open(prompt_path, "rb") as stdin, open(trace_path, "w", encoding="utf-8") as trace:
     proc = subprocess.Popen(cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             text=True, encoding="utf-8", errors="replace", start_new_session=POSIX)
@@ -240,17 +246,25 @@ with open(prompt_path, "rb") as stdin, open(trace_path, "w", encoding="utf-8") a
                 servers = event.get("mcp_servers") or []
             elif event.get("type") == "result":
                 result_event = event
+            for item in ((event.get("message") or {}).get("content") or []) if isinstance(event.get("message"), dict) else []:
+                if not isinstance(item, dict):
+                    continue
+                if item.get("type") == "tool_use" and str(item.get("name", "")).startswith("mcp__"):
+                    mcp_ids.add(item.get("id"))
+                elif item.get("type") == "tool_result" and item.get("tool_use_id") in mcp_ids:
+                    mcp_calls[1 if item.get("is_error") else 0] += 1
     finally:
-        timer.cancel()
-        if proc.poll() is None and (timed_out or sys.exc_info()[0] is not None):
+        if proc.poll() is None and sys.exc_info()[0] is not None:
             kill_tree(proc)
+        # stdout EOF does not mean exit: the timer stays armed until the process ends.
         rc = proc.wait()
+        timer.cancel()
         kill_tree(proc)  # leftover grandchildren in the group
         reader.join(timeout=5)
 sys.stderr.write(mask("".join(err_chunks)))
 
 status = ",".join(str(x.get("name")) + ":" + str(x.get("status")) for x in servers) or "none"
-print(f"[eval-runner] mcp={status}", file=sys.stderr)
+print(f"[eval-runner] mcp={status} mcp_calls_ok={mcp_calls[0]} mcp_calls_err={mcp_calls[1]}", file=sys.stderr)
 if timed_out:
     print(f"[eval-runner] inner timeout {inner}s; masked trace kept", file=sys.stderr)
     sys.exit(124)
