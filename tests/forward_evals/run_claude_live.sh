@@ -99,9 +99,17 @@ fi
 if [[ "${BEOPSUNY_EVAL_EMPTY_DATA_ROOT:-}" == "1" ]]; then
   TRACE=1
 fi
-if [[ "$REQUIRE_MCP" == "1" && -z "${LAW_OC:-}" ]]; then
-  echo "[eval-runner] warning: LAW_OC is not exported; only OC=... patterns can be masked" >&2
+if [[ "$REQUIRE_MCP" == "1" && -z "${LAW_OC:-}" && "${BEOPSUNY_EVAL_NO_SECRET:-}" != "1" ]]; then
+  echo "run_claude_live: export LAW_OC (masked in traces) or set BEOPSUNY_EVAL_NO_SECRET=1 for a keyless server" >&2
+  exit 2
 fi
+# A CLI tool path needs its binary; a missing one would fail inside the run and still be scored.
+for tool in legalize uvx; do
+  if [[ "${BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS:-}" == *"Bash(${tool}"* ]] && ! command -v "$tool" > /dev/null 2>&1; then
+    echo "run_claude_live: ${tool} is allowed but not installed" >&2
+    exit 2
+  fi
+done
 if [[ "$REQUIRE_MCP" == "1" ]]; then
   # Headless runs deny tools that are not pre-approved, so a connected server
   # would still be unusable without its mcp__<server> entry.
@@ -160,7 +168,13 @@ fi
 # first so the normal failure path runs. A run whose MCP servers did not all
 # connect, whose tool-path calls were denied, or whose result is an error exits
 # non-zero and is recorded as an execution error, never as a scored answer.
-INNER_TIMEOUT=$(( ${BEOPSUNY_EVAL_TIMEOUT:-300} - 30 ))
+HARNESS_TIMEOUT="${BEOPSUNY_EVAL_TIMEOUT:-300}"
+HARNESS_TIMEOUT="${HARNESS_TIMEOUT%%.*}"
+if [[ ! "$HARNESS_TIMEOUT" =~ ^[0-9]+$ ]]; then
+  echo "run_claude_live: BEOPSUNY_EVAL_TIMEOUT must be a number of seconds" >&2
+  exit 2
+fi
+INNER_TIMEOUT=$(( HARNESS_TIMEOUT - 30 ))
 (( INNER_TIMEOUT < 30 )) && INNER_TIMEOUT=30
 RUN_TRACED='
 import json, os, re, subprocess, sys, threading
@@ -176,35 +190,63 @@ PATTERNS = [
 ]
 
 
+if secret and len(secret) < 6:
+    print("[eval-runner] LAW_OC shorter than 6 chars: raw-value masking skipped", file=sys.stderr)
+    secret = ""
+
+
 def mask(text):
     for pattern, repl in PATTERNS:
         text = pattern.sub(repl, text)
     return text.replace(secret, "REDACTED") if secret else text
 
 
+POSIX = os.name == "posix"
+
+
+def kill_tree(proc):
+    # Grandchildren (MCP servers, tool processes) inherit the pipes; kill the group.
+    try:
+        if POSIX:
+            os.killpg(proc.pid, 9)
+        else:
+            proc.kill()
+    except (ProcessLookupError, PermissionError, OSError):
+        pass
+
+
 servers, result_event = [], None
 with open(prompt_path, "rb") as stdin, open(trace_path, "w", encoding="utf-8") as trace:
-    proc = subprocess.Popen(cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    proc = subprocess.Popen(cmd, stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            text=True, encoding="utf-8", errors="replace", start_new_session=POSIX)
     timed_out = []
-    timer = threading.Timer(int(inner), lambda: (timed_out.append(1), proc.kill()))
+    timer = threading.Timer(int(inner), lambda: (timed_out.append(1), kill_tree(proc)))
+    timer.daemon = True
     timer.start()
     err_chunks = []
-    reader = threading.Thread(target=lambda: err_chunks.append(proc.stderr.read()))
+    reader = threading.Thread(target=lambda: err_chunks.append(proc.stderr.read()), daemon=True)
     reader.start()
-    for line in proc.stdout:
-        trace.write(mask(line))
-        trace.flush()
-        try:
-            event = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if event.get("type") == "system" and event.get("subtype") == "init":
-            servers = event.get("mcp_servers") or []
-        elif event.get("type") == "result":
-            result_event = event
-    rc = proc.wait()
-    timer.cancel()
-    reader.join()
+    try:
+        for line in proc.stdout:
+            trace.write(mask(line))
+            trace.flush()
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(event, dict):
+                continue
+            if event.get("type") == "system" and event.get("subtype") == "init":
+                servers = event.get("mcp_servers") or []
+            elif event.get("type") == "result":
+                result_event = event
+    finally:
+        timer.cancel()
+        if proc.poll() is None and (timed_out or sys.exc_info()[0] is not None):
+            kill_tree(proc)
+        rc = proc.wait()
+        kill_tree(proc)  # leftover grandchildren in the group
+        reader.join(timeout=5)
 sys.stderr.write(mask("".join(err_chunks)))
 
 status = ",".join(str(x.get("name")) + ":" + str(x.get("status")) for x in servers) or "none"
@@ -222,7 +264,7 @@ if result_event is None or result_event.get("is_error") or result_event.get("sub
     print("[eval-runner] no successful result event", file=sys.stderr)
     sys.exit(1)
 
-TOOL_TOKEN = re.compile(r"(?:^|[\s;&|/(])(?:legalize|uvx)(?:\s|$)")
+TOOL_TOKEN = re.compile(r"(?:^|[\s;&|/\\\"\x27(=])(?:legalize|uvx)(?:\.exe)?(?=[\s\"\x27]|$)", re.I)
 
 
 def tool_path_denial(denial):
@@ -243,4 +285,4 @@ with open(output_path, "w", encoding="utf-8") as fh:
     fh.write(masked)
 '
 python3 -c "$RUN_TRACED" "$TRACE_FILE" "$OUTPUT_FILE" "$PROMPT_FILE" "$REQUIRE_MCP" "$TOOL_PATH" "$INNER_TIMEOUT" \
-  "${CLAUDE_CMD[@]}" "${CLAUDE_ARGS[@]}" --output-format stream-json --verbose
+  "${CLAUDE_CMD[@]}" "${CLAUDE_ARGS[@]}" --output-format stream-json --verbose --no-session-persistence

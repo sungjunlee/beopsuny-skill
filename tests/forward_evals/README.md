@@ -60,7 +60,7 @@ PYTHONPATH=.test-deps python3 tests/forward_eval_harness.py --mode command \
 
 O4 provenance 세트는 라이브 러너 `run_claude_live.sh`와 함께 command 모드로 돌린다. 러너는 harness가 넘기는 `BEOPSUNY_EVAL_*` 환경변수를 읽어 `claude -p`를 호출하고, `o4-05`이거나 `BEOPSUNY_EVAL_EMPTY_DATA_ROOT=1`이면 `BEOPSUNY_DATA_ROOT`를 빈 임시 디렉토리로 설정해 로컬 미러가 없는 환경을 시뮬레이션한다(기본 경로의 o4-05 전제 문구는 과거 evidence와 비교되도록 그대로 둔다). 기본 도구 경로를 평가할 때는 다음을 넘긴다. 지정하지 않으면 MCP 없음·기존 도구 목록·trace 없음으로 동작한다.
 
-- `BEOPSUNY_EVAL_MCP_CONFIG`: MCP 설정 파일의 **절대 경로**(inline JSON·상대 경로 거부, 값은 출력하지 않음). 비밀값은 파일 안에서 `${LAW_OC}`처럼 참조하고 호출 환경에 export한다. 지정하면 trace가 켜지고 `mcp__<서버>` 도구가 자동 허용되며, 서버가 모두 연결되지 않거나 도구 경로 호출이 거부되면 실행 오류로 끝난다(도구 없는 실행이 점수로 남지 않게).
+- `BEOPSUNY_EVAL_MCP_CONFIG`: MCP 설정 파일의 **절대 경로**(inline JSON·상대 경로 거부, 값은 출력하지 않음). 비밀값은 파일 안에서 `${LAW_OC}`처럼 참조하고 호출 환경에 export한다(MCP 설정을 쓰면 `LAW_OC`가 필수, 키 없는 원격 서버면 `BEOPSUNY_EVAL_NO_SECRET=1`). trace 모드는 `--no-session-persistence`로 CLI transcript를 디스크에 남기지 않는다. Git Bash에서는 경로를 `/c/...` 형태로 넘긴다. 지정하면 trace가 켜지고 `mcp__<서버>` 도구가 자동 허용되며, 서버가 모두 연결되지 않거나 도구 경로 호출이 거부되면 실행 오류로 끝난다(도구 없는 실행이 점수로 남지 않게).
 - `BEOPSUNY_EVAL_EXTRA_ALLOWED_TOOLS`: 추가 허용 도구(예: `Bash(legalize:*),Bash(uvx:*)`).
 - `BEOPSUNY_EVAL_TRACE=1`: 도구 호출(stream-json)을 `BEOPSUNY_EVAL_TRACE_DIR`(절대 경로, 기본 `tests/forward_evals/runs/traces/`, gitignore)에 `{prompt_id}.trace.jsonl`로 남긴다. 스트림은 디스크에 쓰기 전에 줄 단위로 마스킹하므로 실패·강제 종료된 실행도 마스킹된 trace만 남는다. `OC=`·`OC%3D`·`"oc":` 값과 `$LAW_OC`는 trace·답변·stderr에서 마스킹한다(`LAW_OC`를 export해야 다른 형태도 가려진다). 러너는 `BEOPSUNY_EVAL_TIMEOUT`보다 30초 짧은 내부 타임아웃으로 claude를 먼저 끝낸다. 팔(arm)마다 다른 디렉토리를 지정하고, 검토 전에는 `evidence/`로 옮기지 않는다. 도구 경로 실행은 느리므로 `BEOPSUNY_EVAL_TIMEOUT`을 늘린다.
 - `BEOPSUNY_EVAL_CLAUDE_BIN`: claude 실행 파일 대체(러너 테스트용 가짜). PATH 순서에 기대지 않는다 — Windows 프로세스 조회는 셸과 다르게 실제 CLI를 찾을 수 있다.
