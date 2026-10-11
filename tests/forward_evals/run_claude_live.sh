@@ -173,7 +173,7 @@ if [[ ! "$HARNESS_TIMEOUT" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
   echo "run_claude_live: BEOPSUNY_EVAL_TIMEOUT must be a number of seconds" >&2
   exit 2
 fi
-HARNESS_TIMEOUT="${HARNESS_TIMEOUT%%.*}"
+HARNESS_TIMEOUT=$(( 10#${HARNESS_TIMEOUT%%.*} ))
 # Finish before the harness kills the runner: 30s margin, or half below 60s.
 if (( HARNESS_TIMEOUT >= 60 )); then
   INNER_TIMEOUT=$(( HARNESS_TIMEOUT - 30 ))
@@ -214,7 +214,8 @@ def kill_tree(proc):
     try:
         if POSIX:
             os.killpg(proc.pid, 9)
-        else:
+        elif subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)],
+                            capture_output=True).returncode != 0:
             proc.kill()
     except (ProcessLookupError, PermissionError, OSError):
         pass
@@ -234,7 +235,7 @@ with open(prompt_path, "rb") as stdin, open(trace_path, "w", encoding="utf-8") a
     reader.start()
     try:
         for line in proc.stdout:
-            trace.write(mask(line))
+            trace.write(mask(line) if line.endswith("\n") else "[truncated]\n")
             trace.flush()
             try:
                 event = json.loads(line)
