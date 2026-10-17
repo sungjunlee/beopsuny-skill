@@ -35,6 +35,8 @@
 
 ### Fixed
 
+- 지식 소스 token을 명시 허용한 GitHub raw HTTPS origin의 최초 요청에만 붙인다. 다른 origin·HTTP·userinfo·다른 port 및 모든 redirect에는 인증을 전달하지 않으며, 익명 조회와 실패 시 skip 동작을 유지한다 (#365).
+
 - Resolved overdue freshness_debt entries per policy (do not extend expired `overdue_resolve_by`)
   - Retired `legal_terms.yaml` from freshness_debt after revalidation
   - Added overdue declarations to 6 expired checklists (fair_trade, food_business, healthcare, labor_hr, privacy_compliance, serious_accident, startup)

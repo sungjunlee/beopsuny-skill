@@ -190,6 +190,7 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_forward_eval_harness.py \
   tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
+  tests/test_knowledge_manifest_io.py \
   tests/test_knowledge_value_prepare.py \
   tests/test_model_era_prepare.py \
   tests/test_cross_matter_scope_rule.py \
@@ -209,6 +210,7 @@ $PYTHON -m py_compile \
   tests/test_forward_eval_harness.py \
   tests/test_forward_eval_execution.py \
   tests/test_knowledge_manifest_ingest.py \
+  tests/test_knowledge_manifest_io.py \
   tests/test_knowledge_value_prepare.py \
   tests/test_model_era_prepare.py \
   tests/test_cross_matter_scope_rule.py \
