@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,22 @@ _validate = _load_sibling("knowledge_manifest_validate")
 IngestError = _validate.IngestError
 
 RAW_MAIN_MARKER = "/sungjunlee/beopsuny-knowledge/main/"
+# The stable/canary sources in knowledge_manifest.yaml use this HTTPS origin.
+AUTHENTICATED_ORIGIN = ("https", "raw.githubusercontent.com", 443)
+
+
+def _allows_credentials(source: str) -> bool:
+    try:
+        url = urllib.parse.urlsplit(source)
+        port = url.port if url.port is not None else 443
+        return (
+            url.username is None
+            and url.password is None
+            and (url.scheme, url.hostname, port) == AUTHENTICATED_ORIGIN
+        )
+    except ValueError:
+        # Malformed authorities must never gain credentials.
+        return False
 
 
 def load_yaml(path: Path) -> Any:
@@ -56,12 +73,15 @@ def read_text_source(source: str, knowledge_root: Path | None = None) -> str:
         return Path(source.removeprefix("file://")).read_text(encoding="utf-8")
     if re.match(r"https?://", source):
         headers = {"User-Agent": "beopsuny-knowledge-ingest"}
-        token = os.environ.get("BEOPSUNY_KNOWLEDGE_TOKEN") or os.environ.get(
-            "GITHUB_TOKEN"
-        )
-        if token:
-            headers["Authorization"] = f"Bearer {token}"
         request = urllib.request.Request(source, headers=headers)
+        if _allows_credentials(source):
+            token = os.environ.get("BEOPSUNY_KNOWLEDGE_TOKEN") or os.environ.get(
+                "GITHUB_TOKEN"
+            )
+            if token:
+                # Even same-origin redirects are anonymous: no later hop may
+                # inherit or restore the initial request's credentials.
+                request.add_unredirected_header("Authorization", f"Bearer {token}")
         try:
             with urllib.request.urlopen(request, timeout=10) as response:  # noqa: S310 - configured manifest URL.
                 status = getattr(response, "status", 200)
