@@ -92,12 +92,12 @@ CONFIG=tests/forward_evals/beopsuny_o4_provenance.yaml MODEL=claude-sonnet-5 \
   tests/forward_evals/run_live_parallel.sh
 ```
 
-- **증분 재개**: `$RUN_DIR/outputs/<prompt_id>.txt`가 비어 있지 않으면 해당 prompt는 스킵한다. 다시 돌리려면 그 파일을 지운다.
+- **목적지 소유**: 같은 `RUN_DIR`은 한 번에 한 실행만 잠근다. 겹치면 즉시 거부한다(`RUN_DIR busy`). 출력·capture·evidence는 전부 쓴 뒤에만 `current`로 공개한다. 쓰다 실패하면 이전 성공 파일은 이번 실행의 완료 결과가 아니다.
 - **병렬도**: `PAR` (기본 4). 환경·요금 한도에 맞게 조절.
 - **드라이 테스트**: `RUNNER=/path/to/mock.sh`로 라이브 `claude` 호출 없이 배관만 검증할 수 있다. `RUN_DIR`도 `/tmp/...`로 두면 repo `runs/`를 건드리지 않는다.
 - **알려진 함정**:
   - `claude -p --allowedTools`는 variadic이라 positional prompt를 삼킨다 → prompt는 stdin으로 전달 (`run_claude_live.sh`).
-  - 일부 오케스트레이션 환경은 장시간 백그라운드 태스크를 kill한다 → 이 드라이버는 **foreground**에서 돌린다. 증분 스킵으로 중단 재개 가능.
+  - 일부 오케스트레이션 환경은 장시간 백그라운드 태스크를 kill한다 → 이 드라이버는 **foreground**에서 돌린다. 끊긴 실행은 완료로 공개되지 않는다.
   - macOS `xargs -I`는 치환 길이 제한이 있다 → bash for-loop로 병렬 실행.
   - 부작용 도구 차단은 `run_claude_live.sh`의 `--disallowedTools` + `--strict-mcp-config`에 있다 (#223).
 - **증거 승격**: 판정 후 `$RUN_DIR/evidence.yaml`을 `evidence/<set>-<model>-YYYYMMDD.yaml`로 복사해 커밋한다. `runs/`는 gitignore된다.
