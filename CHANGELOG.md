@@ -35,6 +35,8 @@
 
 ### Fixed
 
+- 일괄 검토 표에서 값 표나 근거 표를 정렬하면 같은 행이 양쪽에 함께 움직인다. 문서 이름이 같아도 행 식별자로 대응하고, 사람이 입력한 Verified 칸과 근거 내용은 그 행에 남는다 (#371).
+
 - 지식 소스 token을 명시 허용한 GitHub raw HTTPS origin의 최초 요청에만 붙인다. 다른 origin·HTTP·userinfo·다른 port 및 모든 redirect에는 인증을 전달하지 않으며, 익명 조회와 실패 시 skip 동작을 유지한다 (#365).
 
 - Resolved overdue freshness_debt entries per policy (do not extend expired `overdue_resolve_by`)

@@ -388,7 +388,7 @@
     </section>
 
     <div class="toolbar" aria-label="table controls">
-      <p class="panel-note">컬럼 헤더를 클릭하면 클라이언트 사이드 정렬이 적용됩니다.</p>
+      <p class="panel-note">컬럼 헤더를 클릭하면 값 표와 근거 표가 같은 행 순서로 함께 정렬됩니다.</p>
       <div class="switcher" role="group" aria-label="values table / sources table toggle">
         <button type="button" data-target="values-panel" aria-controls="values-panel" aria-pressed="true">values table</button>
         <button type="button" data-target="sources-panel" aria-controls="sources-panel" aria-pressed="false">sources table</button>
@@ -415,8 +415,10 @@
           <tbody>
             <!-- PLACEHOLDER: values_rows_html_escaped.
                  For every dynamic cell, HTML-escape value/state/evidence text.
+                 Each values <tr> and its sources <tr> share one data-row-id.
+                 The id is a stable key, not the visible name. HTML-escape the attribute value.
                  answered cells must include quote/location or source_authority in title/details. -->
-            <tr>
+            <tr data-row-id="row-1">
               <th scope="row" data-sort-value="A MSA">A MSA</th>
               <td class="state-answered" data-sort-value="계약상 기준 금액" title="quote: fees paid in the relevant period... | location: A MSA section">
                 <div class="cell">
@@ -436,7 +438,7 @@
               </td>
               <td data-sort-value=""></td>
             </tr>
-            <tr>
+            <tr data-row-id="row-2">
               <th scope="row" data-sort-value="B NDA">B NDA</th>
               <td class="state-not_present" data-sort-value="not_present">
                 <div class="cell">
@@ -475,10 +477,11 @@
           <tbody>
             <!-- PLACEHOLDER: sources_rows_html_escaped.
                  HTML-escape quote/location/source_authority/status/notes.
+                 Use the same data-row-id as the corresponding values row and HTML-escape it.
                  조문·판례를 인용한 행에만 official law.go.kr link를 `<a href>`로 포함 (output-formats.md 링크 생성 규칙).
                  계약 원문 발췌 행(예: source_authority '사용자 제공 계약 원문')에는 공식 링크를 만들지 않는다. 형식 예:
                  <p class="panel-note">공식 링크: <a href="https://www.law.go.kr/법령/{법령명}/제{N}조">law.go.kr 원문</a></p> -->
-            <tr>
+            <tr data-row-id="row-1">
               <th scope="row" data-sort-value="A MSA">A MSA</th>
               <td class="state-answered" data-sort-value="A MSA section">
                 <div class="cell">
@@ -496,7 +499,7 @@
                 </div>
               </td>
             </tr>
-            <tr>
+            <tr data-row-id="row-2">
               <th scope="row" data-sort-value="B NDA">B NDA</th>
               <td class="state-not_present" data-sort-value="not_present">
                 <div class="cell">
@@ -554,21 +557,84 @@
         return a.localeCompare(b, "ko");
       }
 
+      function rowId(row) {
+        return (row.getAttribute("data-row-id") || "").trim();
+      }
+
+      // 값 표와 근거 표는 data-row-id를 공유한다. 어느 쪽을 정렬해도 그 순서를
+      // 모든 sortable 표에 적용해 Verified 입력과 근거가 같은 행에 남게 한다.
+      function applyIdOrder(tbody, orderedIds) {
+        var current = Array.prototype.slice.call(tbody.rows);
+        var byId = Object.create(null);
+        var placed = Object.create(null);
+        var i;
+        for (i = 0; i < current.length; i++) {
+          var id = rowId(current[i]);
+          if (id && !Object.prototype.hasOwnProperty.call(byId, id)) byId[id] = current[i];
+        }
+        for (i = 0; i < orderedIds.length; i++) {
+          var row = byId[orderedIds[i]];
+          if (row && !placed[orderedIds[i]]) {
+            tbody.appendChild(row);
+            placed[orderedIds[i]] = true;
+          }
+        }
+        for (i = 0; i < current.length; i++) {
+          var leftoverId = rowId(current[i]);
+          if (!leftoverId || !placed[leftoverId]) tbody.appendChild(current[i]);
+        }
+      }
+
+      function applyIndexOrder(tbody, indexOrder) {
+        var current = Array.prototype.slice.call(tbody.rows);
+        var used = Object.create(null);
+        var i;
+        for (i = 0; i < indexOrder.length; i++) {
+          var index = indexOrder[i];
+          if (index >= 0 && index < current.length && !used[index]) {
+            tbody.appendChild(current[index]);
+            used[index] = true;
+          }
+        }
+        for (i = 0; i < current.length; i++) {
+          if (!used[i]) tbody.appendChild(current[i]);
+        }
+      }
+
       function sortTable(table, columnIndex, header) {
         var tbody = table.tBodies[0];
         if (!tbody) return;
         var current = header.getAttribute("aria-sort");
         var next = current === "ascending" ? "descending" : "ascending";
-        var rows = Array.prototype.slice.call(tbody.rows);
+        var original = Array.prototype.slice.call(tbody.rows);
+        var rows = original.slice();
         rows.sort(function (left, right) {
           var result = compareValues(textFor(left, columnIndex), textFor(right, columnIndex));
           return next === "ascending" ? result : -result;
         });
-        rows.forEach(function (row) {
-          tbody.appendChild(row);
+        var indexOrder = [];
+        var orderedIds = [];
+        var seenIds = Object.create(null);
+        var idsAreUnique = rows.length > 0;
+        var i;
+        for (i = 0; i < rows.length; i++) {
+          indexOrder.push(original.indexOf(rows[i]));
+          var id = rowId(rows[i]);
+          if (!id || Object.prototype.hasOwnProperty.call(seenIds, id)) idsAreUnique = false;
+          seenIds[id] = true;
+          orderedIds.push(id);
+        }
+        var tables = Array.prototype.slice.call(document.querySelectorAll("table[data-sortable]"));
+        tables.forEach(function (other) {
+          var body = other.tBodies[0];
+          if (!body) return;
+          if (idsAreUnique) applyIdOrder(body, orderedIds);
+          else applyIndexOrder(body, indexOrder);
         });
-        Array.prototype.forEach.call(table.querySelectorAll("th[aria-sort]"), function (th) {
-          th.setAttribute("aria-sort", "none");
+        tables.forEach(function (other) {
+          Array.prototype.forEach.call(other.querySelectorAll("th[aria-sort]"), function (th) {
+            th.setAttribute("aria-sort", "none");
+          });
         });
         header.setAttribute("aria-sort", next);
       }
