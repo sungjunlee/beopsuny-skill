@@ -56,6 +56,21 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     knowledge = args.knowledge_root.resolve()
     output = args.output.resolve()
+    # Occupied output or sidecar is refused before the helper and any write.
+    # A failed retry must not replace a receipt that already belongs to this destination.
+    if output.exists() or metadata_path(output).exists():
+        print(
+            json.dumps(
+                {
+                    "status": "preparation_failed",
+                    "reason": "refusing to overwrite existing preparation output or metadata",
+                    "output": str(output),
+                    "metadata": str(metadata_path(output)),
+                },
+                ensure_ascii=False,
+            )
+        )
+        return 1
     command = [
         sys.executable,
         str(INGEST_HELPER),
