@@ -9,12 +9,16 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECK_PATH = ROOT / "tests/check_rescore_baseline.py"
@@ -62,8 +66,10 @@ class RescoreBaselineTests(unittest.TestCase):
                 "outputs": {"fwd-03-business-user-external-reply": ""}}))
             with patch.object(self.check, "EVIDENCE_DIR", Path(directory)):
                 result = self.check.rescore_all()
-            self.assertEqual(result["empty"]["fwd-03-business-user-external-reply"],
+            prompt_id = "fwd-03-business-user-external-reply"
+            self.assertEqual(result["failures"]["empty"][prompt_id],
                              ["UNSCORABLE: captured execution did not complete"])
+            self.assertEqual(result["inventory"]["empty"], [prompt_id])
 
     def test_serialization_is_byte_stable(self) -> None:
         self.assertEqual(
@@ -91,19 +97,22 @@ class RescoreBaselineTests(unittest.TestCase):
             "c2": {"p2": ["msg-x", "msg-y"]},
             "c3": {},
         }
-        relaxed, tightened = self.check.classify_diffs(actual, baseline)
+        relaxed, tightened, inventory = self.check.classify_diffs(actual, baseline)
         # c1/p1 실패가 사라졌다 → 완화. c2/p2에 새 실패 → 조임. c3는 변화 없음.
+        # 구형 실패 맵은 inventory를 선언하지 않는다.
         self.assertEqual(relaxed, {"c1": {"p1": ["msg-a"]}})
         self.assertEqual(tightened, {"c2": {"p2": ["msg-y"]}})
+        self.assertIsNone(inventory)
 
     def test_message_level_diff_catches_partial_relaxation(self) -> None:
         """같은 prompt의 일부 실패만 사라져도 완화로 잡힌다 — 전부 통과해야만
         잡히는 판정 단위로는 #282 형태(일부 FAIL 메시지 소실)가 놓친다."""
         baseline = {"c1": {"p1": ["msg-a", "msg-b"]}}
         actual = {"c1": {"p1": ["msg-b"]}}
-        relaxed, tightened = self.check.classify_diffs(actual, baseline)
+        relaxed, tightened, inventory = self.check.classify_diffs(actual, baseline)
         self.assertEqual(relaxed, {"c1": {"p1": ["msg-a"]}})
         self.assertEqual(tightened, {})
+        self.assertIsNone(inventory)
 
     def test_build_report_fails_with_direction_and_stronger_relaxation_wording(
         self,
@@ -201,11 +210,18 @@ class AbsorbedHarnessCorpusTests(unittest.TestCase):
             for path in (ROOT / "tests/forward_evals/evidence").glob("*.yaml")
         }
         missing_files = sorted(set(ABSORBED_CORPUS_STEMS) - evidence_stems)
-        missing_scan = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.actual))
-        missing_baseline = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.baseline))
+        missing_scan = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.actual["failures"]))
+        missing_inventory = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.actual["inventory"]))
+        missing_baseline = sorted(set(ABSORBED_CORPUS_STEMS) - set(self.baseline["failures"]))
+        missing_baseline_inventory = sorted(
+            set(ABSORBED_CORPUS_STEMS) - set(self.baseline["inventory"])
+        )
         self.assertEqual([], missing_files)
         self.assertEqual([], missing_scan)
+        self.assertEqual([], missing_inventory)
         self.assertEqual([], missing_baseline)
+        self.assertEqual([], missing_baseline_inventory)
+        self.assertEqual(2, self.baseline.get("schema"))
 
     def test_harness_tests_do_not_rescore_absorbed_evidence(self) -> None:
         """한 개념 한 집 — 흡수된 corpus 스템이 하네스 테스트로 되돌아오면 FAIL."""
@@ -219,19 +235,261 @@ class AbsorbedHarnessCorpusTests(unittest.TestCase):
         전체 메시지와 corpus별 판정은 baseline 일치 검사가 잠근다.
         과거 키워드 PASS/FAIL을 현재 의미 판정으로 재사용하지 않는다.
         """
-        july09 = self.actual["guardrails-live-sonnet5-20260709"]
+        failures = self.actual["failures"]
+        july09 = failures["guardrails-live-sonnet5-20260709"]
         self.assertTrue(any("forbidden failure phrase" in message
                             for message in july09["fwd-02-law-change-automation-request"]))
         self.assertNotIn("fwd-02-law-change-automation-request",
-                         self.actual["fwd02-recheck-live-sonnet5-20260710"])
+                         failures["fwd02-recheck-live-sonnet5-20260710"])
         for stem in ("guardrails-live-sonnet5-20260710-v050",
                      "guardrails-live-sonnet5-20260720-v051"):
-            messages = self.actual[stem]["fwd-08-profile-write-boundary"]
+            messages = failures[stem]["fwd-08-profile-write-boundary"]
             self.assertTrue(messages)
             self.assertTrue(all(message.startswith("REVIEW_REQUIRED:") for message in messages))
-        messages = self.actual["guardrails-live-sonnet5-20260725-v070"]["fwd-11-shape-deviating-verification"]
+        messages = failures["guardrails-live-sonnet5-20260725-v070"]["fwd-11-shape-deviating-verification"]
         self.assertTrue(messages)
         self.assertTrue(all(message.startswith("REVIEW_REQUIRED:") for message in messages))
+
+    def test_passed_inputs_are_inventoried_without_empty_messages(self) -> None:
+        """통과 corpus는 실패 맵이 비어도 원래 id를 보존한다. 빈 배열로 채우지 않는다."""
+        stem = "fwd02-recheck-live-sonnet5-20260710"
+        self.assertEqual(self.actual["failures"][stem], {})
+        self.assertEqual(
+            self.actual["inventory"][stem],
+            ["fwd-02-law-change-automation-request"],
+        )
+        for corpus, prompts in self.actual["failures"].items():
+            self.assertTrue(set(prompts) <= set(self.actual["inventory"][corpus]))
+            for messages in prompts.values():
+                self.assertTrue(messages)
+
+
+PASS_ID = "fwd-03-business-user-external-reply"
+FAIL_ID = "fwd-02-law-change-automation-request"
+PASS_ALT_ID = "fwd-04-stale-checklist-current-obligation"
+SOURCE_EVAL = "tests/forward_evals/beopsuny_guardrails.yaml"
+
+
+class RescoreInventoryTests(unittest.TestCase):
+    """#373: 통과 입력 누락과 빈 outputs는 내용 판정과 따로 실패한다."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.check = load_check()
+        cls.harness = cls.check.load_harness()
+        config = cls.harness.load_forward_eval(
+            ROOT / "tests/forward_evals/beopsuny_guardrails.yaml"
+        )
+        cls.prompts = {str(prompt["id"]): prompt for prompt in config["prompts"]}
+        cls.samples = cls.harness.SAMPLE_OUTPUTS
+
+    def write_capture(
+        self,
+        directory: Path,
+        outputs: dict[str, str],
+        rows: list[dict[str, Any]] | None = None,
+    ) -> None:
+        for old in directory.glob("*.yaml"):
+            old.unlink()
+        payload: dict[str, Any] = {"source_eval": SOURCE_EVAL, "outputs": outputs}
+        if rows is not None:
+            payload["prompts"] = rows
+        (directory / "case.yaml").write_text(
+            yaml.safe_dump(payload, allow_unicode=True, sort_keys=False),
+            encoding="utf-8",
+        )
+
+    def rescore(self, directory: Path) -> dict[str, Any]:
+        with patch.object(self.check, "EVIDENCE_DIR", directory):
+            return self.check.rescore_all()
+
+    def test_omitted_passing_id_is_not_a_content_match(self) -> None:
+        fail_output = "루틴이 생성되었습니다"
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            self.write_capture(
+                directory,
+                {PASS_ID: self.samples[PASS_ID], FAIL_ID: fail_output},
+            )
+            before = self.rescore(directory)
+            self.assertNotIn(PASS_ID, before["failures"]["case"])
+            self.assertIn(FAIL_ID, before["failures"]["case"])
+            self.assertEqual(before["inventory"]["case"], sorted([PASS_ID, FAIL_ID]))
+            self.write_capture(directory, {FAIL_ID: fail_output})
+            after = self.rescore(directory)
+            self.assertEqual(before["failures"]["case"][FAIL_ID], after["failures"]["case"][FAIL_ID])
+            self.assertNotIn(PASS_ID, after["inventory"]["case"])
+            self.assertNotEqual(
+                self.check.serialize_failures(before),
+                self.check.serialize_failures(after),
+            )
+            report, code = self.check.build_report(after, before)
+            self.assertEqual(code, 1)
+            self.assertIn("[입력 누락]", report)
+            self.assertIn(PASS_ID, report)
+            self.assertNotIn("[완화]", report)
+            self.assertNotIn("[조임]", report)
+            relaxed, tightened, inventory = self.check.classify_diffs(after, before)
+            self.assertEqual(relaxed, {})
+            self.assertEqual(tightened, {})
+            self.assertEqual(inventory["missing"], {"case": [PASS_ID]})
+
+    def test_empty_outputs_do_not_match_an_all_pass_capture(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            self.write_capture(
+                directory,
+                {PASS_ID: self.samples[PASS_ID], PASS_ALT_ID: self.samples[PASS_ALT_ID]},
+            )
+            before = self.rescore(directory)
+            self.assertEqual(before["failures"]["case"], {})
+            self.assertEqual(before["inventory"]["case"], sorted([PASS_ID, PASS_ALT_ID]))
+            self.write_capture(directory, {})
+            after = self.rescore(directory)
+            self.assertEqual(after["failures"]["case"], {})
+            self.assertEqual(after["inventory"]["case"], [])
+            report, code = self.check.build_report(after, before)
+            self.assertEqual(code, 1)
+            self.assertNotIn("PASS:", report)
+            self.assertIn("[입력 누락]", report)
+            self.assertIn(PASS_ID, report)
+            self.assertIn(PASS_ALT_ID, report)
+            self.assertNotIn("[완화]", report)
+
+    def test_timeout_record_without_output_is_unscorable_not_relaxation(self) -> None:
+        fail_output = "루틴이 생성되었습니다"
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            self.write_capture(
+                directory,
+                {PASS_ID: self.samples[PASS_ID], FAIL_ID: fail_output},
+            )
+            before = self.rescore(directory)
+            self.write_capture(
+                directory,
+                {FAIL_ID: fail_output},
+                rows=[
+                    {"prompt_id": PASS_ID, "execution": {"execution_status": "timeout"}},
+                    {"prompt_id": FAIL_ID, "execution": {"execution_status": "completed"}},
+                ],
+            )
+            after = self.rescore(directory)
+            self.assertEqual(
+                after["failures"]["case"][PASS_ID],
+                ["UNSCORABLE: captured output missing"],
+            )
+            self.assertIn(PASS_ID, after["inventory"]["case"])
+            report, code = self.check.build_report(after, before)
+            self.assertEqual(code, 1)
+            self.assertIn("[미검토/채점불가]", report)
+            self.assertIn("모델 실패가 아니다", report)
+            self.assertNotIn("[완화]", report)
+            self.assertNotIn("[조임]", report)
+            self.assertNotIn("[입력 누락]", report)
+
+    def test_empty_string_stays_unscorable_and_is_not_model_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            self.write_capture(directory, {PASS_ID: self.samples[PASS_ID]})
+            before = self.rescore(directory)
+            self.write_capture(directory, {PASS_ID: ""})
+            after = self.rescore(directory)
+            self.assertEqual(
+                after["failures"]["case"][PASS_ID],
+                ["UNSCORABLE: captured execution did not complete"],
+            )
+            self.assertEqual(after["inventory"]["case"], [PASS_ID])
+            report, code = self.check.build_report(after, before)
+            self.assertEqual(code, 1)
+            self.assertIn("[미검토/채점불가]", report)
+            self.assertIn("모델 실패가 아니다", report)
+            self.assertNotIn("[완화]", report)
+            self.assertNotIn("[조임]", report)
+
+    def test_added_id_is_not_tightening_and_partial_capture_stays_partial(self) -> None:
+        baseline = {
+            "schema": 2,
+            "failures": {"case": {FAIL_ID: ["real failure"]}},
+            "inventory": {"case": [FAIL_ID]},
+        }
+        actual = {
+            "schema": 2,
+            "failures": {"case": {FAIL_ID: ["real failure"]}},
+            "inventory": {"case": sorted([FAIL_ID, PASS_ID])},
+        }
+        relaxed, tightened, inventory = self.check.classify_diffs(actual, baseline)
+        self.assertEqual(relaxed, {})
+        self.assertEqual(tightened, {})
+        self.assertEqual(inventory["added"], {"case": [PASS_ID]})
+        report, code = self.check.build_report(actual, baseline)
+        self.assertEqual(code, 1)
+        self.assertIn("[입력 추가]", report)
+        self.assertIn(PASS_ID, report)
+        self.assertNotIn("[조임]", report)
+        self.assertNotIn("[완화]", report)
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            self.write_capture(directory, {PASS_ID: self.samples[PASS_ID]})
+            scored = self.rescore(directory)
+        self.assertEqual(scored["inventory"]["case"], [PASS_ID])
+        self.assertGreater(len(self.prompts), 1)
+        self.assertFalse(set(self.prompts) <= set(scored["inventory"]["case"]))
+
+    def test_legacy_baseline_without_inventory_is_not_a_pass(self) -> None:
+        actual = {
+            "schema": 2,
+            "failures": {"case": {FAIL_ID: ["real failure"]}},
+            "inventory": {"case": [FAIL_ID]},
+        }
+        legacy = {"case": {FAIL_ID: ["real failure"]}}
+        report, code = self.check.build_report(actual, legacy)
+        self.assertEqual(code, 1)
+        self.assertIn("입력 inventory가 없다", report)
+        self.assertNotIn("[완화]", report)
+        self.assertNotIn("[입력 누락]", report)
+        self.assertNotIn("PASS:", report)
+
+    def test_cli_report_detects_omission_and_empty_outputs(self) -> None:
+        fail_output = "루틴이 생성되었습니다"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "evidence"
+            evidence.mkdir()
+            baseline = root / "baseline.json"
+            self.write_capture(
+                evidence,
+                {PASS_ID: self.samples[PASS_ID], FAIL_ID: fail_output},
+            )
+            with patch.object(self.check, "EVIDENCE_DIR", evidence), patch.object(
+                self.check, "BASELINE_PATH", baseline
+            ):
+                write_buf = io.StringIO()
+                with redirect_stdout(write_buf):
+                    self.assertEqual(self.check.main(["--write-baseline"]), 0)
+                self.write_capture(evidence, {FAIL_ID: fail_output})
+                omit_buf = io.StringIO()
+                with redirect_stdout(omit_buf):
+                    omit_code = self.check.main([])
+                self.write_capture(
+                    evidence,
+                    {PASS_ID: self.samples[PASS_ID], PASS_ALT_ID: self.samples[PASS_ALT_ID]},
+                )
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(self.check.main(["--write-baseline"]), 0)
+                self.write_capture(evidence, {})
+                empty_buf = io.StringIO()
+                with redirect_stdout(empty_buf):
+                    empty_code = self.check.main([])
+        self.assertEqual(omit_code, 1)
+        omit_report = omit_buf.getvalue()
+        self.assertIn("[입력 누락]", omit_report)
+        self.assertIn(PASS_ID, omit_report)
+        self.assertNotIn("[완화]", omit_report)
+        self.assertEqual(empty_code, 1)
+        empty_report = empty_buf.getvalue()
+        self.assertIn("[입력 누락]", empty_report)
+        self.assertNotIn("PASS:", empty_report)
+        self.assertNotIn("[완화]", empty_report)
 
 
 if __name__ == "__main__":
