@@ -17,14 +17,17 @@
 `--dns-links`: CI 등 국외 vantage용. 한국 정부 사이트는 국외에서 HTTP가
 timeout/거부될 수 있어(실측: GitHub 러너에서 law.go.kr timeout, 법망 410)
 링크 축은 DNS 해석만 판정하고(glaw류 도메인 사망은 DNS로 전 세계에서 감지됨)
-법망 축 실패는 WARN으로 낮춘다. 사용자 vantage(국내) 판정은 로컬 실행이 기준.
+법망 축의 연결·HTTP 실패는 WARN으로 낮춘다. 수용 기한 만료는 그 보류에
+넣지 않는다 — 공지를 읽은 뒤의 정책 판정이라 CI에서도 FAIL이다. 구분은
+detail 문구가 아니라 명시적 reason이다. 사용자 vantage(국내) 판정은 로컬 실행이 기준.
 
 CI vs 로컬 커버리지 — 이 도크스트링이 이 계약의 집이다 (#286). 다른 표면은
 포인터만 둔다 (`README.md` 릴리즈 체크리스트 2번 ·
 `.github/workflows/source-reachability.yml` cron·이슈 메커닉).
 - CI (`--dns-links`, 미러 clone 안 함): ① 미러 축은 항상 `NOT_INSTALLED`
   (FAIL 아님, 조용히 넘어감). ② 법망 축은 서비스가 공지한 중단 동안 자기만료
-  WARN (아래 `BEOPMANG_PAUSE_ACCEPTED_UNTIL`). ③ 링크 축은 DNS 해석만.
+  WARN (아래 `BEOPMANG_PAUSE_ACCEPTED_UNTIL`). 기한 경과 FAIL은 국외 보류로
+  내리지 않는다. ③ 링크 축은 DNS 해석만.
   ④ 기본 도구 축(GitHub·PyPI·npm·korean-law-mcp 원격)은 국외 호스팅이라 CI에서도
   HTTP로 돈다. 러너가 IP를 공유해 GitHub API 한도에 걸리면 WARN(판정 보류)이다.
   그러므로 CI의 그린은 "기본 도구 FAIL 없음(한도 초과는 판정 보류) + law.go.kr 도메인 생존"이지 전 축 정상이
@@ -98,6 +101,8 @@ STATUS_WIDTH = 15
 # 다시 판단하게 두는 것 — 바로 위 자기만료 문장의 연장선이다.
 BEOPMANG_PAUSE_ACCEPTED_UNTIL = "2027-06-30"
 BEOPMANG_PAUSE_TRACKED_ISSUE = "https://github.com/sungjunlee/beopsuny-skill/issues/268"
+# 국외 vantage 보류와 구별하는 명시적 이유. detail 문구로 추정하지 않는다 (#369).
+BEOPMANG_REASON_ACCEPTANCE_EXPIRED = "acceptance_expired"
 
 
 def data_root() -> Path:
@@ -212,6 +217,7 @@ def declared_outage(text: str, today: str) -> dict[str, str] | None:
     if today > BEOPMANG_PAUSE_ACCEPTED_UNTIL:
         return {
             "status": "FAIL",
+            "reason": BEOPMANG_REASON_ACCEPTANCE_EXPIRED,
             "detail": (
                 f"{detail} — 수용 기한 {BEOPMANG_PAUSE_ACCEPTED_UNTIL} 경과. "
                 f"경로 유지 여부를 다시 판단한다: {BEOPMANG_PAUSE_TRACKED_ISSUE}"
@@ -224,7 +230,8 @@ def check_beopmang(today: str | None = None) -> dict[str, Any]:
     # 조회 실패는 개정 없음이 아니다 — 이 헬스체크는 스킬 계약의 실패 의미론을 따른다.
     axis = "법망 API"
     today = today or date.today().isoformat()
-    status, body, err = http_get(BEOPMANG_SEARCH_URL)
+    # JSON 축은 본문 전체를 읽는다. 기본 4096에서 자르면 정상 응답이 non-JSON이 된다 (#369).
+    status, body, err = http_get(BEOPMANG_SEARCH_URL, max_bytes=None)
     text = body.decode("utf-8", errors="replace")
 
     if err == "timeout" or "timeout" in err.lower():
@@ -233,7 +240,15 @@ def check_beopmang(today: str | None = None) -> dict[str, Any]:
         return {"status": "FAIL", "axis": axis, "detail": f"{err} (조회 실패)"}
     outage = declared_outage(text, today)
     if outage:
-        return {"status": outage["status"], "axis": axis, "detail": outage["detail"]}
+        result: dict[str, Any] = {
+            "status": outage["status"],
+            "axis": axis,
+            "detail": outage["detail"],
+        }
+        reason = outage.get("reason")
+        if reason:
+            result["reason"] = reason
+        return result
     if status >= 500:
         return {
             "status": "FAIL",
@@ -383,17 +398,25 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--dns-links",
         action="store_true",
-        help="국외 vantage(CI)용: 링크 축은 DNS 해석만 판정, 법망 축 실패는 WARN",
+        help=(
+            "국외 vantage(CI)용: 링크 축은 DNS 해석만, 법망 연결·HTTP 실패는 WARN. "
+            "수용 기한 만료는 FAIL 유지"
+        ),
     )
     return parser.parse_args(argv)
 
 
-def run_checks(dns_links: bool = False) -> list[dict[str, Any]]:
+def run_checks(dns_links: bool = False, today: str | None = None) -> list[dict[str, Any]]:
     checks = [check_legalize_data(), check_korean_law_mcp()]
     checks.extend(check_mirror(family) for family in SOURCE_FAMILIES)
-    beopmang = check_beopmang()
-    if dns_links and beopmang["status"] == "FAIL":
-        # 국외 vantage에서는 법망의 HTTP 판정이 신뢰 불가(geo 차이) — 보류.
+    beopmang = check_beopmang(today=today)
+    if (
+        dns_links
+        and beopmang["status"] == "FAIL"
+        and beopmang.get("reason") != BEOPMANG_REASON_ACCEPTANCE_EXPIRED
+    ):
+        # 국외 vantage의 연결·HTTP 판정은 신뢰 불가(geo 차이) — 보류.
+        # 수용 기한 만료는 reason으로만 구분한다. detail 문구로 추정하지 않는다 (#369).
         beopmang = {
             "status": "WARN",
             "axis": beopmang["axis"],
