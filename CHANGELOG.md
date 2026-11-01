@@ -35,6 +35,8 @@
 
 ### Fixed
 
+- 출력 가드레일이 다른 법령의 태그·인용 때문에 상태 표시 없는 결론을 놓치지 않는다. 초안 뒤의 `검토 완료` 언급이나 `## **외부 공유용 초안**` 같은 제목도 유출 구간을 가리지 않는다. 같은 법령의 인용, 결론에 붙지 않은 상태 표시, 구분선 뒤의 검토 메모는 그대로 허용한다 (#367).
+
 - 지식 소스 token을 명시 허용한 GitHub raw HTTPS origin의 최초 요청에만 붙인다. 다른 origin·HTTP·userinfo·다른 port 및 모든 redirect에는 인증을 전달하지 않으며, 익명 조회와 실패 시 skip 동작을 유지한다 (#365).
 
 - Resolved overdue freshness_debt entries per policy (do not extend expired `overdue_resolve_by`)
