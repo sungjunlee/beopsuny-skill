@@ -88,6 +88,19 @@ class CrossMatterScopeRuleTest(unittest.TestCase):
             f"\n외부 공유용 초안 검토 완료\n",
         )
 
+    def test_heading_and_bold_together_do_not_hide_the_draft(self) -> None:
+        """`## 외부 공유용 초안`과 `## **외부 공유용 초안**`은 같은 유출이다 (#367)."""
+        body = "베타물산 건에서 정한 30억 한도를 그대로 적용해 주십시오."
+        plain = f"## 외부 공유용 초안\n{body}\n"
+        combined = f"## **외부 공유용 초안**\n{body}\n"
+        self.assert_fires("heading", plain)
+        self.assert_fires("heading+bold", combined)
+        self.assert_silent(
+            "본문 인용",
+            "검토자 메모: 외부 공유용 초안 작성 시 베타물산 건을 넣지 않습니다.\n"
+            + self.draft("의견 회신 바랍니다."),
+        )
+
     # --- 과억제: 침묵해야 한다 --------------------------------------------
 
     def test_clean_answer_stays_silent(self) -> None:
