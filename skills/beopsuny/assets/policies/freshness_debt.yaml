@@ -91,3 +91,6 @@ assets:
     allowed_use: "international expansion issue-spotting triage only"
     verification_required: "confirm current law.go.kr, competent ministry, NTS, MOFA, KFTC, PIPC, EU official sources, and other primary sources before stating current thresholds, counts, filing duties, or deadlines"
     retire_when: "remaining dated volatile reference claims are removed, reframed as live-check hints, or revalidated with official-source notes"
+    overdue_reason: "next_review 2026-10-31 경과 (2026-11-01 만료). 국외이전·전략물자·국제조세 기관 의존 항목 재검증이 필요하나 #180 partial refresh 이후 공식 출처 재확인을 하지 못해 scheduled work."
+    overdue_resolve_by: "2026-12-31"
+    overdue_tracked_issue: "https://github.com/sungjunlee/beopsuny-skill/issues/180"
