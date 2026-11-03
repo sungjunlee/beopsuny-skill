@@ -33,6 +33,17 @@ def load_helper():
     return module
 
 
+def load_prepare_knowledge():
+    spec = importlib.util.spec_from_file_location(
+        "prepare_knowledge_wrapper", PREPARE_PATH
+    )
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"cannot load {PREPARE_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 class KnowledgeManifestIngestTests(unittest.TestCase):
     def write_asset(self, root: Path, relative: str, content: str) -> dict[str, object]:
         path = root / relative
@@ -577,6 +588,131 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
         self.assertEqual(packet["delivery"]["max_asset_chars"], 1800)
         self.assertEqual(packet["delivery"]["profile"], "default")
         self.assertEqual(packet["delivery"]["status"], "failed_before_delivery")
+
+
+HELPER_SKIP_REASON = "synthetic helper did not deliver staged sections"
+
+
+class PrepareKnowledgeRetryTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.module = load_prepare_knowledge()
+
+    def run_failed_helper(self, knowledge: Path, output: Path) -> int:
+        packet = {
+            "status": "skipped",
+            "reason": HELPER_SKIP_REASON,
+            "delivery": {"max_asset_chars": None, "receipt": []},
+        }
+        completed = subprocess.CompletedProcess(
+            args=["knowledge-ingest"],
+            returncode=1,
+            stdout=json.dumps(packet),
+            stderr="",
+        )
+        stdout = io.StringIO()
+        with (
+            patch.object(self.module.subprocess, "run", return_value=completed),
+            redirect_stdout(stdout),
+        ):
+            return self.module.main(
+                ["--knowledge-root", str(knowledge), "--output", str(output)]
+            )
+
+    def test_failed_retry_preserves_matching_output_and_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            knowledge = root / "knowledge"
+            knowledge.mkdir()
+            output = root / "staged"
+            output.mkdir()
+            staged = output / "section.txt"
+            staged_bytes = b"SENTINEL_STAGED\n"
+            staged.write_bytes(staged_bytes)
+            digest = hashlib.sha256(staged_bytes).hexdigest()
+            metadata = {
+                "status": "prepared_not_measured",
+                "sentinel": "SENTINEL_METADATA",
+                "files": {"section.txt": digest},
+            }
+            meta_path = self.module.metadata_path(output)
+            meta_bytes = (
+                json.dumps(metadata, ensure_ascii=False, indent=2) + "\n"
+            ).encode("utf-8")
+            meta_path.write_bytes(meta_bytes)
+            self.assertEqual(
+                json.loads(meta_bytes)["files"]["section.txt"],
+                hashlib.sha256(staged.read_bytes()).hexdigest(),
+            )
+            before_tree = {
+                path.relative_to(output).as_posix(): path.read_bytes()
+                for path in output.rglob("*")
+                if path.is_file()
+            }
+
+            code = self.run_failed_helper(knowledge, output)
+
+            after_tree = {
+                path.relative_to(output).as_posix(): path.read_bytes()
+                for path in output.rglob("*")
+                if path.is_file()
+            }
+            self.assertEqual(code, 1)
+            self.assertEqual(after_tree, before_tree)
+            self.assertEqual(meta_path.read_bytes(), meta_bytes)
+            self.assertEqual(
+                json.loads(meta_path.read_text(encoding="utf-8"))["status"],
+                "prepared_not_measured",
+            )
+
+    def test_failed_retry_preserves_metadata_when_output_is_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            knowledge = root / "knowledge"
+            knowledge.mkdir()
+            output = root / "staged"
+            meta_path = self.module.metadata_path(output)
+            meta_bytes = (
+                json.dumps(
+                    {
+                        "status": "prepared_not_measured",
+                        "sentinel": "SENTINEL_METADATA_ONLY",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n"
+            ).encode("utf-8")
+            meta_path.write_bytes(meta_bytes)
+            self.assertFalse(output.exists())
+
+            code = self.run_failed_helper(knowledge, output)
+
+            self.assertEqual(code, 1)
+            self.assertEqual(meta_path.read_bytes(), meta_bytes)
+            self.assertFalse(output.exists())
+            self.assertEqual(
+                json.loads(meta_path.read_text(encoding="utf-8"))["status"],
+                "prepared_not_measured",
+            )
+
+    def test_first_failure_on_new_destination_records_failure_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            knowledge = root / "knowledge"
+            knowledge.mkdir()
+            output = root / "staged"
+            meta_path = self.module.metadata_path(output)
+            self.assertFalse(output.exists())
+            self.assertFalse(meta_path.exists())
+
+            code = self.run_failed_helper(knowledge, output)
+
+            self.assertEqual(code, 1)
+            self.assertFalse(output.exists())
+            metadata = json.loads(meta_path.read_text(encoding="utf-8"))
+            self.assertEqual(metadata["status"], "preparation_failed")
+            self.assertEqual(metadata["packet_status"], "skipped")
+            self.assertEqual(metadata["failure_reason"], HELPER_SKIP_REASON)
 
 
 if __name__ == "__main__":

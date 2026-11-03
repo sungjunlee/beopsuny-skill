@@ -40,8 +40,11 @@ STAGED_SECTIONS = {
     "authority_map.core": "audit-core.txt",
     "authority_map.overlay": "audit-overlay.txt",
 }
+# A demoted subheading such as "### Evaluation hypothesis" is still evaluator-only.
+# The optional Evaluation/평가 qualifier does not make the heading model input.
 FORBIDDEN_CANDIDATE_INPUT = re.compile(
-    r"(?im)^#{1,6}\s*(?:candidate\s*metadata|metadata|hypothesis|hypotheses|examples?|"
+    r"(?im)^#{1,6}\s*(?:(?:evaluation|평가)\s+)?"
+    r"(?:candidate\s*metadata|metadata|hypothesis|hypotheses|examples?|"
     r"expected\s*answers?|answers?|rubric|후보\s*메타데이터|메타데이터|가설|예시|정답|채점)\b"
 )
 
@@ -176,19 +179,22 @@ def load_source_bundle(bundle: Path) -> tuple[dict[str, Any], list[dict[str, Any
         path = bundle / relative
         if not path.is_file():
             raise FileNotFoundError(f"source bundle file is missing: {path}")
-        actual = sha256_file(path)
+        # Hash, length, and text come from one read. A later rewrite must not split them.
+        raw = path.read_bytes()
+        actual = sha256_bytes(raw)
         if actual != expected:
             raise ValueError(f"source checksum mismatch: {filename}")
+        text = raw.decode("utf-8")
         seen_ids.add(source_id)
         receipts.append(
             {
                 "id": source_id,
                 "file": filename,
                 "sha256": actual,
-                "chars": len(path.read_text(encoding="utf-8")),
+                "chars": len(text),
                 "official_url": source.get("official_url"),
                 "captured_at": source.get("captured_at"),
-                "text": path.read_text(encoding="utf-8"),
+                "text": text,
             }
         )
     return manifest, receipts
