@@ -89,6 +89,48 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
         self.assertEqual([], self.fire("router-14", "business_user_external_gate", clean))
         self.assertTrue(self.fire("router-14", "business_user_external_gate", leak))
 
+    def test_a2_later_completion_mention_does_not_hide_draft_leak(self) -> None:
+        """초안 뒤의 완료 언급이 앞선 누출을 빼지 않는다 (#367).
+
+        `---`로 닫힌 뒤의 검토 메모는 보낸 문안이 아니다. 이 종료는
+        `external_facing_region`의 메타데이터 종료와 다르다.
+        """
+        leak = (
+            "외부 공유용 초안: 확인 뒤 회신드리겠습니다.\n"
+            "검토자 메모: 내부 판단을 그대로 보냅니다."
+        )
+        mentioned = leak + "\n외부 공유용 초안 검토 완료\n"
+        second_draft = (
+            "외부 공유용 초안: 깨끗한 문안입니다.\n"
+            "\n---\n"
+            "중간 설명입니다.\n"
+            "외부 공유용 초안: 두 번째 문안입니다.\n"
+            "검토자 메모: 내부 판단을 그대로 보냅니다.\n"
+        )
+        closed = (
+            "외부 공유용 초안: 확인 뒤 회신드리겠습니다.\n"
+            "\n---\n"
+            "검토자 메모: 내부 판단을 그대로 보냅니다.\n"
+            "외부 공유용 초안 검토 완료\n"
+        )
+        self.assertTrue(self.fire("router-14", "business_user_external_gate", leak))
+        self.assertTrue(self.fire("router-14", "business_user_external_gate", mentioned))
+        self.assertTrue(self.fire("router-14", "business_user_external_gate", second_draft))
+        self.assertEqual([], self.fire("router-14", "business_user_external_gate", closed))
+
+        text = (
+            "외부 공유용 초안: 본문\n"
+            "---\n"
+            "베타물산 한도\n"
+            "검토자 메모: 메모\n"
+        )
+        draft = scorer.external_draft_region(text)
+        facing = scorer.external_facing_region(text, ["외부 공유용 초안"])
+        self.assertNotIn("베타물산", draft)
+        self.assertNotIn("검토자 메모", draft)
+        self.assertIn("베타물산", facing)
+        self.assertNotIn("검토자 메모: 메모", facing)
+
     def test_a3_excluded_blog_note_does_not_taint_verified_record(self) -> None:
         excluded = (
             "**[공식 원문] [VERIFIED]** 개인정보 보호법 제15조 — "
@@ -161,6 +203,54 @@ class CommonRuleLayerRegressionTests(unittest.TestCase):
         self.assertEqual([], self.fire("router-15", "legal_status_tag", table_tagged))
         self.assertEqual([], self.fire("router-15", "legal_status_tag", table_asks_back))
         self.assertEqual([], self.fire("router-15", "legal_status_tag", table_divider))
+
+    def test_a5_unrelated_status_or_citation_does_not_cover_another_conclusion(self) -> None:
+        """별도 쟁점의 태그·인용이 다른 결론의 상태 누락을 가리지 않는다 (#367)."""
+        violation = "개인정보보호법상 동의 없이 제3자 제공이 가능합니다."
+        other_issue_tag = (
+            violation + "\n[INSUFFICIENT] 식품위생법 제37조에 따라 신고가 필요합니다."
+        )
+        other_issue_citation = (
+            violation + "\n**[공식 원문] [VERIFIED]** 민법 제750조 — law.go.kr 원문"
+        )
+        same_issue_citation = (
+            violation
+            + "\n**[공식 원문] [VERIFIED]** 개인정보보호법 제17조 — law.go.kr 원문"
+        )
+        for label, output in (
+            ("변환 전", violation),
+            ("별도 쟁점 태그", other_issue_tag),
+            ("별도 쟁점 인용", other_issue_citation),
+        ):
+            with self.subTest(label):
+                self.assertTrue(self.fire("router-14", "legal_status_tag", output))
+        # 같은 법령의 인용은 그 결론의 상태 대응이다.
+        self.assertEqual(
+            [], self.fire("router-14", "legal_status_tag", same_issue_citation)
+        )
+
+        list_violation = "1. 식품판매업 신고 — 관할 보건소 (식품위생법 §37)"
+        list_with_citation = (
+            list_violation
+            + "\n**[공식 원문] [VERIFIED]** 민법 제750조 — law.go.kr 원문"
+        )
+        list_same_issue = (
+            list_violation
+            + "\n**[공식 원문] [VERIFIED]** 식품위생법 제37조 — law.go.kr 원문"
+        )
+        list_with_sibling = (
+            "| **신고 대상** | 식품위생법 제37조 — 신고 필요 | 온라인 판매자 |\n"
+            "| **다른 쟁점** | 민법 제750조 — 확인 필요 [INSUFFICIENT] |"
+        )
+        bare_citation = (
+            "**[공식 원문]** 식품위생법 제37조 — 현행 신고 요건은 재확인합니다."
+        )
+        self.assertTrue(self.fire("router-15", "legal_status_tag", list_violation))
+        self.assertTrue(self.fire("router-15", "legal_status_tag", list_with_citation))
+        self.assertTrue(self.fire("router-15", "legal_status_tag", list_with_sibling))
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", list_same_issue))
+        # conclusion-only scope still does not recheck a bare citation record.
+        self.assertEqual([], self.fire("router-15", "legal_status_tag", bare_citation))
 
     def test_a5_conclusion_only_scope_does_not_recheck_citation_records(self) -> None:
         untagged_citation = (

@@ -189,6 +189,7 @@ PYTHONPATH=.test-deps $PYTHON tests/check_rescore_baseline.py
 PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_forward_eval_harness.py \
   tests/test_forward_eval_execution.py \
+  tests/test_forward_eval_parallel.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_knowledge_manifest_io.py \
   tests/test_knowledge_value_prepare.py \
@@ -211,6 +212,7 @@ $PYTHON -m py_compile \
   skills/beopsuny/assets/tools/knowledge_manifest_ingest.py \
   tests/test_forward_eval_harness.py \
   tests/test_forward_eval_execution.py \
+  tests/test_forward_eval_parallel.py \
   tests/test_knowledge_manifest_ingest.py \
   tests/test_knowledge_manifest_io.py \
   tests/test_knowledge_value_prepare.py \
