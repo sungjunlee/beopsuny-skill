@@ -98,7 +98,11 @@ class BeopmangAxisTest(unittest.TestCase):
 
     def axis(self, body: bytes, status: int = 200, today: str = BEFORE) -> dict[str, str]:
         original = health.http_get
-        health.http_get = lambda url, timeout=15: (status, body, "")
+
+        def fake(url, timeout=15, max_bytes=None):
+            return status, body, ""
+
+        health.http_get = fake
         try:
             return health.check_beopmang(today=today)
         finally:
@@ -123,6 +127,169 @@ class BeopmangAxisTest(unittest.TestCase):
         result = self.axis(b'{"data": {"total": 5}}')
         self.assertEqual("OK", result["status"])
 
+    def test_valid_json_over_the_read_cap_is_ok_and_invalid_json_fails(self) -> None:
+        """4096에서 자른 정상 JSON은 non-JSON이 아니다 (#369). 잘못된 JSON은 그대로 FAIL."""
+        payload = {"data": {"total": 7}, "pad": "x" * 5200}
+        raw = json.dumps(payload).encode()
+        self.assertGreaterEqual(len(raw), 5078)
+        with self.assertRaises(json.JSONDecodeError):
+            json.loads(raw[:4096])
+
+        class Resp:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def getcode(self):
+                return 200
+
+            def read(self, n=-1):
+                return raw if n is None or n < 0 else raw[:n]
+
+        original = health.urllib.request.urlopen
+        health.urllib.request.urlopen = lambda req, timeout=15: Resp()
+        try:
+            result = health.check_beopmang(today=BEFORE)
+        finally:
+            health.urllib.request.urlopen = original
+        self.assertEqual("OK", result["status"])
+        self.assertIn("total=7", result["detail"])
+
+        invalid = self.axis(b"<html>502 Bad Gateway</html>")
+        self.assertEqual("FAIL", invalid["status"])
+        self.assertIn("non-JSON", invalid["detail"])
+
+
+# 수용 기한은 이 날짜까지다 (`today > BEOPMANG_PAUSE_ACCEPTED_UNTIL`).
+DAY_BEFORE = "2027-06-29"
+ON_DEADLINE = "2027-06-30"
+DAY_AFTER = "2027-07-01"
+
+
+class ForeignVantageOutageTest(unittest.TestCase):
+    """`--dns-links`는 지역별 연결 불확실성만 보류한다 (#369).
+
+    수용 기한 만료는 공지를 읽은 정책 판정이라 CI에서도 FAIL이다. 구분은 detail
+    문구가 아니라 명시적 reason으로 한다. 나머지 축은 네트워크 없이 OK stub이다.
+    """
+
+    def setUp(self) -> None:
+        self.saved = {
+            "http_get": health.http_get,
+            "check_beopmang": health.check_beopmang,
+            "check_legalize_data": health.check_legalize_data,
+            "check_korean_law_mcp": health.check_korean_law_mcp,
+            "check_mirror": health.check_mirror,
+            "check_link": health.check_link,
+        }
+        health.check_legalize_data = lambda: {
+            "status": "OK",
+            "axis": "기본 도구/legalize 데이터",
+            "detail": "stub",
+        }
+        health.check_korean_law_mcp = lambda: {
+            "status": "OK",
+            "axis": "기본 도구/korean-law-mcp",
+            "detail": "stub",
+        }
+        health.check_mirror = lambda family: {
+            "status": "NOT_INSTALLED",
+            "axis": f"로컬 미러/{family}",
+            "detail": "stub",
+        }
+        health.check_link = lambda label, url, dns_only=False: {
+            "status": "OK",
+            "axis": f"링크/{label}",
+            "detail": "stub",
+        }
+
+    def tearDown(self) -> None:
+        for name, original in self.saved.items():
+            setattr(health, name, original)
+
+    def _run(self, *, dns_links: bool, today: str):
+        checks = health.run_checks(dns_links=dns_links, today=today)
+        found = next(check for check in checks if check["axis"] == "법망 API")
+        line, code = health.summarize(checks)
+        return found, line, code
+
+    def test_acceptance_edges_and_ci_keeps_expiry(self) -> None:
+        health.http_get = lambda url, timeout=15, max_bytes=None: (
+            503,
+            notice_body().encode(),
+            "HTTP 503",
+        )
+        for day, status in (
+            (DAY_BEFORE, "WARN"),
+            (ON_DEADLINE, "WARN"),
+            (DAY_AFTER, "FAIL"),
+        ):
+            with self.subTest(day=day, mode="ci"):
+                found, _line, code = self._run(dns_links=True, today=day)
+                self.assertEqual(status, found["status"])
+                self.assertNotIn("판정 보류", found["detail"])
+                self.assertEqual(0 if status == "WARN" else 1, code)
+            with self.subTest(day=day, mode="local"):
+                found, _line, code = self._run(dns_links=False, today=day)
+                self.assertEqual(status, found["status"])
+                self.assertEqual(0 if status == "WARN" else 1, code)
+        found, _line, _code = self._run(dns_links=True, today=DAY_AFTER)
+        self.assertEqual(health.BEOPMANG_REASON_ACCEPTANCE_EXPIRED, found.get("reason"))
+        self.assertIn(health.BEOPMANG_PAUSE_ACCEPTED_UNTIL, found["detail"])
+
+    def test_regional_connection_failures_stay_deferred(self) -> None:
+        cases = {
+            "timeout": (None, b"", "timeout"),
+            "connection": (None, b"", "connection error: refused"),
+            "http 410": (410, b"gone", "HTTP 410"),
+        }
+        for label, value in cases.items():
+            with self.subTest(label=label, mode="ci"):
+                health.http_get = lambda url, timeout=15, max_bytes=None, value=value: value
+                found, _line, code = self._run(dns_links=True, today=DAY_AFTER)
+                self.assertEqual("WARN", found["status"])
+                self.assertIn("판정 보류", found["detail"])
+                self.assertEqual(0, code)
+            with self.subTest(label=label, mode="local"):
+                health.http_get = lambda url, timeout=15, max_bytes=None, value=value: value
+                found, _line, code = self._run(dns_links=False, today=DAY_BEFORE)
+                self.assertEqual("FAIL", found["status"])
+                self.assertNotIn("판정 보류", found["detail"])
+                self.assertEqual(1, code)
+
+    def test_deferral_uses_reason_not_detail_text(self) -> None:
+        """detail에 기한 문구가 있어도 reason이 만료가 아니면 보류하고, 반대도 같다."""
+
+        def looks_like_expiry(today=None):
+            return {
+                "status": "FAIL",
+                "axis": "법망 API",
+                "detail": "수용 기한 2027-06-30 경과처럼 보이는 연결 실패",
+                "reason": "timeout",
+            }
+
+        def expired_without_those_words(today=None):
+            return {
+                "status": "FAIL",
+                "axis": "법망 API",
+                "detail": "policy window elapsed",
+                "reason": "acceptance_expired",
+            }
+
+        health.check_beopmang = looks_like_expiry
+        found, _line, code = self._run(dns_links=True, today=DAY_AFTER)
+        self.assertEqual("WARN", found["status"])
+        self.assertIn("판정 보류", found["detail"])
+        self.assertEqual(0, code)
+
+        health.check_beopmang = expired_without_those_words
+        found, _line, code = self._run(dns_links=True, today=DAY_AFTER)
+        self.assertEqual("FAIL", found["status"])
+        self.assertEqual("policy window elapsed", found["detail"])
+        self.assertNotIn("판정 보류", found["detail"])
+        self.assertEqual(1, code)
 
 
 class DefaultToolAxesTest(unittest.TestCase):
