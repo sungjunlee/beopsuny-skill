@@ -201,6 +201,7 @@ PYTHONPATH=.test-deps $PYTHON -m unittest \
   tests/test_source_reachability_outage.py \
   tests/test_rescore_baseline.py \
   tests/test_eval_pack_validation.py \
+  tests/test_bulk_grid_row_order.py \
   tests/test_changelog_gate.py
 $PYTHON -m py_compile \
   tests/validate_skill_contracts.py \
@@ -223,6 +224,7 @@ $PYTHON -m py_compile \
   tests/test_source_reachability_outage.py \
   tests/test_rescore_baseline.py \
   tests/test_eval_pack_validation.py \
+  tests/test_bulk_grid_row_order.py \
   tests/test_changelog_gate.py
 git diff --check
 ```

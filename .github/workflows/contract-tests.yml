@@ -55,6 +55,7 @@ jobs:
           tests/test_source_reachability_outage.py
           tests/test_rescore_baseline.py
           tests/test_eval_pack_validation.py
+          tests/test_bulk_grid_row_order.py
           tests/test_changelog_gate.py
 
       # 스코어러/하네스 판정 로직이 바뀌면 커밋된 evidence corpus 재채점 결과가
@@ -86,4 +87,5 @@ jobs:
           tests/test_source_reachability_outage.py
           tests/test_rescore_baseline.py
           tests/test_eval_pack_validation.py
+          tests/test_bulk_grid_row_order.py
           tests/test_changelog_gate.py
