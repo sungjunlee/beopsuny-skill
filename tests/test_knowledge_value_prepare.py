@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import importlib.util
 
@@ -33,6 +34,81 @@ class PreparationTests(unittest.TestCase):
             memo.write_text('## Evaluation Candidate\n### Rubric\nLeak.\n')
             with self.assertRaisesRegex(ValueError, 'evaluator-only'):
                 prepare.extract_evaluation_candidate(memo)
+
+    def test_nested_evaluation_headings_are_not_model_input(self):
+        headings = ('### Evaluation hypothesis', '### Evaluation Rubric')
+        for heading in headings:
+            with self.subTest(heading=heading):
+                with tempfile.TemporaryDirectory() as directory:
+                    memo = Path(directory) / 'memo.md'
+                    memo.write_text(
+                        '## Evaluation Candidate\n'
+                        'Neutral candidate text.\n'
+                        f'{heading}\n'
+                        'EVALUATOR_CANARY_NEUTRAL\n'
+                    )
+                    with self.assertRaisesRegex(ValueError, 'evaluator-only'):
+                        prepare.extract_evaluation_candidate(memo)
+
+    def test_ordinary_candidate_prose_and_subheading_stay_allowed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            memo = Path(directory) / 'memo.md'
+            memo.write_text(
+                '## Evaluation Candidate\n'
+                'Neutral candidate text.\n'
+                '### Background\n'
+                'The hypothesis and rubric stay in prose.\n'
+            )
+            self.assertEqual(
+                'Neutral candidate text.\n'
+                '### Background\n'
+                'The hypothesis and rubric stay in prose.\n',
+                prepare.extract_evaluation_candidate(memo),
+            )
+
+    def test_source_receipt_matches_snapshot_when_file_changes_after_hash_read(self):
+        original = '고정 원문.\n'
+        replacement = '교체된 본문.\n'
+        with tempfile.TemporaryDirectory() as directory:
+            bundle = Path(directory)
+            source = bundle / 'official.md'
+            source.write_text(original, encoding='utf-8')
+            digest = hashlib.sha256(original.encode('utf-8')).hexdigest()
+            (bundle / 'manifest.json').write_text(json.dumps({
+                'access_mode': 'fixed',
+                'sources': [{
+                    'id': 'official',
+                    'file': 'official.md',
+                    'sha256': digest,
+                }],
+            }))
+            swapped = {'done': False}
+            original_read_bytes = Path.read_bytes
+
+            def read_bytes_then_replace(self, *args, **kwargs):
+                data = original_read_bytes(self, *args, **kwargs)
+                if self == source and not swapped['done']:
+                    swapped['done'] = True
+                    source.write_text(replacement, encoding='utf-8')
+                return data
+
+            with patch.object(Path, 'read_bytes', read_bytes_then_replace):
+                try:
+                    _, receipts = prepare.load_source_bundle(bundle)
+                except ValueError:
+                    receipts = None
+            self.assertTrue(swapped['done'])
+            if receipts is None:
+                return
+            receipt = receipts[0]
+            self.assertEqual(receipt['text'], original)
+            self.assertNotEqual(receipt['text'], replacement)
+            self.assertEqual(receipt['chars'], len(receipt['text']))
+            self.assertEqual(
+                receipt['sha256'],
+                hashlib.sha256(receipt['text'].encode('utf-8')).hexdigest(),
+            )
+            self.assertEqual(receipt['sha256'], digest)
 
     def test_candidate_discovery_supports_current_and_frozen_layouts(self):
         for layout in (prepare.CANDIDATE_MEMO_DIRECTORY, prepare.LEGACY_CANDIDATE_MEMO_DIRECTORY):
