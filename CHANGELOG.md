@@ -35,6 +35,9 @@
 
 ### Fixed
 
+- 법망 도달성 검사가 4096바이트를 넘는 정상 JSON을 실패로 보지 않는다. 수용 기한이 지난 공지 중단은 국외 CI에서도 FAIL로 남고, 연결에 실패한 경우만 WARN으로 보류한다 (#369).
+- 계약 표면의 파일을 그 경로 밖으로 옮겨도 CHANGELOG 없이 통과하지 않는다. 이동 전의 경로도 검사하며, 사유가 있는 예외 표시는 그대로 통과한다 (#370).
+
 - 지식 소스 token을 명시 허용한 GitHub raw HTTPS origin의 최초 요청에만 붙인다. 다른 origin·HTTP·userinfo·다른 port 및 모든 redirect에는 인증을 전달하지 않으며, 익명 조회와 실패 시 skip 동작을 유지한다 (#365).
 
 - Resolved overdue freshness_debt entries per policy (do not extend expired `overdue_resolve_by`)

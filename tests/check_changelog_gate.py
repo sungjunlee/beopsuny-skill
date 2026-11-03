@@ -50,11 +50,16 @@ def _git(*args: str) -> subprocess.CompletedProcess[str]:
 
 
 def changed_paths(base_sha: str) -> list[str]:
-    """merge-base 대비 HEAD diff의 변경 파일 목록."""
-    proc = _git("diff", "--name-only", f"{base_sha}...HEAD")
+    """merge-base 대비 HEAD diff의 변경 파일 목록.
+
+    rename의 기본 name-only 결과는 목적지만이라, 보호 경로 밖으로 옮긴 파일이
+    계약 표면에서 빠진다. ``--no-renames``로 삭제·추가 양쪽 경로를 받는다 (#370).
+    """
+    proc = _git("diff", "--name-only", "--no-renames", f"{base_sha}...HEAD")
     if proc.returncode != 0:
         raise SystemExit(
-            f"git diff {base_sha}...HEAD 실패: {proc.stderr.strip() or proc.stdout.strip()}"
+            "git diff --name-only --no-renames "
+            f"{base_sha}...HEAD 실패: {proc.stderr.strip() or proc.stdout.strip()}"
         )
     return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
 
