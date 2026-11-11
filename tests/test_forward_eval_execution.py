@@ -3,11 +3,14 @@
 import copy
 import os
 import shlex
+import signal
+import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -48,6 +51,49 @@ class ForwardExecutionTests(unittest.TestCase):
                 command_template=f"{shlex.quote(sys.executable)} {shlex.quote(str(script))}",
                 model="stub",
             )
+
+    @staticmethod
+    def synthetic_config():
+        return {
+            "prompts": [
+                {
+                    "id": "synthetic-timeout",
+                    "prompt": "synthetic only",
+                    "source_references": [],
+                }
+            ]
+        }
+
+    @staticmethod
+    def pid_is_running(pid_file):
+        if not pid_file.exists():
+            return False
+        try:
+            pid = int(pid_file.read_text())
+            os.kill(pid, 0)
+        except (OSError, ValueError):
+            return False
+        stat_file = Path(f"/proc/{pid}/stat")
+        if stat_file.exists():
+            fields = stat_file.read_text().rsplit(")", 1)[-1].split()
+            if fields and fields[0] == "Z":
+                return False
+        return True
+
+    @staticmethod
+    def cleanup_synthetic_process(pid_file, script):
+        """Kill only a still-running synthetic process whose identity is verified."""
+        if not pid_file.exists():
+            return
+        try:
+            pid = int(pid_file.read_text())
+            os.kill(pid, 0)
+        except (OSError, ValueError):
+            return
+        cmdline = Path(f"/proc/{pid}/cmdline")
+        if not cmdline.exists() or os.fsencode(str(script)) not in cmdline.read_bytes():
+            return
+        os.kill(pid, signal.SIGKILL)
 
     def test_real_setup_surface_safe_exclusion_and_leak_are_distinct(self):
         safe = harness.SAMPLE_OUTPUTS[self.prompt["id"]]
@@ -161,7 +207,7 @@ class ForwardExecutionTests(unittest.TestCase):
     def test_setup_failure_never_executes_command_and_cleans_workspace(self):
         self.config = copy.deepcopy(self.config)
         self.config["prompts"][0]["setup"] = {"unsupported": "surface"}
-        with patch.object(harness.subprocess, "run") as launch:
+        with patch.object(harness.subprocess, "Popen") as launch:
             outputs, records = harness.run_command_outputs(
                 self.config, command_template="false", model="stub"
             )
@@ -173,6 +219,290 @@ class ForwardExecutionTests(unittest.TestCase):
         self.assertEqual(report["summary"]["execution_errors"], 1)
         self.assertEqual(report["summary"]["unscorable"], 1)
 
+    def test_interruption_after_launch_uses_lifecycle_cleanup(self):
+        process = Mock()
+        process.communicate.side_effect = KeyboardInterrupt
+        with patch.object(
+            harness.subprocess, "Popen", return_value=process
+        ) as launch, patch.object(harness, "_terminate_owned_command") as cleanup:
+            with self.assertRaises(KeyboardInterrupt):
+                harness._run_command(
+                    "synthetic command", env={}, cwd=Path.cwd(), timeout=1.0
+                )
+        self.assertEqual(
+            launch.call_args.kwargs["start_new_session"], os.name == "posix"
+        )
+        cleanup.assert_called_once_with(process)
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups are POSIX-only")
+    def test_timeout_terminates_owned_tree_before_workspace_cleanup(self):
+        with tempfile.TemporaryDirectory(prefix="timeout-tree-test-") as directory:
+            root = Path(directory)
+            child_pid = root / "child.pid"
+            grandchild_pid = root / "grandchild.pid"
+            started = root / "grandchild-started.txt"
+            finished = root / "grandchild-finished.txt"
+            terminated = root / "workspace-at-termination.txt"
+            child = root / "child.py"
+            grandchild = root / "grandchild.py"
+            grandchild.write_text(
+                "import os,signal,sys,time\nfrom pathlib import Path\n"
+                f"pid_file=Path({str(grandchild_pid)!r})\n"
+                f"started=Path({str(started)!r})\n"
+                f"finished=Path({str(finished)!r})\n"
+                f"terminated=Path({str(terminated)!r})\n"
+                "def stop(signum, frame):\n"
+                "    workspace=Path(os.environ['BEOPSUNY_EVAL_WORKSPACE'])\n"
+                "    terminated.write_text(str(workspace.exists()))\n"
+                "    raise SystemExit(0)\n"
+                "signal.signal(signal.SIGTERM, stop)\n"
+                "pid_file.write_text(str(os.getpid()))\n"
+                "started.write_text('started')\n"
+                "print('partial stdout', flush=True)\n"
+                "print('partial stderr', file=sys.stderr, flush=True)\n"
+                "time.sleep(3.0)\n"
+                "finished.write_text('synthetic grandchild finished')\n",
+                encoding="utf-8",
+            )
+            child.write_text(
+                "import os,subprocess,sys\nfrom pathlib import Path\n"
+                f"Path({str(child_pid)!r}).write_text(str(os.getpid()))\n"
+                f"subprocess.run([sys.executable, {str(grandchild)!r}], check=True)\n",
+                encoding="utf-8",
+            )
+            launched = []
+            real_popen = harness.subprocess.Popen
+
+            def capture_process(*args, **kwargs):
+                process = real_popen(*args, **kwargs)
+                launched.append(process)
+                return process
+
+            command = (
+                f"{shlex.quote(sys.executable)} {shlex.quote(str(child))}; :"
+            )
+            try:
+                begin = time.monotonic()
+                with patch.dict(
+                    os.environ, {"BEOPSUNY_EVAL_TIMEOUT": "0.5"}, clear=False
+                ), patch.object(
+                    harness, "build_skill_context", return_value="synthetic context"
+                ), patch.object(
+                    harness.subprocess, "Popen", side_effect=capture_process
+                ):
+                    outputs, records = harness.run_command_outputs(
+                        self.synthetic_config(),
+                        command_template=command,
+                        model="synthetic-no-provider",
+                    )
+                elapsed = time.monotonic() - begin
+                record = records[0]
+                self.assertLess(elapsed, 2.0)
+                self.assertTrue(started.exists(), "synthetic startup was inconclusive")
+                self.assertIn("partial stdout", outputs["synthetic-timeout"])
+                self.assertIn("TimeoutExpired", record["stderr"])
+                self.assertIn("partial stderr", record["stderr"])
+                self.assertEqual(record["execution_status"], "execution_error")
+                self.assertTrue(record["workspace_cleaned"])
+                self.assertEqual(terminated.read_text(), "True")
+                self.assertFalse(finished.exists())
+                self.assertFalse(self.pid_is_running(child_pid))
+                self.assertFalse(self.pid_is_running(grandchild_pid))
+                self.assertEqual(len(launched), 1)
+                self.assertIsNotNone(launched[0].returncode)
+                time.sleep(0.2)
+                self.assertFalse(finished.exists(), "descendant wrote after return")
+            finally:
+                self.cleanup_synthetic_process(grandchild_pid, grandchild)
+                self.cleanup_synthetic_process(child_pid, child)
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups are POSIX-only")
+    def test_timeout_escalates_for_owned_child_ignoring_termination(self):
+        with tempfile.TemporaryDirectory(prefix="timeout-kill-test-") as directory:
+            root = Path(directory)
+            pid_file = root / "ignorer.pid"
+            started = root / "ignorer-started.txt"
+            term_seen = root / "term-seen.txt"
+            natural_finish = root / "natural-finish.txt"
+            ignorer = root / "ignorer.py"
+            ignorer.write_text(
+                "import os,signal,time\nfrom pathlib import Path\n"
+                f"pid_file=Path({str(pid_file)!r})\n"
+                f"started=Path({str(started)!r})\n"
+                f"term_seen=Path({str(term_seen)!r})\n"
+                f"natural_finish=Path({str(natural_finish)!r})\n"
+                "def ignore(signum, frame):\n"
+                "    term_seen.write_text('term received')\n"
+                "signal.signal(signal.SIGTERM, ignore)\n"
+                "pid_file.write_text(str(os.getpid()))\n"
+                "started.write_text('started')\n"
+                "deadline=time.monotonic()+3.0\n"
+                "while time.monotonic() < deadline:\n"
+                "    time.sleep(0.05)\n"
+                "natural_finish.write_text('finished without kill')\n",
+                encoding="utf-8",
+            )
+            command = f"{shlex.quote(sys.executable)} {shlex.quote(str(ignorer))}; :"
+            try:
+                begin = time.monotonic()
+                with patch.dict(
+                    os.environ, {"BEOPSUNY_EVAL_TIMEOUT": "0.4"}, clear=False
+                ), patch.object(
+                    harness, "build_skill_context", return_value="synthetic context"
+                ), patch.object(
+                    harness, "COMMAND_TERMINATE_GRACE_SECONDS", 0.2
+                ), patch.object(
+                    harness, "COMMAND_KILL_WAIT_SECONDS", 0.5
+                ):
+                    _, records = harness.run_command_outputs(
+                        self.synthetic_config(),
+                        command_template=command,
+                        model="synthetic-no-provider",
+                    )
+                elapsed = time.monotonic() - begin
+                self.assertLess(elapsed, 1.5)
+                self.assertTrue(started.exists(), "synthetic startup was inconclusive")
+                self.assertTrue(term_seen.exists(), "TERM was not delivered to owned child")
+                self.assertFalse(natural_finish.exists())
+                self.assertFalse(self.pid_is_running(pid_file))
+                self.assertIn("TimeoutExpired", records[0]["stderr"])
+                self.assertTrue(records[0]["workspace_cleaned"])
+                time.sleep(0.2)
+                self.assertFalse(natural_finish.exists())
+            finally:
+                self.cleanup_synthetic_process(pid_file, ignorer)
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups are POSIX-only")
+    def test_truncated_output_does_not_prevent_timeout_kill_escalation(self):
+        with tempfile.TemporaryDirectory(prefix="timeout-truncated-test-") as directory:
+            root = Path(directory)
+            pid_file = root / "ignorer.pid"
+            started = root / "ignorer-started.txt"
+            term_seen = root / "term-seen.txt"
+            natural_finish = root / "natural-finish.txt"
+            child = root / "child.py"
+            ignorer = root / "ignorer.py"
+            ignorer.write_text(
+                "import os,signal,time\nfrom pathlib import Path\n"
+                f"pid_file=Path({str(pid_file)!r})\n"
+                f"started=Path({str(started)!r})\n"
+                f"term_seen=Path({str(term_seen)!r})\n"
+                f"natural_finish=Path({str(natural_finish)!r})\n"
+                "def ignore(signum, frame):\n"
+                "    term_seen.write_text('term received')\n"
+                "signal.signal(signal.SIGTERM, ignore)\n"
+                "pid_file.write_text(str(os.getpid()))\n"
+                "os.write(1, b'truncated utf-8: \\xe2\\x82')\n"
+                "os.close(1)\n"
+                "os.close(2)\n"
+                "started.write_text('started')\n"
+                "deadline=time.monotonic()+3.0\n"
+                "while time.monotonic() < deadline:\n"
+                "    time.sleep(0.05)\n"
+                "natural_finish.write_text('finished without kill')\n",
+                encoding="utf-8",
+            )
+            child.write_text(
+                "import subprocess,sys\n"
+                f"subprocess.run([sys.executable, {str(ignorer)!r}], check=True)\n",
+                encoding="utf-8",
+            )
+            command = f"{shlex.quote(sys.executable)} {shlex.quote(str(child))}; :"
+            sent_signals = []
+            real_signal = harness._signal_owned_command
+
+            def capture_signal(process, sig):
+                sent_signals.append(sig)
+                real_signal(process, sig)
+
+            try:
+                with patch.dict(
+                    os.environ, {"BEOPSUNY_EVAL_TIMEOUT": "0.4"}, clear=False
+                ), patch.object(
+                    harness, "build_skill_context", return_value="synthetic context"
+                ), patch.object(
+                    harness, "COMMAND_TERMINATE_GRACE_SECONDS", 0.2
+                ), patch.object(
+                    harness, "COMMAND_KILL_WAIT_SECONDS", 0.5
+                ), patch.object(
+                    harness, "_signal_owned_command", side_effect=capture_signal
+                ):
+                    outputs, records = harness.run_command_outputs(
+                        self.synthetic_config(),
+                        command_template=command,
+                        model="synthetic-no-provider",
+                    )
+                self.assertTrue(started.exists(), "synthetic startup was inconclusive")
+                self.assertTrue(term_seen.exists(), "TERM was not delivered to descendant")
+                self.assertIn(signal.SIGKILL, sent_signals)
+                self.assertFalse(self.pid_is_running(pid_file))
+                self.assertFalse(natural_finish.exists())
+                self.assertIn("truncated utf-8: ", outputs["synthetic-timeout"])
+                self.assertIn("\ufffd", outputs["synthetic-timeout"])
+                self.assertIn("TimeoutExpired", records[0]["stderr"])
+                self.assertIn("0.4 seconds", records[0]["stderr"])
+                self.assertTrue(records[0]["workspace_cleaned"])
+            finally:
+                self.cleanup_synthetic_process(pid_file, ignorer)
+
+    def test_timeout_truncated_output_file_falls_back_to_partial_stdout(self):
+        def timeout_with_truncated_file(command, *, env, cwd, timeout):
+            Path(env["BEOPSUNY_EVAL_OUTPUT_FILE"]).write_bytes(b"truncated: \xe2\x82")
+            raise subprocess.TimeoutExpired(
+                command, timeout, output=b"captured stdout", stderr=b"captured stderr"
+            )
+
+        with patch.object(
+            harness, "build_skill_context", return_value="synthetic context"
+        ), patch.object(harness, "_run_command", side_effect=timeout_with_truncated_file):
+            outputs, records = harness.run_command_outputs(
+                self.synthetic_config(),
+                command_template="synthetic command",
+                model="synthetic-no-provider",
+            )
+
+        self.assertEqual(outputs["synthetic-timeout"], "captured stdout")
+        self.assertTrue(records[0]["used_stdout"])
+        self.assertIn("TimeoutExpired", records[0]["stderr"])
+        self.assertIn("captured stderr", records[0]["stderr"])
+        self.assertIn("Partial output file read failed", records[0]["stderr"])
+        self.assertIn("UnicodeDecodeError", records[0]["stderr"])
+        self.assertEqual(records[0]["execution_status"], "execution_error")
+        self.assertTrue(records[0]["workspace_cleaned"])
+
+    def test_timeout_output_file_oserror_falls_back_to_partial_stdout(self):
+        real_read_text = Path.read_text
+
+        def unreadable_output(path, *args, **kwargs):
+            if path.name == "output.txt":
+                raise OSError("synthetic read failure")
+            return real_read_text(path, *args, **kwargs)
+
+        def timeout_with_output_file(command, *, env, cwd, timeout):
+            Path(env["BEOPSUNY_EVAL_OUTPUT_FILE"]).write_text(
+                "partial file", encoding="utf-8"
+            )
+            raise subprocess.TimeoutExpired(command, timeout, output="captured stdout")
+
+        with patch.object(
+            harness, "build_skill_context", return_value="synthetic context"
+        ), patch.object(
+            harness, "_run_command", side_effect=timeout_with_output_file
+        ), patch.object(Path, "read_text", new=unreadable_output):
+            outputs, records = harness.run_command_outputs(
+                self.synthetic_config(),
+                command_template="synthetic command",
+                model="synthetic-no-provider",
+            )
+
+        self.assertEqual(outputs["synthetic-timeout"], "captured stdout")
+        self.assertTrue(records[0]["used_stdout"])
+        self.assertIn("TimeoutExpired", records[0]["stderr"])
+        self.assertIn("Partial output file read failed", records[0]["stderr"])
+        self.assertIn("OSError: synthetic read failure", records[0]["stderr"])
+        self.assertEqual(records[0]["execution_status"], "execution_error")
+        self.assertTrue(records[0]["workspace_cleaned"])
+
     def test_command_failure_retains_raw_output_without_model_failure(self):
         outputs, records = harness.run_command_outputs(
             self.config, command_template="printf partial; exit 9", model="stub"
@@ -181,6 +511,15 @@ class ForwardExecutionTests(unittest.TestCase):
         self.assertEqual(report["results"][0]["output"], "partial")
         self.assertEqual(report["summary"]["failed"], 0)
         self.assertEqual(report["summary"]["execution_errors"], 1)
+        self.assertTrue(records[0]["workspace_cleaned"])
+
+    def test_empty_command_output_remains_an_execution_error(self):
+        outputs, records = harness.run_command_outputs(
+            self.config, command_template=":", model="stub"
+        )
+        self.assertEqual(outputs[self.prompt["id"]], "")
+        self.assertEqual(records[0]["returncode"], 0)
+        self.assertEqual(records[0]["execution_status"], "execution_error")
         self.assertTrue(records[0]["workspace_cleaned"])
 
     def test_no_setup_compatibility_and_runtime_root(self):

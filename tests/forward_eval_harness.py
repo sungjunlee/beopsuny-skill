@@ -16,9 +16,11 @@ import hashlib
 import os
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -48,6 +50,8 @@ from evaluate_scenario_outputs import (
 DEFAULT_CONFIG = ROOT / "tests/forward_evals/beopsuny_guardrails.yaml"
 DEFAULT_EVIDENCE_DIR = ROOT / "tests/forward_evals/runs"
 SAMPLE_RUN_AT = "1970-01-01T00:00:00Z"
+COMMAND_TERMINATE_GRACE_SECONDS = 0.5
+COMMAND_KILL_WAIT_SECONDS = 1.0
 
 # 스킬 계약이 "결론 강도를 낮출 때 쓰는 태그"로 선언한 집합
 # (`references/citation-verification-contract.md`). 하네스가 이 목록을 따로
@@ -1369,6 +1373,155 @@ def write_prompt_packets(config: dict[str, Any], packet_dir: Path) -> None:
         )
 
 
+def _subprocess_text(value: str | bytes | None) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value or ""
+
+
+def _owned_process_group_exists(process_group: int) -> bool:
+    if os.name != "posix":
+        return False
+    try:
+        os.killpg(process_group, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+def _wait_for_owned_process_group(process_group: int, timeout: float) -> bool:
+    """Return whether the owned group still exists after a bounded wait."""
+    deadline = time.monotonic() + timeout
+    while _owned_process_group_exists(process_group):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return True
+        time.sleep(min(0.01, remaining))
+    return False
+
+
+def _signal_owned_command(
+    process: subprocess.Popen[bytes], sig: signal.Signals
+) -> None:
+    try:
+        if os.name == "posix":
+            # start_new_session=True makes the direct child the leader of a group
+            # owned by this invocation. Never signal the harness's caller group.
+            os.killpg(process.pid, sig)
+        else:
+            process.send_signal(sig)
+    except ProcessLookupError:
+        pass
+
+
+def _terminate_owned_command(
+    process: subprocess.Popen[bytes],
+    *,
+    stdout: str | bytes | None = None,
+    stderr: str | bytes | None = None,
+) -> tuple[str, str]:
+    """Boundedly stop an already launched command and wait for its direct child."""
+    process_group = process.pid
+    grace_deadline = time.monotonic() + COMMAND_TERMINATE_GRACE_SECONDS
+    _signal_owned_command(process, signal.SIGTERM)
+    communication_finished = False
+    try:
+        final_stdout, final_stderr = process.communicate(
+            timeout=COMMAND_TERMINATE_GRACE_SECONDS
+        )
+        stdout, stderr = final_stdout, final_stderr
+        communication_finished = True
+    except subprocess.TimeoutExpired as exc:
+        if exc.output is not None:
+            stdout = exc.output
+        if exc.stderr is not None:
+            stderr = exc.stderr
+
+    if os.name == "posix":
+        remaining_grace = max(0.0, grace_deadline - time.monotonic())
+        group_exists = _wait_for_owned_process_group(
+            process_group, remaining_grace
+        )
+    else:
+        group_exists = process.poll() is None
+
+    if group_exists:
+        if os.name == "posix":
+            _signal_owned_command(process, signal.SIGKILL)
+        else:
+            process.kill()
+
+    if not communication_finished:
+        try:
+            final_stdout, final_stderr = process.communicate(
+                timeout=COMMAND_KILL_WAIT_SECONDS
+            )
+            stdout, stderr = final_stdout, final_stderr
+        except subprocess.TimeoutExpired as exc:
+            # A deliberately detached descendant can keep inherited pipes open,
+            # but it is outside this process group's containment promise. Keep
+            # the bytes collected so far and do not let pipe draining hang cleanup.
+            if exc.output is not None:
+                stdout = exc.output
+            if exc.stderr is not None:
+                stderr = exc.stderr
+            process.wait(timeout=COMMAND_KILL_WAIT_SECONDS)
+            for stream in (process.stdout, process.stderr):
+                if stream is not None:
+                    stream.close()
+
+    if group_exists and os.name == "posix":
+        _wait_for_owned_process_group(process_group, COMMAND_KILL_WAIT_SECONDS)
+    process.wait(timeout=COMMAND_KILL_WAIT_SECONDS)
+    return _subprocess_text(stdout), _subprocess_text(stderr)
+
+
+def _run_command(
+    command: str,
+    *,
+    env: dict[str, str],
+    cwd: Path,
+    timeout: float,
+) -> subprocess.CompletedProcess[str]:
+    """Run one command with an owned POSIX process group and bounded teardown."""
+    process = subprocess.Popen(
+        command,
+        shell=True,
+        # Invalid or truncated UTF-8 must not interrupt TERM/KILL teardown.
+        # Decode with replacement only after the direct child is collected.
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=False,
+        env=env,
+        cwd=cwd,
+        start_new_session=os.name == "posix",
+    )
+    cleanup_required = True
+    try:
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired as exc:
+            stdout, stderr = _terminate_owned_command(
+                process, stdout=exc.output, stderr=exc.stderr
+            )
+            cleanup_required = False
+            raise subprocess.TimeoutExpired(
+                command, timeout, output=stdout, stderr=stderr
+            ) from None
+        cleanup_required = False
+        return subprocess.CompletedProcess(
+            command,
+            process.returncode,
+            _subprocess_text(stdout),
+            _subprocess_text(stderr),
+        )
+    finally:
+        # KeyboardInterrupt and unexpected failures must not abandon a command
+        # after launch. Successful and timeout paths have already waited it.
+        if cleanup_required:
+            _terminate_owned_command(process)
+
+
 def run_command_outputs(
     config: dict[str, Any],
     *,
@@ -1453,17 +1606,13 @@ def run_command_outputs(
                     BEOPSUNY_EVAL_MODEL=model,
                     BEOPSUNY_EVAL_WORKSPACE=str(prompt_dir),
                 )
-                completed = subprocess.run(
+                output_file = files["output"]
+                completed = _run_command(
                     command_template.format(**values),
-                    shell=True,
-                    check=False,
-                    capture_output=True,
-                    text=True,
                     env=env,
                     cwd=prompt_dir,
                     timeout=float(os.environ.get("BEOPSUNY_EVAL_TIMEOUT", "300")),
                 )
-                output_file = files["output"]
                 from_file = (
                     output_file.read_text(encoding="utf-8")
                     if output_file.exists()
@@ -1483,12 +1632,27 @@ def run_command_outputs(
             except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as exc:
                 record["stderr"] = f"{type(exc).__name__}: {exc}"
                 if isinstance(exc, subprocess.TimeoutExpired):
-                    partial = exc.stdout or ""
+                    partial_stdout = _subprocess_text(exc.stdout)
+                    partial_stderr = _subprocess_text(exc.stderr)
+                    output_file = files["output"]
+                    try:
+                        from_file = (
+                            output_file.read_text(encoding="utf-8")
+                            if output_file.exists()
+                            else ""
+                        )
+                    except (OSError, UnicodeError) as file_exc:
+                        from_file = ""
+                        record["stderr"] += (
+                            "\nPartial output file read failed: "
+                            f"{type(file_exc).__name__}: {file_exc}"
+                        )
                     outputs[prompt_id] = (
-                        partial.decode("utf-8", errors="replace")
-                        if isinstance(partial, bytes)
-                        else partial
+                        from_file if from_file.strip() else partial_stdout
                     )
+                    record["used_stdout"] = not bool(from_file.strip())
+                    if partial_stderr:
+                        record["stderr"] += "\nPartial stderr:\n" + partial_stderr
                 if (
                     prompt.get("setup") is not None
                     and record["setup"]["status"] != "applied"
