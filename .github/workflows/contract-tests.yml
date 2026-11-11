@@ -53,6 +53,7 @@ jobs:
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
+          tests/test_source_reachability_workflow.py
           tests/test_rescore_baseline.py
           tests/test_eval_pack_validation.py
           tests/test_bulk_grid_row_order.py
@@ -73,6 +74,7 @@ jobs:
           tests/check_changelog_gate.py
           tests/forward_eval_harness.py
           tests/check_rescore_baseline.py
+          .github/scripts/source_reachability_state.py
           skills/beopsuny/assets/tools/knowledge_manifest_ingest.py
           tests/test_forward_eval_harness.py
           tests/test_forward_eval_execution.py
@@ -86,6 +88,7 @@ jobs:
           tests/test_common_rule_layers.py
           tests/test_suppression_window_limits.py
           tests/test_source_reachability_outage.py
+          tests/test_source_reachability_workflow.py
           tests/test_rescore_baseline.py
           tests/test_eval_pack_validation.py
           tests/test_bulk_grid_row_order.py

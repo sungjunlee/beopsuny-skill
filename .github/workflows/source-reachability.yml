@@ -32,26 +32,107 @@ jobs:
           # intentionally NOT run in CI (clone cost vs weekly DNS-death-detection
           # role); the full run is the local release checklist (README). This
           # file owns only cron + auto issue mechanics, not the coverage contract.
-          # Retry once after 5m on FAIL to damp transient network blips.
+          # Retry once after 5m on FAIL to damp transient network blips. Keep
+          # each report: a later deferred WARN is not evidence that the first
+          # FAIL recovered, and must not overwrite that diagnostic.
           set +e
-          python tests/check_source_reachability.py --dns-links > report.txt 2>&1
-          EXIT=$?
-          if [ "$EXIT" -ne 0 ]; then
+
+          run_attempt() {
+            local attempt="$1"
+            local report="report-attempt-${attempt}.txt"
+            local result="result-attempt-${attempt}.json"
+
+            python tests/check_source_reachability.py --dns-links --json > "$report" 2>&1
+            ATTEMPT_EXIT=$?
+            tail -n 1 "$report" > "$result"
+            if ! jq -e '
+              (.result == "OK" or .result == "WARN" or .result == "FAIL")
+              and (.checks | type == "array" and length > 0)
+              and all(.checks[];
+                (.axis | type == "string" and length > 0)
+                and (.status == "OK" or .status == "WARN"
+                  or .status == "FAIL" or .status == "NOT_INSTALLED"))
+            ' "$result" >/dev/null 2>&1; then
+              echo "ERROR: checker did not emit a valid structured result" >> "$report"
+              ATTEMPT_EXIT=1
+            fi
+          }
+
+          ATTEMPT_COUNT=1
+          run_attempt 1
+          FINAL_EXIT="$ATTEMPT_EXIT"
+          if [ "$FINAL_EXIT" -ne 0 ]; then
             sleep 300
-            python tests/check_source_reachability.py --dns-links > report.txt 2>&1
-            EXIT=$?
+            ATTEMPT_COUNT=2
+            run_attempt 2
+            FINAL_EXIT="$ATTEMPT_EXIT"
           fi
-          echo "exit_code=$EXIT" >> "$GITHUB_OUTPUT"
-          exit "$EXIT"
+
+          {
+            echo "exit_code=$FINAL_EXIT"
+            echo "attempt_count=$ATTEMPT_COUNT"
+            echo "final_result_file=result-attempt-${ATTEMPT_COUNT}.json"
+          } >> "$GITHUB_OUTPUT"
+          exit "$FINAL_EXIT"
+
+      - name: Publish healthcheck diagnostics to job summary
+        if: always()
+        env:
+          ATTEMPT_COUNT: ${{ steps.healthcheck.outputs.attempt_count }}
+        run: |
+          {
+            echo "## Source reachability diagnostics"
+            echo ""
+            for attempt in $(seq 1 "${ATTEMPT_COUNT:-1}"); do
+              result="result-attempt-${attempt}.json"
+              report="report-attempt-${attempt}.txt"
+              verdict=$(jq -r '.result // "INVALID"' "$result" 2>/dev/null || echo "INVALID")
+              echo "### Attempt ${attempt}: ${verdict}"
+              echo ""
+              echo '```text'
+              cat "$report"
+              echo '```'
+              echo ""
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: File or update tracking issue
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ATTEMPT_COUNT: ${{ steps.healthcheck.outputs.attempt_count }}
+          EXIT: ${{ steps.healthcheck.outputs.exit_code }}
         run: |
-          EXIT="${{ steps.healthcheck.outputs.exit_code }}"
+          set -euo pipefail
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           gh label create source-reachability --force 2>/dev/null || true
           ISSUE=$(gh issue list --label source-reachability --state open --limit 1 --json number --jq '.[0].number // empty')
+
+          DECISION_ARGS=()
+          for attempt in $(seq 1 "${ATTEMPT_COUNT:-1}"); do
+            DECISION_ARGS+=(--result "result-attempt-${attempt}.json")
+          done
+          if [ -n "$ISSUE" ]; then
+            gh issue view "$ISSUE" --json author,body,comments > issue-history.json
+            DECISION_ARGS+=(--existing-issue --issue-history issue-history.json)
+          fi
+          python .github/scripts/source_reachability_state.py \
+            "${DECISION_ARGS[@]}" > decision.json
+
+          STATE_MARKER=$(jq -r '.state_marker' decision.json)
+          CAN_CLOSE=$(jq -r '.can_close' decision.json)
+          REASON=$(jq -r '.reason' decision.json)
+
+          append_reports() {
+            for attempt in $(seq 1 "${ATTEMPT_COUNT:-1}"); do
+              verdict=$(jq -r '.result // "INVALID"' "result-attempt-${attempt}.json" 2>/dev/null || echo "INVALID")
+              echo "### Attempt ${attempt}: ${verdict}"
+              echo ""
+              echo '```text'
+              cat "report-attempt-${attempt}.txt"
+              echo '```'
+              echo ""
+            done
+          }
 
           if [ "$EXIT" != "0" ]; then
             {
@@ -59,9 +140,8 @@ jobs:
               echo ""
               echo "Workflow run: ${RUN_URL}"
               echo ""
-              echo '```'
-              cat report.txt
-              echo '```'
+              append_reports
+              echo "$STATE_MARKER"
             } > issue_body.md
             if [ -n "$ISSUE" ]; then
               gh issue comment "$ISSUE" --body-file issue_body.md
@@ -72,14 +152,49 @@ jobs:
                 --body-file issue_body.md
             fi
           elif [ -n "$ISSUE" ]; then
-            {
-              echo "복구 확인"
-              echo ""
-              echo "Workflow run: ${RUN_URL}"
-            } > issue_body.md
-            gh issue comment "$ISSUE" --body-file issue_body.md
-            gh issue close "$ISSUE"
+            if [ "$CAN_CLOSE" = "true" ]; then
+              {
+                echo "## 복구 확인"
+                echo ""
+                echo "기존 실패 축이 최종 시도에서 모두 OK로 확인되었습니다."
+                echo ""
+                jq -r '.recovered_axes[] | "- `\(.)`: OK"' decision.json
+                echo ""
+                echo "Workflow run: ${RUN_URL}"
+                echo ""
+                append_reports
+              } > issue_body.md
+              gh issue comment "$ISSUE" --body-file issue_body.md
+              gh issue close "$ISSUE"
+            else
+              {
+                echo "## 복구 자동 판정 보류"
+                echo ""
+                echo "프로세스는 성공했지만 기존 실패 축의 복구가 확인되지 않아 이슈를 열어 둡니다."
+                echo ""
+                echo "Decision: \`${REASON}\`"
+                jq -r '.required_axes[] | "- `\(.axis)`: \(.status)"' decision.json
+                echo ""
+                echo "Workflow run: ${RUN_URL}"
+                echo ""
+                append_reports
+                echo "$STATE_MARKER"
+              } > issue_body.md
+              gh issue comment "$ISSUE" --body-file issue_body.md
+            fi
           fi
+
+      - name: Upload healthcheck diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-reachability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            report-attempt-*.txt
+            result-attempt-*.json
+            decision.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Fail job if healthcheck failed
         if: steps.healthcheck.outputs.exit_code != '0'
