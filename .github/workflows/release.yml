@@ -29,8 +29,29 @@ jobs:
       - name: Evaluate router guardrail outputs
         run: python tests/evaluate_scenario_outputs.py
 
-      - name: Test forward eval harness
-        run: python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py
+      - name: Run unit regression tests
+        run: >-
+          python -m unittest
+          tests/test_forward_eval_harness.py
+          tests/test_forward_eval_execution.py
+          tests/test_forward_eval_parallel.py
+          tests/test_knowledge_manifest_ingest.py
+          tests/test_knowledge_manifest_io.py
+          tests/test_knowledge_value_prepare.py
+          tests/test_model_era_prepare.py
+          tests/test_cross_matter_scope_rule.py
+          tests/test_semantic_reviews.py
+          tests/test_common_rule_layers.py
+          tests/test_suppression_window_limits.py
+          tests/test_source_reachability_outage.py
+          tests/test_rescore_baseline.py
+          tests/test_eval_pack_validation.py
+          tests/test_bulk_grid_row_order.py
+          tests/test_changelog_gate.py
+
+      # 태그 커밋도 일반 CI와 같은 evidence corpus 재채점 gate를 통과해야 한다.
+      - name: Check rescore baseline drift
+        run: python tests/check_rescore_baseline.py
 
       - name: Compile test harnesses
         run: python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py tests/forward_eval_harness.py skills/beopsuny/assets/tools/knowledge_manifest_ingest.py tests/test_knowledge_manifest_ingest.py
