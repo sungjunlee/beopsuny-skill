@@ -47,6 +47,7 @@ jobs:
           tests/test_rescore_baseline.py
           tests/test_eval_pack_validation.py
           tests/test_bulk_grid_row_order.py
+          tests/test_freshness_contracts.py
           tests/test_changelog_gate.py
 
       # 태그 커밋도 일반 CI와 같은 evidence corpus 재채점 gate를 통과해야 한다.
