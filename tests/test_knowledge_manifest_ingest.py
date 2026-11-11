@@ -125,6 +125,60 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         return manifest_path, contents, manifest
 
+    def run_channel_case(
+        self,
+        helper,
+        root: Path,
+        *,
+        selected: str,
+        returned: str | None,
+        allow_canary: bool,
+        mode: str,
+        strict: bool,
+    ) -> tuple[int, dict[str, object], list[str]]:
+        manifest_path, _, manifest = self.write_fixture(root)
+        if returned is None:
+            manifest.pop("channel")
+        else:
+            manifest["channel"] = returned
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        policy = helper.load_yaml(POLICY_PATH)["knowledge_manifest"]
+        endpoints = {row["url"] for row in policy["channels"].values()}
+        original_read = helper.read_text_source
+        reads: list[str] = []
+
+        def synthetic_read(location, knowledge_root=None):
+            reads.append(location)
+            if location in endpoints:
+                return json.dumps(manifest)
+            if location != str(manifest_path) and not location.startswith("file://"):
+                raise AssertionError(f"unexpected source read: {location}")
+            return original_read(location, knowledge_root=knowledge_root)
+
+        args = ["--policy", str(POLICY_PATH)]
+        if selected != "stable":
+            args += ["--channel", selected]
+        if allow_canary:
+            args.append("--allow-canary")
+        if mode == "local_file":
+            args += ["--manifest-file", str(manifest_path)]
+        if strict:
+            args.append("--strict")
+
+        output = io.StringIO()
+        with (
+            patch.object(helper, "read_text_source", side_effect=synthetic_read),
+            patch.object(
+                helper.urllib.request,
+                "urlopen",
+                side_effect=AssertionError("network forbidden"),
+            ),
+            redirect_stdout(output),
+        ):
+            exit_code = helper.main(args)
+        return exit_code, json.loads(output.getvalue()), reads
+
     def test_temp_manifest_validates_assets_and_builds_packet(self) -> None:
         helper = load_helper()
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -168,6 +222,112 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
         self.assertEqual(packet["delivery"]["profile"], "nondefault_override")
         self.assertEqual(len(packet["delivery"]["receipt"]), 5)
         self.assertEqual(packet["injection_packet"]["rendered_sections"], contents)
+
+    def test_manifest_channel_matches_for_endpoint_and_local_file(self) -> None:
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for selected, allow_canary in (("stable", False), ("canary", True)):
+                for mode in ("configured_endpoint", "local_file"):
+                    with self.subTest(selected=selected, mode=mode):
+                        exit_code, packet, reads = self.run_channel_case(
+                            helper,
+                            Path(tmpdir),
+                            selected=selected,
+                            returned=selected,
+                            allow_canary=allow_canary,
+                            mode=mode,
+                            strict=True,
+                        )
+
+                        self.assertEqual(exit_code, 0)
+                        self.assertEqual(packet["status"], "ready")
+                        self.assertEqual(packet["channel"], selected)
+                        self.assertEqual(
+                            sum(location.startswith("file://") for location in reads),
+                            5,
+                        )
+
+    def test_invalid_or_mismatched_manifest_channel_skips_before_assets(self) -> None:
+        helper = load_helper()
+        cases = [
+            ("stable", "canary", False, "manifest channel mismatch"),
+            ("stable", None, False, "unknown manifest channel"),
+            ("stable", "unknown", False, "unknown manifest channel"),
+            ("canary", "stable", True, "manifest channel mismatch"),
+        ]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for selected, returned, allow_canary, reason in cases:
+                for mode in ("configured_endpoint", "local_file"):
+                    with self.subTest(
+                        selected=selected, returned=returned, mode=mode
+                    ):
+                        exit_code, packet, reads = self.run_channel_case(
+                            helper,
+                            Path(tmpdir),
+                            selected=selected,
+                            returned=returned,
+                            allow_canary=allow_canary,
+                            mode=mode,
+                            strict=True,
+                        )
+
+                        self.assertEqual(exit_code, 1)
+                        self.assertEqual(packet["status"], "skipped")
+                        self.assertNotIn("channel", packet)
+                        self.assertIn(reason, packet["reason"])
+                        self.assertTrue(packet["continue_live_legal_research"])
+                        self.assertIsNone(packet["injection_packet"])
+                        self.assertEqual(packet["delivery"]["receipt"], [])
+                        self.assertEqual(
+                            packet["delivery"]["status"], "failed_before_delivery"
+                        )
+                        self.assertEqual(
+                            sum(location.startswith("file://") for location in reads),
+                            0,
+                        )
+
+    def test_canary_channel_still_requires_opt_in(self) -> None:
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for mode in ("configured_endpoint", "local_file"):
+                with self.subTest(mode=mode):
+                    exit_code, packet, reads = self.run_channel_case(
+                        helper,
+                        Path(tmpdir),
+                        selected="canary",
+                        returned="canary",
+                        allow_canary=False,
+                        mode=mode,
+                        strict=True,
+                    )
+
+                    self.assertEqual(exit_code, 1)
+                    self.assertEqual(packet["status"], "skipped")
+                    self.assertIn("requires --allow-canary", packet["reason"])
+                    self.assertEqual(reads, [])
+
+    def test_manifest_channel_mismatch_is_fail_open_unless_strict(self) -> None:
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for mode in ("configured_endpoint", "local_file"):
+                with self.subTest(mode=mode):
+                    exit_code, packet, reads = self.run_channel_case(
+                        helper,
+                        Path(tmpdir),
+                        selected="stable",
+                        returned="canary",
+                        allow_canary=False,
+                        mode=mode,
+                        strict=False,
+                    )
+
+                    self.assertEqual(exit_code, 0)
+                    self.assertEqual(packet["status"], "skipped")
+                    self.assertTrue(packet["continue_live_legal_research"])
+                    self.assertIsNone(packet["injection_packet"])
+                    self.assertEqual(
+                        sum(location.startswith("file://") for location in reads), 0
+                    )
 
     def test_exact_boundary_delivers_whole_section_and_one_extra_char_omits_it(
         self,
