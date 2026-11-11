@@ -7,7 +7,7 @@ registers these functions in CHECK_GROUPS and runs them via main().
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -187,7 +187,7 @@ def check_freshness_revalidation_records() -> None:
         asset_path = str(record["asset_path"])
         if not (ROOT / asset_path).exists():
             raise AssertionError(f"{relative}: asset_path does not exist: {asset_path}")
-        parse_verification_date(record["checked_at"], today, f"{relative}: checked_at")
+        parse_checked_at(record["checked_at"], today, f"{relative}: checked_at")
         if not re.search(r"/issues/\d+", str(record["tracked_issue"])):
             raise AssertionError(f"{relative}: tracked_issue must reference a GitHub issue URL")
 
@@ -346,6 +346,8 @@ def parse_review_due(value: Any, label: str = "next_review") -> date:
     try:
         if re.fullmatch(r"\d{4}-\d{2}", text):
             year, month = (int(part) for part in text.split("-"))
+            if not 1 <= month <= 12:
+                raise AssertionError(f"{label}: invalid date: {text!r}")
             if month == 12:
                 return date(year + 1, 1, 1)
             return date(year, month + 1, 1)
@@ -372,6 +374,40 @@ def parse_verification_date(value: Any, today: date, label: str = "last_verified
     if verified > today:
         raise AssertionError(f"{label}: future verification date {verified.isoformat()!r}")
     return verified
+
+
+
+def parse_checked_at(value: Any, today: date, label: str = "checked_at") -> date:
+    """Parse a revalidation checked_at value.
+
+    The schema allows YYYY-MM-DD or an ISO-8601 timestamp, including values
+    already loaded by YAML as datetime. last_verified stays date-only via
+    parse_verification_date.
+    """
+    if value is None:
+        raise AssertionError(f"{label}: date must not be missing or null")
+    if type(value) is date:
+        checked = value
+    elif isinstance(value, datetime):
+        checked = value.date()
+    else:
+        text = str(value)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            try:
+                checked = date.fromisoformat(text)
+            except ValueError as exc:
+                raise AssertionError(f"{label}: invalid date: {text!r}") from exc
+        else:
+            normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+            try:
+                checked = datetime.fromisoformat(normalized).date()
+            except ValueError as exc:
+                raise AssertionError(
+                    f"{label}: unsupported date format: {text!r}"
+                ) from exc
+    if checked > today:
+        raise AssertionError(f"{label}: future verification date {checked.isoformat()!r}")
+    return checked
 
 
 def validate_maintenance_dates(
@@ -508,7 +544,7 @@ def current_maintenance_dates(
 def revalidation_record_applies(
     record: dict[str, Any], current: dict[str, Any], today: date, label: str
 ) -> bool:
-    checked_at = parse_verification_date(
+    checked_at = parse_checked_at(
         record.get("checked_at"), today, f"{label}: checked_at"
     )
     asset_update = record.get("asset_update")

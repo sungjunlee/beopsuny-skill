@@ -6,7 +6,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import unittest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -190,6 +190,11 @@ class FreshnessContractTest(unittest.TestCase):
                 "next_review",
             ),
             (
+                "invalid review month 00",
+                self.maintenance(next_review="2027-00", last_verified=self.today.isoformat()),
+                "next_review",
+            ),
+            (
                 "invalid verification day",
                 self.maintenance(next_review=valid_review, last_verified="2026-02-30"),
                 "last_verified",
@@ -280,6 +285,39 @@ class FreshnessContractTest(unittest.TestCase):
 
         freshness.check_freshness_revalidation_records()
         freshness.check_freshness_debt_registry()
+
+    def test_iso_timestamp_checked_at_is_accepted(self) -> None:
+        current_review = (self.today + timedelta(days=365)).isoformat()
+        self.write_asset(
+            self.maintenance(
+                next_review=current_review,
+                last_verified=self.today.isoformat(),
+            )
+        )
+        self.write_registry(current_review)
+        self.write_record(
+            "timestamp.yaml",
+            checked_at=f"{self.today.isoformat()}T12:00:00Z",
+            next_review_before=(self.today - timedelta(days=30)).isoformat(),
+            next_review_after=current_review,
+        )
+        # retrieved_at in the dumped record also uses checked_at; that field is
+        # not date-validated by these checks. The record itself must load as a
+        # timestamp string or datetime and still apply.
+        freshness.check_freshness_revalidation_records()
+        freshness.check_freshness_debt_registry()
+
+        parsed = freshness.parse_checked_at(
+            "2026-07-03T12:00:00Z", date(2026, 7, 3), "checked_at"
+        )
+        self.assertEqual(parsed, date(2026, 7, 3))
+        parsed_dt = freshness.parse_checked_at(
+            datetime(2026, 7, 3, 12, 0, tzinfo=timezone.utc),
+            date(2026, 7, 3),
+            "checked_at",
+        )
+        self.assertEqual(parsed_dt, date(2026, 7, 3))
+
 
 
 if __name__ == "__main__":
