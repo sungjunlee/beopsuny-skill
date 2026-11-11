@@ -1400,7 +1400,9 @@ def _wait_for_owned_process_group(process_group: int, timeout: float) -> bool:
     return False
 
 
-def _signal_owned_command(process: subprocess.Popen[str], sig: signal.Signals) -> None:
+def _signal_owned_command(
+    process: subprocess.Popen[bytes], sig: signal.Signals
+) -> None:
     try:
         if os.name == "posix":
             # start_new_session=True makes the direct child the leader of a group
@@ -1413,7 +1415,7 @@ def _signal_owned_command(process: subprocess.Popen[str], sig: signal.Signals) -
 
 
 def _terminate_owned_command(
-    process: subprocess.Popen[str],
+    process: subprocess.Popen[bytes],
     *,
     stdout: str | bytes | None = None,
     stderr: str | bytes | None = None,
@@ -1485,9 +1487,11 @@ def _run_command(
     process = subprocess.Popen(
         command,
         shell=True,
+        # Invalid or truncated UTF-8 must not interrupt TERM/KILL teardown.
+        # Decode with replacement only after the direct child is collected.
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True,
+        text=False,
         env=env,
         cwd=cwd,
         start_new_session=os.name == "posix",
@@ -1506,7 +1510,10 @@ def _run_command(
             ) from None
         cleanup_required = False
         return subprocess.CompletedProcess(
-            command, process.returncode, stdout, stderr
+            command,
+            process.returncode,
+            _subprocess_text(stdout),
+            _subprocess_text(stderr),
         )
     finally:
         # KeyboardInterrupt and unexpected failures must not abandon a command
@@ -1628,11 +1635,18 @@ def run_command_outputs(
                     partial_stdout = _subprocess_text(exc.stdout)
                     partial_stderr = _subprocess_text(exc.stderr)
                     output_file = files["output"]
-                    from_file = (
-                        output_file.read_text(encoding="utf-8")
-                        if output_file.exists()
-                        else ""
-                    )
+                    try:
+                        from_file = (
+                            output_file.read_text(encoding="utf-8")
+                            if output_file.exists()
+                            else ""
+                        )
+                    except (OSError, UnicodeError) as file_exc:
+                        from_file = ""
+                        record["stderr"] += (
+                            "\nPartial output file read failed: "
+                            f"{type(file_exc).__name__}: {file_exc}"
+                        )
                     outputs[prompt_id] = (
                         from_file if from_file.strip() else partial_stdout
                     )

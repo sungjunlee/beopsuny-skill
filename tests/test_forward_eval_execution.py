@@ -4,6 +4,7 @@ import copy
 import os
 import shlex
 import signal
+import subprocess
 import sys
 import tempfile
 import time
@@ -370,6 +371,137 @@ class ForwardExecutionTests(unittest.TestCase):
                 self.assertFalse(natural_finish.exists())
             finally:
                 self.cleanup_synthetic_process(pid_file, ignorer)
+
+    @unittest.skipUnless(os.name == "posix", "owned process groups are POSIX-only")
+    def test_truncated_output_does_not_prevent_timeout_kill_escalation(self):
+        with tempfile.TemporaryDirectory(prefix="timeout-truncated-test-") as directory:
+            root = Path(directory)
+            pid_file = root / "ignorer.pid"
+            started = root / "ignorer-started.txt"
+            term_seen = root / "term-seen.txt"
+            natural_finish = root / "natural-finish.txt"
+            child = root / "child.py"
+            ignorer = root / "ignorer.py"
+            ignorer.write_text(
+                "import os,signal,time\nfrom pathlib import Path\n"
+                f"pid_file=Path({str(pid_file)!r})\n"
+                f"started=Path({str(started)!r})\n"
+                f"term_seen=Path({str(term_seen)!r})\n"
+                f"natural_finish=Path({str(natural_finish)!r})\n"
+                "def ignore(signum, frame):\n"
+                "    term_seen.write_text('term received')\n"
+                "signal.signal(signal.SIGTERM, ignore)\n"
+                "pid_file.write_text(str(os.getpid()))\n"
+                "os.write(1, b'truncated utf-8: \\xe2\\x82')\n"
+                "os.close(1)\n"
+                "os.close(2)\n"
+                "started.write_text('started')\n"
+                "deadline=time.monotonic()+3.0\n"
+                "while time.monotonic() < deadline:\n"
+                "    time.sleep(0.05)\n"
+                "natural_finish.write_text('finished without kill')\n",
+                encoding="utf-8",
+            )
+            child.write_text(
+                "import subprocess,sys\n"
+                f"subprocess.run([sys.executable, {str(ignorer)!r}], check=True)\n",
+                encoding="utf-8",
+            )
+            command = f"{shlex.quote(sys.executable)} {shlex.quote(str(child))}; :"
+            sent_signals = []
+            real_signal = harness._signal_owned_command
+
+            def capture_signal(process, sig):
+                sent_signals.append(sig)
+                real_signal(process, sig)
+
+            try:
+                with patch.dict(
+                    os.environ, {"BEOPSUNY_EVAL_TIMEOUT": "0.4"}, clear=False
+                ), patch.object(
+                    harness, "build_skill_context", return_value="synthetic context"
+                ), patch.object(
+                    harness, "COMMAND_TERMINATE_GRACE_SECONDS", 0.2
+                ), patch.object(
+                    harness, "COMMAND_KILL_WAIT_SECONDS", 0.5
+                ), patch.object(
+                    harness, "_signal_owned_command", side_effect=capture_signal
+                ):
+                    outputs, records = harness.run_command_outputs(
+                        self.synthetic_config(),
+                        command_template=command,
+                        model="synthetic-no-provider",
+                    )
+                self.assertTrue(started.exists(), "synthetic startup was inconclusive")
+                self.assertTrue(term_seen.exists(), "TERM was not delivered to descendant")
+                self.assertIn(signal.SIGKILL, sent_signals)
+                self.assertFalse(self.pid_is_running(pid_file))
+                self.assertFalse(natural_finish.exists())
+                self.assertIn("truncated utf-8: ", outputs["synthetic-timeout"])
+                self.assertIn("\ufffd", outputs["synthetic-timeout"])
+                self.assertIn("TimeoutExpired", records[0]["stderr"])
+                self.assertIn("0.4 seconds", records[0]["stderr"])
+                self.assertTrue(records[0]["workspace_cleaned"])
+            finally:
+                self.cleanup_synthetic_process(pid_file, ignorer)
+
+    def test_timeout_truncated_output_file_falls_back_to_partial_stdout(self):
+        def timeout_with_truncated_file(command, *, env, cwd, timeout):
+            Path(env["BEOPSUNY_EVAL_OUTPUT_FILE"]).write_bytes(b"truncated: \xe2\x82")
+            raise subprocess.TimeoutExpired(
+                command, timeout, output=b"captured stdout", stderr=b"captured stderr"
+            )
+
+        with patch.object(
+            harness, "build_skill_context", return_value="synthetic context"
+        ), patch.object(harness, "_run_command", side_effect=timeout_with_truncated_file):
+            outputs, records = harness.run_command_outputs(
+                self.synthetic_config(),
+                command_template="synthetic command",
+                model="synthetic-no-provider",
+            )
+
+        self.assertEqual(outputs["synthetic-timeout"], "captured stdout")
+        self.assertTrue(records[0]["used_stdout"])
+        self.assertIn("TimeoutExpired", records[0]["stderr"])
+        self.assertIn("captured stderr", records[0]["stderr"])
+        self.assertIn("Partial output file read failed", records[0]["stderr"])
+        self.assertIn("UnicodeDecodeError", records[0]["stderr"])
+        self.assertEqual(records[0]["execution_status"], "execution_error")
+        self.assertTrue(records[0]["workspace_cleaned"])
+
+    def test_timeout_output_file_oserror_falls_back_to_partial_stdout(self):
+        real_read_text = Path.read_text
+
+        def unreadable_output(path, *args, **kwargs):
+            if path.name == "output.txt":
+                raise OSError("synthetic read failure")
+            return real_read_text(path, *args, **kwargs)
+
+        def timeout_with_output_file(command, *, env, cwd, timeout):
+            Path(env["BEOPSUNY_EVAL_OUTPUT_FILE"]).write_text(
+                "partial file", encoding="utf-8"
+            )
+            raise subprocess.TimeoutExpired(command, timeout, output="captured stdout")
+
+        with patch.object(
+            harness, "build_skill_context", return_value="synthetic context"
+        ), patch.object(
+            harness, "_run_command", side_effect=timeout_with_output_file
+        ), patch.object(Path, "read_text", new=unreadable_output):
+            outputs, records = harness.run_command_outputs(
+                self.synthetic_config(),
+                command_template="synthetic command",
+                model="synthetic-no-provider",
+            )
+
+        self.assertEqual(outputs["synthetic-timeout"], "captured stdout")
+        self.assertTrue(records[0]["used_stdout"])
+        self.assertIn("TimeoutExpired", records[0]["stderr"])
+        self.assertIn("Partial output file read failed", records[0]["stderr"])
+        self.assertIn("OSError: synthetic read failure", records[0]["stderr"])
+        self.assertEqual(records[0]["execution_status"], "execution_error")
+        self.assertTrue(records[0]["workspace_cleaned"])
 
     def test_command_failure_retains_raw_output_without_model_failure(self):
         outputs, records = harness.run_command_outputs(
