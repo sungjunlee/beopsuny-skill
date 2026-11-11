@@ -78,6 +78,13 @@ def build_packet(args: argparse.Namespace) -> dict[str, Any]:
     manifest = json.loads(
         read_text_source(str(manifest_source), knowledge_root=knowledge_root)
     )
+    manifest_channel = manifest.get("channel")
+    if not isinstance(manifest_channel, str) or manifest_channel not in channels:
+        raise IngestError(f"unknown manifest channel {manifest_channel!r}")
+    if manifest_channel != channel:
+        raise IngestError(
+            f"manifest channel mismatch expected={channel!r} actual={manifest_channel!r}"
+        )
     supported = set(
         str(item)
         for item in (manifest.get("compatibility") or {}).get(
