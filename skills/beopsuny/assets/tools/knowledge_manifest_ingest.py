@@ -46,6 +46,7 @@ urllib = _io.urllib
 ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_POLICY = ROOT / "skills/beopsuny/assets/policies/knowledge_manifest.yaml"
 DEFAULT_MAX_ASSET_CHARS = 1800
+CONSUMER_SUPPORTED_SCHEMA_VERSIONS = frozenset({"1"})
 
 
 def delivery_profile(max_asset_chars: int | None) -> str:
@@ -85,14 +86,15 @@ def build_packet(args: argparse.Namespace) -> dict[str, Any]:
         raise IngestError(
             f"manifest channel mismatch expected={channel!r} actual={manifest_channel!r}"
         )
-    supported = set(
+    advertised = set(
         str(item)
         for item in (manifest.get("compatibility") or {}).get(
             "supported_schema_versions", []
         )
     )
-    if not supported:
-        supported = {"1"}
+    supported = set(CONSUMER_SUPPORTED_SCHEMA_VERSIONS)
+    if advertised:
+        supported.intersection_update(advertised)
     validate_publication(manifest, supported)
 
     expected_assets = manifest_policy.get("required_asset_keys") or {}

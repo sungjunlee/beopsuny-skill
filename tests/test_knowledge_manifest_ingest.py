@@ -179,6 +179,59 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
             exit_code = helper.main(args)
         return exit_code, json.loads(output.getvalue()), reads
 
+    def run_schema_case(
+        self,
+        helper,
+        root: Path,
+        *,
+        manifest_version: int,
+        advertised: list[int] | None,
+        asset_version: int,
+        strict: bool,
+    ) -> tuple[int, dict[str, object], list[str]]:
+        _, contents, _ = self.write_fixture(root)
+        contents = {
+            key: text.replace(
+                "schema_version: 1", f"schema_version: {asset_version}"
+            )
+            for key, text in contents.items()
+        }
+        manifest_path, _, manifest = self.write_fixture(
+            root,
+            content_overrides=contents,
+            manifest_overrides={"schema_version": manifest_version},
+        )
+        if advertised is None:
+            manifest.pop("compatibility")
+        else:
+            manifest["compatibility"] = {
+                "supported_schema_versions": advertised
+            }
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        original_read = helper.read_text_source
+        reads: list[str] = []
+
+        def tracked_read(location, knowledge_root=None):
+            reads.append(location)
+            return original_read(location, knowledge_root=knowledge_root)
+
+        args = ["--manifest-file", str(manifest_path)]
+        if strict:
+            args.append("--strict")
+        output = io.StringIO()
+        with (
+            patch.object(helper, "read_text_source", side_effect=tracked_read),
+            patch.object(
+                helper.urllib.request,
+                "urlopen",
+                side_effect=AssertionError("network forbidden"),
+            ),
+            redirect_stdout(output),
+        ):
+            exit_code = helper.main(args)
+        return exit_code, json.loads(output.getvalue()), reads
+
     def test_temp_manifest_validates_assets_and_builds_packet(self) -> None:
         helper = load_helper()
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -222,6 +275,101 @@ class KnowledgeManifestIngestTests(unittest.TestCase):
         self.assertEqual(packet["delivery"]["profile"], "nondefault_override")
         self.assertEqual(len(packet["delivery"]["receipt"]), 5)
         self.assertEqual(packet["injection_packet"]["rendered_sections"], contents)
+
+    def test_consumer_schema_support_accepts_v1_with_declared_or_missing_metadata(
+        self,
+    ) -> None:
+        helper = load_helper()
+        self.assertEqual(helper.CONSUMER_SUPPORTED_SCHEMA_VERSIONS, {"1"})
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for advertised in ([1], [], None):
+                with self.subTest(advertised=advertised):
+                    exit_code, packet, reads = self.run_schema_case(
+                        helper,
+                        Path(tmpdir),
+                        manifest_version=1,
+                        advertised=advertised,
+                        asset_version=1,
+                        strict=True,
+                    )
+
+                    self.assertEqual(exit_code, 0)
+                    self.assertEqual(packet["status"], "ready")
+                    self.assertIsNotNone(packet["injection_packet"])
+                    self.assertEqual(
+                        sum(location.startswith("file://") for location in reads), 5
+                    )
+
+    def test_producer_metadata_cannot_expand_supported_manifest_schemas(self) -> None:
+        helper = load_helper()
+        cases = (None, [], [999], [1, 999])
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for advertised in cases:
+                for strict, expected_exit in ((False, 0), (True, 1)):
+                    with self.subTest(advertised=advertised, strict=strict):
+                        exit_code, packet, reads = self.run_schema_case(
+                            helper,
+                            Path(tmpdir),
+                            manifest_version=999,
+                            advertised=advertised,
+                            asset_version=999,
+                            strict=strict,
+                        )
+
+                        self.assertEqual(exit_code, expected_exit)
+                        self.assertEqual(packet["status"], "skipped")
+                        self.assertIn(
+                            "unsupported manifest schema_version=999", packet["reason"]
+                        )
+                        self.assertTrue(packet["continue_live_legal_research"])
+                        self.assertIsNone(packet["injection_packet"])
+                        self.assertEqual(packet["delivery"]["receipt"], [])
+                        self.assertEqual(
+                            sum(
+                                location.startswith("file://") for location in reads
+                            ),
+                            0,
+                        )
+
+    def test_producer_metadata_cannot_expand_supported_asset_schemas(self) -> None:
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            exit_code, packet, reads = self.run_schema_case(
+                helper,
+                Path(tmpdir),
+                manifest_version=1,
+                advertised=[1, 999],
+                asset_version=999,
+                strict=True,
+            )
+
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(packet["status"], "skipped")
+        self.assertIn("unsupported asset schema_version='999'", packet["reason"])
+        self.assertTrue(packet["continue_live_legal_research"])
+        self.assertIsNone(packet["injection_packet"])
+        self.assertEqual(
+            sum(location.startswith("file://") for location in reads), 1
+        )
+
+    def test_producer_metadata_can_narrow_consumer_schema_support(self) -> None:
+        helper = load_helper()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            exit_code, packet, reads = self.run_schema_case(
+                helper,
+                Path(tmpdir),
+                manifest_version=1,
+                advertised=[999],
+                asset_version=1,
+                strict=True,
+            )
+
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(packet["status"], "skipped")
+        self.assertIn("unsupported manifest schema_version=1", packet["reason"])
+        self.assertEqual(
+            sum(location.startswith("file://") for location in reads), 0
+        )
 
     def test_manifest_channel_matches_for_endpoint_and_local_file(self) -> None:
         helper = load_helper()
