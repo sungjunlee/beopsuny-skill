@@ -161,6 +161,83 @@ class RecoveryDecisionTest(unittest.TestCase):
         self.assertEqual("invalid_structured_result", decision["reason"])
         self.assertFalse(decision["state_complete"])
 
+    def test_cli_issue_bot_author_is_trusted_separately_from_comments(self) -> None:
+        history = {
+            "author": {"is_bot": True, "login": "app/github-actions"},
+            "body": state.encode_state(complete=True, failed_axes=["axis-a"]),
+            "comments": [],
+        }
+        decision = state.evaluate(
+            [result(("axis-a", "OK"))],
+            existing_issue=True,
+            issue_history=history,
+        )
+        self.assertEqual("recover", decision["action"])
+        self.assertTrue(decision["can_close"])
+        self.assertEqual(
+            ["axis-a"], state.latest_trusted_state(history)["failed_axes"]
+        )
+
+        comment_only = {
+            "author": {"login": "someone-else"},
+            "body": "human-opened issue without a bot marker",
+            "comments": [
+                {
+                    "author": {"is_bot": True, "login": "app/github-actions"},
+                    "body": state.encode_state(complete=True, failed_axes=["axis-a"]),
+                }
+            ],
+        }
+        decision = state.evaluate(
+            [result(("axis-a", "OK"))],
+            existing_issue=True,
+            issue_history=comment_only,
+        )
+        self.assertEqual("recover", decision["action"])
+
+    def test_partial_recovery_keeps_required_axes_until_close(self) -> None:
+        initial = state.evaluate(
+            [result(("axis-a", "FAIL"), ("axis-b", "FAIL"))],
+            existing_issue=False,
+        )
+        self.assertEqual("failure", initial["action"])
+        history = {
+            "author": {"login": "github-actions"},
+            "body": initial["state_marker"],
+            "comments": [],
+        }
+        self.assertEqual(
+            ["axis-a", "axis-b"],
+            state.latest_trusted_state(history)["failed_axes"],
+        )
+
+        follow_up = state.evaluate(
+            [result(("axis-a", "OK"), ("axis-b", "WARN"))],
+            existing_issue=True,
+            issue_history=history,
+        )
+        self.assertEqual("defer", follow_up["action"])
+        self.assertEqual(["axis-b"], follow_up["unresolved_axes"])
+        next_history = {
+            "author": {"login": "github-actions"},
+            "body": follow_up["state_marker"],
+            "comments": [],
+        }
+        self.assertEqual(
+            ["axis-a", "axis-b"],
+            state.latest_trusted_state(next_history)["failed_axes"],
+        )
+
+        later = state.evaluate(
+            [result(("axis-a", "WARN"), ("axis-b", "OK"))],
+            existing_issue=True,
+            issue_history=next_history,
+        )
+        self.assertEqual("defer", later["action"])
+        self.assertFalse(later["can_close"])
+        self.assertEqual(["axis-a"], later["unresolved_axes"])
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -25,7 +25,7 @@ from typing import Any, Iterable
 STATE_VERSION = 1
 STATE_PREFIX = "<!-- source-reachability-state:"
 STATE_RE = re.compile(rf"{re.escape(STATE_PREFIX)}([A-Za-z0-9_-]+) -->")
-TRUSTED_BOT_LOGINS = {"github-actions", "github-actions[bot]"}
+TRUSTED_BOT_LOGINS = {"github-actions", "github-actions[bot]", "app/github-actions"}
 VALID_STATUSES = {"OK", "WARN", "FAIL", "NOT_INSTALLED"}
 
 
@@ -182,7 +182,10 @@ def evaluate(
     unresolved = [
         item["axis"] for item in required_statuses if item["status"] != "OK"
     ]
-    tracked_axes = _ordered_unique([*unresolved, *final_fail_axes])
+    # Keep every previously failed axis while the issue remains open, even
+    # after a later run marks some of them OK. Dropping recovered axes would
+    # let a later deferred WARN close the issue (#382 review P2).
+    tracked_axes = _ordered_unique([*required, *final_fail_axes])
 
     if final_fail_axes:
         action = "failure"
