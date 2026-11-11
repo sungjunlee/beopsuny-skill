@@ -7,7 +7,7 @@ registers these functions in CHECK_GROUPS and runs them via main().
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -160,17 +160,21 @@ REVALIDATION_DECISIONS = {"keep_registered", "retire", "partial_refresh"}
 REVALIDATION_ITEM_RESULTS = {"unchanged", "updated", "removed", "insufficient", "contradicted"}
 
 def check_freshness_revalidation_records() -> None:
-    registry_paths = {
-        str(item.get("path"))
-        for item in freshness_debt_registry().get("assets", [])
-        if isinstance(item, dict)
+    registry = freshness_debt_registry()
+    registry_items = {
+        str(item.get("path")): item
+        for item in registry.get("assets", [])
+        if isinstance(item, dict) and item.get("path")
     }
+    registry_paths = set(registry_items)
     fixtures_dir = ROOT / "tests/fixtures/freshness_revalidations"
     label = "tests/fixtures/freshness_revalidations"
     fixture_paths = sorted(fixtures_dir.glob("*.yaml")) if fixtures_dir.exists() else []
     if not fixture_paths:
         raise AssertionError(f"{label}: add at least one freshness revalidation record fixture")
 
+    today = date.today()
+    records_by_asset: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for path in fixture_paths:
         relative = path.relative_to(ROOT).as_posix()
         record = load_yaml(relative)
@@ -183,6 +187,7 @@ def check_freshness_revalidation_records() -> None:
         asset_path = str(record["asset_path"])
         if not (ROOT / asset_path).exists():
             raise AssertionError(f"{relative}: asset_path does not exist: {asset_path}")
+        parse_checked_at(record["checked_at"], today, f"{relative}: checked_at")
         if not re.search(r"/issues/\d+", str(record["tracked_issue"])):
             raise AssertionError(f"{relative}: tracked_issue must reference a GitHub issue URL")
 
@@ -235,6 +240,14 @@ def check_freshness_revalidation_records() -> None:
                 raise AssertionError(f"{relative}: asset_update missing {required!r}")
         if not isinstance(asset_update["updated"], bool):
             raise AssertionError(f"{relative}: asset_update.updated must be boolean")
+        parse_review_due(
+            asset_update["maintenance_next_review_before"],
+            f"{relative}: asset_update.maintenance_next_review_before",
+        )
+        parse_review_due(
+            asset_update["maintenance_next_review_after"],
+            f"{relative}: asset_update.maintenance_next_review_after",
+        )
 
         decision = record["retirement_decision"]
         if not isinstance(decision, dict) or decision.get("decision") not in REVALIDATION_DECISIONS:
@@ -269,6 +282,38 @@ def check_freshness_revalidation_records() -> None:
             if self_check.get("next_review_advanced") is not True:
                 raise AssertionError(f"{relative}: retire decisions must advance next_review")
 
+        records_by_asset.setdefault(asset_path, []).append((relative, record))
+
+    # An asset may have historical records. Require one record that supports the
+    # current maintenance dates; do not make every old event pretend to describe
+    # the latest state. ``checked_at >= last_verified`` deliberately permits a
+    # record made after a retained verification date (clause_references #207).
+    for asset_path, records in records_by_asset.items():
+        current = current_maintenance_dates(asset_path, registry_items, today)
+        if current is None:
+            continue
+        if not any(
+            revalidation_record_applies(record, current, today, relative)
+            for relative, record in records
+        ):
+            candidates = [
+                {
+                    "record": relative,
+                    "checked_at": record.get("checked_at"),
+                    "next_review_after": (
+                        record.get("asset_update", {}).get("maintenance_next_review_after")
+                        if isinstance(record.get("asset_update"), dict)
+                        else None
+                    ),
+                }
+                for relative, record in records
+            ]
+            raise AssertionError(
+                f"{asset_path}: no revalidation record supports current maintenance "
+                f"last_verified={current.get('last_verified')!r}, "
+                f"next_review={current.get('next_review')!r}; candidates={candidates!r}"
+            )
+
 
 def check_freshness_metadata_schema() -> None:
     data = load_yaml("skills/beopsuny/assets/schemas/freshness_metadata.yaml")
@@ -292,21 +337,89 @@ def check_freshness_metadata_schema() -> None:
         if required not in data:
             raise AssertionError(f"{label}: missing {required!r}")
 
-def parse_review_due(value: Any) -> date | None:
-    if isinstance(value, date):
-        return value
+def parse_review_due(value: Any, label: str = "next_review") -> date:
     if value is None:
-        return None
+        raise AssertionError(f"{label}: date must not be missing or null")
+    if type(value) is date:
+        return value
     text = str(value)
-    if re.fullmatch(r"\d{4}-\d{2}", text):
-        year, month = (int(part) for part in text.split("-"))
-        if month == 12:
-            return date(year + 1, 1, 1)
-        return date(year, month + 1, 1)
-    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
-        year, month, day = (int(part) for part in text.split("-"))
-        return date(year, month, day)
-    raise AssertionError(f"unsupported next_review date format: {text!r}")
+    try:
+        if re.fullmatch(r"\d{4}-\d{2}", text):
+            year, month = (int(part) for part in text.split("-"))
+            if not 1 <= month <= 12:
+                raise AssertionError(f"{label}: invalid date: {text!r}")
+            if month == 12:
+                return date(year + 1, 1, 1)
+            return date(year, month + 1, 1)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            return date.fromisoformat(text)
+    except ValueError as exc:
+        raise AssertionError(f"{label}: invalid date: {text!r}") from exc
+    raise AssertionError(f"{label}: unsupported date format: {text!r}")
+
+
+def parse_verification_date(value: Any, today: date, label: str = "last_verified") -> date:
+    if value is None:
+        raise AssertionError(f"{label}: date must not be missing or null")
+    if type(value) is date:
+        verified = value
+    else:
+        text = str(value)
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            raise AssertionError(f"{label}: unsupported date format: {text!r}")
+        try:
+            verified = date.fromisoformat(text)
+        except ValueError as exc:
+            raise AssertionError(f"{label}: invalid date: {text!r}") from exc
+    if verified > today:
+        raise AssertionError(f"{label}: future verification date {verified.isoformat()!r}")
+    return verified
+
+
+
+def parse_checked_at(value: Any, today: date, label: str = "checked_at") -> date:
+    """Parse a revalidation checked_at value.
+
+    The schema allows YYYY-MM-DD or an ISO-8601 timestamp, including values
+    already loaded by YAML as datetime. last_verified stays date-only via
+    parse_verification_date.
+    """
+    if value is None:
+        raise AssertionError(f"{label}: date must not be missing or null")
+    if type(value) is date:
+        checked = value
+    elif isinstance(value, datetime):
+        checked = value.date()
+    else:
+        text = str(value)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            try:
+                checked = date.fromisoformat(text)
+            except ValueError as exc:
+                raise AssertionError(f"{label}: invalid date: {text!r}") from exc
+        else:
+            normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+            try:
+                checked = datetime.fromisoformat(normalized).date()
+            except ValueError as exc:
+                raise AssertionError(
+                    f"{label}: unsupported date format: {text!r}"
+                ) from exc
+    if checked > today:
+        raise AssertionError(f"{label}: future verification date {checked.isoformat()!r}")
+    return checked
+
+
+def validate_maintenance_dates(
+    maintenance: dict[str, Any], today: date, label: str
+) -> tuple[date, date]:
+    next_review = parse_review_due(
+        maintenance.get("next_review"), f"{label}.next_review"
+    )
+    last_verified = parse_verification_date(
+        maintenance.get("last_verified"), today, f"{label}.last_verified"
+    )
+    return next_review, last_verified
 
 
 def asset_expiry_reasons(next_review: Any, maintenance: Any, today: date) -> list[str]:
@@ -316,15 +429,20 @@ def asset_expiry_reasons(next_review: Any, maintenance: Any, today: date) -> lis
     두 검사 모두 이 함수를 통해서만 만료를 판정한다."""
     reasons: list[str] = []
     due = parse_review_due(next_review)
-    if due and due <= today:
+    if due <= today:
         reasons.append(f"next_review {next_review} 경과")
     if isinstance(maintenance, dict):
-        last_verified = maintenance.get("last_verified")
+        last_verified = parse_verification_date(
+            maintenance.get("last_verified"), today, "maintenance.last_verified"
+        )
         freshness_days = maintenance.get("freshness_days")
-        if last_verified is not None and isinstance(freshness_days, int):
-            window_due = date.fromisoformat(str(last_verified)) + timedelta(days=freshness_days)
+        if isinstance(freshness_days, int):
+            window_due = last_verified + timedelta(days=freshness_days)
             if window_due <= today:
-                reasons.append(f"last_verified {last_verified} + freshness_days {freshness_days}일 경과")
+                reasons.append(
+                    f"last_verified {last_verified.isoformat()} + "
+                    f"freshness_days {freshness_days}일 경과"
+                )
     return reasons
 
 
@@ -383,6 +501,7 @@ def check_asset_freshness_metadata_tracked() -> None:
         if not isinstance(maintenance["freshness_days"], int) or maintenance["freshness_days"] <= 0:
             raise AssertionError(f"{relative}: maintenance.freshness_days must be a positive integer")
 
+        validate_maintenance_dates(maintenance, today, f"{relative}: maintenance")
         expired = bool(asset_expiry_reasons(maintenance.get("next_review"), maintenance, today))
         if expired and relative not in registered_assets:
             stale_untracked.append(f"{relative}: next_review={maintenance.get('next_review')}")
@@ -401,15 +520,76 @@ def check_asset_freshness_metadata_tracked() -> None:
         )
 
 
-def revalidated_asset_paths() -> set[str]:
-    """재검증 기록이 존재하는 asset_path 집합. 기록의 스키마 검증은
-    check_freshness_revalidation_records가 담당하고, 여기서는 존재 여부만 본다."""
+def current_maintenance_dates(
+    asset_path: str, registry_items: dict[str, dict[str, Any]], today: date
+) -> dict[str, Any] | None:
+    path = ROOT / asset_path
+    if path.suffix == ".yaml":
+        data = load_yaml(asset_path)
+        maintenance = data.get("maintenance") if isinstance(data, dict) else None
+        if not isinstance(maintenance, dict):
+            raise AssertionError(f"{asset_path}: asset has no maintenance metadata")
+        validate_maintenance_dates(maintenance, today, f"{asset_path}: maintenance")
+        return maintenance
+
+    registry_item = registry_items.get(asset_path)
+    if registry_item is None:
+        return None
+    parse_review_due(
+        registry_item.get("next_review"), f"freshness_debt.yaml: {asset_path}.next_review"
+    )
+    return {"next_review": registry_item.get("next_review"), "last_verified": None}
+
+
+def revalidation_record_applies(
+    record: dict[str, Any], current: dict[str, Any], today: date, label: str
+) -> bool:
+    checked_at = parse_checked_at(
+        record.get("checked_at"), today, f"{label}: checked_at"
+    )
+    asset_update = record.get("asset_update")
+    if not isinstance(asset_update, dict):
+        return False
+    recorded_next_review = asset_update.get("maintenance_next_review_after")
+    parse_review_due(
+        recorded_next_review, f"{label}: asset_update.maintenance_next_review_after"
+    )
+    current_next_review = current.get("next_review")
+    parse_review_due(current_next_review, f"{label}: current maintenance.next_review")
+    if str(recorded_next_review) != str(current_next_review):
+        return False
+
+    current_last_verified = current.get("last_verified")
+    if current_last_verified is None:
+        return True
+    verified_at = parse_verification_date(
+        current_last_verified, today, f"{label}: current maintenance.last_verified"
+    )
+    return checked_at >= verified_at
+
+
+def revalidated_asset_paths(
+    today: date | None = None, registry: dict[str, Any] | None = None
+) -> set[str]:
+    """현재 maintenance 날짜를 뒷받침하는 기록이 있는 asset_path 집합."""
+    as_of = today or date.today()
+    registry_data = registry if registry is not None else freshness_debt_registry()
+    registry_items = {
+        str(item.get("path")): item
+        for item in registry_data.get("assets", [])
+        if isinstance(item, dict) and item.get("path")
+    }
     fixtures_dir = ROOT / "tests/fixtures/freshness_revalidations"
     paths: set[str] = set()
     for path in sorted(fixtures_dir.glob("*.yaml")) if fixtures_dir.exists() else []:
-        record = load_yaml(path.relative_to(ROOT).as_posix())
-        if isinstance(record, dict) and record.get("asset_path"):
-            paths.add(str(record["asset_path"]))
+        relative = path.relative_to(ROOT).as_posix()
+        record = load_yaml(relative)
+        if not isinstance(record, dict) or not record.get("asset_path"):
+            continue
+        asset_path = str(record["asset_path"])
+        current = current_maintenance_dates(asset_path, registry_items, as_of)
+        if current is not None and revalidation_record_applies(record, current, as_of, relative):
+            paths.add(asset_path)
     return paths
 
 
@@ -417,7 +597,7 @@ def check_freshness_debt_registry() -> None:
     data = freshness_debt_registry()
     label = "freshness_debt.yaml"
     today = date.today()
-    revalidated = revalidated_asset_paths()
+    revalidated = revalidated_asset_paths(today, data)
 
     for required in ["tracked_issue", "policy", "assets"]:
         if required not in data:
@@ -477,6 +657,7 @@ def check_freshness_debt_registry() -> None:
             maintenance = asset_data.get("maintenance") if isinstance(asset_data, dict) else None
             if not isinstance(maintenance, dict):
                 raise AssertionError(f"{label}: registered asset has no maintenance metadata: {path}")
+            validate_maintenance_dates(maintenance, today, f"{path}: maintenance")
             if str(maintenance.get("next_review")) != str(item["next_review"]):
                 raise AssertionError(
                     f"{label}: {path} next_review drift: registry={item['next_review']!r}, "
@@ -484,9 +665,7 @@ def check_freshness_debt_registry() -> None:
                 )
         elif not path.startswith("skills/beopsuny/references/") or registered_path.suffix != ".md":
             raise AssertionError(f"{label}: non-YAML entries must be reference markdown files: {path}")
-        due = parse_review_due(item["next_review"])
-        if not due:
-            raise AssertionError(f"{label}: registered asset has invalid next_review: {path}")
+        parse_review_due(item["next_review"], f"{label}: {path}.next_review")
 
         expiry_reasons = asset_expiry_reasons(item["next_review"], maintenance, today)
 
@@ -505,9 +684,9 @@ def check_freshness_debt_registry() -> None:
             for required in ["overdue_reason", "overdue_tracked_issue"]:
                 if not item.get(required):
                     raise AssertionError(f"{label}: {path} overdue entry missing {required!r}")
-            resolve_due = parse_review_due(resolve_by)
-            if not resolve_due:
-                raise AssertionError(f"{label}: {path} invalid overdue_resolve_by: {resolve_by!r}")
+            resolve_due = parse_review_due(
+                resolve_by, f"{label}: {path}.overdue_resolve_by"
+            )
             if resolve_due <= today:
                 raise AssertionError(
                     f"{label}: {path} overdue_resolve_by {resolve_by} 도과 — "
@@ -584,4 +763,3 @@ def check_freshness_governance_reference() -> None:
         assert_contains(text, token, "freshness-governance.md")
     # Registry contents and record fields have one machine-readable home; their
     # completeness, expiration and deletion are checked by registry/record checks.
-
