@@ -3179,7 +3179,8 @@ def check_release_workflow_preflight() -> None:
         "python -m pip install -r requirements-dev.txt",
         "python tests/validate_skill_contracts.py",
         "python tests/evaluate_scenario_outputs.py",
-        "python -m unittest tests/test_forward_eval_harness.py tests/test_knowledge_manifest_ingest.py",
+        "python -m unittest",
+        "python tests/check_rescore_baseline.py",
         "python -m py_compile tests/validate_skill_contracts.py tests/evaluate_scenario_outputs.py",
         "skills/beopsuny/assets/tools/knowledge_manifest_ingest.py",
         "tests/test_knowledge_manifest_ingest.py",
@@ -3191,11 +3192,64 @@ def check_release_workflow_preflight() -> None:
     ]:
         assert_contains(text, required, label)
 
-    release_zip_index = text.find("Create release zips")
-    preflight_index = text.find("Validate skill document contracts")
-    version_index = text.find("Verify release tag matches plugin metadata")
-    if not (0 <= preflight_index < release_zip_index and 0 <= version_index < release_zip_index):
-        raise AssertionError(f"{label}: preflight checks must run before release zip creation")
+    contract_commands = workflow_run_commands(
+        ".github/workflows/contract-tests.yml", "contracts"
+    )
+    release_commands = workflow_run_commands(".github/workflows/release.yml", "release")
+    contract_unittest_targets = python_module_test_targets(
+        contract_commands, "unittest", "contract-tests.yml unittest"
+    )
+    release_unittest_targets = python_module_test_targets(
+        release_commands, "unittest", f"{label} unittest"
+    )
+    assert_same_paths(
+        release_unittest_targets,
+        contract_unittest_targets,
+        f"{label} unittest vs contract-tests.yml unittest",
+    )
+
+    data = load_yaml(".github/workflows/release.yml")
+    jobs = data.get("jobs") if isinstance(data, dict) else None
+    release_job = jobs.get("release") if isinstance(jobs, dict) else None
+    steps = release_job.get("steps") if isinstance(release_job, dict) else None
+    if not isinstance(steps, list):
+        raise AssertionError(f"{label}: release.steps must be a list")
+
+    rescore_steps = [
+        step
+        for step in steps
+        if isinstance(step, dict)
+        and step.get("run") == "python tests/check_rescore_baseline.py"
+    ]
+    if len(rescore_steps) != 1:
+        raise AssertionError(
+            f"{label}: rescore baseline gate must appear exactly once — "
+            f"found {len(rescore_steps)}"
+        )
+
+    expected_order = [
+        "Validate skill document contracts",
+        "Evaluate router guardrail outputs",
+        "Run unit regression tests",
+        "Check rescore baseline drift",
+        "Compile test harnesses",
+        "Verify release tag matches plugin metadata",
+        "Create release zips",
+        "Create GitHub Release",
+    ]
+    step_names = [
+        step.get("name") for step in steps if isinstance(step, dict) and "name" in step
+    ]
+    positions: list[int] = []
+    for expected_name in expected_order:
+        if step_names.count(expected_name) != 1:
+            raise AssertionError(
+                f"{label}: expected exactly one {expected_name!r} step — "
+                f"found {step_names.count(expected_name)}"
+            )
+        positions.append(step_names.index(expected_name))
+    if positions != sorted(positions):
+        raise AssertionError(f"{label}: release preflight and publication gates are out of order")
 
 
 # 은퇴한 표면 → 그 개념의 현재 집. 재퇴적(파일 복귀)을 하드 실패로 막는다.
